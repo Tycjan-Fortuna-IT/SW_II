@@ -1,7 +1,7 @@
-@echo off
+@ECHO OFF
 
-pushd ..
-Vendor\Binaries\Premake\Windows\premake5.exe --file=Build.lua vs2022
-popd
+PUSHD $~dp0\..\
+vendor\premake\premake5.exe --file=Build.lua vs2022
+POPD
 
-pause
+PAUSE
