@@ -1,7 +1,9 @@
 #pragma once
 
+#include "Core/Defines.hpp"
+
 namespace Core {
 
-	void PrintHelloWorld();
+	API void PrintHelloWorld();
 
 }

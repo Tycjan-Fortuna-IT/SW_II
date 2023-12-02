@@ -1,12 +1,12 @@
+#include "pch.hpp"
 #include "Core.hpp"
-
-#include <iostream>
 
 namespace Core {
 
 	void PrintHelloWorld()
 	{
-		std::cout << "Hello World!\n";
+        std::string test = "Hello world !";
+		std::cout << test;
 		std::cin.get();
 	}
 

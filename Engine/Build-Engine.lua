@@ -1,37 +1,49 @@
 project "Engine"
-   kind "StaticLib"
-   language "C++"
-   cppdialect "C++20"
-   targetdir "Binaries/%{cfg.buildcfg}"
-   staticruntime "off"
+    kind "SharedLib"
+    language "C++"
+    cppdialect "C++20"
+    targetdir "Binaries/%{cfg.buildcfg}"
+    staticruntime "off"
 
-   files { "src/**.h", "src/**.cpp" }
+    files { "src/**.hpp", "src/**.cpp" }
 
-   includedirs
-   {
-      "src"
-   }
+    pchheader "pch.hpp"
+    pchsource "src/pch.cpp"
 
-   targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")
-   objdir ("../Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
+    defines
+    {
+        "EXPORT"
+    }
 
-   filter "system:windows"
-       systemversion "latest"
-       defines { }
+    includedirs
+    {
+        "src"
+    }
 
-   filter "configurations:Debug"
-       defines { "DEBUG" }
-       runtime "Debug"
-       symbols "On"
+    targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")
+    objdir ("../Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
 
-   filter "configurations:Release"
-       defines { "RELEASE" }
-       runtime "Release"
-       optimize "On"
-       symbols "On"
+    postbuildcommands {
+        "{COPY} %{wks.location}/Binaries/" .. OutputDir .. "/Engine/Engine.dll %{wks.location}/Binaries/" .. OutputDir .. "/Testbed"
+    }
 
-   filter "configurations:Dist"
-       defines { "DIST" }
-       runtime "Release"
-       optimize "On"
-       symbols "Off"
+    filter "system:windows"
+        systemversion "latest"
+        defines { }
+
+    filter "configurations:Debug"
+        defines { "DEBUG" }
+        runtime "Debug"
+        symbols "On"
+
+    filter "configurations:Release"
+        defines { "RELEASE" }
+        runtime "Release"
+        optimize "On"
+        symbols "On"
+
+    filter "configurations:Dist"
+        defines { "DIST" }
+        runtime "Release"
+        optimize "On"
+        symbols "Off"
