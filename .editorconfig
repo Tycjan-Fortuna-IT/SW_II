@@ -1,0 +1,42 @@
+# EditorConfig is a simple way to define and maintain consistent coding styles
+# and formatting rules between different editors and IDEs. For more information:
+# https://editorconfig.org
+
+# Top-most EditorConfig file, for setting default rules for the entire project.
+root = true
+
+# All files should use LF (Unix) line endings.
+[*]
+end_of_line = crlf
+
+# Use UTF-8 encoding for all files.
+charset = utf-8
+
+# Remove trailing whitespace at the end of lines.
+trim_trailing_whitespace = true
+
+# Ensure a newline at the end of each file.
+insert_final_newline = true
+
+# Set the indent style to spaces (4 spaces per level).
+indent_style = space
+indent_size = 4
+
+# Override settings for specific file types or directories.
+[*.md]
+# Markdown files should use a single space after "#" for headers.
+# and wrap text at 80 characters.
+trim_trailing_whitespace = false
+max_line_length = 80
+
+# C# files
+[*.cs]
+indent_size = 4
+
+# JSON files
+[*.json]
+indent_size = 4
+
+# Exclude specific directories or files
+[bin/, obj/]
+exclude = true
