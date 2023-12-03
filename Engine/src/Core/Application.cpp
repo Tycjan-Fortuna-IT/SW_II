@@ -1,8 +1,5 @@
 #include "Application.hpp"
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 #include "Core/Debug/Logger.hpp"
 
 namespace SW {
@@ -13,6 +10,15 @@ namespace SW {
         : m_Specification(specification) {}
 
     bool Application::OnInit() {
+        const WindowSpecification specification = {
+            .Title = m_Specification.Title,
+            .Width = m_Specification.Width,
+            .Height = m_Specification.Height,
+            .VSync = m_Specification.VSync
+        };
+
+        m_Window = new Window(specification);
+
         m_IsRunning = true;
 
         TRACE("Application has been properly initialized");
@@ -21,6 +27,7 @@ namespace SW {
     }
 
     bool Application::OnShutdown() {
+        delete m_Window;
         delete s_Instance;
 
         TRACE("Application has been properly shut down");

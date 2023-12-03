@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Defines.hpp"
+#include "Core/Window.hpp"
 
 namespace SW {
 
@@ -40,6 +41,7 @@ namespace SW {
         static Application* s_Instance;
 
         ApplicationSpecification m_Specification;
+        Window* m_Window = nullptr;
 
         bool m_IsRunning = false;
     };
