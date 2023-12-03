@@ -1,0 +1,9 @@
+[submodule "Engine/vendor/GLAD"]
+	path = Engine/vendor/GLAD
+	url = https://github.com/Tycjan-Fortuna-IT/glad.git
+[submodule "Engine/vendor/GLFW"]
+	path = Engine/vendor/GLFW
+	url = https://github.com/Tycjan-Fortuna-IT/glfw.git
+[submodule "ImGui"]
+	path = ImGui
+	url = https://github.com/Tycjan-Fortuna-IT/imgui.git
