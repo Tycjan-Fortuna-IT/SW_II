@@ -7,8 +7,8 @@ project "Engine"
 
     files { "src/**.hpp", "src/**.cpp" }
 
-    pchheader "pch.hpp"
-    pchsource "src/pch.cpp"
+    -- pchheader "pch.hpp"
+    -- pchsource "src/pch.cpp"
 
     defines
     {
