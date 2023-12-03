@@ -13,13 +13,19 @@ project "Testbed"
         "../Engine/src"
     }
 
+    -- externalincludedirs
+    -- {
+    --     "%{IncludeDir.glfw}",
+    --     "%{IncludeDir.glad}",
+    -- }
+
     links
     {
         "Engine"
     }
 
-    targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")
-    objdir ("../Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
+    targetdir ("../Binaries/" .. outputdir .. "/%{prj.name}")
+    objdir ("../Binaries/Intermediates/" .. outputdir .. "/%{prj.name}")
 
     filter "system:windows"
         systemversion "latest"

@@ -1,11 +1,14 @@
 #include "Application.hpp"
 
+//#include <glad/glad.h>
+//#include <GLFW/glfw3.h>
+
 namespace SW {
 
     Application* Application::s_Instance = nullptr;
 
     Application::Application(const ApplicationSpecification& specification) {
-        
+        //GLFWwindow* window = glfwCreateWindow(1280, 720, "Title", nullptr, nullptr);
     }
 
     bool Application::OnInit() {

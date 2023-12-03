@@ -20,11 +20,21 @@ project "Engine"
         "src"
     }
 
-    targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")
-    objdir ("../Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
+    externalincludedirs {
+        "%{IncludeDir.glfw}",
+        "%{IncludeDir.glad}",
+    }
+
+    links {
+        "glfw",
+        "glad",
+    }
+
+    targetdir ("../Binaries/" .. outputdir .. "/%{prj.name}")
+    objdir ("../Binaries/Intermediates/" .. outputdir .. "/%{prj.name}")
 
     postbuildcommands {
-        "{COPY} %{wks.location}/Binaries/" .. OutputDir .. "/Engine/Engine.dll %{wks.location}/Binaries/" .. OutputDir .. "/Testbed"
+        "{COPY} %{wks.location}/Binaries/" .. outputdir .. "/Engine/Engine.dll %{wks.location}/Binaries/" .. outputdir .. "/Testbed"
     }
 
     filter "system:windows"
@@ -47,3 +57,8 @@ project "Engine"
         runtime "Release"
         optimize "On"
         symbols "Off"
+
+    group "Engine/Dependencies"
+        include "Engine/vendor/GLFW"
+        include "Engine/vendor/GLAD"
+    group ""
