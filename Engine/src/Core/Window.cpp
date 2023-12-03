@@ -3,8 +3,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "Debug/Logger.hpp"
-
 namespace SW {
     Window::Window(const WindowSpecification& specification)
         : m_Specification(specification) {

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Core/Defines.hpp"
-
 namespace SW {
 
     enum LogLevel : i8
@@ -28,15 +26,15 @@ namespace SW {
      * @param msg The message to print if the assertion fails.
      */
     #define ASSERT(x, msg)                                                  \
-        {                                                                       \
-            if (!(x))                                                           \
-            {                                                                   \
-                Logger::ReportAssertionFailure(#x, msg, __FILE__, __LINE__);    \
-                __debugbreak();                                                 \
-            }                                                                   \
-        }
+    {                                                                       \
+        if (!(x))                                                           \
+        {                                                                   \
+            Logger::ReportAssertionFailure(#x, msg, __FILE__, __LINE__);    \
+            __debugbreak();                                                 \
+        }                                                                   \
+    }
 
-     /**
+    /**
      * @brief Logs a message.
      *        This macro should not be used directly, but rather through the FATAL, ERROR, WARN, INFO, DEBUG, and TRACE macros.
      *
@@ -46,7 +44,7 @@ namespace SW {
      */
     #define LOG(level, msg, ...) Logger::PrintMessage(level, msg, ##__VA_ARGS__)
 
-     /**
+    /**
      * @brief Logs a fatal message.
      *        This macro should be used to stop the application when hit.
      *
@@ -55,7 +53,7 @@ namespace SW {
      */
     #define FATAL(msg, ...) { LOG(LOG_LEVEL_FATAL, msg, ##__VA_ARGS__); __debugbreak(); }
 
-     /**
+    /**
      * @brief Logs an error message.
      *        This macro should be used to indicate critical runtime problems that cause the application to run improperly or not at all.
      *
@@ -73,7 +71,7 @@ namespace SW {
       */
     #define WARN(msg, ...) LOG(LOG_LEVEL_WARN, msg, ##__VA_ARGS__)
 
-      /**
+     /**
       * @brief Logs an info message.
       *        This macro should be used for non-erronuous informational purposes.
       *
@@ -82,7 +80,7 @@ namespace SW {
       */
     #define INFO(msg, ...) LOG(LOG_LEVEL_INFO, msg, ##__VA_ARGS__)
 
-      /**
+     /**
       * @brief Logs a debug message.
       *        This macro should be used for debugging purposes.
       *
@@ -91,7 +89,7 @@ namespace SW {
       */
     #define DEBUG(msg, ...) LOG(LOG_LEVEL_DEBUG, msg, ##__VA_ARGS__)
 
-      /**
+     /**
       * @brief Logs a trace message.
       *        This macro should be used for verbose debugging purposes.
       *

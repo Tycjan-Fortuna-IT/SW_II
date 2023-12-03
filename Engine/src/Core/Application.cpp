@@ -1,7 +1,5 @@
 #include "Application.hpp"
 
-#include "Core/Debug/Logger.hpp"
-
 namespace SW {
 
     Application* Application::s_Instance = nullptr;
