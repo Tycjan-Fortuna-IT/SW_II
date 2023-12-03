@@ -12,7 +12,8 @@ project "Engine"
 
     defines
     {
-        "EXPORT"
+        "EXPORT",
+        "GLFW_INCLUDE_NONE",
     }
 
     includedirs
@@ -42,18 +43,18 @@ project "Engine"
         defines { }
 
     filter "configurations:Debug"
-        defines { "DEBUG" }
+        defines { "SW_DEBUG" }
         runtime "Debug"
         symbols "On"
 
     filter "configurations:Release"
-        defines { "RELEASE" }
+        defines { "SW_RELEASE" }
         runtime "Release"
         optimize "On"
         symbols "On"
 
     filter "configurations:Dist"
-        defines { "DIST" }
+        defines { "SW_DIST" }
         runtime "Release"
         optimize "On"
         symbols "Off"

@@ -7,6 +7,11 @@ project "Testbed"
 
     files { "src/**.hpp", "src/**.cpp" }
 
+    defines
+    {
+        "GLFW_INCLUDE_NONE",
+    }
+
     includedirs
     {
         "src",
@@ -32,18 +37,18 @@ project "Testbed"
         defines { "WINDOWS" }
 
     filter "configurations:Debug"
-        defines { "DEBUG" }
+        defines { "SW_DEBUG" }
         runtime "Debug"
         symbols "On"
 
     filter "configurations:Release"
-        defines { "RELEASE" }
+        defines { "SW_RELEASE" }
         runtime "Release"
         optimize "On"
         symbols "On"
 
     filter "configurations:Dist"
-        defines { "DIST" }
+        defines { "SW_DIST" }
         runtime "Release"
         optimize "On"
         symbols "Off"

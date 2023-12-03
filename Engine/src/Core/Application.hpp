@@ -23,7 +23,6 @@ namespace SW {
         bool OnShutdown();
 
         void OnEvent();
-        void OnUpdate();
 
         API void Run();
         API void Close();
@@ -40,7 +39,7 @@ namespace SW {
 
         static Application* s_Instance;
 
-        ApplicationSpecification specification;
+        ApplicationSpecification m_Specification;
 
         bool m_IsRunning = false;
     };
