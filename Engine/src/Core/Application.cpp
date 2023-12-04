@@ -1,5 +1,7 @@
 #include "Application.hpp"
 
+#include "Events/Event.hpp"
+
 namespace SW {
 
     Application* Application::s_Instance = nullptr;
@@ -19,12 +21,25 @@ namespace SW {
 
         m_IsRunning = true;
 
+        EventSystem::Initialize();
+        EventSystem::Register(EventCode::EVENT_CODE_APPLICATION_QUIT, nullptr, [](Event event, void* sender, void* listener) -> bool {
+            WARN("Event received!");
+
+            return true;
+        });
+
         TRACE("Application has been properly initialized");
 
         return true;
     }
 
     bool Application::OnShutdown() {
+        Event event;
+        event.Code = EventCode::EVENT_CODE_APPLICATION_QUIT;
+
+        EventSystem::Emit(event, this);
+        EventSystem::Shutdown();
+
         delete m_Window;
         delete s_Instance;
 
