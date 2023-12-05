@@ -21,12 +21,10 @@ namespace SW {
 
         m_IsRunning = true;
 
-        EventSystem::Initialize();
-        EventSystem::Register(EventCode::EVENT_CODE_APPLICATION_QUIT, nullptr, [](Event event, void* sender, void* listener) -> bool {
-            WARN("Event received!");
+        s_Instance = this;
 
-            return true;
-        });
+        EventSystem::Initialize();
+        EventSystem::Register(EventCode::EVENT_CODE_APPLICATION_QUIT, nullptr, OnApplicationCloseEvent);
 
         TRACE("Application has been properly initialized");
 
@@ -34,14 +32,7 @@ namespace SW {
     }
 
     bool Application::OnShutdown() {
-        Event event;
-        event.Code = EventCode::EVENT_CODE_APPLICATION_QUIT;
-
-        EventSystem::Emit(event, this);
         EventSystem::Shutdown();
-
-        delete m_Window;
-        delete s_Instance;
 
         TRACE("Application has been properly shut down");
 
@@ -57,8 +48,7 @@ namespace SW {
 
         i16 i = 0;
         while(m_IsRunning) {
-            if (i++ > 15) break;
-            printf("Iteration %i \n", i);
+            m_Window->OnUpdate();
         }
 
         if (!this->OnShutdown()) {}
@@ -67,4 +57,11 @@ namespace SW {
     void Application::Close() {
         m_IsRunning = false;
     }
+
+    bool Application::OnApplicationCloseEvent(Event event, void* sender, void* listener) {
+        Application::Get()->Close();
+
+        return true;
+    }
+
 }

@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "Events/Event.hpp"
+
 namespace SW {
     Window::Window(const WindowSpecification& specification)
         : m_Specification(specification) {
@@ -44,6 +46,12 @@ namespace SW {
         glViewport(0, 0, m_Specification.Width, m_Specification.Height);
 
         this->SetVSync(m_Specification.VSync);
+
+        glfwSetWindowCloseCallback(m_Handle, [](GLFWwindow* window) {
+            constexpr Event event{ .Code = EVENT_CODE_APPLICATION_QUIT };
+
+            EventSystem::Emit(event, nullptr);
+        });
     }
 
     Window::~Window() {

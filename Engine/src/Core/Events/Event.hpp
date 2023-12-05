@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 
 namespace SW {
 
@@ -22,6 +23,7 @@ namespace SW {
     };
 
     typedef bool(*EventCallback)(Event event, void* sender, void* listener);
+    //using EventCallback = std::function<bool(Event event, void* sender, void* listener)>;
 
     class EventSystem final
     {

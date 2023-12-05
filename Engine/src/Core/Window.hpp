@@ -27,6 +27,8 @@ namespace SW {
         u16 GetWidth() const { return m_Specification.Width; }
         u16 GetHeight() const { return m_Specification.Height; }
 
+        const GLFWwindow* GetHandle() const { return m_Handle; }
+
         void SetVSync(bool enabled);
 
     private:

@@ -4,6 +4,8 @@
 
 namespace SW {
 
+    struct Event;
+
     struct ApplicationSpecification final
     {
         std::string Title = "No title";
@@ -15,7 +17,9 @@ namespace SW {
     class Application
     {
     public:
-        API static const Application* Get() { return s_Instance; }
+        API static Application* Get() { return s_Instance; }
+
+        API const Window* GetWindow() const { return m_Window;  }
 
         bool OnInit();
         bool OnShutdown();
@@ -41,6 +45,8 @@ namespace SW {
         Window* m_Window = nullptr;
 
         bool m_IsRunning = false;
+
+        static bool OnApplicationCloseEvent(Event event, void* sender, void* listener);
     };
 
 }
