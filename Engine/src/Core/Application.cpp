@@ -64,4 +64,12 @@ namespace SW {
         m_IsRunning = false;
     }
 
+    void Application::PushLayer(const Layer& layer) {
+        m_Layers.emplace_back(layer);
+    }
+
+    void Application::PopLayer() {
+        m_Layers.pop_back();
+    }
+
 }

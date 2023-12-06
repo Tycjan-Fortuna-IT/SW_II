@@ -1,5 +1,4 @@
 #pragma once
-#include <functional>
 
 namespace SW {
 
@@ -11,6 +10,8 @@ namespace SW {
 
     struct Event final
     {
+        EventCode Code;
+
         /** @brief In total 128 bytes of data. */
         union {
             /** @brief An array of 2 64-bit signed integers. */
@@ -18,8 +19,6 @@ namespace SW {
             /** @brief An array of 2 64-bit unsigned integers. */
             u64 u64[2];
         } Payload;
-
-        EventCode Code;
     };
 
     // typedef bool(*EventCallback)(Event event, void* sender, void* listener);

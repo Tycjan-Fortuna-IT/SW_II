@@ -8,7 +8,7 @@
 namespace SW {
     Window::Window(const WindowSpecification& specification)
         : m_Specification(specification) {
-        TRACE("Creating window: %s, width: %i px, height: %i px", m_Specification.Title, m_Specification.Width, m_Specification.Height);
+        TRACE("Creating window: %s, width: %i px, height: %i px", m_Specification.Title.c_str(), m_Specification.Width, m_Specification.Height);
 
         ASSERT(glfwInit(), "Failed to initialize GLFW");
 
@@ -48,9 +48,9 @@ namespace SW {
         this->SetVSync(m_Specification.VSync);
 
         glfwSetWindowCloseCallback(m_Handle, [](GLFWwindow* window) {
-            constexpr Event event{ .Code = EVENT_CODE_APPLICATION_QUIT };
-
-            EventSystem::Emit(event, nullptr);
+            EventSystem::Emit({
+                .Code = EVENT_CODE_APPLICATION_QUIT
+            }, nullptr);
         });
     }
 

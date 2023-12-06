@@ -1,6 +1,9 @@
 #pragma once
 
+#include <vector>
+
 #include "Core/Window.hpp"
+#include "Core/Layer.hpp"
 
 namespace SW {
 
@@ -29,6 +32,9 @@ namespace SW {
         API void Run();
         API void Close();
 
+        API void PushLayer(const Layer& layer);
+        API void PopLayer();
+
     protected:
         API Application(const ApplicationSpecification& specification);
         API virtual ~Application() = default;
@@ -45,6 +51,8 @@ namespace SW {
         Window* m_Window = nullptr;
 
         bool m_IsRunning = false;
+
+        std::vector<Layer> m_Layers;
     };
 
 }

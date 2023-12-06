@@ -1,7 +1,5 @@
 #include "Event.hpp"
 
-#include <vector>
-
 namespace SW {
 
     struct RegisteredEvent final {
