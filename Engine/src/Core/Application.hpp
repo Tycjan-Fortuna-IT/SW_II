@@ -45,8 +45,6 @@ namespace SW {
         Window* m_Window = nullptr;
 
         bool m_IsRunning = false;
-
-        static bool OnApplicationCloseEvent(Event event, void* sender, void* listener);
     };
 
 }

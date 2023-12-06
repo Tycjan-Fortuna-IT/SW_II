@@ -22,6 +22,11 @@ namespace SW {
 
     static EventSystemState* state = nullptr;
 
+    bool AreEventCallbacksEqual(const EventCallback& a, const EventCallback& b) {
+        return a.target_type() == b.target_type() &&
+               a.target<void(*)(Event, void*, void*)>() == b.target<void(*)(Event, void*, void*)>();
+    }
+
     bool EventSystem::Initialize() {
         state = new EventSystemState();
 
@@ -44,7 +49,10 @@ namespace SW {
         ASSERT(state, "Event system must be initialized before registering a listener!");
 
         for (u64 i = 0; i < state->registered[code].events.size(); ++i) {
-            if (state->registered[code].events[i].listener == listener && state->registered[code].events[i].callback == handler) {
+            if (
+                state->registered[code].events[i].listener == listener &&
+                AreEventCallbacksEqual(state->registered[code].events[i].callback, handler)
+            ) {
                 WARN("Event has already been registered with the code %hu and the callback of %p", code, handler);
                 return false;
             }
@@ -71,7 +79,7 @@ namespace SW {
 
         // Find the exact event handler for exact event listener and remove it.
         for (u64 i = 0; i < state->registered[code].events.size(); ++i) {
-            if (state->registered[code].events[i].listener == listener && state->registered[code].events[i].callback == handler) {
+            if (AreEventCallbacksEqual(state->registered[code].events[i].callback, handler)) {
                 std::vector<RegisteredEvent>::iterator it = state->registered[code].events.begin();
                 std::advance(it, i);
 

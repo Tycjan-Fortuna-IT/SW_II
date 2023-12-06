@@ -24,7 +24,11 @@ namespace SW {
         s_Instance = this;
 
         EventSystem::Initialize();
-        EventSystem::Register(EventCode::EVENT_CODE_APPLICATION_QUIT, nullptr, OnApplicationCloseEvent);
+        EventSystem::Register(EventCode::EVENT_CODE_APPLICATION_QUIT, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+            Application::Close();
+
+            return true;
+        });
 
         TRACE("Application has been properly initialized");
 
@@ -44,24 +48,20 @@ namespace SW {
     }
 
     void Application::Run() {
-        if (!this->OnInit()) {}
+        if (!this->OnInit())
+            ERROR("Application failed to initialize!");
 
         i16 i = 0;
         while(m_IsRunning) {
             m_Window->OnUpdate();
         }
 
-        if (!this->OnShutdown()) {}
+        if (!this->OnShutdown())
+            ERROR("Application failed to shut down!");
     }
 
     void Application::Close() {
         m_IsRunning = false;
-    }
-
-    bool Application::OnApplicationCloseEvent(Event event, void* sender, void* listener) {
-        Application::Get()->Close();
-
-        return true;
     }
 
 }

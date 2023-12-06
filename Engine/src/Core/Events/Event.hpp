@@ -22,8 +22,10 @@ namespace SW {
         EventCode Code;
     };
 
-    typedef bool(*EventCallback)(Event event, void* sender, void* listener);
-    //using EventCallback = std::function<bool(Event event, void* sender, void* listener)>;
+    // typedef bool(*EventCallback)(Event event, void* sender, void* listener);
+    using EventCallback = std::function<bool(Event event, void* sender, void* listener)>;
+
+    bool AreEventCallbacksEqual(const EventCallback& a, const EventCallback& b);
 
     class EventSystem final
     {
