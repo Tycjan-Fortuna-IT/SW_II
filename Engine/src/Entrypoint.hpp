@@ -9,4 +9,6 @@ int main()
     SW::Application* instance = CreateApplication();
 
     instance->Run();
+
+    delete instance;
 }

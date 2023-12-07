@@ -15,13 +15,12 @@ namespace SW {
         //Layer& operator=(const Layer& application) = delete;
         //Layer& operator=(Layer&& application) = delete;
 
-        virtual void OnAttach() {}
-        virtual void OnDetach() {}
+        API virtual void OnAttach() {}
+        API virtual void OnDetach() {}
 
-        virtual void OnUpdate(float dt) {}
-        virtual void OnEvent(Event& event) {}
+        API virtual void OnUpdate(float dt) {}
 
-        virtual void OnImGuiRender() {}
+        API virtual void OnRender() {}
 
         const std::string& GetName() const { return m_Name; }
 

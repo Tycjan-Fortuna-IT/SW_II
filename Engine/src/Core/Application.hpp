@@ -5,6 +5,8 @@
 #include "Core/Window.hpp"
 #include "Core/Layer.hpp"
 
+int main();
+
 namespace SW {
 
     struct Event;
@@ -32,7 +34,7 @@ namespace SW {
         API void Run();
         API void Close();
 
-        API void PushLayer(const Layer& layer);
+        API void PushLayer(Layer* layer);
         API void PopLayer();
 
     protected:
@@ -52,7 +54,9 @@ namespace SW {
 
         bool m_IsRunning = false;
 
-        std::vector<Layer> m_Layers;
+        std::vector<Layer*> m_Layers;
+
+        friend int ::main();
     };
 
 }

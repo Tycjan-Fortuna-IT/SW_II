@@ -34,14 +34,15 @@ namespace SW {
     */
     #define ANSI_COLOR_RESET   "\x1b[0m"
 
-    void Logger::PrintMessage(LogLevel level, const char* message, ...) {
+    void Logger::PrintMessage(LogType type, LogLevel level, const char* message, ...) {
+        static const char* log_types[2] = { "[ENGINE]", "[ APP  ]" };
         static const char* level_strings[6] = { "[FATAL]: ", "[ERROR]: ", "[WARN]:  ", "[INFO]:  ", "[DEBUG]: ", "[TRACE]: " };
         static const char* level_colors[6] = { ANSI_COLOR_RED, ANSI_COLOR_RED, ANSI_COLOR_YELLOW, ANSI_COLOR_BLUE, ANSI_COLOR_MAGENTA, ANSI_COLOR_GREEN };
 
         va_list args;
         va_start(args, message);
 
-        printf("%s%s%s", level_colors[level], level_strings[level], ANSI_COLOR_RESET);
+        printf("%s%s%s%s", log_types[type], level_colors[level], level_strings[level], ANSI_COLOR_RESET);
         vprintf(message, args);
         printf("\n");
 
@@ -49,7 +50,7 @@ namespace SW {
     }
 
     void Logger::ReportAssertionFailure(const char* expression, const char* message, const char* file, i16 line) {
-        Logger::PrintMessage(LOG_LEVEL_FATAL, "Assertion Failure: %s, message: '%s', in file: %s, line: %d\n", expression, message, file, line);
+        Logger::PrintMessage(LogType::ENGINE, LogLevel::LOG_LEVEL_FATAL, "Assertion Failure: %s, message: '%s', in file: %s, line: %d\n", expression, message, file, line);
     }
 
 }

@@ -54,6 +54,14 @@ namespace SW {
         i16 i = 0;
         while(m_IsRunning) {
             m_Window->OnUpdate();
+
+            for (Layer* layer : m_Layers) {
+                layer->OnUpdate(1);
+            }
+
+            for (Layer* layer : m_Layers) {
+                layer->OnRender();
+            }
         }
 
         if (!this->OnShutdown())
@@ -64,12 +72,24 @@ namespace SW {
         m_IsRunning = false;
     }
 
-    void Application::PushLayer(const Layer& layer) {
+    void Application::PushLayer(Layer* layer) {
         m_Layers.emplace_back(layer);
+
+        layer->OnAttach();
     }
 
     void Application::PopLayer() {
+        TRACE("POP");
+
+        if (m_Layers.empty())
+            FATAL("No Layer to pop!");
+
+        Layer* back = m_Layers.back();
+        back->OnDetach();
+
         m_Layers.pop_back();
+
+        delete back;
     }
 
 }
