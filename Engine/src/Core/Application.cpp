@@ -1,3 +1,4 @@
+#include "pch.hpp"
 #include "Application.hpp"
 
 #include "KeyCode.hpp"
@@ -9,7 +10,10 @@ namespace SW {
     Application* Application::s_Instance = nullptr;
 
     Application::Application(const ApplicationSpecification& specification)
-        : m_Specification(specification) {}
+        : m_Specification(specification) {
+        if (!this->OnInit())
+            ERROR("Application failed to initialize!");
+    }
 
     bool Application::OnInit() {
         const WindowSpecification specification = {
@@ -61,9 +65,6 @@ namespace SW {
     }
 
     void Application::Run() {
-        if (!this->OnInit())
-            ERROR("Application failed to initialize!");
-
         while(m_IsRunning) {
             const float time = (float)glfwGetTime();
             const float dt = time - m_LastFrameTime;

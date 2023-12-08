@@ -5,15 +5,17 @@ project "Testbed"
     targetdir "Binaries/%{cfg.buildcfg}"
     staticruntime "off"
 
-    files { "src/**.hpp", "src/**.cpp" }
+    files {
+        "assets/**.glsl",
+        "src/**.hpp",
+        "src/**.cpp"
+    }
 
-    defines
-    {
+    defines {
         "GLFW_INCLUDE_NONE",
     }
 
-    includedirs
-    {
+    includedirs {
         "src",
         "../Engine/src"
     }
@@ -31,6 +33,10 @@ project "Testbed"
 
     targetdir ("../Binaries/" .. outputdir .. "/%{prj.name}")
     objdir ("../Binaries/Intermediates/" .. outputdir .. "/%{prj.name}")
+
+    postbuildcommands {
+        "{COPY} assets %{wks.location}/Binaries/" .. outputdir .. "/Testbed/assets"
+    }
 
     filter "system:windows"
         systemversion "latest"

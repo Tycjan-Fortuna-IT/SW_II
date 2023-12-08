@@ -2,6 +2,7 @@
 #include <Entrypoint.hpp>
 
 #include "Core/Debug/Logger.hpp"
+#include "Core/OpenGL/Shader.hpp"
 
 class TestLayer final : public SW::Layer
 {
@@ -11,6 +12,8 @@ public:
 
     void OnAttach() override {
         APP_TRACE("ON attach!");
+
+        SW::Shader basicShader("assets/shaders/Initial.frag.glsl", "assets/shaders/Initial.vert.glsl");
     }
 
     void OnDetach() override {

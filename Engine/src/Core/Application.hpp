@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Defines.hpp"
 #include "Core/OpenGL/Window.hpp"
 #include "Core/Layer.hpp"
 

@@ -5,21 +5,22 @@ project "Engine"
     targetdir "Binaries/%{cfg.buildcfg}"
     staticruntime "off"
 
-    files { "src/**.hpp", "src/**.cpp" }
+    files {
+        "src/**.hpp",
+        "src/**.cpp"
+    }
 
     pchheader "pch.hpp"
     pchsource "src/pch.cpp"
 
     forceincludes { "pch.hpp" }
 
-    defines
-    {
+    defines {
         "EXPORT",
         "GLFW_INCLUDE_NONE",
     }
 
-    includedirs
-    {
+    includedirs {
         "src"
     }
 
