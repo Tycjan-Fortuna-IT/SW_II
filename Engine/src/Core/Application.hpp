@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "Core/Window.hpp"
+#include "Core/OpenGL/Window.hpp"
 #include "Core/Layer.hpp"
 
 int main();

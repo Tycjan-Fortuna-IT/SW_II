@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "Events/Event.hpp"
+#include "Core/Events/Event.hpp"
 
 namespace SW {
     Window::Window(const WindowSpecification& specification)
@@ -52,6 +52,29 @@ namespace SW {
                 .Code = EVENT_CODE_APPLICATION_QUIT
             }, nullptr);
         });
+
+        glfwSetKeyCallback(m_Handle, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+            switch (action)
+            {
+                case GLFW_PRESS:
+                    EventSystem::Emit({
+                        .Code = EVENT_CODE_KEY_PRESSED,
+                        .Payload = {
+                            .u16 = {
+                                (u16)key
+                            }
+                        }
+                    }, nullptr);
+
+                    break;
+                case GLFW_RELEASE:
+                    break;
+                case GLFW_REPEAT:
+                    break;
+                default:
+                    WARN("Unsupported key action: %i", action);
+            }
+        });
     }
 
     Window::~Window() {
@@ -59,6 +82,9 @@ namespace SW {
     }
 
     void Window::OnUpdate() const {
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
         glfwPollEvents();
         glfwSwapBuffers(m_Handle);
     }

@@ -1,5 +1,6 @@
 #include "Application.hpp"
 
+#include "KeyCode.hpp"
 #include "Events/Event.hpp"
 #include "GLFW/glfw3.h"
 
@@ -25,8 +26,19 @@ namespace SW {
         s_Instance = this;
 
         EventSystem::Initialize();
+
         EventSystem::Register(EventCode::EVENT_CODE_APPLICATION_QUIT, nullptr, [this](Event event, void* sender, void* listener) -> bool {
             Application::Close();
+
+            return true;
+        });
+
+        EventSystem::Register(EventCode::EVENT_CODE_KEY_PRESSED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+            TRACE("Key pressed: %i", event.Payload.u16[0]);
+
+            if (event.Payload.u16[0] == KeyCode::Escape) {
+                Application::Close();
+            }
 
             return true;
         });
@@ -51,7 +63,7 @@ namespace SW {
     void Application::Run() {
         if (!this->OnInit())
             ERROR("Application failed to initialize!");
-        
+
         while(m_IsRunning) {
             const float time = (float)glfwGetTime();
             const float dt = time - m_LastFrameTime;

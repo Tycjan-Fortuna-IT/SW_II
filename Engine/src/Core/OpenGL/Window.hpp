@@ -2,8 +2,6 @@
 
 #include <string>
 
-#include "Defines.hpp"
-
 struct GLFWwindow;
 
 namespace SW {
