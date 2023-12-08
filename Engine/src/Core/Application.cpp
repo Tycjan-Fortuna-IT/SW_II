@@ -1,6 +1,7 @@
 #include "Application.hpp"
 
 #include "Events/Event.hpp"
+#include "GLFW/glfw3.h"
 
 namespace SW {
 
@@ -50,13 +51,16 @@ namespace SW {
     void Application::Run() {
         if (!this->OnInit())
             ERROR("Application failed to initialize!");
-
-        i16 i = 0;
+        
         while(m_IsRunning) {
+            const float time = (float)glfwGetTime();
+            const float dt = time - m_LastFrameTime;
+            m_LastFrameTime = time;
+
             m_Window->OnUpdate();
 
             for (Layer* layer : m_Layers) {
-                layer->OnUpdate(1);
+                layer->OnUpdate(dt);
             }
 
             for (Layer* layer : m_Layers) {

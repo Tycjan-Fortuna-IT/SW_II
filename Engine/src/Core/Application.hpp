@@ -53,6 +53,7 @@ namespace SW {
         Window* m_Window = nullptr;
 
         bool m_IsRunning = false;
+        float m_LastFrameTime = 0.f;
 
         std::vector<Layer*> m_Layers;
 
