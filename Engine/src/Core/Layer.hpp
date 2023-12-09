@@ -7,7 +7,7 @@ namespace SW {
     class Layer
     {
     public:
-        API Layer(const std::string& name = "DefaultLayer");
+        Layer(const std::string& name = "DefaultLayer");
         virtual ~Layer() = default;
 
         //Layer(const Layer& application) = delete;
@@ -15,12 +15,12 @@ namespace SW {
         //Layer& operator=(const Layer& application) = delete;
         //Layer& operator=(Layer&& application) = delete;
 
-        API virtual void OnAttach() {}
-        API virtual void OnDetach() {}
+        virtual void OnAttach() {}
+        virtual void OnDetach() {}
 
-        API virtual void OnUpdate(float dt) {}
+        virtual void OnUpdate(float dt) {}
 
-        API virtual void OnRender() {}
+        virtual void OnRender() {}
 
         const std::string& GetName() const { return m_Name; }
 

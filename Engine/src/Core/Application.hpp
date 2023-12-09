@@ -23,24 +23,24 @@ namespace SW {
     class Application
     {
     public:
-        API static Application* Get() { return s_Instance; }
+        static Application* Get() { return s_Instance; }
 
-        API const Window* GetWindow() const { return m_Window;  }
+        const Window* GetWindow() const { return m_Window;  }
 
         bool OnInit();
         bool OnShutdown();
 
         void OnEvent();
 
-        API void Run();
-        API void Close();
+        void Run();
+        void Close();
 
-        API void PushLayer(Layer* layer);
-        API void PopLayer();
+        void PushLayer(Layer* layer);
+        void PopLayer();
 
     protected:
-        API Application(const ApplicationSpecification& specification);
-        API virtual ~Application() = default;
+        Application(const ApplicationSpecification& specification);
+        virtual ~Application() = default;
 
     private:
         Application(const Application& application) = delete;

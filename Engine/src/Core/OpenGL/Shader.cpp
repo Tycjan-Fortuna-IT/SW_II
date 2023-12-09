@@ -10,9 +10,6 @@ namespace SW {
         ShaderData data = this->ProcessShaderFiles(vertexFilePath, fragmentFilePath);
 
         this->CompileShaders(data);
-
-        TRACE("Vertex shader `%s` compiled successfully!", vertexFilePath.c_str());
-        TRACE("Fragment shader `%s` compiled successfully!", fragmentFilePath.c_str());
     }
 
     Shader::~Shader() {
@@ -21,7 +18,9 @@ namespace SW {
 
     ShaderData Shader::ProcessShaderFiles(const std::string& vertexFilePath, const std::string& fragmentFilePath) const {
         return {
+            .vertexSourcePath = vertexFilePath,
             .vertexSource = Utils::ReadFile(vertexFilePath),
+            .fragmentSourcePath = fragmentFilePath,
             .fragmentSource = Utils::ReadFile(fragmentFilePath)
         };
     }
@@ -29,21 +28,26 @@ namespace SW {
     void Shader::CompileShaders(const ShaderData& data) {
         const u32 program = glCreateProgram();
 
-        const u32 vertexShader = glCreateShader(GL_VERTEX_SHADER);
+        u32 vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
         const GLchar* vertexSource = data.vertexSource.c_str();
+
         glShaderSource(vertexShader, 1, &vertexSource, nullptr);
         glCompileShader(vertexShader);
+
+        INFO("Compiling - Vertex shader: \n%s", data.vertexSource.c_str());
 
         i32 isVertexCompiled;
         glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &isVertexCompiled);
 
-        if (!isVertexCompiled) {
+        if (!isVertexCompiled)
+        {
             GLint maxLength = 0;
-            std::vector<GLchar> infoLog(maxLength);
-
             glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &maxLength);
-            glGetShaderInfoLog(vertexShader, maxLength, &maxLength, infoLog.data());
+
+            std::vector<GLchar> infoLog(maxLength);
+            glGetShaderInfoLog(vertexShader, maxLength, &maxLength, &infoLog[0]);
+
             glDeleteShader(vertexShader);
 
             ERROR("%s", infoLog.data());
@@ -52,21 +56,28 @@ namespace SW {
             return;
         }
 
-        const u32 fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+        TRACE("Vertex shader `%s` compiled successfully!", data.vertexSourcePath.c_str());
 
-        const GLchar* fragmentSource = data.vertexSource.c_str();
+        u32 fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+        const GLchar* fragmentSource = data.fragmentSource.c_str();
+
         glShaderSource(fragmentShader, 1, &fragmentSource, nullptr);
         glCompileShader(fragmentShader);
+
+        INFO("Compiling - Fragment shader: \n%s", data.fragmentSource.c_str());
 
         i32 isFragmentCompiled;
         glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &isFragmentCompiled);
 
-        if (!isFragmentCompiled) {
+        if (!isFragmentCompiled)
+        {
             GLint maxLength = 0;
-            std::vector<GLchar> infoLog(maxLength);
-
             glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &maxLength);
-            glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, infoLog.data());
+
+            std::vector<GLchar> infoLog(maxLength);
+            glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, &infoLog[0]);
+
             glDeleteShader(vertexShader);
             glDeleteShader(fragmentShader);
 
@@ -76,6 +87,8 @@ namespace SW {
             return;
         }
 
+        TRACE("Fragment shader `%s` compiled successfully!", data.fragmentSourcePath.c_str());
+
         glAttachShader(program, vertexShader);
         glAttachShader(program, fragmentShader);
 
@@ -84,7 +97,7 @@ namespace SW {
         GLint isLinked = 0;
         glGetProgramiv(program, GL_LINK_STATUS, (int*)&isLinked);
 
-        if (!isLinked) {
+        if (isLinked == GL_FALSE) {
             GLint maxLength = 0;
             glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
 
@@ -96,14 +109,11 @@ namespace SW {
             glDeleteShader(vertexShader);
             glDeleteShader(fragmentShader);
 
-            ERROR("%s", infoLog.data());
+            //ERROR("%s", infoLog.data());
             ERROR("Shader link failure!");
 
             return;
         }
-
-        //glDetachShader(program, vertexShader);
-        //glDetachShader(program, fragmentShader);
 
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);

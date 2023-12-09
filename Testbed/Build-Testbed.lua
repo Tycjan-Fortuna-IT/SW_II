@@ -20,11 +20,11 @@ project "Testbed"
         "../Engine/src"
     }
 
-    -- externalincludedirs
-    -- {
-    --     "%{IncludeDir.glfw}",
-    --     "%{IncludeDir.glad}",
-    -- }
+    externalincludedirs
+    {
+        "%{IncludeDir.glfw}",
+        "%{IncludeDir.glad}",
+    }
 
     links
     {

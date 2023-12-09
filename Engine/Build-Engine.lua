@@ -1,5 +1,5 @@
 project "Engine"
-    kind "SharedLib"
+    kind "StaticLib"
     language "C++"
     cppdialect "C++20"
     targetdir "Binaries/%{cfg.buildcfg}"
@@ -16,7 +16,6 @@ project "Engine"
     forceincludes { "pch.hpp" }
 
     defines {
-        "EXPORT",
         "GLFW_INCLUDE_NONE",
     }
 
@@ -37,9 +36,9 @@ project "Engine"
     targetdir ("../Binaries/" .. outputdir .. "/%{prj.name}")
     objdir ("../Binaries/Intermediates/" .. outputdir .. "/%{prj.name}")
 
-    postbuildcommands {
-        "{COPY} %{wks.location}/Binaries/" .. outputdir .. "/Engine/Engine.dll %{wks.location}/Binaries/" .. outputdir .. "/Testbed"
-    }
+    -- postbuildcommands {
+    --     "{COPY} %{wks.location}/Binaries/" .. outputdir .. "/Engine/Engine.dll %{wks.location}/Binaries/" .. outputdir .. "/Testbed"
+    -- }
 
     filter "system:windows"
         systemversion "latest"

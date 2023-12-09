@@ -4,15 +4,17 @@ namespace SW {
 
     struct ShaderData final
     {
+        std::string vertexSourcePath;
         std::string vertexSource;
+        std::string fragmentSourcePath;
         std::string fragmentSource;
     };
 
     class Shader final
     {
     public:
-        API Shader(const std::string& vertexFilePath, const std::string& fragmentFilePath);
-        API ~Shader();
+        Shader(const std::string& vertexFilePath, const std::string& fragmentFilePath);
+        ~Shader();
 
         void Bind() const;
         void Unbind() const;

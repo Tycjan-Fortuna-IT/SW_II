@@ -21,7 +21,7 @@ namespace SW {
     class Logger final
     {
     public:
-        API static void PrintMessage(LogType type, LogLevel level, const char* message, ...);
+        static void PrintMessage(LogType type, LogLevel level, const char* message, ...);
         static void ReportAssertionFailure(const char* expression, const char* message, const char* file, i16 line);
     };
 
