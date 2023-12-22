@@ -6,7 +6,7 @@ project "Testbed"
     staticruntime "off"
 
     files {
-        "assets/**.glsl",
+        "assets/**.*",
         "src/**.hpp",
         "src/**.cpp"
     }
@@ -20,22 +20,21 @@ project "Testbed"
         "../Engine/src"
     }
 
-    externalincludedirs
-    {
+    externalincludedirs {
         "%{IncludeDir.glfw}",
         "%{IncludeDir.glad}",
+        "%{IncludeDir.stb_image}",
     }
 
-    links
-    {
+    links {
         "Engine"
     }
 
-    targetdir ("../Binaries/" .. outputdir .. "/%{prj.name}")
-    objdir ("../Binaries/Intermediates/" .. outputdir .. "/%{prj.name}")
+    targetdir ("../Binaries/bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("../Binaries/bin-int/" .. outputdir .. "/%{prj.name}")
 
     postbuildcommands {
-        "{COPY} assets %{wks.location}/Binaries/" .. outputdir .. "/Testbed/assets"
+        "{COPY} assets %{wks.location}/Binaries/bin" .. outputdir .. "/Testbed/assets"
     }
 
     filter "system:windows"

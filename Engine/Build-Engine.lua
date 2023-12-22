@@ -26,6 +26,7 @@ project "Engine"
     externalincludedirs {
         "%{IncludeDir.glfw}",
         "%{IncludeDir.glad}",
+        "%{IncludeDir.stb_image}",
     }
 
     links {
@@ -33,8 +34,8 @@ project "Engine"
         "glad",
     }
 
-    targetdir ("../Binaries/" .. outputdir .. "/%{prj.name}")
-    objdir ("../Binaries/Intermediates/" .. outputdir .. "/%{prj.name}")
+    targetdir ("../Binaries/bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("../Binaries/bin-int/" .. outputdir .. "/%{prj.name}")
 
     -- postbuildcommands {
     --     "{COPY} %{wks.location}/Binaries/" .. outputdir .. "/Engine/Engine.dll %{wks.location}/Binaries/" .. outputdir .. "/Testbed"

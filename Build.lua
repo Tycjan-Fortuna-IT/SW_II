@@ -7,7 +7,6 @@ workspace "SW_II"
     filter "system:windows"
         buildoptions { "/EHsc", "/Zc:preprocessor", "/Zc:__cplusplus" }
 
-
     -- Folder name containing compiled output in a following format: /[config]-[platform]-[architecture]/.
     -- e.g. folder Windows-x64/Debug
     outputdir = "%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}"
@@ -21,6 +20,7 @@ workspace "SW_II"
     IncludeDir = {}
     IncludeDir["glfw"] = "%{wks.location}/Engine/vendor/glfw/include"
     IncludeDir["glad"] = "%{wks.location}/Engine/vendor/glad/include"
+    IncludeDir["stb_image"] = "%{wks.location}/Engine/vendor/stb_image"
 
 group "Engine"
 	include "Engine/Build-Engine.lua"
