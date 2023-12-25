@@ -109,7 +109,6 @@ namespace SW {
             glDeleteShader(vertexShader);
             glDeleteShader(fragmentShader);
 
-            //ERROR("%s", infoLog.data());
             ERROR("Shader link failure!");
 
             return;

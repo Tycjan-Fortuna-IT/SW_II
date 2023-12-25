@@ -19,6 +19,8 @@ namespace SW {
         void Bind() const;
         void Unbind() const;
 
+        const u32 GetHandle() const { return m_ShaderHandle; }
+
     private:
         u32 m_ShaderHandle;
 
