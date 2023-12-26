@@ -131,4 +131,8 @@ namespace SW {
     void Shader::UploadUniformInt(const std::string& name, int value) const {
         glUniform1i(glGetUniformLocation(m_ShaderHandle, name.c_str()), value);
     }
+
+    void Shader::UploadUniformMat4(const std::string& name, const Matrix4<f32>& value) const {
+        glUniformMatrix4fv(glGetUniformLocation(m_ShaderHandle, name.c_str()), 1, GL_FALSE, value.ValuePtr());
+    }
 }

@@ -5,7 +5,18 @@ workspace "SW_II"
 
     -- Workspace-wide build options for MSVC
     filter "system:windows"
-        buildoptions { "/EHsc", "/Zc:preprocessor", "/Zc:__cplusplus" }
+        buildoptions {
+            -- This option specifies the model of exception handling to be used by the compiler.
+            -- "EHsc" is the standard C++ exception handling model.
+            "/EHsc",
+
+            -- This option enforces compliance with the C++ preprocessor standard.
+            "/Zc:preprocessor",
+
+            -- This option enables the __cplusplus macro to report an accurate value for the C++
+            -- language standard supported by the compiler.
+            "/Zc:__cplusplus"
+        }
 
     -- Folder name containing compiled output in a following format: /[config]-[platform]-[architecture]/.
     -- e.g. folder Windows-x64/Debug

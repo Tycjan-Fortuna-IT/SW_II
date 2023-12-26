@@ -7,6 +7,8 @@
 #include "Core/Debug/Logger.hpp"
 #include "Core/OpenGL/Shader.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
+#include "Core/Math/Matrix4.hpp"
+#include "Core/Math/Vector3.hpp"
 
 class TestLayer final : public SW::Layer
 {
@@ -23,6 +25,15 @@ public:
     void OnAttach() override {
         APP_TRACE("ON attach!");
 
+        const SW::Vector3<f32> vec = { 1.2f, 1.4f, 1.3f };
+        const SW::Matrix4<f32> mat = { 2.4f };
+
+        APP_TRACE("SW::Vector3<f32>, %s", vec.ToString().c_str());
+        APP_TRACE("SW::Vector3<f32>, %s", vec.ToCString());
+
+        APP_TRACE("SW::Matrix4<f32>, %s", mat.ToString().c_str());
+        APP_TRACE("SW::Matrix4<f32>, %s", mat.ToCString());
+
         shader = new SW::Shader("assets/shaders/Initial.vert.glsl", "assets/shaders/Initial.frag.glsl");
         boxTexture = new SW::Texture2D("assets/textures/container_512x512.jpg");
         faceTexture = new SW::Texture2D("assets/textures/awesomeface_512x512.png");
@@ -32,7 +43,7 @@ public:
              0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
              0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
             -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-            -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+            -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
         };
         unsigned int indices[] = {
             0, 1, 3, // first triangle
@@ -70,6 +81,17 @@ public:
         shader->Bind();
         shader->UploadUniformInt("u_Texture1", 0);
         shader->UploadUniformInt("u_Texture2", 1);
+
+        SW::Matrix4<f32> testMatrix = { 1.0f };
+
+        // make it smaller
+        testMatrix.data[0] = 0.85f;
+        testMatrix.data[5] = 1.f;
+
+        // move it to the right
+        testMatrix.data[12] = 0.5f;
+
+        shader->UploadUniformMat4("u_Transform", testMatrix);
     }
 
     void OnDetach() override {

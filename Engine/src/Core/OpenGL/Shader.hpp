@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Math/Matrix4.hpp"
+
 namespace SW {
 
     struct ShaderData final
@@ -22,6 +24,8 @@ namespace SW {
         const u32 GetHandle() const { return m_ShaderHandle; }
 
         void UploadUniformInt(const std::string& name, int value) const;
+
+        void UploadUniformMat4(const std::string& name, const Matrix4<f32>& value) const;
 
     private:
         u32 m_ShaderHandle;
