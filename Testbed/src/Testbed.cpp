@@ -66,10 +66,10 @@ public:
 
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        shader->Bind();
-        glUniform1i(glGetUniformLocation(shader->GetHandle(), "u_Texture1"), 0);
-        glUniform1i(glGetUniformLocation(shader->GetHandle(), "u_Texture2"), 1);
 
+        shader->Bind();
+        shader->UploadUniformInt("u_Texture1", 0);
+        shader->UploadUniformInt("u_Texture2", 1);
     }
 
     void OnDetach() override {

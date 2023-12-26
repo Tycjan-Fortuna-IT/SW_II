@@ -21,6 +21,8 @@ namespace SW {
 
         const u32 GetHandle() const { return m_ShaderHandle; }
 
+        void UploadUniformInt(const std::string& name, int value) const;
+
     private:
         u32 m_ShaderHandle;
 

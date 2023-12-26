@@ -127,4 +127,8 @@ namespace SW {
     void Shader::Unbind() const {
         glUseProgram(0);
     }
+
+    void Shader::UploadUniformInt(const std::string& name, int value) const {
+        glUniform1i(glGetUniformLocation(m_ShaderHandle, name.c_str()), value);
+    }
 }
