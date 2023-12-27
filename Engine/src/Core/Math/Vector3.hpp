@@ -47,6 +47,18 @@ namespace SW {
         const T* ValuePtr() const {
             return data;
         }
+
+        T Length() const {
+            return static_cast<T>(sqrt(x * x + y * y + z * z));
+        }
+
+        void Normalize() {
+            const T length = Length();
+
+            x /= length;
+            y /= length;
+            z /= length;
+        }
     };
 
 }

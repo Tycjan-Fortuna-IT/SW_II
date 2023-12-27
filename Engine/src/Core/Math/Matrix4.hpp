@@ -1,8 +1,11 @@
 #pragma once
 
+#include "Core/Math/Vector3.hpp"
+
 namespace SW {
 
     template <typename T>
+        requires std::is_arithmetic_v<T>
     struct Matrix4 final
     {
         Matrix4(T x) {
@@ -37,6 +40,27 @@ namespace SW {
 
         const T* ValuePtr() const {
             return data;
+        }
+
+        void RotateX(f32 radians) {
+            data[5] = static_cast<T>(cos(radians));
+            data[6] = static_cast<T>(sin(radians));
+            data[9] = static_cast<T>(-sin(radians));
+            data[10] = static_cast<T>(cos(radians));
+        }
+
+        void RotateY(f32 radians) {
+            data[0] = static_cast<T>(cos(radians));
+            data[2] = static_cast<T>(-sin(radians));
+            data[8] = static_cast<T>(sin(radians));
+            data[10] = static_cast<T>(cos(radians));
+        }
+
+        void RotateZ(f32 radians) {
+            data[0] = static_cast<T>(cos(radians));
+            data[1] = static_cast<T>(sin(radians));
+            data[4] = static_cast<T>(-sin(radians));
+            data[5] = static_cast<T>(cos(radians));
         }
     };
 
