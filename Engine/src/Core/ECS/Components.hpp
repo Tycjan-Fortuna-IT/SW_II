@@ -1,0 +1,98 @@
+#pragma once
+
+#include "Core/Math/Vector3.hpp"
+#include "Core/Math/Vector4.hpp"
+#include "Core/Utils/Random.hpp"
+
+namespace SW {
+
+    /**
+     * @struct IDComponent
+     * @brief This component is used to identify an entity. Each entity has a unique ID.
+     * @note This component is required for each entity. ID = 0 is reserved for null or invalid entity.
+     */
+    struct IDComponent final
+    {
+        u64 ID = 0;
+
+        IDComponent()
+            : ID(CreateID()) {}
+        IDComponent(u64 id)
+            : ID(id) {}
+
+        IDComponent(const IDComponent& other) = default;
+        IDComponent(IDComponent&& other) = default;
+        IDComponent& operator=(const IDComponent& other) = default;
+        IDComponent& operator=(IDComponent&& other) = default;
+
+        ~IDComponent() = default;
+    };
+
+    /**
+     * @struct TagComponent
+     * @brief This component is used to identify an entity by a tag.
+     * @note This component is optional.
+     */
+    struct TagComponent final
+    {
+        std::string Tag = "No tag";
+
+        TagComponent() = default;
+        TagComponent(const std::string& tag)
+            : Tag(tag) {}
+
+        TagComponent(const TagComponent& other) = default;
+        TagComponent(TagComponent&& other) = default;
+        TagComponent& operator=(const TagComponent& other) = default;
+        TagComponent& operator=(TagComponent&& other) = default;
+
+        ~TagComponent() = default;
+    };
+
+    /**
+     * @struct TransformComponent
+     * @brief This component is used to store the position, rotation and scale of an entity.
+     * @note This component is required for each entity.
+     */
+    struct TransformComponent final
+    {
+        Vector3<f32> Position = { 0.0f, 0.0f , 0.0f };
+        Vector3<f32> Rotation = { 0.0f, 0.0f , 0.0f };
+        Vector3<f32> Scale =    { 0.0f, 0.0f , 0.0f };
+
+        TransformComponent() = default;
+        TransformComponent(const Vector3<f32>& position, const Vector3<f32>& rotation, const Vector3<f32>& scale)
+            : Position(position), Rotation(rotation), Scale(scale) {}
+        TransformComponent(const Vector3<f32>& position)
+            : Position(position) {}
+
+        TransformComponent(const TransformComponent& other) = default;
+        TransformComponent(TransformComponent&& other) = default;
+        TransformComponent& operator=(const TransformComponent& other) = default;
+        TransformComponent& operator=(TransformComponent&& other) = default;
+
+        ~TransformComponent() = default;
+    };
+
+    /**
+     * @struct SpriteComponent
+     * @brief This component is used to store the color of an entity. This component is used for rendering.
+     * @note This component is optional.
+     */
+    struct SpriteComponent final
+    {
+        Vector4<f32> Color = { 1.0f };
+
+        SpriteComponent() = default;
+        SpriteComponent(const Vector4<f32>& color)
+            : Color(color) {}
+
+        SpriteComponent(const SpriteComponent& other) = default;
+        SpriteComponent(SpriteComponent&& other) = default;
+        SpriteComponent& operator=(const SpriteComponent& other) = default;
+        SpriteComponent& operator=(SpriteComponent&& other) = default;
+
+        ~SpriteComponent() = default;
+    };
+
+}
