@@ -5,10 +5,12 @@
 #include <glad/glad.h>
 
 #include "Core/Debug/Logger.hpp"
+#include "Core/Math/Math.hpp"
 #include "Core/OpenGL/Shader.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
 #include "Core/Math/Matrix4.hpp"
 #include "Core/Math/Vector3.hpp"
+#include "Core/Utils/Random.hpp"
 
 class TestLayer final : public SW::Layer
 {
@@ -90,6 +92,10 @@ public:
 
         // move it to the right
         testMatrix.data[12] = 0.5f;
+
+        //testMatrix.RotateX(SW::Math::ToRadians(45.f));
+        //testMatrix.RotateY(SW::Math::ToRadians(-85.f));
+        //testMatrix.RotateZ(SW::Math::ToRadians(90.f));
 
         shader->UploadUniformMat4("u_Transform", testMatrix);
     }
