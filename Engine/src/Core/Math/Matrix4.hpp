@@ -24,18 +24,14 @@ namespace SW {
 
         T data[16] = { static_cast<T>(0) };
 
-        const std::string& ToString() const {
-            static const std::string str =
+        std::string ToString() const {
+            const std::string str =
                 "\n{ " + std::to_string(data[0]) + ", " + std::to_string(data[1]) + ", " + std::to_string(data[2]) + ", " + std::to_string(data[3]) + "\n" +
                 "  " + std::to_string(data[4]) + ", " + std::to_string(data[5]) + ", " + std::to_string(data[6]) + ", " + std::to_string(data[7]) + "\n" +
                 "  " + std::to_string(data[8]) + ", " + std::to_string(data[9]) + ", " + std::to_string(data[10]) + ", " + std::to_string(data[11]) + "\n" +
                 "  " + std::to_string(data[12]) + ", " + std::to_string(data[13]) + ", " + std::to_string(data[14]) + ", " + std::to_string(data[15]) + " }";
 
             return str;
-        }
-
-        const char* ToCString() const {
-            return ToString().c_str();
         }
 
         const T* ValuePtr() const {

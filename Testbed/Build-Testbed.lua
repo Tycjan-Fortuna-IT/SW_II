@@ -24,6 +24,7 @@ project "Testbed"
         "%{IncludeDir.glfw}",
         "%{IncludeDir.glad}",
         "%{IncludeDir.stb_image}",
+        "%{IncludeDir.entt}",
     }
 
     links {

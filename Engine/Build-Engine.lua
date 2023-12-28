@@ -27,6 +27,7 @@ project "Engine"
         "%{IncludeDir.glfw}",
         "%{IncludeDir.glad}",
         "%{IncludeDir.stb_image}",
+        "%{IncludeDir.entt}",
     }
 
     links {

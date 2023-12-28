@@ -5,7 +5,9 @@
 #include <glad/glad.h>
 
 #include "Core/Debug/Logger.hpp"
-#include "Core/Math/Math.hpp"
+#include "Core/ECS/Components.hpp"
+#include "Core/ECS/EntityRegistry.hpp"
+#include "Core/ECS/Entity.hpp"
 #include "Core/OpenGL/Shader.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
 #include "Core/Math/Matrix4.hpp"
@@ -30,11 +32,11 @@ public:
         const SW::Vector3<f32> vec = { 1.2f, 1.4f, 1.3f };
         const SW::Matrix4<f32> mat = { 2.4f };
 
-        APP_TRACE("SW::Vector3<f32>, %s", vec.ToString().c_str());
-        APP_TRACE("SW::Vector3<f32>, %s", vec.ToCString());
+        //APP_TRACE("SW::Vector3<f32>, %s", vec.ToString().c_str());
+        ////APP_TRACE("SW::Vector3<f32>, %s", vec.ToCString());
 
-        APP_TRACE("SW::Matrix4<f32>, %s", mat.ToString().c_str());
-        APP_TRACE("SW::Matrix4<f32>, %s", mat.ToCString());
+        //APP_TRACE("SW::Matrix4<f32>, %s", mat.ToString().c_str());
+        //APP_TRACE("SW::Matrix4<f32>, %s", mat.ToCString());
 
         shader = new SW::Shader("assets/shaders/Initial.vert.glsl", "assets/shaders/Initial.frag.glsl");
         boxTexture = new SW::Texture2D("assets/textures/container_512x512.jpg");
@@ -109,6 +111,22 @@ public:
         delete shader;
         delete boxTexture;
         delete faceTexture;
+
+        SW::EntityRegistry registry;
+
+        const SW::Vector3<f32> vec1 = { 1.2f, 1.4f, 1.3f };
+        const SW::Vector3<f32> vec2 = { 2.2f, 2.4f, 2.3f };
+        const SW::Vector3<f32> vec3 = { 3.2f, 3.4f, 3.3f };
+
+        SW::Entity entity = registry.CreateEntity();
+        entity.AddComponent<SW::TransformComponent>(vec1, vec2, vec3);
+
+        SW::TransformComponent transform = entity.GetComponent<SW::TransformComponent>();
+
+        APP_TRACE("SW::TransformComponent, %s", transform.Position.ToString().c_str());
+        APP_TRACE("SW::TransformComponent, %s", transform.Rotation.ToString().c_str());
+        APP_TRACE("SW::TransformComponent, %s", transform.Scale.ToString().c_str());
+
     }
 
     void OnUpdate(float dt) override {

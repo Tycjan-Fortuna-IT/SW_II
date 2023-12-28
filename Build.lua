@@ -32,6 +32,7 @@ workspace "SW_II"
     IncludeDir["glfw"] = "%{wks.location}/Engine/vendor/glfw/include"
     IncludeDir["glad"] = "%{wks.location}/Engine/vendor/glad/include"
     IncludeDir["stb_image"] = "%{wks.location}/Engine/vendor/stb_image"
+    IncludeDir["entt"] = "%{wks.location}/Engine/vendor/entt"
 
 group "Engine"
 	include "Engine/Build-Engine.lua"

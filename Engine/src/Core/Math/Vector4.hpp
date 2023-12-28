@@ -38,14 +38,10 @@ namespace SW {
             };
         };
 
-        const std::string& ToString() const {
-            static const std::string str = "{ " + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ", " + std::to_string(w) + " }";
+        std::string ToString() const {
+            const std::string str = "{ " + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ", " + std::to_string(w) + " }";
 
             return str;
-        }
-
-        const char* ToCString() const {
-            return ToString().c_str();
         }
 
         const T* ValuePtr() const {
