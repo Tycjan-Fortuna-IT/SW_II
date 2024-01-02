@@ -405,3 +405,5 @@ FodyWeavers.xsd
 .idea
 /bin
 /bin-int
+
+/docs/html
