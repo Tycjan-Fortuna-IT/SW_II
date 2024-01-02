@@ -1,9 +1,8 @@
 project "Engine"
     kind "StaticLib"
-    language "C++"
-    cppdialect "C++20"
-    targetdir "Binaries/%{cfg.buildcfg}"
-    staticruntime "off"
+
+    targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 
     files {
         "src/**.hpp",
@@ -23,28 +22,12 @@ project "Engine"
         "src"
     }
 
-    externalincludedirs {
-        "%{IncludeDir.glfw}",
-        "%{IncludeDir.glad}",
-        "%{IncludeDir.stb_image}",
-        "%{IncludeDir.entt}",
-    }
-
-    links {
-        "glfw",
-        "glad",
-    }
-
-    targetdir ("../Binaries/bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("../Binaries/bin-int/" .. outputdir .. "/%{prj.name}")
-
-    -- postbuildcommands {
-    --     "{COPY} %{wks.location}/Binaries/" .. outputdir .. "/Engine/Engine.dll %{wks.location}/Binaries/" .. outputdir .. "/Testbed"
-    -- }
+    IncludeEngineDependencies()
+    LinkEngineDependencies()
 
     filter "system:windows"
         systemversion "latest"
-        defines { }
+        defines { "SW_WINDOWS" }
 
     filter "configurations:Debug"
         defines { "SW_DEBUG" }

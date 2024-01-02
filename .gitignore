@@ -403,4 +403,5 @@ FodyWeavers.xsd
 *.vcxproj.user
 
 .idea
-Binaries
+/bin
+/bin-int

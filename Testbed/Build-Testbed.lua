@@ -1,9 +1,8 @@
 project "Testbed"
     kind "ConsoleApp"
-    language "C++"
-    cppdialect "C++20"
-    targetdir "Binaries/%{cfg.buildcfg}"
-    staticruntime "off"
+
+    targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 
     files {
         "assets/**.*",
@@ -11,36 +10,24 @@ project "Testbed"
         "src/**.cpp"
     }
 
-    defines {
-        "GLFW_INCLUDE_NONE",
-    }
+    defines { "GLFW_INCLUDE_NONE" }
+    links { "Engine" }
 
     includedirs {
         "src",
-        "../Engine/src"
+        "../Engine/src",
+        "../Engine/vendor",
     }
 
-    externalincludedirs {
-        "%{IncludeDir.glfw}",
-        "%{IncludeDir.glad}",
-        "%{IncludeDir.stb_image}",
-        "%{IncludeDir.entt}",
-    }
-
-    links {
-        "Engine"
-    }
-
-    targetdir ("../Binaries/bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("../Binaries/bin-int/" .. outputdir .. "/%{prj.name}")
-
+    IncludeEngineDependencies()
+    
     postbuildcommands {
-        "{COPY} assets %{wks.location}/Binaries/bin" .. outputdir .. "/Testbed/assets"
+        "{COPY} assets %{wks.location}/bin/" .. outputdir .. "/Testbed/assets"
     }
 
     filter "system:windows"
         systemversion "latest"
-        defines { "WINDOWS" }
+        defines { "SW_WINDOWS" }
 
     filter "configurations:Debug"
         defines { "SW_DEBUG" }
