@@ -3,7 +3,12 @@
 #include <cstdarg>
 #include <cstdio>
 
+#include <spdlog/spdlog.h>
+
 namespace SW {
+
+	std::shared_ptr<spdlog::logger> Logger::s_EngineLogger;
+	std::shared_ptr<spdlog::logger> Logger::s_AppLogger;
 
     /*
     * @brief Macros to change the color of the text in the terminal

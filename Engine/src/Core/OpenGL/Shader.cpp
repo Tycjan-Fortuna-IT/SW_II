@@ -50,8 +50,8 @@ namespace SW {
 
             glDeleteShader(vertexShader);
 
-            ERROR("%s", infoLog.data());
-            ERROR("Vertex shader compilation failure!");
+            SW_ERROR("%s", infoLog.data());
+            SW_ERROR("Vertex shader compilation failure!");
 
             return;
         }
@@ -81,8 +81,8 @@ namespace SW {
             glDeleteShader(vertexShader);
             glDeleteShader(fragmentShader);
 
-            ERROR("%s", infoLog.data());
-            ERROR("Fragment shader compilation failure!");
+            SW_ERROR("%s", infoLog.data());
+            SW_ERROR("Fragment shader compilation failure!");
 
             return;
         }
@@ -109,7 +109,7 @@ namespace SW {
             glDeleteShader(vertexShader);
             glDeleteShader(fragmentShader);
 
-            ERROR("Shader link failure!");
+            SW_ERROR("Shader link failure!");
 
             return;
         }

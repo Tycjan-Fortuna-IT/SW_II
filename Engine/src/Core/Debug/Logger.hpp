@@ -1,5 +1,9 @@
 #pragma once
 
+namespace spdlog {
+	class logger;
+}
+
 namespace SW {
 
     enum LogType : i8
@@ -23,6 +27,10 @@ namespace SW {
     public:
         static void PrintMessage(LogType type, LogLevel level, const char* message, ...);
         static void ReportAssertionFailure(const char* expression, const char* message, const char* file, i16 line);
+
+    private:
+		static std::shared_ptr<spdlog::logger> s_EngineLogger;
+		static std::shared_ptr<spdlog::logger> s_AppLogger;
     };
 
     /**
@@ -57,7 +65,7 @@ namespace SW {
      * @param msg The message to log.
      * @param ... The arguments to the message to be formatted.
      */
-    #define FATAL(msg, ...) { LOG(ENGINE, LOG_LEVEL_FATAL, msg, ##__VA_ARGS__); __debugbreak(); }
+    #define SW_FATAL(msg, ...) { LOG(ENGINE, LOG_LEVEL_FATAL, msg, ##__VA_ARGS__); __debugbreak(); }
 
     /**
      * @brief Logs an error message. (Engine use only.)
@@ -66,7 +74,7 @@ namespace SW {
      * @param msg The message to log.
      * @param ... The arguments to the message to be formatted.
      */
-    #define ERROR(msg, ...) LOG(ENGINE, LOG_LEVEL_ERROR, msg, ##__VA_ARGS__)
+    #define SW_ERROR(msg, ...) LOG(ENGINE, LOG_LEVEL_ERROR, msg, ##__VA_ARGS__)
 
     /**
      * @brief Logs a warning message. (Engine use only.)

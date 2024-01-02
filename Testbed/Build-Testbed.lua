@@ -10,7 +10,10 @@ project "Testbed"
         "src/**.cpp"
     }
 
-    defines { "GLFW_INCLUDE_NONE" }
+    defines { 
+        "GLFW_INCLUDE_NONE",
+        "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
+    }
     links { "Engine" }
 
     includedirs {

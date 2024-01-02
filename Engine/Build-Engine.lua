@@ -16,6 +16,7 @@ project "Engine"
 
     defines {
         "GLFW_INCLUDE_NONE",
+        "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
     }
 
     includedirs {
@@ -49,4 +50,5 @@ project "Engine"
     group "Engine/Dependencies"
         include "Engine/vendor/GLFW"
         include "Engine/vendor/GLAD"
+        include "Engine/vendor/spdlog"
     group ""

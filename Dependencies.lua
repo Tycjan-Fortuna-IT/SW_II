@@ -18,6 +18,10 @@ Dependencies = {
     STB_IMAGE = {
         IncludeDir = "%{wks.location}/Engine/vendor/stb_image",
     },
+    SPDLOG = { -- premake handles this library's directory automatically
+        IncludeDir = "%{wks.location}/Engine/vendor/spdlog/include",
+        LinkAs = "spdlog",
+    },
 }
 
 function IncludeEngineDependencies()

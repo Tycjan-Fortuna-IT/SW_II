@@ -12,7 +12,7 @@ namespace SW {
     Application::Application(const ApplicationSpecification& specification)
         : m_Specification(specification) {
         if (!this->OnInit())
-            ERROR("Application failed to initialize!");
+            SW_ERROR("Application failed to initialize!");
     }
 
     bool Application::OnInit() {
@@ -82,7 +82,7 @@ namespace SW {
         }
 
         if (!this->OnShutdown())
-            ERROR("Application failed to shut down!");
+            SW_ERROR("Application failed to shut down!");
     }
 
     void Application::Close() {
@@ -99,7 +99,7 @@ namespace SW {
         TRACE("POP");
 
         if (m_Layers.empty())
-            FATAL("No Layer to pop!");
+            SW_FATAL("No Layer to pop!");
 
         Layer* back = m_Layers.back();
         back->OnDetach();

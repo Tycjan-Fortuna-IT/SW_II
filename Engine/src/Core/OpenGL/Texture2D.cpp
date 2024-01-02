@@ -22,7 +22,7 @@ namespace SW {
             internalFormat = GL_RGB8;
             dataFormat = GL_RGB;
         } else {
-            ERROR("Texture2D format not yet supported!");
+            SW_ERROR("Texture2D format not yet supported!");
         }
 
         glCreateTextures(GL_TEXTURE_2D, 1, &m_TextureHandle);
