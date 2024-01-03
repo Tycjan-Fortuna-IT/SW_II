@@ -4,6 +4,7 @@
 
 #include <glad/glad.h>
 
+#include "imgui.h"
 #include "Core/KeyCode.hpp"
 #include "Core/Debug/LogSystem.hpp"
 #include "Core/ECS/Components.hpp"
@@ -168,7 +169,8 @@ public:
     }
 
     void OnRender() override {
-
+		bool open = true;
+		ImGui::ShowDemoWindow(&open);
     }
 };
 

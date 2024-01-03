@@ -30,6 +30,7 @@ namespace SW {
         s_Instance = this;
 
 		m_GuiLayer = new GuiLayer();
+		m_GuiLayer->OnAttach();
 
         EventSystem::Initialize();
 
@@ -54,6 +55,8 @@ namespace SW {
 
 	bool Application::OnShutdown() {
 		EventSystem::Shutdown();
+
+		m_GuiLayer->OnDetach();
 
 		delete m_Window;
 		delete m_GuiLayer;
