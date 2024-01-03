@@ -31,18 +31,18 @@ project "Engine"
         defines { "SW_WINDOWS" }
 
     filter "configurations:Debug"
-        defines { "SW_DEBUG" }
+        defines { "SW_DEBUG_BUILD" }
         runtime "Debug"
         symbols "On"
 
     filter "configurations:Release"
-        defines { "SW_RELEASE" }
+        defines { "SW_RELEASE_BUILD" }
         runtime "Release"
         optimize "On"
         symbols "On"
 
     filter "configurations:Dist"
-        defines { "SW_DIST" }
+        defines { "SW_DIST_BUILD" }
         runtime "Release"
         optimize "On"
         symbols "Off"

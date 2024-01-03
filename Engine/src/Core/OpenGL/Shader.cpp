@@ -35,7 +35,7 @@ namespace SW {
         glShaderSource(vertexShader, 1, &vertexSource, nullptr);
         glCompileShader(vertexShader);
 
-        INFO("Compiling - Vertex shader: \n%s", data.vertexSource.c_str());
+        SW_DEBUG("Compiling - Vertex shader: \n{}", data.vertexSource);
 
         i32 isVertexCompiled;
         glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &isVertexCompiled);
@@ -50,13 +50,13 @@ namespace SW {
 
             glDeleteShader(vertexShader);
 
-            SW_ERROR("%s", infoLog.data());
+            SW_ERROR("{}", infoLog.data());
             SW_ERROR("Vertex shader compilation failure!");
 
             return;
         }
 
-        TRACE("Vertex shader `%s` compiled successfully!", data.vertexSourcePath.c_str());
+		SW_INFO("Vertex shader `{}` compiled successfully!", data.vertexSourcePath);
 
         u32 fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -65,7 +65,7 @@ namespace SW {
         glShaderSource(fragmentShader, 1, &fragmentSource, nullptr);
         glCompileShader(fragmentShader);
 
-        INFO("Compiling - Fragment shader: \n%s", data.fragmentSource.c_str());
+		SW_DEBUG("Compiling - Fragment shader: \n{}", data.fragmentSource);
 
         i32 isFragmentCompiled;
         glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &isFragmentCompiled);
@@ -81,13 +81,13 @@ namespace SW {
             glDeleteShader(vertexShader);
             glDeleteShader(fragmentShader);
 
-            SW_ERROR("%s", infoLog.data());
+            SW_ERROR("{}", infoLog.data());
             SW_ERROR("Fragment shader compilation failure!");
 
             return;
         }
 
-        TRACE("Fragment shader `%s` compiled successfully!", data.fragmentSourcePath.c_str());
+        SW_INFO("Fragment shader `{}` compiled successfully!", data.fragmentSourcePath);
 
         glAttachShader(program, vertexShader);
         glAttachShader(program, fragmentShader);

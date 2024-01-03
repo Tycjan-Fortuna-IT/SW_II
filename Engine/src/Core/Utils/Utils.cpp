@@ -7,7 +7,7 @@ namespace SW {
         std::ifstream stream(filepath, std::ios::in | std::ios::binary);
 
         if (!stream.is_open())
-            SW_ERROR("Could not open file %s", filepath.c_str());
+            SW_ERROR("Could not open file {}", filepath);
 
         stream.seekg(0, std::ios::end);
         result.resize(stream.tellg());

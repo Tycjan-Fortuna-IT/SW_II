@@ -4,7 +4,7 @@
 
 #include <glad/glad.h>
 
-#include "Core/Debug/Logger.hpp"
+#include "Core/Debug/LogSystem.hpp"
 #include "Core/ECS/Components.hpp"
 #include "Core/ECS/EntityRegistry.hpp"
 #include "Core/ECS/Entity.hpp"
@@ -27,106 +27,93 @@ public:
     SW::Texture2D* faceTexture = nullptr;
 
     void OnAttach() override {
-        APP_TRACE("ON attach!");
+		APP_TRACE("TestLayer::OnAttach()");
 
-        const SW::Vector3<f32> vec = { 1.2f, 1.4f, 1.3f };
-        const SW::Matrix4<f32> mat = { 2.4f };
+		const SW::Vector3<f32> vec = { 1.2f, 1.4f, 1.3f };
+		const SW::Matrix4<f32> mat = { 2.4f };
 
-        //APP_TRACE("SW::Vector3<f32>, %s", vec.ToString().c_str());
-        ////APP_TRACE("SW::Vector3<f32>, %s", vec.ToCString());
+		shader = new SW::Shader("assets/shaders/Initial.vert.glsl", "assets/shaders/Initial.frag.glsl");
+		boxTexture = new SW::Texture2D("assets/textures/container_512x512.jpg");
+		faceTexture = new SW::Texture2D("assets/textures/awesomeface_512x512.png");
 
-        //APP_TRACE("SW::Matrix4<f32>, %s", mat.ToString().c_str());
-        //APP_TRACE("SW::Matrix4<f32>, %s", mat.ToCString());
+		float vertices[] = {
+			// positions          // colors           // texture coords
+			 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+			 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+			-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+			-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
+		};
+		unsigned int indices[] = {
+			0, 1, 3, // first triangle
+			1, 2, 3  // second triangle
+		};
 
-        shader = new SW::Shader("assets/shaders/Initial.vert.glsl", "assets/shaders/Initial.frag.glsl");
-        boxTexture = new SW::Texture2D("assets/textures/container_512x512.jpg");
-        faceTexture = new SW::Texture2D("assets/textures/awesomeface_512x512.png");
+		glGenBuffers(1, &VBO);
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &EBO);
 
-        float vertices[] = {
-            // positions          // colors           // texture coords
-             0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-             0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-            -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
-        };
-        unsigned int indices[] = {
-            0, 1, 3, // first triangle
-            1, 2, 3  // second triangle
-        };
+		glBindVertexArray(VAO);
 
-        glGenBuffers(1, &VBO);
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &EBO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-        glBindVertexArray(VAO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		// position attribute
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		// color attribute
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+		// texture coord attribute
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+		glEnableVertexAttribArray(2);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
 
-        // position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-        // color attribute
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-        glEnableVertexAttribArray(1);
-        // texture coord attribute
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-        glEnableVertexAttribArray(2);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
+		shader->Bind();
+		shader->UploadUniformInt("u_Texture1", 0);
+		shader->UploadUniformInt("u_Texture2", 1);
 
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		SW::Matrix4<f32> testMatrix = { 1.0f };
 
-        shader->Bind();
-        shader->UploadUniformInt("u_Texture1", 0);
-        shader->UploadUniformInt("u_Texture2", 1);
+		// make it smaller
+		testMatrix.data[0] = 0.85f;
+		testMatrix.data[5] = 1.f;
 
-        SW::Matrix4<f32> testMatrix = { 1.0f };
+		// move it to the right
+		testMatrix.data[12] = 0.5f;
 
-        // make it smaller
-        testMatrix.data[0] = 0.85f;
-        testMatrix.data[5] = 1.f;
+		//testMatrix.RotateX(SW::Math::ToRadians(45.f));
+		//testMatrix.RotateY(SW::Math::ToRadians(-85.f));
+		//testMatrix.RotateZ(SW::Math::ToRadians(90.f));
 
-        // move it to the right
-        testMatrix.data[12] = 0.5f;
+		shader->UploadUniformMat4("u_Transform", testMatrix);
+	}
 
-        //testMatrix.RotateX(SW::Math::ToRadians(45.f));
-        //testMatrix.RotateY(SW::Math::ToRadians(-85.f));
-        //testMatrix.RotateZ(SW::Math::ToRadians(90.f));
+	void OnDetach() override {
+		glDeleteVertexArrays(1, &VAO);
+		glDeleteBuffers(1, &VBO);
 
-        shader->UploadUniformMat4("u_Transform", testMatrix);
-    }
+		delete shader;
+		delete boxTexture;
+		delete faceTexture;
 
-    void OnDetach() override {
-        APP_TRACE("ON detach!");
+		SW::EntityRegistry registry;
 
-        glDeleteVertexArrays(1, &VAO);
-        glDeleteBuffers(1, &VBO);
+		const SW::Vector3<f32> vec1 = { 1.2f, 1.4f, 1.3f };
+		const SW::Vector3<f32> vec2 = { 2.2f, 2.4f, 2.3f };
+		const SW::Vector3<f32> vec3 = { 3.2f, 3.4f, 3.3f };
 
-        delete shader;
-        delete boxTexture;
-        delete faceTexture;
+		SW::Entity entity = registry.CreateEntity();
+		entity.AddComponent<SW::TransformComponent>(vec1, vec2, vec3);
 
-        SW::EntityRegistry registry;
-
-        const SW::Vector3<f32> vec1 = { 1.2f, 1.4f, 1.3f };
-        const SW::Vector3<f32> vec2 = { 2.2f, 2.4f, 2.3f };
-        const SW::Vector3<f32> vec3 = { 3.2f, 3.4f, 3.3f };
-
-        SW::Entity entity = registry.CreateEntity();
-        entity.AddComponent<SW::TransformComponent>(vec1, vec2, vec3);
-
-        SW::TransformComponent transform = entity.GetComponent<SW::TransformComponent>();
-
-        APP_TRACE("SW::TransformComponent, %s", transform.Position.ToString().c_str());
-        APP_TRACE("SW::TransformComponent, %s", transform.Rotation.ToString().c_str());
-        APP_TRACE("SW::TransformComponent, %s", transform.Scale.ToString().c_str());
-
+		SW::TransformComponent transform = entity.GetComponent<SW::TransformComponent>();
     }
 
     void OnUpdate(float dt) override {

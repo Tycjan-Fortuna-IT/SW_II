@@ -39,7 +39,7 @@ namespace SW {
 
         stbi_image_free(data);
 
-        TRACE("Texture2D `%s` created successfully!", filepath.c_str());
+		SW_INFO("Texture2D `{}` created successfully!", filepath);
     }
 
     Texture2D::~Texture2D() {

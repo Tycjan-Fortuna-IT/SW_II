@@ -8,7 +8,7 @@
 namespace SW {
     Window::Window(const WindowSpecification& specification)
         : m_Specification(specification) {
-        TRACE("Creating window: %s, width: %i px, height: %i px", m_Specification.Title.c_str(), m_Specification.Width, m_Specification.Height);
+        SW_INFO("Creating window: {}, width: {} px, height: {} px", m_Specification.Title, m_Specification.Width, m_Specification.Height);
 
         ASSERT(glfwInit(), "Failed to initialize GLFW");
 
@@ -33,13 +33,12 @@ namespace SW {
         ASSERT(status, "Failed to initialize GLAD");
         ASSERT(GLVersion.major == 4 && GLVersion.minor >= 6, "Engine requires at least OpenGL version 4.6!")
 
-        INFO("OpenGL Info:");
-        INFO("  Vendor: %s", glGetString(GL_VENDOR));
-        INFO("  Renderer: %s", glGetString(GL_RENDERER));
-        INFO("  Version: %s", glGetString(GL_VERSION));
-        INFO("  GLSL Version: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
-        INFO("  OpenGL Context Initialized!");
-        INFO("  OpenGL Version: %i.%i", GLVersion.major, GLVersion.minor);
+        SW_WARN("Vendor: {}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+        SW_WARN("Renderer: {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+        SW_WARN("Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+        SW_WARN("GLSL Version: {}", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+        SW_WARN("OpenGL Context Initialized!");
+        SW_WARN("OpenGL Version: {}.{}", GLVersion.major, GLVersion.minor);
 
         glfwSetWindowUserPointer(m_Handle, this);
 
@@ -72,7 +71,7 @@ namespace SW {
                 case GLFW_REPEAT:
                     break;
                 default:
-                    WARN("Unsupported key action: %i", action);
+                    SW_WARN("Unsupported key action: {}", action);
             }
         });
     }

@@ -18,4 +18,4 @@
 #include <utility>
 
 #include "Core/Defines.hpp"
-#include "Core/Debug/Logger.hpp"
+#include "Core/Debug/LogSystem.hpp"

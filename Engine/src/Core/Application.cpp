@@ -1,4 +1,3 @@
-#include "pch.hpp"
 #include "Application.hpp"
 
 #include "KeyCode.hpp"
@@ -38,7 +37,7 @@ namespace SW {
         });
 
         EventSystem::Register(EventCode::EVENT_CODE_KEY_PRESSED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
-            TRACE("Key pressed: %i", event.Payload.u16[0]);
+			SW_TRACE("Key pressed: {}", event.Payload.u16[0]);
 
             if (event.Payload.u16[0] == KeyCode::Escape) {
                 Application::Close();
@@ -47,57 +46,55 @@ namespace SW {
             return true;
         });
 
-        TRACE("Application has been properly initialized");
+		SW_INFO("Application has been properly initialized");
 
-        return true;
-    }
+		return true;
+	}
 
-    bool Application::OnShutdown() {
-        EventSystem::Shutdown();
+	bool Application::OnShutdown() {
+		EventSystem::Shutdown();
 
-        TRACE("Application has been properly shut down");
+		SW_INFO("Application has been properly shut down");
 
-        return true;
-    }
+		return true;
+	}
 
-    void Application::OnEvent() {
+	void Application::OnEvent() {
 
-    }
+	}
 
-    void Application::Run() {
-        while(m_IsRunning) {
-            const float time = (float)glfwGetTime();
-            const float dt = time - m_LastFrameTime;
-            m_LastFrameTime = time;
+	void Application::Run() {
+		while (m_IsRunning) {
+			const float time = (float)glfwGetTime();
+			const float dt = time - m_LastFrameTime;
+			m_LastFrameTime = time;
 
-            m_Window->OnUpdate();
+			m_Window->OnUpdate();
 
-            for (Layer* layer : m_Layers) {
-                layer->OnUpdate(dt);
-            }
+			for (Layer* layer : m_Layers) {
+				layer->OnUpdate(dt);
+			}
 
-            for (Layer* layer : m_Layers) {
-                layer->OnRender();
-            }
-        }
+			for (Layer* layer : m_Layers) {
+				layer->OnRender();
+			}
+		}
 
-        if (!this->OnShutdown())
-            SW_ERROR("Application failed to shut down!");
-    }
+		if (!this->OnShutdown())
+			SW_ERROR("Application failed to shut down!");
+	}
 
-    void Application::Close() {
-        m_IsRunning = false;
-    }
+	void Application::Close() {
+		m_IsRunning = false;
+	}
 
-    void Application::PushLayer(Layer* layer) {
-        m_Layers.emplace_back(layer);
+	void Application::PushLayer(Layer* layer) {
+		m_Layers.emplace_back(layer);
 
-        layer->OnAttach();
-    }
+		layer->OnAttach();
+	}
 
-    void Application::PopLayer() {
-        TRACE("POP");
-
+	void Application::PopLayer() {
         if (m_Layers.empty())
             SW_FATAL("No Layer to pop!");
 

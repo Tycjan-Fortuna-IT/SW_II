@@ -10,6 +10,14 @@ workspace "SW_II"
 	cppdialect "C++20"
 	staticruntime "Off"
 
+    defines {
+        -- Disable warnings for using unsafe functions
+		"_CRT_SECURE_NO_WARNINGS",
+
+        -- Disable warnings for using deprecated functions
+		"_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING",
+	}
+
     -- Include editorconfig file for consistent coding style
     solution_items { ".editorconfig" }
 
