@@ -1,8 +1,9 @@
 #include "Application.hpp"
 
-#include "KeyCode.hpp"
+#include <GLFW/glfw3.h>
+#include "Core/KeyCode.hpp"
 #include "Events/Event.hpp"
-#include "GLFW/glfw3.h"
+#include "GUI/GuiLayer.hpp"
 
 namespace SW {
 
@@ -28,6 +29,8 @@ namespace SW {
 
         s_Instance = this;
 
+		m_GuiLayer = new GuiLayer();
+
         EventSystem::Initialize();
 
         EventSystem::Register(EventCode::EVENT_CODE_APPLICATION_QUIT, nullptr, [this](Event event, void* sender, void* listener) -> bool {
@@ -52,6 +55,9 @@ namespace SW {
 	bool Application::OnShutdown() {
 		EventSystem::Shutdown();
 
+		delete m_Window;
+		delete m_GuiLayer;
+
 		SW_INFO("Application has been properly shut down");
 
 		return true;
@@ -73,9 +79,11 @@ namespace SW {
 				layer->OnUpdate(dt);
 			}
 
+			m_GuiLayer->Begin();
 			for (Layer* layer : m_Layers) {
 				layer->OnRender();
 			}
+			m_GuiLayer->End();
 		}
 
 		if (!this->OnShutdown())

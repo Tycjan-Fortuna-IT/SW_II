@@ -10,7 +10,8 @@ int main();
 
 namespace SW {
 
-    struct Event;
+	class GuiLayer;
+	struct Event;
 
     struct ApplicationSpecification final
     {
@@ -57,6 +58,8 @@ namespace SW {
         float m_LastFrameTime = 0.f;
 
         std::vector<Layer*> m_Layers;
+
+		GuiLayer* m_GuiLayer = nullptr;
 
         friend int ::main();
     };

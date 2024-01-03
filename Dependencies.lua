@@ -22,6 +22,10 @@ Dependencies = {
         IncludeDir = "%{wks.location}/Engine/vendor/spdlog/include",
         LinkAs = "spdlog",
     },
+    IMGUI = {
+        IncludeDir = "%{wks.location}/Engine/vendor/imgui",
+        LinkAs = "ImGui",
+    },
 }
 
 function IncludeEngineDependencies()

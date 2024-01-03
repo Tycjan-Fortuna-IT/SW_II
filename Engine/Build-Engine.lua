@@ -6,7 +6,9 @@ project "Engine"
 
     files {
         "src/**.hpp",
-        "src/**.cpp"
+        "src/**.cpp",
+        "vendor/ImGui/backends/imgui_impl_glfw.cpp",
+        "vendor/ImGui/backends/imgui_impl_opengl3.cpp",
     }
 
     pchheader "pch.hpp"
@@ -51,4 +53,5 @@ project "Engine"
         include "Engine/vendor/GLFW"
         include "Engine/vendor/GLAD"
         include "Engine/vendor/spdlog"
+        include "Engine/vendor/ImGui"
     group ""
