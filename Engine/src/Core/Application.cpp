@@ -37,13 +37,11 @@ namespace SW {
         });
 
         EventSystem::Register(EventCode::EVENT_CODE_KEY_PRESSED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
-			SW_TRACE("Key pressed: {}", event.Payload.u16[0]);
-
             if (event.Payload.u16[0] == KeyCode::Escape) {
                 Application::Close();
             }
 
-            return true;
+            return false;
         });
 
 		SW_INFO("Application has been properly initialized");

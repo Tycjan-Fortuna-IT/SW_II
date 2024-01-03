@@ -41,7 +41,7 @@ workspace "SW_II"
 
     -- Folder name containing compiled output in a following format: /[config]-[platform]-[architecture]/.
     -- e.g. folder Windows-x64/Debug
-    outputdir = "%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}"
+    outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 group "Engine"
 	include "Engine/Build-Engine.lua"

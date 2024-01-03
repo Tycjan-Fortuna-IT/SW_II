@@ -38,6 +38,12 @@ namespace SW {
             return data;
         }
 
+		void Translate(const Vector3<T>& translation) {
+	        data[12] += translation.x;
+			data[13] += translation.y;
+			data[14] += translation.z;
+        }
+
         void RotateX(f32 radians) {
             data[5] = static_cast<T>(cos(radians));
             data[6] = static_cast<T>(sin(radians));

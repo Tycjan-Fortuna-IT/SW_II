@@ -4,10 +4,12 @@
 
 #include <glad/glad.h>
 
+#include "Core/KeyCode.hpp"
 #include "Core/Debug/LogSystem.hpp"
 #include "Core/ECS/Components.hpp"
 #include "Core/ECS/EntityRegistry.hpp"
 #include "Core/ECS/Entity.hpp"
+#include "Core/Events/Event.hpp"
 #include "Core/OpenGL/Shader.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
 #include "Core/Math/Matrix4.hpp"
@@ -25,6 +27,8 @@ public:
     SW::Shader* shader = nullptr;
     SW::Texture2D* boxTexture = nullptr;
     SW::Texture2D* faceTexture = nullptr;
+
+	SW::Matrix4<f32> testMatrix = { 1.0f };
 
     void OnAttach() override {
 		APP_TRACE("TestLayer::OnAttach()");
@@ -80,20 +84,54 @@ public:
 		shader->UploadUniformInt("u_Texture1", 0);
 		shader->UploadUniformInt("u_Texture2", 1);
 
-		SW::Matrix4<f32> testMatrix = { 1.0f };
+		//SW::Matrix4<f32> testMatrix = { 1.0f };
 
 		// make it smaller
-		testMatrix.data[0] = 0.85f;
-		testMatrix.data[5] = 1.f;
+		//testMatrix.data[0] = 0.85f;
+		//testMatrix.data[5] = 1.f;
 
 		// move it to the right
-		testMatrix.data[12] = 0.5f;
+		//testMatrix.data[12] = 0.5f;
 
 		//testMatrix.RotateX(SW::Math::ToRadians(45.f));
 		//testMatrix.RotateY(SW::Math::ToRadians(-85.f));
 		//testMatrix.RotateZ(SW::Math::ToRadians(90.f));
 
 		shader->UploadUniformMat4("u_Transform", testMatrix);
+
+		SW::Vector3<f32>* t = new SW::Vector3<f32>({1.f, 1.f, 1.f});
+
+		SW::EventSystem::Register(SW::EventCode::EVENT_CODE_KEY_PRESSED, nullptr, 
+			[this](SW::Event event, void* sender, void* listener) -> bool {
+			SW::KeyCode code = (SW::KeyCode)event.Payload.u16[0];
+			APP_DEBUG("Key pressed: {}", (int)code);
+
+			if (code == SW::KeyCode::A) {
+				SW::Vector3<f32> offset = { -0.1f, 0.0f, 0.0f };
+
+				testMatrix.Translate(offset);
+			} else if (code == SW::KeyCode::D) {
+				SW::Vector3<f32> offset = { 0.1f, 0.0f, 0.0f };
+
+				testMatrix.Translate(offset);
+			} else if (code == SW::KeyCode::W) {
+				SW::Vector3<f32> offset = { 0.0f, 0.1f, 0.0f };
+
+				testMatrix.Translate(offset);
+			} else if (code == SW::KeyCode::S) {
+				SW::Vector3<f32> offset = { 0.0f, -0.1f, 0.0f };
+
+				testMatrix.Translate(offset);
+			} else {
+				return false;
+			}
+
+			APP_DEBUG("{}", testMatrix.ToString());
+
+			shader->UploadUniformMat4("u_Transform", testMatrix);
+
+			return true;
+		});
 	}
 
 	void OnDetach() override {

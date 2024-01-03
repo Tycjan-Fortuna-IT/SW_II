@@ -19,7 +19,7 @@ namespace SW {
 	 * in the logging system. Each log type has a specific meaning and is used
 	 * to categorize log messages.
 	 */
-	enum LogType : i8
+	enum LogType : u8
     {
         ENGINE, /**< Log type for engine-related messages. */
         APP,	/**< Log type for application-specific messages. */
@@ -32,7 +32,7 @@ namespace SW {
 	 * in the logging system. Each log level has a specific meaning and is used
 	 * to categorize log messages by their severity.
 	 */
-    enum LogLevel : i8
+    enum LogLevel : u8
     {
         LOG_LEVEL_TRACE, /**< Log level for trace messages. */
         LOG_LEVEL_INFO,  /**< Log level for informational messages. */
