@@ -16,6 +16,7 @@
 #include "Core/Math/Matrix4.hpp"
 #include "Core/Math/Vector3.hpp"
 #include "Core/Utils/Random.hpp"
+#include "Core/OpenGL/Framebuffer.hpp"
 
 class TestLayer final : public SW::Layer
 {
@@ -31,6 +32,8 @@ public:
 
 	SW::Matrix4<f32> testMatrix = { 1.0f };
 
+	SW::Framebuffer* framebuffer = nullptr;
+
     void OnAttach() override {
 		APP_TRACE("TestLayer::OnAttach()");
 
@@ -41,6 +44,9 @@ public:
 		boxTexture = new SW::Texture2D("assets/textures/container_512x512.jpg");
 		faceTexture = new SW::Texture2D("assets/textures/awesomeface_512x512.png");
 
+		SW::FramebufferSpecification spec = { 1280, 720 };
+		framebuffer = new SW::Framebuffer(spec);
+
 		float vertices[] = {
 			// positions          // colors           // texture coords
 			 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
@@ -48,6 +54,7 @@ public:
 			-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
 			-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
 		};
+
 		unsigned int indices[] = {
 			0, 1, 3, // first triangle
 			1, 2, 3  // second triangle
@@ -163,14 +170,30 @@ public:
         boxTexture->Bind(0);
         faceTexture->Bind(1);
 
+		framebuffer->Bind();
+		framebuffer->Clear();
+
         glBindVertexArray(VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		framebuffer->Unbind();
+
     }
 
     void OnRender() override {
-		bool open = true;
-		ImGui::ShowDemoWindow(&open);
+		//bool open = true;
+		//ImGui::ShowDemoWindow(&open);
+
+		ImGui::Begin("Viewport");
+
+		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+		//m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+
+		u32 textureID = framebuffer->GetColorAttachmentRendererID();
+		ImGui::Image((void*)textureID, ImVec2{ viewportPanelSize.x, viewportPanelSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+		ImGui::End();
     }
 };
 
