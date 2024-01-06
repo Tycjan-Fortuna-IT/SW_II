@@ -1,15 +1,26 @@
+/**
+ * @file Event.hpp
+ * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
+ * @version 0.1.1
+ * @date 2024-01-04
+ *
+ * @copyright Copyright (c) 2024 Tycjan Fortuna
+ */
 #pragma once
 
 namespace SW {
 
+	/**
+	 * @brief EventCode is an enum representing the type of the event.
+	 */
     enum EventCode : u8
     {
-        /** @brief Shuts the application down on the next frame. */
+		/** @brief Shuts the application down on the next frame. */
         EVENT_CODE_APPLICATION_QUIT = 0x01,
 
-        /** @brief Keyboard key pressed.
-         * Context usage:
-         * u16 keyCode = data.data.u16[0];
+        /**
+         * @brief Keyboard key pressed.
+         * @warning Context usage: u16 keyCode = event.Payload.u16[0];
          */
         EVENT_CODE_KEY_PRESSED = 0x02,
 
@@ -20,8 +31,13 @@ namespace SW {
         EVENT_CODE_KEY_REPEAT = 0x04,
     };
 
+	/**
+	 * @brief Event is a struct representing an event.
+	 * @note Maximum event message size is 128 bytes.
+	 */
     struct Event final
     {
+		/** @brief The type of the event. */
         EventCode Code;
 
         /** @brief In total 128 bytes of data. */
@@ -56,21 +72,69 @@ namespace SW {
         } Payload;
     };
 
-    // typedef bool(*EventCallback)(Event event, void* sender, void* listener);
+	/** @brief EventCallback is a function pointer (interface) for event callbacks.*/
     using EventCallback = std::function<bool(Event event, void* sender, void* listener)>;
 
+	/**
+	 * @brief Compares two event callbacks.
+	 * 
+	 * @param a The first event callback.
+	 * @param b The second event callback.
+	 * @return bool True if the callbacks are equal, false otherwise.
+	 */
     bool AreEventCallbacksEqual(const EventCallback& a, const EventCallback& b);
 
+	/**
+	 * @brief EventSystem is a static class that exposes event system functionality.
+	 */
     class EventSystem final
     {
     public:
 
+		/**
+		 * @brief Initializes the event system.
+		 * @warning This function must be called before any other event system function.
+		 * 
+		 * @return bool True if the event system was initialized successfully, false otherwise.
+		 */
         static bool Initialize();
+
+		/**
+		 * @brief Shuts down the event system.
+		 * 
+		 * @return bool True if the event system was shut down successfully, false otherwise.
+		 */
         static bool Shutdown();
 
+		/**
+		 * @brief Registers an event listener. An event listener is a function that is called when an event is emitted.
+		 * 		  The event listener is registered for a specific event code, many listeners can be registered for the same event code.
+		 * 
+		 * @param code The event code to register the listener for.
+		 * @param listener The listener to register. Can be nullptr.
+		 * @param handler The event callback to register.
+		 * @return bool True if the listener was registered successfully, false otherwise.
+		 */
         static bool Register(EventCode code, void* listener, EventCallback handler);
+
+		/**
+		 * @brief Unregisters an event listener. An event listener is a function that is called when an event is emitted.
+		 * 
+		 * @param code The event code to unregister the listener for.
+		 * @param listener The listener to unregister. Can be nullptr.
+		 * @param handler The event callback to unregister.
+		 * @return bool True if the listener was unregistered successfully, false otherwise. 
+		 */
         static bool UnRegister(EventCode code, void* listener, EventCallback handler);
 
+		/**
+		 * @brief Emits an event. This function calls all registered event listeners for the specified event code 
+		 * 		  and passes the event with the data to them.
+		 * 
+		 * @param event The event to emit.
+		 * @param sender The sender of the event. Can be nullptr.
+		 * @return bool True if the event was emitted successfully, false otherwise.
+		 */
         static bool Emit(Event event, void* sender);
     };
 

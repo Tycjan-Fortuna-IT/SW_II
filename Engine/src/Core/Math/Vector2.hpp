@@ -1,12 +1,14 @@
 /**
  * @file Vector2.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.1
- * @date 2024-01-04
+ * @version 0.0.2
+ * @date 2024-01-06
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
 #pragma once
+
+#include "Core/Debug/LogSystem.hpp"
 
 namespace SW {
 
@@ -44,6 +46,22 @@ namespace SW {
 		Vector2(T x, T y, T z) {
 			data[0] = static_cast<T>(x);
 			data[1] = static_cast<T>(y);
+		}
+
+		/**
+		 * @brief Construct a new Vector2 object from braced initialize list.
+		 *
+		 * @param values Initializer list containing the data. The behavior depends on the number of elements:
+		 * - No elements: The vector will be filled with zeros.
+		 * - One element: All fields will be filled with this value.
+		 * - Two elements: They will be assigned in sequence, with the last value filling the remaining fields.
+		 */
+		Vector2(std::initializer_list<T> values) {
+			ASSERT(values.size() <= 2, "Too many arguments passed for the Vector2D constructor!");
+
+			auto it = values.begin();
+			data[0] = it != values.end() ? *it++ : 0;
+			data[1] = it != values.end() ? *it : data[0];
 		}
 
 		/** @brief Copy constructor. */

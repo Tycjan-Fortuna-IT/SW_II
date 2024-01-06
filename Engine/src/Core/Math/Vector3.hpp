@@ -1,12 +1,14 @@
 /**
  * @file Vector3.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.1
- * @date 2024-01-04
+ * @version 0.1.2
+ * @date 2024-01-06
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
 #pragma once
+
+#include "Core/Debug/LogSystem.hpp"
 
 namespace SW {
 
@@ -47,6 +49,23 @@ namespace SW {
             data[1] = static_cast<T>(y);
             data[2] = static_cast<T>(z);
         }
+
+		/**
+		 * @brief Construct a new Vector3 object from a braced initializer list.
+		 *
+		 * @param values Initializer list containing the data. The behavior depends on the number of elements:
+		 * - No elements: The vector will be filled with zeros.
+		 * - One element: All fields will be filled with this value.
+		 * - Two or three elements: They will be assigned in sequence, with the last value filling the remaining fields.
+		 */
+		Vector3(std::initializer_list<T> values) {
+			ASSERT(values.size() <= 3, "Too many arguments passed for the Vector3 constructor!");
+
+			auto it = values.begin();
+			data[0] = it != values.end() ? *it++ : 0;
+			data[1] = it != values.end() ? *it++ : data[0];
+			data[2] = it != values.end() ? *it : data[1];
+		}
 
 		/** @brief Copy constructor. */
         Vector3(const Vector3& other) = default;

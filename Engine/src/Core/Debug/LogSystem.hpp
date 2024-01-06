@@ -52,14 +52,12 @@ namespace SW {
 
 		/**
 		 * @brief Initializes the log system.
-		 * 
 		 * @warning This method should be called before any logging is done!!
 		 */
 		static void Initialize();
 
 		/**
 		 * @brief Shuts down the log system.
-		 * 
 		 * @warning This method should be called after all logging is done
 		 *			(before application shutdown)!!
 		 */
