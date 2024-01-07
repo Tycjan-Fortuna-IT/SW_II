@@ -24,8 +24,10 @@ namespace SW {
 		boxTexture = new Texture2D("assets/textures/container_512x512.jpg");
 		faceTexture = new Texture2D("assets/textures/awesomeface_512x512.png");
 
-		FramebufferSpecification spec = { 1280, 720 };
+		const FramebufferSpecification spec = { 1280, 720 };
 		framebuffer = new Framebuffer(spec);
+
+		m_CameraController = new OrthographicCameraController((f32)spec.Width / (f32)spec.Height);
 
 		// matrix to test the inverse
 		Matrix4<f32> inverseTest = { 2.f };
@@ -88,37 +90,6 @@ namespace SW {
 		shader->UploadUniformMat4("u_Transform", testMatrix);
 
 		Vector3<f32>* t = new Vector3<f32>({ 1.f, 1.f, 1.f });
-
-		EventSystem::Register(EventCode::EVENT_CODE_KEY_PRESSED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
-			KeyCode code = (KeyCode)event.Payload.u16[0];
-			APP_DEBUG("Key pressed: {}", (int)code);
-
-			if (code == KeyCode::A) {
-				Vector3<f32> offset = { -0.1f, 0.0f, 0.0f };
-
-				testMatrix.Translate(offset);
-			} else if (code == KeyCode::D) {
-				Vector3<f32> offset = { 0.1f, 0.0f, 0.0f };
-
-				testMatrix.Translate(offset);
-			} else if (code == KeyCode::W) {
-				Vector3<f32> offset = { 0.0f, 0.1f, 0.0f };
-
-				testMatrix.Translate(offset);
-			} else if (code == KeyCode::S) {
-				Vector3<f32> offset = { 0.0f, -0.1f, 0.0f };
-
-				testMatrix.Translate(offset);
-			} else {
-				return false;
-			}
-
-			APP_DEBUG("{}", testMatrix.ToString());
-
-			shader->UploadUniformMat4("u_Transform", testMatrix);
-
-			return true;
-		});
 	}
 
 	void TestLayer::OnDetach() {
@@ -144,12 +115,21 @@ namespace SW {
 	void TestLayer::OnUpdate(float dt) {
 		FramebufferSpecification spec = framebuffer->GetSpecification();
 
+		m_CameraController->OnUpdate(dt);
+
+		Matrix4<f32> testTransform = { 1.0f };
+		testTransform.Translate(m_CameraController->GetCamera().GetPosition());
+		testTransform.RotateZ(m_CameraController->GetCamera().GetRotation());
+
+		shader->UploadUniformMat4("u_Transform", testTransform);
+
 		if (
 			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && // if it's a valid size viewport
 			(spec.Width != (u32)m_ViewportSize.x || spec.Height != (u32)m_ViewportSize.y) // if it changed
 		) {
 			framebuffer->Resize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
-			shader->UploadUniformMat4("u_ViewProjection", viewProjection);
+			m_CameraController->OnResize(m_ViewportSize.x, m_ViewportSize.y);
+			shader->UploadUniformMat4("u_ViewProjection", m_CameraController->GetCamera().GetViewProjectionMatrix());
 		}
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
