@@ -407,3 +407,5 @@ FodyWeavers.xsd
 /bin-int
 
 /docs/html
+
+Makefile

@@ -90,7 +90,7 @@ namespace SW {
 					logger->error(fmt::vformat(message, fmt::make_format_args(std::forward<Args>(args)...))); break;
 				case LOG_LEVEL_FATAL:
 					logger->critical(fmt::vformat(message, fmt::make_format_args(std::forward<Args>(args)...)));
-					__debugbreak(); break;
+					DEBUG_BREAK(); break;
 			}
 		}
 
@@ -128,7 +128,7 @@ namespace SW {
         if (!(x))																	 \
         {																			 \
             ::SW::LogSystem::ReportAssertionFailure(#x, msg, __FILE__, __LINE__);    \
-            __debugbreak();															 \
+            DEBUG_BREAK();															 \
         }																			 \
     }
 
@@ -150,7 +150,7 @@ namespace SW {
      * @param msg The message to log.
      * @param ... The arguments to the message to be formatted.
      */
-    #define SW_FATAL(msg, ...) { SW_LOG(ENGINE, LOG_LEVEL_FATAL, msg, ##__VA_ARGS__); __debugbreak(); }
+    #define SW_FATAL(msg, ...) { SW_LOG(ENGINE, LOG_LEVEL_FATAL, msg, ##__VA_ARGS__); DEBUG_BREAK(); }
 
     /**
      * @brief Logs an error message.
@@ -210,7 +210,7 @@ namespace SW {
 	 * @param msg The message to log.
 	 * @param ... The arguments to the message to be formatted.
 	 */
-	#define APP_FATAL(msg, ...) { SW_LOG(::SW::APP, ::SW::LOG_LEVEL_FATAL, msg, ##__VA_ARGS__); __debugbreak(); }
+	#define APP_FATAL(msg, ...) { SW_LOG(::SW::APP, ::SW::LOG_LEVEL_FATAL, msg, ##__VA_ARGS__); DEBUG_BREAK(); }
 
 	/**
 	 * @brief Logs an error message.

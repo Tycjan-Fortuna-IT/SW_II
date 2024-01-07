@@ -18,6 +18,7 @@ project "Engine"
 
     defines {
         "GLFW_INCLUDE_NONE",
+        "IMGUI_DEFINE_MATH_OPERATORS",
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
     }
 
@@ -27,11 +28,7 @@ project "Engine"
 
     IncludeEngineDependencies()
     LinkEngineDependencies()
-
-    filter "system:windows"
-        systemversion "latest"
-        defines { "SW_WINDOWS" }
-
+    
     filter "configurations:Debug"
         defines { "SW_DEBUG_BUILD" }
         runtime "Debug"

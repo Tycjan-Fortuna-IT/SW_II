@@ -26,6 +26,8 @@ workspace "SW_II"
 
     -- Workspace-wide build options for MSVC
     filter "system:windows"
+        systemversion "latest"
+        defines { "SW_WINDOWS" }
         buildoptions {
             -- This option specifies the model of exception handling to be used by the compiler.
             -- "EHsc" is the standard C++ exception handling model.
@@ -39,9 +41,12 @@ workspace "SW_II"
             "/Zc:__cplusplus"
         }
 
-    -- Folder name containing compiled output in a following format: /[config]-[platform]-[architecture]/.
-    -- e.g. folder Windows-x64/Debug
-    outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+    filter "system:linux"
+        defines { "SW_LINUX" }
+
+-- Folder name containing compiled output in a following format: /[config]-[platform]-[architecture]/.
+-- e.g. folder Windows-x64/Debug
+outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 group "Engine"
 	include "Engine/Build-Engine.lua"

@@ -5,11 +5,11 @@
 --   - LinkAs: The name of the library to link to (if compiled as a static library)
 Dependencies = {
     GLFW = { -- premake handles this library's directory automatically
-        IncludeDir = "%{wks.location}/Engine/vendor/glfw/include",
+        IncludeDir = "%{wks.location}/Engine/vendor/GLFW/include",
         LinkAs = "glfw",
     },
     GLAD = { -- premake handles this library's directory automatically
-        IncludeDir = "%{wks.location}/Engine/vendor/glad/include",
+        IncludeDir = "%{wks.location}/Engine/vendor/GLAD/include",
         LinkAs = "glad",
     },
     ENTT = {
@@ -23,7 +23,7 @@ Dependencies = {
         LinkAs = "spdlog",
     },
     IMGUI = {
-        IncludeDir = "%{wks.location}/Engine/vendor/imgui",
+        IncludeDir = "%{wks.location}/Engine/vendor/ImGui",
         LinkAs = "ImGui",
     },
 }

@@ -50,3 +50,12 @@ static_assert(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
         #define API
     #endif
 #endif
+
+#ifdef SW_WINDOWS
+    #define DEBUG_BREAK() __debugbreak()
+#elif defined(SW_LINUX)
+    #include <signal.h>
+    #define DEBUG_BREAK() raise(SIGTRAP)
+#else
+    #error "Platform not supported!"
+#endif

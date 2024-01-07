@@ -12,6 +12,7 @@ project "Testbed"
 
     defines { 
         "GLFW_INCLUDE_NONE",
+        "IMGUI_DEFINE_MATH_OPERATORS",
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
     }
     links { "Engine" }
@@ -23,14 +24,11 @@ project "Testbed"
     }
 
     IncludeEngineDependencies()
-    
+    LinkEngineDependencies()
+
     postbuildcommands {
         "{COPY} assets %{wks.location}/bin/" .. outputdir .. "/Testbed/assets"
     }
-
-    filter "system:windows"
-        systemversion "latest"
-        defines { "SW_WINDOWS" }
 
     filter "configurations:Debug"
         defines { "SW_DEBUG_BUILD" }
