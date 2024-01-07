@@ -142,9 +142,10 @@ namespace SW {
 		 * @param index The index of the row to access.
 		 * @return A pointer to the row at the given index.
 		 */
-		T* operator[](int index) {
-			ASSERT(index >= 0 && index < 4, "Index out of bounds for Matrix4!");
-			return data + index * 4;
+		T& operator[](u64 index) {
+			ASSERT(index <= 15, "Index out of bounds for Matrix4!");
+
+			return data[index];
 		}
 
 		/**
@@ -153,9 +154,10 @@ namespace SW {
 		 * @param index The index of the row to access.
 		 * @return A const pointer to the row at the given index.
 		 */
-		const T* operator[](int index) const {
-			ASSERT(index >= 0 && index < 4, "Index out of bounds for Matrix4!");
-			return data + index * 4;
+		const T& operator[](u64 index) const {
+			ASSERT(index <= 15, "Index out of bounds for Matrix4!");
+
+			return data[index];
 		}
 
 		/**
@@ -167,25 +169,22 @@ namespace SW {
 		Matrix4 operator*(const Matrix4& other) const {
 			Matrix4 result;
 
-			result[0][0] = data[0] * other[0][0] + data[4] * other[0][1] + data[8] * other[0][2] + data[12] * other[0][3];
-			result[0][1] = data[1] * other[0][0] + data[5] * other[0][1] + data[9] * other[0][2] + data[13] * other[0][3];
-			result[0][2] = data[2] * other[0][0] + data[6] * other[0][1] + data[10] * other[0][2] + data[14] * other[0][3];
-			result[0][3] = data[3] * other[0][0] + data[7] * other[0][1] + data[11] * other[0][2] + data[15] * other[0][3];
-
-			result[1][0] = data[0] * other[1][0] + data[4] * other[1][1] + data[8] * other[1][2] + data[12] * other[1][3];
-			result[1][1] = data[1] * other[1][0] + data[5] * other[1][1] + data[9] * other[1][2] + data[13] * other[1][3];
-			result[1][2] = data[2] * other[1][0] + data[6] * other[1][1] + data[10] * other[1][2] + data[14] * other[1][3];
-			result[1][3] = data[3] * other[1][0] + data[7] * other[1][1] + data[11] * other[1][2] + data[15] * other[1][3];
-
-			result[2][0] = data[0] * other[2][0] + data[4] * other[2][1] + data[8] * other[2][2] + data[12] * other[2][3];
-			result[2][1] = data[1] * other[2][0] + data[5] * other[2][1] + data[9] * other[2][2] + data[13] * other[2][3];
-			result[2][2] = data[2] * other[2][0] + data[6] * other[2][1] + data[10] * other[2][2] + data[14] * other[2][3];
-			result[2][3] = data[3] * other[2][0] + data[7] * other[2][1] + data[11] * other[2][2] + data[15] * other[2][3];
-
-			result[3][0] = data[0] * other[3][0] + data[4] * other[3][1] + data[8] * other[3][2] + data[12] * other[3][3];
-			result[3][1] = data[1] * other[3][0] + data[5] * other[3][1] + data[9] * other[3][2] + data[13] * other[3][3];
-			result[3][2] = data[2] * other[3][0] + data[6] * other[3][1] + data[10] * other[3][2] + data[14] * other[3][3];
-			result[3][3] = data[3] * other[3][0] + data[7] * other[3][1] + data[11] * other[3][2] + data[15] * other[3][3];
+			result[0] = this->data[0] * other[0] + this->data[1] * other[4] + this->data[2] * other[8] + this->data[3] * other[12];
+			result[1] = this->data[0] * other[1] + this->data[1] * other[5] + this->data[2] * other[9] + this->data[3] * other[13];
+			result[2] = this->data[0] * other[2] + this->data[1] * other[6] + this->data[2] * other[10] + this->data[3] * other[14];
+			result[3] = this->data[0] * other[3] + this->data[1] * other[7] + this->data[2] * other[11] + this->data[3] * other[15];
+			result[4] = this->data[4] * other[0] + this->data[5] * other[4] + this->data[6] * other[8] + this->data[7] * other[12];
+			result[5] = this->data[4] * other[1] + this->data[5] * other[5] + this->data[6] * other[9] + this->data[7] * other[13];
+			result[6] = this->data[4] * other[2] + this->data[5] * other[6] + this->data[6] * other[10] + this->data[7] * other[14];
+			result[7] = this->data[4] * other[3] + this->data[5] * other[7] + this->data[6] * other[11] + this->data[7] * other[15];
+			result[8] = this->data[8] * other[0] + this->data[9] * other[4] + this->data[10] * other[8] + this->data[11] * other[12];
+			result[9] = this->data[8] * other[1] + this->data[9] * other[5] + this->data[10] * other[9] + this->data[11] * other[13];
+			result[10] = this->data[8] * other[2] + this->data[9] * other[6] + this->data[10] * other[10] + this->data[11] * other[14];
+			result[11] = this->data[8] * other[3] + this->data[9] * other[7] + this->data[10] * other[11] + this->data[11] * other[15];
+			result[12] = this->data[12] * other[0] + this->data[13] * other[4] + this->data[14] * other[8] + this->data[15] * other[12];
+			result[13] = this->data[12] * other[1] + this->data[13] * other[5] + this->data[14] * other[9] + this->data[15] * other[13];
+			result[14] = this->data[12] * other[2] + this->data[13] * other[6] + this->data[14] * other[10] + this->data[15] * other[14];
+			result[15] = this->data[12] * other[3] + this->data[13] * other[7] + this->data[14] * other[11] + this->data[15] * other[15];
 
 			return result;
 		}

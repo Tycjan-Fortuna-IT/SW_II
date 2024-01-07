@@ -9,6 +9,7 @@
 #include "Core/ECS/EntityRegistry.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Events/Event.hpp"
+#include "Core/Math/Math.hpp"
 #include "Core/Math/Vector3.hpp"
 
 namespace SW {
@@ -25,6 +26,16 @@ namespace SW {
 
 		FramebufferSpecification spec = { 1280, 720 };
 		framebuffer = new Framebuffer(spec);
+
+		// matrix to test the inverse
+		Matrix4<f32> inverseTest = { 2.f };
+		inverseTest[3] = 3.f;
+		inverseTest[4] = 4.f;
+		inverseTest[8] = 4.f;
+		inverseTest[12] = 4.f;
+		Matrix4<f32> result = Math::Inverse<f32>(inverseTest);
+
+		APP_DEBUG("{}", result.ToString());
 
 		//m_CameraController = 
 		//viewProjection

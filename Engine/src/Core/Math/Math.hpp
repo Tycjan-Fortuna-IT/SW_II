@@ -54,22 +54,154 @@ namespace SW {
 		 * @return Matrix4<T>
 		 */
 		template <typename T>
+    		requires std::is_arithmetic_v<T>
 		inline Matrix4<T> OrthogonalProjection(T left, T right, T bottom, T top, T near, T far) {
 			Matrix4<T> result = { static_cast<T>(1) };
 
-			result[0][0] = static_cast<T>(2) / (right - left);
-			result[1][1] = static_cast<T>(2) / (top - bottom);
-			result[2][2] = -static_cast<T>(2) / (far - near);
-			result[3][0] = -(right + left) / (right - left);
-			result[3][1] = -(top + bottom) / (top - bottom);
-			result[3][2] = -(far + near) / (far - near);
+			result[0] = static_cast<T>(2) / (right - left);
+			result[5] = static_cast<T>(2) / (top - bottom);
+			result[10] = -static_cast<T>(2) / (far - near);
+			result[12] = -(right + left) / (right - left);
+			result[13] = -(top + bottom) / (top - bottom);
+			result[14] = -(far + near) / (far - near);
 
 			return result;
 		}
 
 		template <typename T>
+			requires std::is_arithmetic_v<T>
 		inline Matrix4<T> Inverse(const Matrix4<T>& matrix) {
 			Matrix4<T> result;
+
+			// determinant
+			T d1 = matrix[0] * (
+				   matrix[5] * (matrix[10] * matrix[15] - matrix[11] * matrix[14]) -
+				   matrix[6] * (matrix[9] * matrix[15] - matrix[11] * matrix[13]) +
+				   matrix[7] * (matrix[9] * matrix[14] - matrix[10] * matrix[13])
+			);
+
+			T d2 = matrix[1] * (
+				   matrix[4] * (matrix[10] * matrix[15] - matrix[11] * matrix[14]) -
+				   matrix[6] * (matrix[8] * matrix[15] - matrix[11] * matrix[12]) +
+				   matrix[7] * (matrix[8] * matrix[14] - matrix[10] * matrix[12])
+			);
+
+			T d3 = matrix[2] * (
+				   matrix[4] * (matrix[9] * matrix[15] - matrix[11] * matrix[13]) -
+				   matrix[5] * (matrix[8] * matrix[15] - matrix[11] * matrix[12]) +
+				   matrix[7] * (matrix[8] * matrix[13] - matrix[9] * matrix[12])
+			);
+
+			T d4 = matrix[3] * (
+				   matrix[4] * (matrix[9] * matrix[14] - matrix[10] * matrix[13]) -
+				   matrix[5] * (matrix[8] * matrix[14] - matrix[10] * matrix[12]) +
+				   matrix[6] * (matrix[8] * matrix[13] - matrix[9] * matrix[12])
+			);
+
+			T det = d1 - d2 + d3 - d4;
+
+			if (det == static_cast<T>(0)) {
+				SW_ERROR("Matrix4::Inverse() - Matrix is not invertible. {}", matrix.ToString());
+				return result;
+			}
+
+			T idet = static_cast<T>(1) / det;
+
+			result[0] = idet * (
+					matrix[5] * (matrix[10] * matrix[15] - matrix[11] * matrix[14]) -
+					matrix[6] * (matrix[9] * matrix[15] - matrix[11] * matrix[13]) +
+					matrix[7] * (matrix[9] * matrix[14] - matrix[10] * matrix[13])
+			);
+
+			result[1] = -idet * (
+					matrix[1] * (matrix[10] * matrix[15] - matrix[11] * matrix[14]) -
+					matrix[2] * (matrix[9] * matrix[15] - matrix[11] * matrix[13]) +
+					matrix[3] * (matrix[9] * matrix[14] - matrix[10] * matrix[13])
+			);
+
+			result[2] = idet * (
+					matrix[1] * (matrix[6] * matrix[15] - matrix[7] * matrix[14]) -
+					matrix[2] * (matrix[5] * matrix[15] - matrix[7] * matrix[13]) +
+					matrix[3] * (matrix[5] * matrix[14] - matrix[6] * matrix[13])
+			);
+
+			result[3] = -idet * (
+					matrix[1] * (matrix[6] * matrix[11] - matrix[7] * matrix[10]) -
+					matrix[2] * (matrix[5] * matrix[11] - matrix[7] * matrix[9]) +
+					matrix[3] * (matrix[5] * matrix[10] - matrix[6] * matrix[9])
+			);
+
+			result[4] = -idet * (
+					matrix[4] * (matrix[10] * matrix[15] - matrix[11] * matrix[14]) -
+					matrix[6] * (matrix[8] * matrix[15] - matrix[11] * matrix[12]) +
+					matrix[7] * (matrix[8] * matrix[14] - matrix[10] * matrix[12])
+			);
+
+			result[5] = idet * (
+					matrix[0] * (matrix[10] * matrix[15] - matrix[11] * matrix[14]) -
+					matrix[2] * (matrix[8] * matrix[15] - matrix[11] * matrix[12]) +
+					matrix[3] * (matrix[8] * matrix[14] - matrix[10] * matrix[12])
+			);
+
+			result[6] = -idet * (
+					matrix[0] * (matrix[6] * matrix[15] - matrix[7] * matrix[14]) -
+					matrix[2] * (matrix[4] * matrix[15] - matrix[7] * matrix[12]) +
+					matrix[3] * (matrix[4] * matrix[14] - matrix[6] * matrix[12])
+			);
+
+			result[7] = idet * (
+					matrix[0] * (matrix[6] * matrix[11] - matrix[7] * matrix[10]) -
+					matrix[2] * (matrix[4] * matrix[11] - matrix[7] * matrix[8]) +
+					matrix[3] * (matrix[4] * matrix[10] - matrix[6] * matrix[8])
+			);
+
+			result[8] = idet * (
+					matrix[4] * (matrix[9] * matrix[15] - matrix[11] * matrix[13]) -
+					matrix[5] * (matrix[8] * matrix[15] - matrix[11] * matrix[12]) +
+					matrix[7] * (matrix[8] * matrix[13] - matrix[9] * matrix[12])
+			);
+
+			result[9] = -idet * (
+					matrix[0] * (matrix[9] * matrix[15] - matrix[11] * matrix[13]) -
+					matrix[1] * (matrix[8] * matrix[15] - matrix[11] * matrix[12]) +
+					matrix[3] * (matrix[8] * matrix[13] - matrix[9] * matrix[12])
+			);
+
+			result[10] = idet * (
+					matrix[0] * (matrix[5] * matrix[15] - matrix[7] * matrix[13]) -
+					matrix[1] * (matrix[4] * matrix[15] - matrix[7] * matrix[12]) +
+					matrix[3] * (matrix[4] * matrix[13] - matrix[5] * matrix[12])
+			);
+
+			result[11] = -idet * (
+					matrix[0] * (matrix[5] * matrix[11] - matrix[7] * matrix[9]) -
+					matrix[1] * (matrix[4] * matrix[11] - matrix[7] * matrix[8]) +
+					matrix[3] * (matrix[4] * matrix[9] - matrix[5] * matrix[8])
+			);
+
+			result[12] = -idet * (
+					matrix[4] * (matrix[9] * matrix[14] - matrix[10] * matrix[13]) -
+					matrix[5] * (matrix[8] * matrix[14] - matrix[10] * matrix[12]) +
+					matrix[6] * (matrix[8] * matrix[13] - matrix[9] * matrix[12])
+			);
+
+			result[13] = idet * (
+					matrix[0] * (matrix[9] * matrix[14] - matrix[10] * matrix[13]) -
+					matrix[1] * (matrix[8] * matrix[14] - matrix[10] * matrix[12]) +
+					matrix[2] * (matrix[8] * matrix[13] - matrix[9] * matrix[12])
+			);
+
+			result[14] = -idet * (
+					matrix[0] * (matrix[5] * matrix[14] - matrix[6] * matrix[13]) -
+					matrix[1] * (matrix[4] * matrix[14] - matrix[6] * matrix[12]) +
+					matrix[2] * (matrix[4] * matrix[13] - matrix[5] * matrix[12])
+			);
+
+			result[15] = idet * (
+					matrix[0] * (matrix[5] * matrix[10] - matrix[6] * matrix[9]) -
+					matrix[1] * (matrix[4] * matrix[10] - matrix[6] * matrix[8]) +
+					matrix[2] * (matrix[4] * matrix[9] - matrix[5] * matrix[8])
+			);
 
 			return result;
 		}
