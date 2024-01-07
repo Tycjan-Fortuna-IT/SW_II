@@ -73,30 +73,43 @@ namespace SW {
 		inline Matrix4<T> Inverse(const Matrix4<T>& matrix) {
 			Matrix4<T> result;
 
+			const T det_2x2_1 = matrix[10] * matrix[15] - matrix[11] * matrix[14];
+			const T det_2x2_2 = matrix[9] * matrix[15] - matrix[11] * matrix[13];
+			const T det_2x2_3 = matrix[9] * matrix[14] - matrix[10] * matrix[13];
+			const T det_2x2_4 = matrix[8] * matrix[15] - matrix[11] * matrix[12];
+			const T det_2x2_5 = matrix[8] * matrix[14] - matrix[10] * matrix[12];
+			const T det_2x2_6 = matrix[8] * matrix[13] - matrix[9] * matrix[12];
+			const T det_2x2_7 = matrix[6] * matrix[15] - matrix[7] * matrix[14];
+			const T det_2x2_8 = matrix[5] * matrix[15] - matrix[7] * matrix[13];
+			const T det_2x2_9 = matrix[5] * matrix[14] - matrix[6] * matrix[13];
+			const T det_2x2_10 = matrix[6] * matrix[11] - matrix[7] * matrix[10];
+			const T det_2x2_11 = matrix[4] * matrix[15] - matrix[7] * matrix[12];
+			const T det_2x2_12 = matrix[5] * matrix[10] - matrix[6] * matrix[9];
+			const T det_2x2_13 = matrix[4] * matrix[15] - matrix[7] * matrix[12];
+			const T det_2x2_14 = matrix[4] * matrix[14] - matrix[6] * matrix[12];
+			const T det_2x2_15 = matrix[4] * matrix[11] - matrix[7] * matrix[8];
+			const T det_2x2_16 = matrix[4] * matrix[10] - matrix[6] * matrix[8];
+			const T det_2x2_17 = matrix[4] * matrix[13] - matrix[5] * matrix[12];
+			const T det_2x2_18 = matrix[4] * matrix[9] - matrix[5] * matrix[8];
+
+			const T mul_1 = matrix[5] * det_2x2_1;
+			const T mul_2 = matrix[6] * det_2x2_2;
+			const T mul_3 = matrix[7] * det_2x2_3;
+			const T mul_4 = matrix[4] * det_2x2_1;
+			const T mul_5 = matrix[6] * det_2x2_4;
+			const T mul_6 = matrix[7] * det_2x2_5;
+			const T mul_7 = matrix[4] * det_2x2_2;
+			const T mul_8 = matrix[5] * det_2x2_4;
+			const T mul_9 = matrix[7] * det_2x2_6;
+			const T mul_10 = matrix[4] * det_2x2_3;
+			const T mul_11 = matrix[5] * det_2x2_5;
+			const T mul_12 = matrix[6] * det_2x2_6;
+
 			// determinant
-			T d1 = matrix[0] * (
-				   matrix[5] * (matrix[10] * matrix[15] - matrix[11] * matrix[14]) -
-				   matrix[6] * (matrix[9] * matrix[15] - matrix[11] * matrix[13]) +
-				   matrix[7] * (matrix[9] * matrix[14] - matrix[10] * matrix[13])
-			);
-
-			T d2 = matrix[1] * (
-				   matrix[4] * (matrix[10] * matrix[15] - matrix[11] * matrix[14]) -
-				   matrix[6] * (matrix[8] * matrix[15] - matrix[11] * matrix[12]) +
-				   matrix[7] * (matrix[8] * matrix[14] - matrix[10] * matrix[12])
-			);
-
-			T d3 = matrix[2] * (
-				   matrix[4] * (matrix[9] * matrix[15] - matrix[11] * matrix[13]) -
-				   matrix[5] * (matrix[8] * matrix[15] - matrix[11] * matrix[12]) +
-				   matrix[7] * (matrix[8] * matrix[13] - matrix[9] * matrix[12])
-			);
-
-			T d4 = matrix[3] * (
-				   matrix[4] * (matrix[9] * matrix[14] - matrix[10] * matrix[13]) -
-				   matrix[5] * (matrix[8] * matrix[14] - matrix[10] * matrix[12]) +
-				   matrix[6] * (matrix[8] * matrix[13] - matrix[9] * matrix[12])
-			);
+			T d1 = matrix[0] * (mul_1 - mul_2 + mul_3);
+			T d2 = matrix[1] * (mul_4 - mul_5 + mul_6);
+			T d3 = matrix[2] * (mul_7 - mul_8 + mul_9);
+			T d4 = matrix[3] * (mul_10 - mul_11 + mul_12);
 
 			T det = d1 - d2 + d3 - d4;
 
@@ -107,100 +120,84 @@ namespace SW {
 
 			T idet = static_cast<T>(1) / det;
 
-			result[0] = idet * (
-					matrix[5] * (matrix[10] * matrix[15] - matrix[11] * matrix[14]) -
-					matrix[6] * (matrix[9] * matrix[15] - matrix[11] * matrix[13]) +
-					matrix[7] * (matrix[9] * matrix[14] - matrix[10] * matrix[13])
-			);
+			result[0] = idet * (mul_1 - mul_2 + mul_3);
 
 			result[1] = -idet * (
-					matrix[1] * (matrix[10] * matrix[15] - matrix[11] * matrix[14]) -
-					matrix[2] * (matrix[9] * matrix[15] - matrix[11] * matrix[13]) +
-					matrix[3] * (matrix[9] * matrix[14] - matrix[10] * matrix[13])
+				matrix[1] * det_2x2_1 -
+				matrix[2] * det_2x2_2 +
+				matrix[3] * det_2x2_3
 			);
 
 			result[2] = idet * (
-					matrix[1] * (matrix[6] * matrix[15] - matrix[7] * matrix[14]) -
-					matrix[2] * (matrix[5] * matrix[15] - matrix[7] * matrix[13]) +
-					matrix[3] * (matrix[5] * matrix[14] - matrix[6] * matrix[13])
+				matrix[1] * det_2x2_7 -
+				matrix[2] * det_2x2_8 +
+				matrix[3] * det_2x2_9
 			);
 
 			result[3] = -idet * (
-					matrix[1] * (matrix[6] * matrix[11] - matrix[7] * matrix[10]) -
-					matrix[2] * (matrix[5] * matrix[11] - matrix[7] * matrix[9]) +
-					matrix[3] * (matrix[5] * matrix[10] - matrix[6] * matrix[9])
+				matrix[1] * det_2x2_10 -
+				matrix[2] * det_2x2_11 +
+				matrix[3] * det_2x2_12
 			);
 
-			result[4] = -idet * (
-					matrix[4] * (matrix[10] * matrix[15] - matrix[11] * matrix[14]) -
-					matrix[6] * (matrix[8] * matrix[15] - matrix[11] * matrix[12]) +
-					matrix[7] * (matrix[8] * matrix[14] - matrix[10] * matrix[12])
-			);
+			result[4] = -idet * (mul_4 - mul_5 + mul_6);
 
 			result[5] = idet * (
-					matrix[0] * (matrix[10] * matrix[15] - matrix[11] * matrix[14]) -
-					matrix[2] * (matrix[8] * matrix[15] - matrix[11] * matrix[12]) +
-					matrix[3] * (matrix[8] * matrix[14] - matrix[10] * matrix[12])
+				matrix[0] * det_2x2_1 -
+				matrix[2] * det_2x2_4 +
+				matrix[3] * det_2x2_5
 			);
 
 			result[6] = -idet * (
-					matrix[0] * (matrix[6] * matrix[15] - matrix[7] * matrix[14]) -
-					matrix[2] * (matrix[4] * matrix[15] - matrix[7] * matrix[12]) +
-					matrix[3] * (matrix[4] * matrix[14] - matrix[6] * matrix[12])
+				matrix[0] * det_2x2_7 -
+				matrix[2] * det_2x2_13 +
+				matrix[3] * det_2x2_14
 			);
 
 			result[7] = idet * (
-					matrix[0] * (matrix[6] * matrix[11] - matrix[7] * matrix[10]) -
-					matrix[2] * (matrix[4] * matrix[11] - matrix[7] * matrix[8]) +
-					matrix[3] * (matrix[4] * matrix[10] - matrix[6] * matrix[8])
+				matrix[0] * det_2x2_10 -
+				matrix[2] * det_2x2_15 +
+				matrix[3] * det_2x2_16
 			);
 
-			result[8] = idet * (
-					matrix[4] * (matrix[9] * matrix[15] - matrix[11] * matrix[13]) -
-					matrix[5] * (matrix[8] * matrix[15] - matrix[11] * matrix[12]) +
-					matrix[7] * (matrix[8] * matrix[13] - matrix[9] * matrix[12])
-			);
+			result[8] = idet * (mul_7 - mul_8 + mul_9);
 
 			result[9] = -idet * (
-					matrix[0] * (matrix[9] * matrix[15] - matrix[11] * matrix[13]) -
-					matrix[1] * (matrix[8] * matrix[15] - matrix[11] * matrix[12]) +
-					matrix[3] * (matrix[8] * matrix[13] - matrix[9] * matrix[12])
+				matrix[0] * det_2x2_2 -
+				matrix[1] * det_2x2_4 +
+				matrix[3] * det_2x2_6
 			);
 
 			result[10] = idet * (
-					matrix[0] * (matrix[5] * matrix[15] - matrix[7] * matrix[13]) -
-					matrix[1] * (matrix[4] * matrix[15] - matrix[7] * matrix[12]) +
-					matrix[3] * (matrix[4] * matrix[13] - matrix[5] * matrix[12])
+				matrix[0] * det_2x2_8 -
+				matrix[1] * det_2x2_13 +
+				matrix[3] * det_2x2_17
 			);
 
 			result[11] = -idet * (
-					matrix[0] * (matrix[5] * matrix[11] - matrix[7] * matrix[9]) -
-					matrix[1] * (matrix[4] * matrix[11] - matrix[7] * matrix[8]) +
-					matrix[3] * (matrix[4] * matrix[9] - matrix[5] * matrix[8])
+				matrix[0] * det_2x2_11 -
+				matrix[1] * det_2x2_15 +
+				matrix[3] * det_2x2_18
 			);
 
-			result[12] = -idet * (
-					matrix[4] * (matrix[9] * matrix[14] - matrix[10] * matrix[13]) -
-					matrix[5] * (matrix[8] * matrix[14] - matrix[10] * matrix[12]) +
-					matrix[6] * (matrix[8] * matrix[13] - matrix[9] * matrix[12])
-			);
+			result[12] = -idet * (mul_10 - mul_11 + mul_12);
 
 			result[13] = idet * (
-					matrix[0] * (matrix[9] * matrix[14] - matrix[10] * matrix[13]) -
-					matrix[1] * (matrix[8] * matrix[14] - matrix[10] * matrix[12]) +
-					matrix[2] * (matrix[8] * matrix[13] - matrix[9] * matrix[12])
+				matrix[0] * det_2x2_3 -
+				matrix[1] * det_2x2_5 +
+				matrix[2] * det_2x2_6
 			);
 
 			result[14] = -idet * (
-					matrix[0] * (matrix[5] * matrix[14] - matrix[6] * matrix[13]) -
-					matrix[1] * (matrix[4] * matrix[14] - matrix[6] * matrix[12]) +
-					matrix[2] * (matrix[4] * matrix[13] - matrix[5] * matrix[12])
+				matrix[0] * det_2x2_9 -
+				matrix[1] * det_2x2_14 +
+				matrix[2] * det_2x2_17
 			);
 
 			result[15] = idet * (
-					matrix[0] * (matrix[5] * matrix[10] - matrix[6] * matrix[9]) -
-					matrix[1] * (matrix[4] * matrix[10] - matrix[6] * matrix[8]) +
-					matrix[2] * (matrix[4] * matrix[9] - matrix[5] * matrix[8])
+				matrix[0] * det_2x2_12 -
+				matrix[1] * det_2x2_16 +
+				matrix[2] * det_2x2_18
 			);
 
 			return result;
