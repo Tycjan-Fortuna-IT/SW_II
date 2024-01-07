@@ -18,6 +18,7 @@ namespace SW {
 	 * @param T Type of the vector.
 	 */
     template <typename T>
+		requires std::is_arithmetic_v<T>
     struct Vector3 final
     {
 		/**

@@ -68,6 +68,12 @@ namespace SW {
 			return result;
 		}
 
+		/**
+		 * @brief Performs inverse of a matrix.
+		 * 
+		 * @param matrix Matrix to be inverted.
+		 * @return Matrix4<T> Inverted matrix. 
+		 */
 		template <typename T>
 			requires std::is_arithmetic_v<T>
 		inline Matrix4<T> Inverse(const Matrix4<T>& matrix) {

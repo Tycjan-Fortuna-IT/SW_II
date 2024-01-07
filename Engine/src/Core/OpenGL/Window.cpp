@@ -52,16 +52,14 @@ namespace SW {
             }, nullptr);
         });
 
-        glfwSetKeyCallback(m_Handle, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+        glfwSetKeyCallback(m_Handle, [](GLFWwindow* window, i32 key, i32 scancode, i32 action, i32 mods) {
             switch (action)
             {
                 case GLFW_PRESS:
                     EventSystem::Emit({
                         .Code = EVENT_CODE_KEY_PRESSED,
                         .Payload = {
-                            .u16 = {
-                                (u16)key
-                            }
+                            .u16 = { (u16)key }
                         }
                     }, nullptr);
 
@@ -74,6 +72,26 @@ namespace SW {
                     SW_WARN("Unsupported key action: {}", action);
             }
         });
+
+		glfwSetWindowSizeCallback(m_Handle, [](GLFWwindow* window, i32 width, i32 height) {
+			// todo update as well the glfwGetWindowUserPointer!
+
+			EventSystem::Emit({
+				.Code = EVENT_CODE_WINDOW_RESIZED,
+				.Payload = {
+					.i32 = { width, height }
+				}
+			}, nullptr);
+		});
+
+		glfwSetScrollCallback(m_Handle, [](GLFWwindow* window, f64 xOffset, f64 yOffset) {
+			EventSystem::Emit({
+				.Code = EVENT_CODE_MOUSE_WHEEL,
+				.Payload = {
+					.f32 = { (f32)xOffset, (f32)yOffset }
+				}
+			}, nullptr);
+		});
     }
 
     Window::~Window() {

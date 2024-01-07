@@ -29,6 +29,18 @@ namespace SW {
 
         /** @brief Not implemented */
         EVENT_CODE_KEY_REPEAT = 0x04,
+
+		/**
+		 * @brief Mouse wheel scrolled.
+		 * @warning Context usage: 
+		 */
+		EVENT_CODE_MOUSE_WHEEL = 0x05,
+
+		/**
+		 * @brief OS Window resized/resolution changed.
+		 * @warning Context usage: 
+		 */
+		EVENT_CODE_WINDOW_RESIZED = 0x06,
     };
 
 	/**

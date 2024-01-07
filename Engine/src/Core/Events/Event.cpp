@@ -105,7 +105,7 @@ namespace SW {
             }
         }
 
-        SW_WARN("Event with the code {} has not been fully handled!", (int)event.Code);
+        SW_DEBUG("Event with the code {} has not been fully handled!", (int)event.Code);
 
         return false;
     }
