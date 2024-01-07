@@ -26,6 +26,9 @@ namespace SW {
 		FramebufferSpecification spec = { 1280, 720 };
 		framebuffer = new Framebuffer(spec);
 
+		//m_CameraController = 
+		//viewProjection
+
 		float vertices[] = {
 			// positions          // colors           // texture coords
 			 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
@@ -135,6 +138,7 @@ namespace SW {
 			(spec.Width != (u32)m_ViewportSize.x || spec.Height != (u32)m_ViewportSize.y) // if it changed
 		) {
 			framebuffer->Resize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
+			shader->UploadUniformMat4("u_ViewProjection", viewProjection);
 		}
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);

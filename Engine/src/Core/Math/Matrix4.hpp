@@ -135,6 +135,60 @@ namespace SW {
             data[4] = static_cast<T>(-sin(radians));
             data[5] = static_cast<T>(cos(radians));
         }
+
+		/**
+		 * @brief Operator [] for accessing the elements of the matrix.
+		 * 
+		 * @param index The index of the row to access.
+		 * @return A pointer to the row at the given index.
+		 */
+		T* operator[](int index) {
+			ASSERT(index >= 0 && index < 4, "Index out of bounds for Matrix4!");
+			return data + index * 4;
+		}
+
+		/**
+		 * @brief Const version of operator [] for accessing the elements of the matrix.
+		 * 
+		 * @param index The index of the row to access.
+		 * @return A const pointer to the row at the given index.
+		 */
+		const T* operator[](int index) const {
+			ASSERT(index >= 0 && index < 4, "Index out of bounds for Matrix4!");
+			return data + index * 4;
+		}
+
+		/**
+		 * @brief Operator * for multiplying the matrix by another matrix.
+		 * 
+		 * @param other Matrix to multiply by.
+		 * @return Matrix4 
+		 */
+		Matrix4 operator*(const Matrix4& other) const {
+			Matrix4 result;
+
+			result[0][0] = data[0] * other[0][0] + data[4] * other[0][1] + data[8] * other[0][2] + data[12] * other[0][3];
+			result[0][1] = data[1] * other[0][0] + data[5] * other[0][1] + data[9] * other[0][2] + data[13] * other[0][3];
+			result[0][2] = data[2] * other[0][0] + data[6] * other[0][1] + data[10] * other[0][2] + data[14] * other[0][3];
+			result[0][3] = data[3] * other[0][0] + data[7] * other[0][1] + data[11] * other[0][2] + data[15] * other[0][3];
+
+			result[1][0] = data[0] * other[1][0] + data[4] * other[1][1] + data[8] * other[1][2] + data[12] * other[1][3];
+			result[1][1] = data[1] * other[1][0] + data[5] * other[1][1] + data[9] * other[1][2] + data[13] * other[1][3];
+			result[1][2] = data[2] * other[1][0] + data[6] * other[1][1] + data[10] * other[1][2] + data[14] * other[1][3];
+			result[1][3] = data[3] * other[1][0] + data[7] * other[1][1] + data[11] * other[1][2] + data[15] * other[1][3];
+
+			result[2][0] = data[0] * other[2][0] + data[4] * other[2][1] + data[8] * other[2][2] + data[12] * other[2][3];
+			result[2][1] = data[1] * other[2][0] + data[5] * other[2][1] + data[9] * other[2][2] + data[13] * other[2][3];
+			result[2][2] = data[2] * other[2][0] + data[6] * other[2][1] + data[10] * other[2][2] + data[14] * other[2][3];
+			result[2][3] = data[3] * other[2][0] + data[7] * other[2][1] + data[11] * other[2][2] + data[15] * other[2][3];
+
+			result[3][0] = data[0] * other[3][0] + data[4] * other[3][1] + data[8] * other[3][2] + data[12] * other[3][3];
+			result[3][1] = data[1] * other[3][0] + data[5] * other[3][1] + data[9] * other[3][2] + data[13] * other[3][3];
+			result[3][2] = data[2] * other[3][0] + data[6] * other[3][1] + data[10] * other[3][2] + data[14] * other[3][3];
+			result[3][3] = data[3] * other[3][0] + data[7] * other[3][1] + data[11] * other[3][2] + data[15] * other[3][3];
+
+			return result;
+		}
     };
 
 }

@@ -60,18 +60,18 @@ namespace SW {
 		/**
 		 * @brief Bind the framebuffer. Meaning that all the following draw calls will be rendered to the framebuffer.
 		 */
-		void Bind();
+		void Bind() const;
 
 		/**
 		 * @brief Unbind the framebuffer. Meaning that all the following draw calls will be rendered to the default framebuffer.
 		 */
-		void Unbind();
+		void Unbind() const;
 
 		/**
 		 * @brief Clear the framebuffer.
 		 * @warning Must be called after binding the framebuffer.
 		 */
-		void Clear();
+		void Clear() const;
 
 	private:
 		/**

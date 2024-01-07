@@ -23,16 +23,16 @@ namespace SW {
 		Invalidate();
 	}
 
-	void Framebuffer::Bind() {
+	void Framebuffer::Bind() const {
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 		glViewport(0, 0, m_Specification.Width, m_Specification.Height);
 	}
 
-	void Framebuffer::Unbind() {
+	void Framebuffer::Unbind() const {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void Framebuffer::Clear() {
+	void Framebuffer::Clear() const {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
