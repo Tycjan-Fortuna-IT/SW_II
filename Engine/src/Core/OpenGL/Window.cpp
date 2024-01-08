@@ -6,9 +6,16 @@
 #include "Core/Events/Event.hpp"
 
 namespace SW {
+
+    void errorCallback(int error, const char* description) {
+        fprintf(stderr, "GLFW Error %d: %s\n", error, description);
+    }
+
     Window::Window(const WindowSpecification& specification)
         : m_Specification(specification) {
         SW_INFO("Creating window: {}, width: {} px, height: {} px", m_Specification.Title, m_Specification.Width, m_Specification.Height);
+
+        glfwSetErrorCallback(errorCallback);
 
         ASSERT(glfwInit(), "Failed to initialize GLFW");
 

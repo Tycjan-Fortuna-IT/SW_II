@@ -6,11 +6,11 @@
 Dependencies = {
     GLFW = { -- premake handles this library's directory automatically
         IncludeDir = "%{wks.location}/Engine/vendor/GLFW/include",
-        LinkAs = "glfw",
+        LinkAs = "GLFW",
     },
     GLAD = { -- premake handles this library's directory automatically
         IncludeDir = "%{wks.location}/Engine/vendor/GLAD/include",
-        LinkAs = "glad",
+        LinkAs = "GLAD",
     },
     ENTT = {
         IncludeDir = "%{wks.location}/Engine/vendor/entt",
