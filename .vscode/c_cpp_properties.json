@@ -1,0 +1,47 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/Engine/src/**",
+                "${workspaceFolder}/Engine/vendor/**",
+                "${workspaceFolder}/Testbed/src/**"
+            ],
+            "defines": [
+                "GLFW_INCLUDE_NONE",
+                "IMGUI_DEFINE_MATH_OPERATORS",
+                "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
+                "SW_DEBUG_BUILD",
+                "SW_WINDOWS"
+            ],
+            "forcedInclude": [
+                "${workspaceFolder}/Engine/src/pch.hpp"
+            ],
+            "compilerPath": "C:\\Program Files\\LLVM\\bin\\clang.exe",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "windows-clang-x64"
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/Engine/src/**",
+                "${workspaceFolder}/Engine/vendor/**",
+                "${workspaceFolder}/Testbed/src/**"
+            ],
+            "defines": [
+                "GLFW_INCLUDE_NONE",
+                "IMGUI_DEFINE_MATH_OPERATORS",
+                "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
+                "SW_DEBUG_BUILD",
+                "SW_LINUX"
+            ],
+            "forcedInclude": [
+                "${workspaceFolder}/Engine/src/pch.hpp"
+            ],
+            "compilerPath": "/usr/bin/clang",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}
