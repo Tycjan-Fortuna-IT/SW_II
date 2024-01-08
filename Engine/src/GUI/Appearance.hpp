@@ -7,6 +7,7 @@
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
 #pragma once
+
 #include "Core/Math/Vector2.hpp"
 #include "Core/Math/Vector4.hpp"
 
