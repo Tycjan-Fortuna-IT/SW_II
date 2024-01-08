@@ -1,24 +1,19 @@
 #include "TestLayer.hpp"
 
 #include <glad/glad.h>
+#include <imgui.h>
 
-#include "imgui.h"
-#include "Core/KeyCode.hpp"
 #include "Core/Debug/LogSystem.hpp"
 #include "Core/ECS/Components.hpp"
 #include "Core/ECS/EntityRegistry.hpp"
 #include "Core/ECS/Entity.hpp"
-#include "Core/Events/Event.hpp"
-#include "Core/Math/Math.hpp"
 #include "Core/Math/Vector3.hpp"
+#include "GUI/Appearance.hpp"
 
 namespace SW {
 
 	void TestLayer::OnAttach() {
 		APP_TRACE("TestLayer::OnAttach()");
-
-		const Vector3<f32> vec = { 1.2f, 1.4f, 1.3f };
-		const Matrix4<f32> mat = { 2.4f };
 
 		shader = new Shader("assets/shaders/Initial.vert.glsl", "assets/shaders/Initial.frag.glsl");
 		boxTexture = new Texture2D("assets/textures/container_512x512.jpg");
@@ -29,18 +24,8 @@ namespace SW {
 
 		m_CameraController = new OrthographicCameraController((f32)spec.Width / (f32)spec.Height);
 
-		// matrix to test the inverse
-		Matrix4<f32> inverseTest = { 2.f };
-		inverseTest[3] = 3.f;
-		inverseTest[4] = 4.f;
-		inverseTest[8] = 4.f;
-		inverseTest[12] = 4.f;
-		Matrix4<f32> result = Math::Inverse<f32>(inverseTest);
-
-		APP_DEBUG("{}", result.ToString());
-
-		//m_CameraController = 
-		//viewProjection
+		GUI::Appearance::ApplyStyle(GUI::Style());
+		GUI::Appearance::ApplyColors(GUI::Colors());
 
 		float vertices[] = {
 			// positions          // colors           // texture coords
@@ -88,8 +73,6 @@ namespace SW {
 		shader->UploadUniformInt("u_Texture2", 1);
 
 		shader->UploadUniformMat4("u_Transform", testMatrix);
-
-		Vector3<f32>* t = new Vector3<f32>({ 1.f, 1.f, 1.f });
 	}
 
 	void TestLayer::OnDetach() {
@@ -106,10 +89,10 @@ namespace SW {
 		const Vector3<f32> vec2 = { 2.2f, 2.4f, 2.3f };
 		const Vector3<f32> vec3 = { 3.2f, 3.4f, 3.3f };
 
-		Entity entity = registry.CreateEntity();
+		/*Entity entity = registry.CreateEntity();
 		entity.AddComponent<TransformComponent>(vec1, vec2, vec3);
 
-		TransformComponent transform = entity.GetComponent<TransformComponent>();
+		TransformComponent transform = entity.GetComponent<TransformComponent>();*/
 	}
 
 	void TestLayer::OnUpdate(float dt) {
@@ -157,6 +140,9 @@ namespace SW {
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
 		ImGui::Begin("Panel");
+
+		static bool check = false;
+		ImGui::Checkbox("The label", &check);
 
 		ImGui::End();
 
