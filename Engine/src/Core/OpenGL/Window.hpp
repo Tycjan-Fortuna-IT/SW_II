@@ -94,6 +94,21 @@ namespace SW {
 		 */
 		void RegisterOverTitlebar(bool over);
 
+		/**
+		 * @brief Minimize the window.
+		 */
+		void Minimize() const;
+
+		/**
+		 * @brief Maximize the window.
+		 */
+		void Maximize() const;
+
+		/**
+		 * @brief Restore the window. (unmaximize)
+		 */
+		void Restore() const;
+
     private:
         WindowSpecification m_Specification; /** @brief Window specification. */
         GLFWwindow* m_Handle = nullptr;	 	 /** @brief GLFW window handle. */

@@ -41,7 +41,7 @@ namespace SW {
 
         glfwMakeContextCurrent(m_Handle);
 
-    	if (!m_Specification.DisableToolbar && m_Specification.Icon.Data != nullptr) {
+    	if (m_Specification.Icon.Data != nullptr) {
 			GLFWimage icon;
 			i32 channels;
 
@@ -118,7 +118,6 @@ namespace SW {
 		});
 
 		glfwSetTitlebarHitTestCallback(m_Handle, [](GLFWwindow* window, int xPos, int yPos, int* hit) {
-			SW_WARN("HIT ? {}", static_cast<WindowSpecification*>(glfwGetWindowUserPointer(window))->OverTitlebar);
 			*hit = static_cast<WindowSpecification*>(glfwGetWindowUserPointer(window))->OverTitlebar ? 1 : 0;
 		});
     }
@@ -144,4 +143,17 @@ namespace SW {
     void Window::RegisterOverTitlebar(bool over) {
 		m_Specification.OverTitlebar = over;
     }
+
+    void Window::Minimize() const {
+		glfwIconifyWindow(m_Handle);
+    }
+
+    void Window::Maximize() const {
+		glfwMaximizeWindow(m_Handle);
+    }
+
+    void Window::Restore() const {
+		glfwRestoreWindow(m_Handle);
+    }
+
 }

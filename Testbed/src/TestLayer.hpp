@@ -35,7 +35,7 @@ namespace SW {
 
 		Vector2<f32> m_ViewportSize;
 
-		bool m_TitleBarHovered = false;
+		bool m_WindowMaximized = false;
 
 		void OnAttach() override;
 		void OnDetach() override;
@@ -43,7 +43,7 @@ namespace SW {
 		void OnUpdate(float dt) override;
 		void OnRender() override;
 
-		void DrawTitleBar(f32 titlebarHeight);
+		f32 DrawTitleBar();
 	};
 
 }

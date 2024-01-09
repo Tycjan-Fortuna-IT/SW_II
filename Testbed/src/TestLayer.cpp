@@ -124,7 +124,8 @@ namespace SW {
 
 	}
 
-	void TestLayer::DrawTitleBar(f32 titlebarHeight) {
+	f32 TestLayer::DrawTitleBar() {
+		constexpr f32 titlebarHeight = 57.0f;
 		const ImVec2 windowPadding = ImGui::GetCurrentWindow()->WindowPadding;
 
 		ImGui::SetCursorPos(windowPadding);
@@ -150,14 +151,58 @@ namespace SW {
 			drawList->AddImage((ImTextureID)m_IconTexture->GetHandle(), logoRectStart, logoRectMax);
 		}
 
-		const float w = ImGui::GetContentRegionAvail().x;
-		const float buttonsAreaWidth = 94;
+		const f32 w = ImGui::GetContentRegionAvail().x;
+		constexpr f32 buttonsAreaWidth = 120;
 
 		ImGui::InvisibleButton("##titleBarDragZone", ImVec2(w - buttonsAreaWidth, titlebarHeight));
 
 		if (ImGui::IsItemHovered()) {
 			Application::Get()->GetWindow()->RegisterOverTitlebar(true);
 		}
+
+		// Minimize Button
+		{
+			const float rightOffset = ImGui::GetWindowWidth() - 120.0f;
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(rightOffset - windowPadding.x);
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
+			ImGui::SetItemAllowOverlap();
+			if (ImGui::Button("_", { 40.f, 40.f })) {
+				Application::Get()->GetWindow()->Minimize();
+			}
+		}
+
+		// Maximize / shrink button
+		{
+			const float rightOffset = ImGui::GetWindowWidth() - 80.0f;
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(rightOffset - windowPadding.x);
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
+			ImGui::SetItemAllowOverlap();
+			if (ImGui::Button("O", { 40.f, 40.f })) {
+				if (m_WindowMaximized) {
+					Application::Get()->GetWindow()->Restore();
+					m_WindowMaximized = false;
+				} else {
+					Application::Get()->GetWindow()->Maximize();
+					m_WindowMaximized = true;
+				}
+			}
+		}
+
+		// Close button
+		{
+			const float rightOffset = ImGui::GetWindowWidth() - 40.0f;
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(rightOffset - windowPadding.x);
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
+			ImGui::SetItemAllowOverlap();
+			if (ImGui::Button("X", { 40.f, 40.f })) {
+				Application::Get()->Close();
+			}
+		}
+
+		return titlebarHeight;
 	}
 
 	void TestLayer::OnRender() {
@@ -191,8 +236,7 @@ namespace SW {
 
 		ImGui::PopStyleVar(2);
 
-		const float titlebarHeight = 57.0f;
-		DrawTitleBar(titlebarHeight);
+		f32 titlebarHeight = DrawTitleBar();
 
 		ImGui::SetCursorPosY(titlebarHeight + ImGui::GetCurrentWindow()->WindowPadding.y);
 
@@ -221,6 +265,8 @@ namespace SW {
 		ImGui::Image((void*)textureID, currentViewportSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
 		ImGui::End();
+
+		ImGui::ShowDemoWindow();
 	}
 
 }
