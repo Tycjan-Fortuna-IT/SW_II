@@ -3,12 +3,12 @@
 #include <glad/glad.h>
 #include <imgui.h>
 
+#include "imgui_internal.h"
 #include "Core/Debug/LogSystem.hpp"
 #include "Core/ECS/Components.hpp"
-#include "Core/ECS/EntityRegistry.hpp"
-#include "Core/ECS/Entity.hpp"
-#include "Core/Math/Vector3.hpp"
+#include "GLFW/glfw3.h"
 #include "GUI/Appearance.hpp"
+#include "GUI/Colors.hpp"
 
 namespace SW {
 
@@ -16,8 +16,10 @@ namespace SW {
 		APP_TRACE("TestLayer::OnAttach()");
 
 		shader = new Shader("assets/shaders/Initial.vert.glsl", "assets/shaders/Initial.frag.glsl");
+
 		boxTexture = new Texture2D("assets/textures/container_512x512.jpg");
 		faceTexture = new Texture2D("assets/textures/awesomeface_512x512.png");
+		m_IconTexture = new Texture2D("assets/icons/SW_Icon.png", false);
 
 		const FramebufferSpecification spec = { 1280, 720 };
 		framebuffer = new Framebuffer(spec);
@@ -82,17 +84,6 @@ namespace SW {
 		delete shader;
 		delete boxTexture;
 		delete faceTexture;
-
-		EntityRegistry registry;
-
-		const Vector3<f32> vec1 = { 1.2f, 1.4f, 1.3f };
-		const Vector3<f32> vec2 = { 2.2f, 2.4f, 2.3f };
-		const Vector3<f32> vec3 = { 3.2f, 3.4f, 3.3f };
-
-		/*Entity entity = registry.CreateEntity();
-		entity.AddComponent<TransformComponent>(vec1, vec2, vec3);
-
-		TransformComponent transform = entity.GetComponent<TransformComponent>();*/
 	}
 
 	void TestLayer::OnUpdate(float dt) {
@@ -133,15 +124,89 @@ namespace SW {
 
 	}
 
-	void TestLayer::OnRender() {
-		//bool open = true;
-		//ImGui::ShowDemoWindow(&open);
+	void TestLayer::DrawTitleBar(f32 titlebarHeight) {
+		const ImVec2 windowPadding = ImGui::GetCurrentWindow()->WindowPadding;
 
-		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+		ImGui::SetCursorPos(windowPadding);
+
+		const ImVec2 titlebarMin = ImGui::GetCursorScreenPos();
+		const ImVec2 titlebarMax = {
+			ImGui::GetCursorScreenPos().x + ImGui::GetWindowWidth() - windowPadding.y * 2.0f,
+			ImGui::GetCursorScreenPos().y + titlebarHeight
+		};
+
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+		drawList->AddRectFilled(titlebarMin, titlebarMax, Color::TitleBar);
+		drawList->AddRectFilledMultiColor(titlebarMin, ImVec2(titlebarMin.x + 600.0f, titlebarMax.y), Color::LightBlack, Color::TitleBar, Color::TitleBar, Color::LightBlack);
+
+		{
+			const f32 logoWidth = (f32)m_IconTexture->GetWidth() / 3.f;
+			const f32 logoHeight = (f32)m_IconTexture->GetHeight() / 3.f;
+			const ImVec2 logoOffset(20.0f + windowPadding.x, windowPadding.y - 1.2f);
+			const ImVec2 logoRectStart = { ImGui::GetItemRectMin().x + logoOffset.x, ImGui::GetItemRectMin().y + logoOffset.y };
+			const ImVec2 logoRectMax = { logoRectStart.x + logoWidth, logoRectStart.y + logoHeight };
+
+			drawList->AddImage((ImTextureID)m_IconTexture->GetHandle(), logoRectStart, logoRectMax);
+		}
+
+		const float w = ImGui::GetContentRegionAvail().x;
+		const float buttonsAreaWidth = 94;
+
+		ImGui::InvisibleButton("##titleBarDragZone", ImVec2(w - buttonsAreaWidth, titlebarHeight));
+
+		if (ImGui::IsItemHovered()) {
+			Application::Get()->GetWindow()->RegisterOverTitlebar(true);
+		}
+	}
+
+	void TestLayer::OnRender() {
+		Application::Get()->GetWindow()->RegisterOverTitlebar(false);
+
+		ImGuiIO& io = ImGui::GetIO();
+		ImGuiStyle& style = ImGui::GetStyle();
+
+		io.ConfigWindowsResizeFromEdges = io.BackendFlags & ImGuiBackendFlags_HasMouseCursors;
+
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
+
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(viewport->Pos);
+		ImGui::SetNextWindowSize(viewport->Size);
+		ImGui::SetNextWindowViewport(viewport->ID);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+		const bool isMaximized = (bool)glfwGetWindowAttrib(Application::Get()->GetWindow()->GetHandle(), GLFW_MAXIMIZED);
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, isMaximized ? ImVec2(6.0f, 6.0f) : ImVec2(1.0f, 1.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
+
+		ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4{ 0.0f, 0.0f, 0.0f, 0.0f });
+		ImGui::Begin("DockSpace Demo", nullptr, window_flags);
+		ImGui::PopStyleColor();
+		ImGui::PopStyleVar(2);
+
+		ImGui::PopStyleVar(2);
+
+		const float titlebarHeight = 57.0f;
+		DrawTitleBar(titlebarHeight);
+
+		ImGui::SetCursorPosY(titlebarHeight + ImGui::GetCurrentWindow()->WindowPadding.y);
+
+		// Dockspace
+		float minWinSizeX = style.WindowMinSize.x;
+		style.WindowMinSize.x = 370.0f;
+		ImGui::DockSpace(ImGui::GetID("MyDockspace"));
+		style.WindowMinSize.x = minWinSizeX;
+
+		ImGui::End();
 
 		ImGui::Begin("Panel");
 
-		static bool check = false;
+		static bool check = true;
 		ImGui::Checkbox("The label", &check);
 
 		ImGui::End();

@@ -7,8 +7,8 @@
 
 namespace SW {
 
-    Texture2D::Texture2D(const std::string& filepath) {
-        stbi_set_flip_vertically_on_load(true);
+    Texture2D::Texture2D(const std::string& filepath, bool flipped) {
+        stbi_set_flip_vertically_on_load(flipped);
         stbi_uc* data = stbi_load(filepath.c_str(), &m_Width, &m_Height, &m_Channels, 0);
 
         ASSERT(data, ("Failed to load the image: " + filepath).c_str());

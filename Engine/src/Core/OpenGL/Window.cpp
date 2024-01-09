@@ -26,7 +26,7 @@ namespace SW {
 
 		if (m_Specification.DisableToolbar) {
 			glfwWindowHint(GLFW_TITLEBAR, GLFW_FALSE);
-			glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+			//glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 		}
 
         m_Handle = glfwCreateWindow(
@@ -64,7 +64,7 @@ namespace SW {
         SW_WARN("OpenGL Context Initialized!");
         SW_WARN("OpenGL Version: {}.{}", GLVersion.major, GLVersion.minor);
 
-        glfwSetWindowUserPointer(m_Handle, this);
+        glfwSetWindowUserPointer(m_Handle, &m_Specification);
 
         glViewport(0, 0, m_Specification.Width, m_Specification.Height);
 
@@ -116,6 +116,11 @@ namespace SW {
 				}
 			}, nullptr);
 		});
+
+		glfwSetTitlebarHitTestCallback(m_Handle, [](GLFWwindow* window, int xPos, int yPos, int* hit) {
+			SW_WARN("HIT ? {}", static_cast<WindowSpecification*>(glfwGetWindowUserPointer(window))->OverTitlebar);
+			*hit = static_cast<WindowSpecification*>(glfwGetWindowUserPointer(window))->OverTitlebar ? 1 : 0;
+		});
     }
 
     Window::~Window() {
@@ -134,5 +139,9 @@ namespace SW {
             glfwSwapInterval(0);
 
         m_Specification.VSync = enabled;
+    }
+
+    void Window::RegisterOverTitlebar(bool over) {
+		m_Specification.OverTitlebar = over;
     }
 }

@@ -33,6 +33,7 @@ namespace SW {
         bool VSync = false;					/** @brief Vertical synchronization. */
 		EmbeddedIcon Icon = {};				/** @brief Window's icon, shown only if toolbar is enabled */
 		bool DisableToolbar = false;		/** @brief Whether the default window's toolbar should be visible. */
+		bool OverTitlebar = false;
 	};
 
 	/**
@@ -85,6 +86,13 @@ namespace SW {
 		 * @param enabled Whether to enable or disable vertical synchronization.
 		 */
         void SetVSync(bool enabled);
+
+		/**
+		 * @brief Set the state of titlebar drag, used for the window handle to allow for custom way of drag.
+		 *
+		 * @param over Whether to enable or disable custom drag.
+		 */
+		void RegisterOverTitlebar(bool over);
 
     private:
         WindowSpecification m_Specification; /** @brief Window specification. */

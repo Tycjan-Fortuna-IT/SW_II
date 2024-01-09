@@ -46,6 +46,7 @@ namespace SW {
 		constexpr ImU32 CaputMortuum = IM_COL32(89, 39, 32, 255);		/** @brief caputmortuum */
 		constexpr ImU32 BarbiePink = IM_COL32(255, 0, 127, 255);		/** @brief barbie pink */
 
+		constexpr ImU32 TitleBar = IM_COL32(12, 14, 18, 255);			/** @brief dark gray */
 	}
 
 }

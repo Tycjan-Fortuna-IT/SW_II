@@ -52,7 +52,7 @@ namespace SW {
 		 * 
 		 * @return const Window* 
 		 */
-        const Window* GetWindow() const { return m_Window;  }
+        Window* GetWindow() const { return m_Window;  }
 
 		/**
 		 * @brief Initialize the application

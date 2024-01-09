@@ -31,7 +31,7 @@ SW::Application* CreateApplication() {
 			.Data = e_SW_Icon,
 			.Size = sizeof(e_SW_Icon)
 		},
-		.DisableToolbar = false,
+		.DisableToolbar = true,
     };
 
     return new Testbed(spec);

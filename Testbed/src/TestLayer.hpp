@@ -24,6 +24,8 @@ namespace SW {
 		Texture2D* boxTexture = nullptr;
 		Texture2D* faceTexture = nullptr;
 
+		Texture2D* m_IconTexture = nullptr;
+
 		Matrix4<f32> testMatrix = { 1.0f };
 		Matrix4<f32> viewProjection = { 1.0f };
 
@@ -33,11 +35,15 @@ namespace SW {
 
 		Vector2<f32> m_ViewportSize;
 
+		bool m_TitleBarHovered = false;
+
 		void OnAttach() override;
 		void OnDetach() override;
 
 		void OnUpdate(float dt) override;
 		void OnRender() override;
+
+		void DrawTitleBar(f32 titlebarHeight);
 	};
 
 }
