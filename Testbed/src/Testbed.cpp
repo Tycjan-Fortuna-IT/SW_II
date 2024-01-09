@@ -4,6 +4,8 @@
 
 #include "TestLayer.hpp"
 
+#include "icons/embed/SW_Icon.embed"
+
 class Testbed final : public SW::Application
 {
 public:
@@ -24,7 +26,12 @@ SW::Application* CreateApplication() {
         .Title = "Testbed",
         .Width = 1280,
         .Height = 720,
-        .VSync = false
+        .VSync = false,
+		.Icon = {
+			.Data = e_SW_Icon,
+			.Size = sizeof(e_SW_Icon)
+		},
+		.DisableToolbar = false,
     };
 
     return new Testbed(spec);

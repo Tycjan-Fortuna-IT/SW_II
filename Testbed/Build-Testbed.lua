@@ -6,6 +6,7 @@ project "Testbed"
 
     files {
         "assets/**.*",
+        "assets/**.embed",
         "src/**.hpp",
         "src/**.cpp"
     }
@@ -18,6 +19,7 @@ project "Testbed"
     links { "Engine" }
 
     includedirs {
+        "assets",
         "src",
         "../Engine/src",
         "../Engine/vendor",

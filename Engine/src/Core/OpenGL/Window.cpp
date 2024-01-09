@@ -1,5 +1,6 @@
 #include "Window.hpp"
 
+#include <stb_image.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -23,6 +24,11 @@ namespace SW {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+		if (m_Specification.DisableToolbar) {
+			glfwWindowHint(GLFW_TITLEBAR, GLFW_FALSE);
+			glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+		}
+
         m_Handle = glfwCreateWindow(
             m_Specification.Width,
             m_Specification.Height,
@@ -34,6 +40,17 @@ namespace SW {
         ASSERT(m_Handle, "Failed to create GLFW window");
 
         glfwMakeContextCurrent(m_Handle);
+
+    	if (!m_Specification.DisableToolbar && m_Specification.Icon.Data != nullptr) {
+			GLFWimage icon;
+			i32 channels;
+
+			icon.pixels = stbi_load_from_memory(m_Specification.Icon.Data, m_Specification.Icon.Size, &icon.width, &icon.height, &channels, 4);
+
+			glfwSetWindowIcon(m_Handle, 1, &icon);
+
+			stbi_image_free(icon.pixels);
+		}
 
         const int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 

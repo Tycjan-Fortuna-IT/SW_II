@@ -15,15 +15,25 @@ struct GLFWwindow;
 namespace SW {
 
 	/**
+	 * @brief Internal data of the embedded icon, helper structure.
+	 */
+	struct EmbeddedIcon final {
+		const u8* Data = nullptr;			/** @brief Embedded binary icon of the application. */
+		const i32 Size = 0;					/** @brief Number of embedded binary fragments. */
+	};
+
+	/**
 	 * @brief Window specification structure.
 	 */
     struct WindowSpecification final
     {
-        std::string Title = "No title";  /** @brief Window title. */
-        u16 Width = 1280;				 /** @brief Window width. */
-        u16 Height = 720;				 /** @brief Window height. */
-        bool VSync = false;				 /** @brief Vertical synchronization. */
-    };
+        std::string Title = "No title";		/** @brief Window title. */
+        u16 Width = 1280;					/** @brief Window width. */
+        u16 Height = 720;					/** @brief Window height. */
+        bool VSync = false;					/** @brief Vertical synchronization. */
+		EmbeddedIcon Icon = {};				/** @brief Window's icon, shown only if toolbar is enabled */
+		bool DisableToolbar = false;		/** @brief Whether the default window's toolbar should be visible. */
+	};
 
 	/**
 	 * @brief Engine's abstraction of a window.

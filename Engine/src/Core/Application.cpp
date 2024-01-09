@@ -20,7 +20,9 @@ namespace SW {
             .Title = m_Specification.Title,
             .Width = m_Specification.Width,
             .Height = m_Specification.Height,
-            .VSync = m_Specification.VSync
+            .VSync = m_Specification.VSync,
+			.Icon = m_Specification.Icon,
+			.DisableToolbar = m_Specification.DisableToolbar,
         };
 
         m_Window = new Window(specification);
@@ -64,10 +66,6 @@ namespace SW {
 		SW_INFO("Application has been properly shut down");
 
 		return true;
-	}
-
-	void Application::OnEvent() {
-
 	}
 
 	void Application::Run() {
