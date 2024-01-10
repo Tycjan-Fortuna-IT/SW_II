@@ -42,7 +42,8 @@ namespace SW {
 		constexpr ImU32 DarkGreen = IM_COL32(0, 100, 0, 255); 			/** @brief dark green */
 		constexpr ImU32 DarkBlue = IM_COL32(0, 0, 128, 255); 			/** @brief dark blue */
 		constexpr ImU32 DarkViolet = IM_COL32(128, 0, 128, 255); 		/** @brief dark violet */
-
+		constexpr ImU32 DarkGray = IM_COL32(64, 64, 64, 255); 			/** @brief dark gray */
+		
 		constexpr ImU32 CaputMortuum = IM_COL32(89, 39, 32, 255);		/** @brief caputmortuum */
 		constexpr ImU32 BarbiePink = IM_COL32(255, 0, 127, 255);		/** @brief barbie pink */
 

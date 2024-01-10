@@ -11,6 +11,8 @@
 #include "Core/Math/Vector2.hpp"
 #include "Core/Math/Vector4.hpp"
 
+struct ImFont;
+
 namespace SW {
 
 	namespace GUI {
@@ -155,6 +157,39 @@ namespace SW {
 		};
 
 		/**
+		 * @brief Fonts specification, data used while creating fonts.
+		 */
+		struct FontSpecification
+		{
+			f32 SmallSize = 12.f;		/** @brief Size of the small font */
+			f32 DefaultSize = 18.f;		/** @brief Size of the default font */
+			f32 BigSize = 24.f;			/** @brief Size of the big font */
+			std::string FontPath;		/** @brief Path to the .ttf file with normal font */
+			std::string BoldFontPath;	/** @brief Path to the .ttf file with bold font */
+
+			FontSpecification(const std::string& fontPath, const std::string& boldFontPath)
+				: FontPath(fontPath), BoldFontPath(boldFontPath) {} 
+		};
+
+		/**
+		 * @brief Fonts of the GUI
+		 */
+		struct Fonts final
+		{
+			f32 SmallSize = 12.f;		/** @brief Size of the small font */
+			f32 DefaultSize = 18.f;		/** @brief Size of the default font */
+			f32 BigSize = 24.f;			/** @brief Size of the big font */
+
+			ImFont* SmallFont = nullptr;
+			ImFont* DefaultFont = nullptr;
+			ImFont* BigFont = nullptr;
+
+			ImFont* SmallBoldFont = nullptr;
+			ImFont* DefaultBoldFont = nullptr;
+			ImFont* BigBoldFont = nullptr;
+		};
+
+		/**
 		 * @brief Applies style to the GUI
 		 */
 		class Appearance final {
@@ -170,6 +205,35 @@ namespace SW {
 			 * @param colors Colors to apply
 			 */
 			static void ApplyColors(const Colors& colors);
+
+			/**
+			 * @brief Applies fonts to the GUI
+			 * @param spec Font specification to apply
+			 */
+			static void ApplyFonts(const FontSpecification& spec);
+
+			/**
+			 * @brief Returns style applied to the application
+			 * @return Current style
+			 */
+			static const Style& GetStyle() { return s_Style; }
+
+			/**
+			 * @brief Returns colors applied to the application
+			 * @return Current colors
+			 */
+			static const Colors& GetColors() { return s_Colors; }
+
+			/**
+			 * @brief Returns fonts applied to the application
+			 * @return Current fonts
+			 */
+			static const Fonts& GetFonts() { return s_Fonts; }
+
+		private:
+			static Style s_Style;		/** @brief Current app's style */
+			static Colors s_Colors;		/** @brief Current app's colors */
+			static Fonts s_Fonts;		/** @brief Current app's fonts */
 		};
 
 	}
