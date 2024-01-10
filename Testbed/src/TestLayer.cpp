@@ -9,6 +9,7 @@
 #include "GLFW/glfw3.h"
 #include "GUI/Appearance.hpp"
 #include "GUI/Colors.hpp"
+#include "GUI/GUI.hpp"
 
 namespace SW {
 
@@ -20,14 +21,21 @@ namespace SW {
 		boxTexture = new Texture2D("assets/textures/container_512x512.jpg");
 		faceTexture = new Texture2D("assets/textures/awesomeface_512x512.png");
 		m_IconTexture = new Texture2D("assets/icons/SW_Icon.png", false);
+		m_CloseIconTexture = new Texture2D("assets/icons/editor/windows/Close.png", false);
+		m_MaximizeIconTexture = new Texture2D("assets/icons/editor/windows/Maximize.png", false);
+		m_MinimizeIconTexture = new Texture2D("assets/icons/editor/windows/Minimize.png", false);
+		m_RestoreIconTexture = new Texture2D("assets/icons/editor/windows/Restore.png", false);
 
 		const FramebufferSpecification spec = { 1280, 720 };
 		framebuffer = new Framebuffer(spec);
 
 		m_CameraController = new OrthographicCameraController((f32)spec.Width / (f32)spec.Height);
 
+		const GUI::FontSpecification fontSpec("assets/fonts/Roboto/Roboto-Regular.ttf", "assets/fonts/Roboto/Roboto-Bold.ttf");
+
 		GUI::Appearance::ApplyStyle(GUI::Style());
 		GUI::Appearance::ApplyColors(GUI::Colors());
+		GUI::Appearance::ApplyFonts(fontSpec);
 
 		float vertices[] = {
 			// positions          // colors           // texture coords
@@ -148,7 +156,7 @@ namespace SW {
 			const ImVec2 logoRectStart = { ImGui::GetItemRectMin().x + logoOffset.x, ImGui::GetItemRectMin().y + logoOffset.y };
 			const ImVec2 logoRectMax = { logoRectStart.x + logoWidth, logoRectStart.y + logoHeight };
 
-			drawList->AddImage((ImTextureID)m_IconTexture->GetHandle(), logoRectStart, logoRectMax);
+			drawList->AddImage(GUI::GetTextureID(m_IconTexture), logoRectStart, logoRectMax);
 		}
 
 		const f32 w = ImGui::GetContentRegionAvail().x;
@@ -167,9 +175,9 @@ namespace SW {
 			ImGui::SetCursorPosX(rightOffset - windowPadding.x);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
 			ImGui::SetItemAllowOverlap();
-			if (ImGui::Button("_", { 40.f, 40.f })) {
+			GUI::ImageButton(*m_MinimizeIconTexture, { 40.f, 40.f }, [&]() {
 				Application::Get()->GetWindow()->Minimize();
-			}
+			});
 		}
 
 		// Maximize / shrink button
@@ -179,14 +187,16 @@ namespace SW {
 			ImGui::SetCursorPosX(rightOffset - windowPadding.x);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
 			ImGui::SetItemAllowOverlap();
-			if (ImGui::Button("O", { 40.f, 40.f })) {
-				if (m_WindowMaximized) {
+			if (m_WindowMaximized) {
+				GUI::ImageButton(*m_RestoreIconTexture, { 40.f, 40.f }, [&]() {
 					Application::Get()->GetWindow()->Restore();
 					m_WindowMaximized = false;
-				} else {
+				});
+			} else {
+				GUI::ImageButton(*m_MaximizeIconTexture, { 40.f, 40.f }, [&]() {
 					Application::Get()->GetWindow()->Maximize();
 					m_WindowMaximized = true;
-				}
+				});
 			}
 		}
 
@@ -197,9 +207,10 @@ namespace SW {
 			ImGui::SetCursorPosX(rightOffset - windowPadding.x);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
 			ImGui::SetItemAllowOverlap();
-			if (ImGui::Button("X", { 40.f, 40.f })) {
+
+			GUI::ImageButton(*m_CloseIconTexture, { 40.f, 40.f }, []() {
 				Application::Get()->Close();
-			}
+			});
 		}
 
 		return titlebarHeight;
@@ -215,7 +226,7 @@ namespace SW {
 
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
 
-		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		const ImGuiViewport* viewport = ImGui::GetMainViewport();
 		ImGui::SetNextWindowPos(viewport->Pos);
 		ImGui::SetNextWindowSize(viewport->Size);
 		ImGui::SetNextWindowViewport(viewport->ID);
@@ -261,8 +272,8 @@ namespace SW {
 		m_ViewportSize.x = currentViewportSize.x;
 		m_ViewportSize.y = currentViewportSize.y;
 
-		u32 textureID = framebuffer->GetColorAttachmentRendererID();
-		ImGui::Image((void*)textureID, currentViewportSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		const ImTextureID textureID = GUI::GetTextureID(framebuffer->GetColorAttachmentRendererID());
+		ImGui::Image(textureID, currentViewportSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
 		ImGui::End();
 

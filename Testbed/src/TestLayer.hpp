@@ -25,6 +25,10 @@ namespace SW {
 		Texture2D* faceTexture = nullptr;
 
 		Texture2D* m_IconTexture = nullptr;
+		Texture2D* m_CloseIconTexture = nullptr;
+		Texture2D* m_MaximizeIconTexture = nullptr;
+		Texture2D* m_MinimizeIconTexture = nullptr;
+		Texture2D* m_RestoreIconTexture = nullptr;
 
 		Matrix4<f32> testMatrix = { 1.0f };
 		Matrix4<f32> viewProjection = { 1.0f };
