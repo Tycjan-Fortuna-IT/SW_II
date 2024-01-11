@@ -60,21 +60,9 @@ namespace SW {
 		 */
 		void SetZoomLevel(f32 level) { m_ZoomLevel = level; CalculateView(); }
 
-	private:
-		f32 m_AspectRatio;      	/** @brief Aspect ratio of the camera. */
-		f32 m_ZoomLevel = 1.0f;		/** @brief Zoom level of the camera. */
-
-		Vector3<f32> m_CameraPosition = { 0.0f, 0.0f, 0.0f }; /** @brief Position of the camera. */
-
-		f32 m_CameraRotation = 0.0f; 		/** @brief Rotation of the camera. */
-		f32 m_CameraMoveSpeed = 2.0f; 		/** @brief Speed of the camera. */
-		f32 m_CameraRotationSpeed = 2.0f; 	/** @brief Rotation speed of the camera. */
-
-		OrthographicCamera m_Camera; /** @brief Orthographic camera. */
-
 		/**
 		 * @brief React on the mouse scrolled event.
-		 * 
+		 *
 		 * @param xOffset Offset on the X axis.
 		 * @param yOffset Offset on the Y axis.
 		 * @return bool
@@ -83,12 +71,24 @@ namespace SW {
 
 		/**
 		 * @brief React on the window resized event.
-		 * 
+		 *
 		 * @param width New width.
 		 * @param height New height.
 		 * @return bool
 		 */
 		bool OnWindowResized(i32 width, i32 height);
+
+	private:
+		f32 m_AspectRatio;      	/** @brief Aspect ratio of the camera. */
+		f32 m_ZoomLevel = 1.0f;		/** @brief Zoom level of the camera. */
+
+		Vector3<f32> m_CameraPosition = { 0.0f, 0.0f, 0.0f }; /** @brief Position of the camera. */
+
+		f32 m_CameraRotation = 0.0f; 		/** @brief Rotation of the camera. */
+		f32 m_CameraMoveSpeed = 20.0f; 		/** @brief Speed of the camera. */
+		f32 m_CameraRotationSpeed = 20.0f; 	/** @brief Rotation speed of the camera. */
+
+		OrthographicCamera m_Camera; /** @brief Orthographic camera. */
 
 		/**
 		 * @brief Calculate or recalculate the view of the camera.

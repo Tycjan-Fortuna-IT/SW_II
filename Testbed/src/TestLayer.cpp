@@ -6,6 +6,8 @@
 #include "imgui_internal.h"
 #include "Core/Debug/LogSystem.hpp"
 #include "Core/ECS/Components.hpp"
+#include "Core/Events/Event.hpp"
+#include "Core/Math/Math.hpp"
 #include "GLFW/glfw3.h"
 #include "GUI/Appearance.hpp"
 #include "GUI/Colors.hpp"
@@ -36,6 +38,27 @@ namespace SW {
 		GUI::Appearance::ApplyStyle(GUI::Style());
 		GUI::Appearance::ApplyColors(GUI::Colors());
 		GUI::Appearance::ApplyFonts(fontSpec);
+
+		EventSystem::Register(EVENT_CODE_MOUSE_WHEEL, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+			const f32 xOffset = event.Payload.f32[0];
+			const f32 yOffset = event.Payload.f32[1];
+
+			if (!m_IsViewportFocused) return false;
+
+			return m_CameraController->OnMouseScrolled(xOffset, yOffset);
+		});
+
+		EventSystem::Register(EVENT_CODE_WINDOW_RESIZED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+			const i32 width = event.Payload.i32[0];
+			const i32 height = event.Payload.i32[1];
+
+			if (!m_IsViewportFocused) return false;
+
+			return m_CameraController->OnWindowResized(width, height);
+		});
+
+		Application::Get()->GetWindow()->Maximize();
+		Application::Get()->GetWindow()->SetVSync(true);
 
 		float vertices[] = {
 			// positions          // colors           // texture coords
@@ -92,18 +115,23 @@ namespace SW {
 		delete shader;
 		delete boxTexture;
 		delete faceTexture;
+		delete m_IconTexture;
+		delete m_CloseIconTexture;
+		delete m_MaximizeIconTexture;
+		delete m_MinimizeIconTexture;
+		delete m_RestoreIconTexture;
+		delete m_CameraController;
+		delete framebuffer;
 	}
 
 	void TestLayer::OnUpdate(float dt) {
 		FramebufferSpecification spec = framebuffer->GetSpecification();
 
-		m_CameraController->OnUpdate(dt);
+		if (m_IsViewportFocused)
+			m_CameraController->OnUpdate(dt);
 
-		Matrix4<f32> testTransform = { 1.0f };
-		testTransform.Translate(m_CameraController->GetCamera().GetPosition());
-		testTransform.RotateZ(m_CameraController->GetCamera().GetRotation());
-
-		shader->UploadUniformMat4("u_Transform", testTransform);
+		shader->UploadUniformMat4("u_Transform", { 1.0f });
+		shader->UploadUniformMat4("u_ViewProjection", m_CameraController->GetCamera().GetViewProjectionMatrix());
 
 		if (
 			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && // if it's a valid size viewport
@@ -111,7 +139,6 @@ namespace SW {
 		) {
 			framebuffer->Resize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
 			m_CameraController->OnResize(m_ViewportSize.x, m_ViewportSize.y);
-			shader->UploadUniformMat4("u_ViewProjection", m_CameraController->GetCamera().GetViewProjectionMatrix());
 		}
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -216,6 +243,10 @@ namespace SW {
 		return titlebarHeight;
 	}
 
+	void TestLayer::DrawMenuBar() {
+		
+	}
+
 	void TestLayer::OnRender() {
 		Application::Get()->GetWindow()->RegisterOverTitlebar(false);
 
@@ -259,7 +290,7 @@ namespace SW {
 
 		ImGui::End();
 
-		ImGui::Begin("Panel");
+		ImGui::Begin("Scene");
 
 		static bool check = true;
 		ImGui::Checkbox("The label", &check);
@@ -267,6 +298,8 @@ namespace SW {
 		ImGui::End();
 
 		ImGui::Begin("Viewport");
+
+		m_IsViewportFocused = ImGui::IsWindowFocused();
 
 		const ImVec2 currentViewportSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize.x = currentViewportSize.x;
@@ -277,7 +310,31 @@ namespace SW {
 
 		ImGui::End();
 
-		ImGui::ShowDemoWindow();
+		ImGui::Begin("Components");
+
+		ImGui::End();
+
+		ImGui::Begin("Assets");
+
+		ImGui::End();
+
+		ImGui::Begin("Console");
+
+		ImGui::End();
+
+		ImGui::Begin("Statistics");
+
+		ImGui::Text("FPS: %d", (int)ImGui::GetIO().Framerate);
+		ImGui::Text("Frame Time: %f ms", 1000.0f / ImGui::GetIO().Framerate);
+
+		static bool VSync = true;
+		if (ImGui::Checkbox("VSync", &VSync)) {
+			Application::Get()->GetWindow()->SetVSync(VSync);
+		}
+
+		ImGui::End();
+
+		//ImGui::ShowDemoWindow();
 	}
 
 }

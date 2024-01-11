@@ -39,7 +39,8 @@ namespace SW {
 
 		Vector2<f32> m_ViewportSize;
 
-		bool m_WindowMaximized = false;
+		bool m_WindowMaximized = true;
+		bool m_IsViewportFocused = false;
 
 		void OnAttach() override;
 		void OnDetach() override;
@@ -48,6 +49,7 @@ namespace SW {
 		void OnRender() override;
 
 		f32 DrawTitleBar();
+		void DrawMenuBar();
 	};
 
 }

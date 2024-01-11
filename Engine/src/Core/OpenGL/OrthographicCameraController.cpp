@@ -1,29 +1,13 @@
 #include "OrthographicCameraController.hpp"
 
 #include "Core/KeyCode.hpp"
-#include "Core/Events/Event.hpp"
 #include "Core/Utils/Input.hpp"
 
 namespace SW {
 
 	OrthographicCameraController::OrthographicCameraController(f32 aspectRatio)
 		: m_AspectRatio(aspectRatio),
-		m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio* m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel) {
-
-		EventSystem::Register(EVENT_CODE_MOUSE_WHEEL, nullptr, [this](Event event, void* sender, void* listener) -> bool {
-			const f32 xOffset = event.Payload.f32[0];
-			const f32 yOffset = event.Payload.f32[1];
-
-			return OnMouseScrolled(xOffset, yOffset);
-		});
-
-		EventSystem::Register(EVENT_CODE_WINDOW_RESIZED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
-			const i32 width = event.Payload.i32[0];
-			const i32 height = event.Payload.i32[1];
-
-			return OnWindowResized(width, height);
-		});
-	}
+		m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio* m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel) {}
 
 	void OrthographicCameraController::OnUpdate(f32 dt) {
 		if (Input::IsKeyPressed(KeyCode::A))
