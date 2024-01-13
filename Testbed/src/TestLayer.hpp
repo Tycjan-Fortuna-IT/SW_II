@@ -23,7 +23,7 @@ namespace SW {
 
 		Scene m_Scene;
 
-		Shader* shader = nullptr;
+		std::shared_ptr<Shader> m_Shader = nullptr;
 		Texture2D* boxTexture = nullptr;
 		Texture2D* faceTexture = nullptr;
 

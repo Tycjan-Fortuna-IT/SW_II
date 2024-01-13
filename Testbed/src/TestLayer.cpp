@@ -18,7 +18,7 @@ namespace SW {
 	void TestLayer::OnAttach() {
 		APP_TRACE("TestLayer::OnAttach()");
 
-		shader = new Shader("assets/shaders/Initial.vert.glsl", "assets/shaders/Initial.frag.glsl");
+		m_Shader = std::make_shared<Shader>("assets/shaders/Initial.vert.glsl", "assets/shaders/Initial.frag.glsl");
 
 		boxTexture = new Texture2D("assets/textures/container_512x512.jpg");
 		faceTexture = new Texture2D("assets/textures/awesomeface_512x512.png");
@@ -103,18 +103,17 @@ namespace SW {
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-		shader->Bind();
-		shader->UploadUniformInt("u_Texture1", 0);
-		shader->UploadUniformInt("u_Texture2", 1);
+		m_Shader->Bind();
+		m_Shader->UploadUniformInt("u_Texture1", 0);
+		m_Shader->UploadUniformInt("u_Texture2", 1);
 
-		shader->UploadUniformMat4("u_Transform", testMatrix);
+		m_Shader->UploadUniformMat4("u_Transform", testMatrix);
 	}
 
 	void TestLayer::OnDetach() {
 		glDeleteVertexArrays(1, &VAO);
 		glDeleteBuffers(1, &VBO);
 
-		delete shader;
 		delete boxTexture;
 		delete faceTexture;
 		delete m_IconTexture;
@@ -134,8 +133,8 @@ namespace SW {
 
 		m_Scene.OnUpdate(dt);
 
-		shader->UploadUniformMat4("u_Transform", { 1.0f });
-		shader->UploadUniformMat4("u_ViewProjection", m_CameraController->GetCamera().GetViewProjectionMatrix());
+		m_Shader->UploadUniformMat4("u_Transform", { 1.0f });
+		m_Shader->UploadUniformMat4("u_ViewProjection", m_CameraController->GetCamera().GetViewProjectionMatrix());
 
 		if (
 			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && // if it's a valid size viewport
@@ -149,7 +148,7 @@ namespace SW {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		shader->Bind();
+		m_Shader->Bind();
 		boxTexture->Bind(0);
 		faceTexture->Bind(1);
 

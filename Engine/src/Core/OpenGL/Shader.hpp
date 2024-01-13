@@ -57,6 +57,14 @@ namespace SW {
 		void UploadUniformInt(const std::string& name, int value) const;
 
 		/**
+		 * @brief Uploads an integer array uniform to the shader.
+		 * @param name The name of the uniform.
+		 * @param values The value of the uniform.
+		 * @param count Count of the elements in the passed value.
+		 */
+		void UploadUniformIntArray(const std::string& name, int* values, u32 count) const;
+
+		/**
 		 * @brief Uploads a 4x4 matrix uniform to the shader.
 		 * @param name The name of the uniform.
 		 * @param value The value of the uniform.

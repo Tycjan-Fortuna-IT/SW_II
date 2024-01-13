@@ -26,31 +26,58 @@ namespace SW {
             SW_ERROR("Texture2D format not yet supported!");
         }
 
-        glCreateTextures(GL_TEXTURE_2D, 1, &m_TextureHandle);
-        glTextureStorage2D(m_TextureHandle, 1, internalFormat, m_Width, m_Height);
+        glCreateTextures(GL_TEXTURE_2D, 1, &m_Handle);
+		glTextureStorage2D(m_Handle, 1, internalFormat, m_Width, m_Height);
 
-        glTextureParameteri(m_TextureHandle, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTextureParameteri(m_TextureHandle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTextureParameteri(m_Handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTextureParameteri(m_Handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        glTextureParameteri(m_TextureHandle, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTextureParameteri(m_TextureHandle, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTextureParameteri(m_Handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(m_Handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-        glTextureSubImage2D(m_TextureHandle, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
-        glGenerateTextureMipmap(m_TextureHandle);
+		glTextureSubImage2D(m_Handle, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
+		glGenerateTextureMipmap(m_Handle);
 
-        stbi_image_free(data);
+		stbi_image_free(data);
+
+		m_DataFormat = dataFormat;
+		m_InternalFormat = internalFormat;
 
 		SW_INFO("Texture2D `{}` created successfully!", filepath);
+	}
+
+	Texture2D::Texture2D(u32 width, u32 height)
+	{
+		m_InternalFormat = GL_RGBA8;
+		m_DataFormat = GL_RGBA;
+
+		glCreateTextures(GL_TEXTURE_2D, 1, &m_Handle);
+		glTextureStorage2D(m_Handle, 1, GL_RGBA8, m_Width, m_Height);
+
+		glTextureParameteri(m_Handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(m_Handle, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		glTextureParameteri(m_Handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(m_Handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	}
+
+	Texture2D::~Texture2D()
+	{
+		glDeleteTextures(1, &m_Handle);
+	}
+
+	void Texture2D::Bind(u32 slot) const
+	{
+		glBindTextureUnit(slot, m_Handle);
     }
 
-    Texture2D::~Texture2D()
+	void Texture2D::SetData(void* data, u32 size)
 	{
-        glDeleteTextures(1, &m_TextureHandle);
-    }
+		u32 bpp = m_DataFormat == GL_RGBA ? 4 : 3;
 
-    void Texture2D::Bind(u32 slot) const
-	{
-        glBindTextureUnit(slot, m_TextureHandle);
-    }
+		ASSERT(size == m_Width * m_Height * bpp, "Data must be entire texture!");
+
+		glTextureSubImage2D(m_Height, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
+	}
 
 }

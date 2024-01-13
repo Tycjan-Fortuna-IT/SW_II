@@ -25,6 +25,14 @@ namespace SW {
         Texture2D(const std::string& filepath, bool flipped = true);
 
 		/**
+		 * @brief Construct a new Texture 2D
+		 *
+		 * @param width Width of the texture
+		 * @param height Height of the texture
+		 */
+		Texture2D(u32 width, u32 height);
+
+		/**
 		 * @brief Destroy the Texture 2D
 		 */
         ~Texture2D();
@@ -41,7 +49,7 @@ namespace SW {
 		 *
 		 * @return u32
 		 */
-		u32 GetHandle() const { return m_TextureHandle; }
+		u32 GetHandle() const { return m_Handle; }
 
 		/**
 		 * @brief Get the Width of the texture
@@ -57,11 +65,30 @@ namespace SW {
 		 */
 		i32 GetHeight() const { return m_Height; }
 
+		/**
+		 * @brief Set the texture data
+		 * @warning Data must be whole texture data, width * height * channels
+		 */
+		void SetData(void* data, u32 size);
+
+		/**
+		 * @brief Check if two textures are the same
+		 * 
+		 * @param other Texture to compare to
+		 * @return bool If textures are the same
+		 */
+		bool operator==(const Texture2D& other) const
+		{
+			return m_Handle == ((Texture2D&)other).m_Handle;
+		}
+
     private:
-        u32 m_TextureHandle;	/** @brief OpenGL texture handle */
+        u32 m_Handle;			/** @brief OpenGL texture handle */
 		i32 m_Width;			/** @brief Texture width */
 		i32 m_Height;			/** @brief Texture height */
 		i32 m_Channels;			/** @brief Texture channels */
+		u32 m_DataFormat;
+		u32 m_InternalFormat;
     };
 
 }

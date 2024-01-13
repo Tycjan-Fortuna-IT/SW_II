@@ -15,9 +15,11 @@
 
 namespace SW {
 
+	class Shader;
+
 	class Renderer2D final
 	{
-		static void Init();
+		static void Init(const std::shared_ptr<Shader>& shader);
 		static void Shutdown();
 
 		static void DrawQuad(const Matrix4<f32>& transform, const Vector4<f32>& color);
