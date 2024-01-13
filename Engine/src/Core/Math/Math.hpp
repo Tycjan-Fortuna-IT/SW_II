@@ -232,6 +232,36 @@ namespace SW {
 
 			return result;
 		}
+
+		template <typename T>
+			requires std::is_arithmetic_v<T>
+		inline Matrix4<T> Translate(const Matrix4<T>& matrix, const Vector3<f32> vector)
+		{
+			Matrix4<T> result = matrix;
+
+			result[3] = vector.x;
+			result[7] = vector.y;
+			result[11] = vector.z;
+
+			return result;
+		}
+
+		template <typename T>
+			requires std::is_arithmetic_v<T>
+		inline Matrix4<T> RotateZ(const Matrix4<T>& matrix, f32 radians)
+		{
+			Matrix4<T> result = matrix;
+
+			const f32 c = std::cos(radians);
+			const f32 s = std::sin(radians);
+
+			result[0] = c;
+			result[1] = s;
+			result[4] = -s;
+			result[5] = c;
+
+			return result;
+		}
     }
 
 }

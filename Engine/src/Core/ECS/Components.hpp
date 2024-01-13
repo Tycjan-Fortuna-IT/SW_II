@@ -12,6 +12,7 @@
 #include "Core/Math/Vector4.hpp"
 #include "Core/Utils/Random.hpp"
 #include "Core/Scene/SceneCamera.hpp"
+#include "Core/Math/Math.hpp"
 
 namespace SW {
 
@@ -67,7 +68,7 @@ namespace SW {
     {
         Vector3<f32> Position = { 0.0f, 0.0f , 0.0f };
         Vector3<f32> Rotation = { 0.0f, 0.0f , 0.0f };
-        Vector3<f32> Scale =    { 0.0f, 0.0f , 0.0f };
+        Vector3<f32> Scale =    { 1.0f, 1.0f , 1.0f };
 
         TransformComponent() = default;
         TransformComponent(const Vector3<f32>& position, const Vector3<f32>& rotation, const Vector3<f32>& scale)
@@ -84,12 +85,9 @@ namespace SW {
 
 		Matrix4<f32> GetTransform() const
 		{
-			Matrix4<f32> transform = { 1.0f };
-			transform.Translate(Position);
-			//transform.RotateZ(Rotation.z); todo
-			//transform.Scale(Scale);
-
-			return transform;
+			return Math::Translate(Matrix4<f32>::Identity(), Position) *
+				Math::RotateZ(Matrix4<f32>::Identity(), Math::ToRadians(Rotation.z)) *
+				Math::Scale(Matrix4<f32>::Identity(), Scale);
 		}
     };
 
