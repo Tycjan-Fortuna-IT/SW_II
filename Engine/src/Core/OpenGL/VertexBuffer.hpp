@@ -14,6 +14,11 @@ namespace SW {
 
 	/**
 	 * @brief Represents a vertex buffer object in OpenGL.
+	 * 
+	 * The VertexBuffer class encapsulates the functionality of a vertex buffer object (VBO) in OpenGL.
+	 * It provides methods to construct the buffer with a specified size or with specified vertices and size,
+	 * bind and unbind the VBO, and destroy the VBO.
+	 * The VBO stores the vertex data which will be processed by the Vertex Shader to determine the final positions of the vertices in the screen.
 	 */
 	class VertexBuffer final
 	{
