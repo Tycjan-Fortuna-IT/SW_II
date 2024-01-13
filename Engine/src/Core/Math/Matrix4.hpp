@@ -84,6 +84,34 @@ namespace SW {
         }
 
 		/**
+		 * @brief Returns an identity matrix.
+		 * 
+		 * @return Matrix4<T> 
+		 */
+		static Matrix4<T> Identity()
+		{
+			return Matrix4<T>(1.0f);
+		}
+
+		/**
+		 * @brief Returns the transpose of the matrix.
+		 * 
+		 * @return Matrix4<T> 
+		 */
+		Matrix4<T> Transpose() const
+		{
+			Matrix4<T> result;
+
+			for (int i = 0; i < 4; ++i) {
+				for (int j = 0; j < 4; ++j) {
+					result.data[j * 4 + i] = data[i * 4 + j];
+				}
+			}
+
+			return result;
+		}
+
+		/**
 		 * @brief Returns a pointer to the beginning of the data of the matrix.
 		 * 
 		 * @return const T* Pointer to the beginning of the data of the matrix.
