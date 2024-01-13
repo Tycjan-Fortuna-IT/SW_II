@@ -212,6 +212,26 @@ namespace SW {
 
 			return result;
 		}
+
+		/**
+		 * @brief Performs scale of a matrix.
+		 *
+		 * @param matrix Matrix to be scaled.
+		 * @param vector Vector used to scale the matrix.
+		 * @return Matrix4<T> scaled matrix.
+		 */
+		template <typename T>
+			requires std::is_arithmetic_v<T>
+		inline Matrix4<T> Scale(const Matrix4<T>& matrix, const Vector3<f32> vector)
+		{
+			Matrix4<T> result = matrix;
+
+			result[0] = vector.x;
+			result[5] = vector.y;
+			result[10] = vector.z;
+
+			return result;
+		}
     }
 
 }

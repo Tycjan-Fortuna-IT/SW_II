@@ -81,6 +81,16 @@ namespace SW {
         TransformComponent& operator=(TransformComponent&& other) = default;
 
         ~TransformComponent() = default;
+
+		Matrix4<f32> GetTransform() const
+		{
+			Matrix4<f32> transform = { 1.0f };
+			transform.Translate(Position);
+			//transform.RotateZ(Rotation.z); todo
+			//transform.Scale(Scale);
+
+			return transform;
+		}
     };
 
     /**

@@ -9,6 +9,7 @@
 #pragma once
 
 #include "Core/Debug/LogSystem.hpp"
+#include "Core/Math/Vector4.hpp"
 
 namespace SW {
 
@@ -140,6 +141,21 @@ namespace SW {
             y /= length;
             z /= length;
         }
+
+		/**
+		 * @brief Converts the 4D vector to 3D vector.
+		 * 
+		 * @param other 4D vector to be converted.
+		 * @return Vector3<T> Converted 3D vector.
+		 */
+		Vector3<T> operator=(const Vector4<T>& other)
+		{
+			data[0] = other.x;
+			data[1] = other.y;
+			data[2] = other.z;
+
+			return *this;
+		}
     };
 
 }

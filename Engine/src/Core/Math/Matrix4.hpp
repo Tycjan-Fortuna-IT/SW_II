@@ -9,6 +9,7 @@
 #pragma once
 
 #include "Core/Math/Vector3.hpp"
+#include "Core/Math/Vector4.hpp"
 
 namespace SW {
 
@@ -96,10 +97,21 @@ namespace SW {
 		 */
 		void Translate(const Vector3<T>& translation)
 		{
-	        data[12] += translation.x;
-			data[13] += translation.y;
-			data[14] += translation.z;
+	        data[3] += translation.x;
+			data[7] += translation.y;
+			data[11] += translation.z;
         }
+
+		/**
+		 * @brief Scales the matrix by the given vector.
+		 *
+		 * @param scale Vector by which the matrix will be scaled.
+		 */
+		void Scale(const Vector3<f32> scale) {
+			data[0] = scale.x;
+			data[5] = scale.y;
+			data[10] = scale.z;
+		}
 
 		/**
 		 * @brief Rotates the matrix by the given angle around the X axis.
@@ -172,9 +184,9 @@ namespace SW {
 		 * @param other Matrix to multiply by.
 		 * @return Matrix4 
 		 */
-		Matrix4 operator*(const Matrix4& other) const
+		Matrix4<T> operator*(const Matrix4<T>& other) const
 		{
-			Matrix4 result;
+			Matrix4<T> result;
 
 			result[0] = this->data[0] * other[0] + this->data[1] * other[4] + this->data[2] * other[8] + this->data[3] * other[12];
 			result[1] = this->data[0] * other[1] + this->data[1] * other[5] + this->data[2] * other[9] + this->data[3] * other[13];
@@ -192,6 +204,24 @@ namespace SW {
 			result[13] = this->data[12] * other[1] + this->data[13] * other[5] + this->data[14] * other[9] + this->data[15] * other[13];
 			result[14] = this->data[12] * other[2] + this->data[13] * other[6] + this->data[14] * other[10] + this->data[15] * other[14];
 			result[15] = this->data[12] * other[3] + this->data[13] * other[7] + this->data[14] * other[11] + this->data[15] * other[15];
+
+			return result;
+		}
+
+		/**
+		 * @brief Operator * for multiplying the matrix by a vector.
+		 * 
+		 * @param vector Vector to multiply by.
+		 * @return Vector4 
+		 */
+		Vector4<T> operator*(const Vector4<T>& vector) const
+		{
+			Vector4<T> result;
+
+			result.x = this->data[0] * vector.x + this->data[1] * vector.y + this->data[2] * vector.z + this->data[3] * vector.w;
+			result.y = this->data[4] * vector.x + this->data[5] * vector.y + this->data[6] * vector.z + this->data[7] * vector.w;
+			result.z = this->data[8] * vector.x + this->data[9] * vector.y + this->data[10] * vector.z + this->data[11] * vector.w;
+			result.w = this->data[12] * vector.x + this->data[13] * vector.y + this->data[14] * vector.z + this->data[15] * vector.w;
 
 			return result;
 		}
