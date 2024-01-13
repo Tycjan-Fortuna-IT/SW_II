@@ -1,17 +1,16 @@
 #include "TestLayer.hpp"
 
-#include <glad/glad.h>
 #include <imgui.h>
+#include <imgui_internal.h>
 
-#include "imgui_internal.h"
 #include "Core/Debug/LogSystem.hpp"
 #include "Core/ECS/Components.hpp"
 #include "Core/Events/Event.hpp"
 #include "Core/Math/Math.hpp"
-#include "GLFW/glfw3.h"
 #include "GUI/Appearance.hpp"
 #include "GUI/Colors.hpp"
 #include "GUI/GUI.hpp"
+#include "Core/Renderer/Renderer2D.hpp"
 
 namespace SW {
 
@@ -59,61 +58,24 @@ namespace SW {
 			return false;
 		});
 
+		//m_CameraEntity = m_Scene.CreateEntity("Camera Entity Test - 1");
+		//m_CameraEntity.AddComponent<CameraComponent>();
+
+		m_Square1 = m_Scene.CreateEntity("Square Entity Test - 1");
+		m_Square1.AddComponent<SpriteComponent>(Vector4<f32>(0.5f, 0.5f, 0.5f, 1.0f));
+
+		m_Square2 = m_Scene.CreateEntity("Square Entity Test - 1");
+		m_Square2.AddComponent<SpriteComponent>(Vector4<f32>(1.f, 0.f, 0.f, 1.0f));
+
+		m_Square2.GetComponent<TransformComponent>().Position = { 0.25f, 0.25f, 0.0f };
+
 		Application::Get()->GetWindow()->Maximize();
 		Application::Get()->GetWindow()->SetVSync(true);
 
-		float vertices[] = {
-			// positions          // colors           // texture coords
-			 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-			 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-			-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-			-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
-		};
-
-		unsigned int indices[] = {
-			0, 1, 3, // first triangle
-			1, 2, 3  // second triangle
-		};
-
-		glGenBuffers(1, &VBO);
-		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &EBO);
-
-		glBindVertexArray(VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-		// position attribute
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-		// color attribute
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(1);
-		// texture coord attribute
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-		glEnableVertexAttribArray(2);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
-
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-		m_Shader->Bind();
-		m_Shader->UploadUniformInt("u_Texture1", 0);
-		m_Shader->UploadUniformInt("u_Texture2", 1);
-
-		m_Shader->UploadUniformMat4("u_Transform", testMatrix);
+		Renderer2D::Init(m_Shader);
 	}
 
 	void TestLayer::OnDetach() {
-		glDeleteVertexArrays(1, &VAO);
-		glDeleteBuffers(1, &VBO);
-
 		delete boxTexture;
 		delete faceTexture;
 		delete m_IconTexture;
@@ -123,6 +85,8 @@ namespace SW {
 		delete m_RestoreIconTexture;
 		delete m_CameraController;
 		delete framebuffer;
+
+		Renderer2D::Shutdown();
 	}
 
 	void TestLayer::OnUpdate(float dt) {
@@ -130,11 +94,6 @@ namespace SW {
 
 		if (m_IsViewportFocused)
 			m_CameraController->OnUpdate(dt);
-
-		m_Scene.OnUpdate(dt);
-
-		m_Shader->UploadUniformMat4("u_Transform", { 1.0f });
-		m_Shader->UploadUniformMat4("u_ViewProjection", m_CameraController->GetCamera().GetViewProjectionMatrix());
 
 		if (
 			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && // if it's a valid size viewport
@@ -145,22 +104,15 @@ namespace SW {
 			m_Scene.OnViewportResize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
 		}
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		m_Shader->Bind();
-		boxTexture->Bind(0);
-		faceTexture->Bind(1);
+		Renderer2D::ResetStats();
 
 		framebuffer->Bind();
+
 		framebuffer->Clear();
 
-		glBindVertexArray(VAO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		m_Scene.OnUpdate(dt, m_CameraController->GetCamera());
 
 		framebuffer->Unbind();
-
 	}
 
 	f32 TestLayer::DrawTitleBar() {
@@ -270,7 +222,7 @@ namespace SW {
 		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-		const bool isMaximized = (bool)glfwGetWindowAttrib(Application::Get()->GetWindow()->GetHandle(), GLFW_MAXIMIZED);
+		const bool isMaximized = Application::Get()->GetWindow()->IsCurrentlyMaximized();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, isMaximized ? ImVec2(6.0f, 6.0f) : ImVec2(1.0f, 1.0f));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
@@ -335,6 +287,12 @@ namespace SW {
 		if (ImGui::Checkbox("VSync", &VSync)) {
 			Application::Get()->GetWindow()->SetVSync(VSync);
 		}
+
+		ImGui::Text("Renderer2D Stats:");
+		ImGui::Text("Draw Calls: %d", Renderer2D::GetStats().DrawCalls);
+		ImGui::Text("Quads: %d", Renderer2D::GetStats().QuadCount);
+		ImGui::Text("Vertices: %d", Renderer2D::GetStats().GetTotalVertexCount());
+		ImGui::Text("Indices: %d", Renderer2D::GetStats().GetTotalIndexCount());
 
 		ImGui::End();
 

@@ -110,6 +110,13 @@ namespace SW {
 		 */
 		void Restore() const;
 
+		/**
+		 * @brief Check if the Window is currently maximized.
+		 * 
+		 * @return Whether the windows is currently maximized.
+		 */
+		bool IsCurrentlyMaximized() const;
+
     private:
         WindowSpecification m_Specification; /** @brief Window specification. */
         GLFWwindow* m_Handle = nullptr;	 	 /** @brief GLFW window handle. */

@@ -165,4 +165,9 @@ namespace SW {
 		glfwRestoreWindow(m_Handle);
     }
 
+	bool Window::IsCurrentlyMaximized() const
+	{
+		return (bool)glfwGetWindowAttrib(m_Handle, GLFW_MAXIMIZED);
+	}
+
 }

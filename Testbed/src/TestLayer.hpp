@@ -19,9 +19,11 @@ namespace SW {
 		explicit TestLayer(const std::string& name)
 			: Layer(name) {}
 
-		u32 VBO, VAO, EBO = 0;
-
 		Scene m_Scene;
+
+		Entity m_CameraEntity;
+		Entity m_Square1;
+		Entity m_Square2;
 
 		std::shared_ptr<Shader> m_Shader = nullptr;
 		Texture2D* boxTexture = nullptr;
