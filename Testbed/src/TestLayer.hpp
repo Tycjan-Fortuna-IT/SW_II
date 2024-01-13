@@ -9,6 +9,7 @@
 #include "Core/Math/Vector2.hpp"
 #include "Core/OpenGL/Framebuffer.hpp"
 #include "Core/OpenGL/OrthographicCameraController.hpp"
+#include "Core/Scene/Scene.hpp"
 
 
 namespace SW {
@@ -19,6 +20,8 @@ namespace SW {
 			: Layer(name) {}
 
 		u32 VBO, VAO, EBO = 0;
+
+		Scene m_Scene;
 
 		Shader* shader = nullptr;
 		Texture2D* boxTexture = nullptr;

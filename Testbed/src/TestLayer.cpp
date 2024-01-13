@@ -54,7 +54,9 @@ namespace SW {
 
 			if (!m_IsViewportFocused) return false;
 
-			return m_CameraController->OnWindowResized(width, height);
+			m_CameraController->OnWindowResized(width, height);
+
+			return false;
 		});
 
 		Application::Get()->GetWindow()->Maximize();
@@ -130,6 +132,8 @@ namespace SW {
 		if (m_IsViewportFocused)
 			m_CameraController->OnUpdate(dt);
 
+		m_Scene.OnUpdate(dt);
+
 		shader->UploadUniformMat4("u_Transform", { 1.0f });
 		shader->UploadUniformMat4("u_ViewProjection", m_CameraController->GetCamera().GetViewProjectionMatrix());
 
@@ -139,6 +143,7 @@ namespace SW {
 		) {
 			framebuffer->Resize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
 			m_CameraController->OnResize(m_ViewportSize.x, m_ViewportSize.y);
+			m_Scene.OnViewportResize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
 		}
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);

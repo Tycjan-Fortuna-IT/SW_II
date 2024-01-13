@@ -1,8 +1,17 @@
+/**
+ * @file Components.hpp
+ * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
+ * @version 0.0.2
+ * @date 2024-01-13
+ *
+ * @copyright Copyright (c) 2024 Tycjan Fortuna
+ */
 #pragma once
 
 #include "Core/Math/Vector3.hpp"
 #include "Core/Math/Vector4.hpp"
 #include "Core/Utils/Random.hpp"
+#include "Core/Scene/SceneCamera.hpp"
 
 namespace SW {
 
@@ -94,5 +103,21 @@ namespace SW {
 
         ~SpriteComponent() = default;
     };
+
+	/**
+	 * @struct CameraComponent
+	 * @brief This component is used to store the camera's data with position's attached to the component.
+	 * @note This component is optional. However without even single camera the scene will not be visible!
+	 */
+	struct CameraComponent {
+		SceneCamera Camera;
+
+		CameraComponent() = default;
+
+		CameraComponent(const CameraComponent& other) = default;
+		CameraComponent(CameraComponent&& other) = default;
+		CameraComponent& operator=(const CameraComponent& other) = default;
+		CameraComponent& operator=(CameraComponent&& other) = default;
+	};
 
 }
