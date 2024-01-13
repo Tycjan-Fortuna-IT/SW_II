@@ -3,6 +3,8 @@
 #include <entt.hpp>
 
 #include "Core/ECS/Components.hpp"
+#include "Core/Renderer/Camera.hpp"
+#include "../Renderer/Renderer2D.hpp"
 
 namespace SW {
 
@@ -32,9 +34,18 @@ namespace SW {
 		EntityRegistry::Get().destroy(entity);
 	}
 
-	void Scene::OnUpdate(f32 dt)
+	void Scene::OnUpdate(f32 dt, const OrthographicCamera& camera)
 	{
+		Renderer2D::BeginScene(camera);
 
+		const auto& group = EntityRegistry::Get().group<TransformComponent>(entt::get<SpriteComponent>);
+		for (auto entity : group) {
+			const auto& [transform, sprite] = group.get<TransformComponent, SpriteComponent>(entity);
+
+			Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+		}
+
+		Renderer2D::EndScene();
 	}
 
 	void Scene::OnViewportResize(u32 width, u32 height)
