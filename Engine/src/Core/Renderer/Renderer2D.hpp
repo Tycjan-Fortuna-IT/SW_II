@@ -12,7 +12,7 @@
 #include "Core/Math/Vector3.hpp"
 #include "Core/Math/Vector4.hpp"
 #include "Core/Math/Matrix4.hpp"
-#include "Core/OpenGL/OrthographicCamera.hpp"
+#include "Core/Scene/SceneCamera.hpp"
 
 namespace SW {
 
@@ -36,7 +36,7 @@ namespace SW {
 		static const Renderer2DStatistics& GetStats();
 		static void ResetStats();
 
-		static void BeginScene(const OrthographicCamera& camera);
+		static void BeginScene(const SceneCamera& camera);
 		static void EndScene();
 
 		static void Flush();

@@ -9,7 +9,7 @@
 #pragma once
 
 #include "Core/ECS/Entity.hpp"
-#include "Core/OpenGL/OrthographicCamera.hpp"
+#include "Core/Scene/SceneCamera.hpp"
 
 namespace SW {
 
@@ -22,7 +22,7 @@ namespace SW {
 		Entity CreateEntity(const std::string& tag = "Entity");
 		void DestroyEntity(Entity entity);
 
-		void OnUpdate(f32 dt, const OrthographicCamera& camera);
+		void OnUpdate(f32 dt, const SceneCamera& camera);
 
 		void OnViewportResize(u32 width, u32 height);
 

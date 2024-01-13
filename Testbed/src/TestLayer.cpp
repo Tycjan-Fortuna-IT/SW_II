@@ -30,7 +30,7 @@ namespace SW {
 		const FramebufferSpecification spec = { 1280, 720 };
 		framebuffer = new Framebuffer(spec);
 
-		m_CameraController = new OrthographicCameraController((f32)spec.Width / (f32)spec.Height);
+		m_SceneCamera = new SceneCamera(spec.Width / spec.Height);
 
 		const GUI::FontSpecification fontSpec("assets/fonts/Roboto/Roboto-Regular.ttf", "assets/fonts/Roboto/Roboto-Bold.ttf");
 
@@ -44,7 +44,9 @@ namespace SW {
 
 			if (!m_IsViewportFocused) return false;
 
-			return m_CameraController->OnMouseScrolled(xOffset, yOffset);
+			m_SceneCamera->OnMouseScrolled(xOffset, yOffset);
+
+			return false;
 		});
 
 		EventSystem::Register(EVENT_CODE_WINDOW_RESIZED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
@@ -53,7 +55,7 @@ namespace SW {
 
 			if (!m_IsViewportFocused) return false;
 
-			m_CameraController->OnWindowResized(width, height);
+			m_SceneCamera->OnViewportResize(width, height);
 
 			return false;
 		});
@@ -83,7 +85,7 @@ namespace SW {
 		delete m_MaximizeIconTexture;
 		delete m_MinimizeIconTexture;
 		delete m_RestoreIconTexture;
-		delete m_CameraController;
+		delete m_SceneCamera;
 		delete framebuffer;
 
 		Renderer2D::Shutdown();
@@ -93,14 +95,14 @@ namespace SW {
 		FramebufferSpecification spec = framebuffer->GetSpecification();
 
 		if (m_IsViewportFocused)
-			m_CameraController->OnUpdate(dt);
+			m_SceneCamera->OnUpdate(dt);
 
 		if (
 			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && // if it's a valid size viewport
 			(spec.Width != (u32)m_ViewportSize.x || spec.Height != (u32)m_ViewportSize.y) // if it changed
 		) {
 			framebuffer->Resize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
-			m_CameraController->OnResize(m_ViewportSize.x, m_ViewportSize.y);
+			m_SceneCamera->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
 			m_Scene.OnViewportResize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
 		}
 
@@ -110,7 +112,7 @@ namespace SW {
 
 		framebuffer->Clear();
 
-		m_Scene.OnUpdate(dt, m_CameraController->GetCamera());
+		m_Scene.OnUpdate(dt, *m_SceneCamera);
 
 		framebuffer->Unbind();
 	}
@@ -267,6 +269,10 @@ namespace SW {
 		ImGui::End();
 
 		ImGui::Begin("Components");
+
+		//ImGui::InputFloat3("Position", m_Square1.GetComponent<TransformComponent>().Position.data);
+		//ImGui::InputFloat3("Rotation", m_Square1.GetComponent<TransformComponent>().Rotation.data);
+		//ImGui::InputFloat3("Scale", m_Square1.GetComponent<TransformComponent>().Scale.data);
 
 		ImGui::End();
 

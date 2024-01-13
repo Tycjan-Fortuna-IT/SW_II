@@ -8,9 +8,8 @@
 #include "Core/Math/Matrix4.hpp"
 #include "Core/Math/Vector2.hpp"
 #include "Core/OpenGL/Framebuffer.hpp"
-#include "Core/OpenGL/OrthographicCameraController.hpp"
 #include "Core/Scene/Scene.hpp"
-
+#include "Core/Scene/SceneCamera.hpp"
 
 namespace SW {
 
@@ -38,7 +37,7 @@ namespace SW {
 		Matrix4<f32> testMatrix = { 1.0f };
 		Matrix4<f32> viewProjection = { 1.0f };
 
-		OrthographicCameraController* m_CameraController;
+		SceneCamera* m_SceneCamera;
 
 		Framebuffer* framebuffer = nullptr;
 

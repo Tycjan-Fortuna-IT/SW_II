@@ -118,12 +118,10 @@ namespace SW {
 		memset(&s_Data.Stats, 0, sizeof(Renderer2DStatistics));
 	}
 
-	void Renderer2D::BeginScene(const OrthographicCamera& camera)
+	void Renderer2D::BeginScene(const SceneCamera& camera)
 	{
-		//Matrix4<f32> viewProjection = camera.GetProjection() * Math::Inverse(transform);
-
 		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->UploadUniformMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+		s_Data.TextureShader->UploadUniformMat4("u_ViewProjection", camera.GetViewProjectionMatrix().Transpose());
 
 		s_Data.QuadIndexCount = 0;
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;

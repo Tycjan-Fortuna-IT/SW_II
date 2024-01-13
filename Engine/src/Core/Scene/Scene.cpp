@@ -34,7 +34,7 @@ namespace SW {
 		EntityRegistry::Get().destroy(entity);
 	}
 
-	void Scene::OnUpdate(f32 dt, const OrthographicCamera& camera)
+	void Scene::OnUpdate(f32 dt, const SceneCamera& camera)
 	{
 		Renderer2D::BeginScene(camera);
 
