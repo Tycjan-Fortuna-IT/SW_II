@@ -37,7 +37,8 @@ namespace SW {
 	 * @param type Internal engine's type notation enum
 	 * @return OpenGL macro representing given type
 	 */
-	inline GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type) {
+	inline GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
+	{
 		switch (type) {
 			case ShaderDataType::Float:
 			case ShaderDataType::Float2:
@@ -65,7 +66,8 @@ namespace SW {
 	 * @param type Internal engine's type notation enum
 	 * @return Size of the type
 	 */
-	inline u32 GetShaderDataTypeSize(ShaderDataType type) {
+	inline u32 GetShaderDataTypeSize(ShaderDataType type)
+	{
 		switch (type) {
 			case ShaderDataType::Float:  return 4;
 			case ShaderDataType::Float2: return 4 * 2;
@@ -89,7 +91,8 @@ namespace SW {
 	 * @brief Represents a single element in a buffer layout.
 	 * @warning Remember to update the offset when adding new buffer elements to the layout!
 	 */
-	struct BufferElement {
+	struct BufferElement
+	{
 		std::string Name;		/**< The name of the element. */
 		ShaderDataType Type;	/**< The data type of the element. */
 		u32 Size;				/**< The size of the element. */
@@ -108,7 +111,8 @@ namespace SW {
 		 * @brief Gets the number of components in the element.
 		 * @return The number of components.
 		 */
-		u32 GetComponentCount() const {
+		u32 GetComponentCount() const
+		{
 			switch (Type) {
 				case ShaderDataType::Float:  return 1;
 				case ShaderDataType::Float2: return 2;

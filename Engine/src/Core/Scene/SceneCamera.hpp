@@ -10,7 +10,8 @@
 
 namespace SW {
 
-	class SceneCamera final {
+	class SceneCamera final
+	{
 	public:
 		void SetViewportSize(uint32_t width, uint32_t height);
 	};

@@ -30,7 +30,8 @@ namespace SW {
 		 * @param elements List of elements that we want to store in the buffer.
 		 */
 		BufferLayout(const std::initializer_list<BufferElement>& elements)
-			: m_Elements(elements) {
+			: m_Elements(elements)
+		{
 			CalculateOffsetsAndStride();
 		}
 

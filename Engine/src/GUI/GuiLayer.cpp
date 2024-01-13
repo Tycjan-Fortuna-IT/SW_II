@@ -11,7 +11,8 @@ namespace SW {
 	GuiLayer::GuiLayer()
 		: Layer("GUI Layer") {}
 
-	void GuiLayer::OnAttach() {
+	void GuiLayer::OnAttach()
+	{
 		IMGUI_CHECKVERSION();
 
 		ImGui::CreateContext();
@@ -24,30 +25,35 @@ namespace SW {
 		ImGui_ImplOpenGL3_Init("#version 450");
 	}
 
-	void GuiLayer::OnDetach() {
+	void GuiLayer::OnDetach()
+	{
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
 	}
 
-	void GuiLayer::OnUpdate(float dt) {
+	void GuiLayer::OnUpdate(float dt)
+	{
 		ImGuiIO& io = ImGui::GetIO();
 		Application* app = Application::Get();
 		io.DisplaySize = ImVec2(app->GetWindow()->GetWidth(), app->GetWindow()->GetHeight());
 		io.DeltaTime = dt;
 	}
 
-	void GuiLayer::OnRender() {
+	void GuiLayer::OnRender()
+	{
 		
 	}
 
-	void GuiLayer::Begin() const {
+	void GuiLayer::Begin() const
+	{
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 	}
 
-	void GuiLayer::End() const {
+	void GuiLayer::End() const
+	{
 		ImGuiIO& io = ImGui::GetIO();
 
 		ImGui::Render();
@@ -55,8 +61,10 @@ namespace SW {
 
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
 			GLFWwindow* backup_current_context = glfwGetCurrentContext();
+
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
+
 			glfwMakeContextCurrent(backup_current_context);
 		}
 	}

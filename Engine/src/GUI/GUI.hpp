@@ -73,7 +73,8 @@ namespace SW::GUI {
 	 *		  so that we easily can avoid many calls to Push/Pop ID.
 	 *		  This way more advanced UI code doesn't get so clustered.
 	 */
-	class ScopedID {
+	class ScopedID
+	{
 	public:
 		ScopedID(const ScopedID&) = delete;
 		ScopedID(const ScopedID&&) = delete;
@@ -93,7 +94,8 @@ namespace SW::GUI {
 	 * @param texture Texture2D
 	 * @return ImTextureID 
 	 */
-	inline ImTextureID GetTextureID(const Texture2D& texture) {
+	inline ImTextureID GetTextureID(const Texture2D& texture)
+	{
 		return reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(texture.GetHandle()));
 	}
 
@@ -104,7 +106,8 @@ namespace SW::GUI {
 	 * @param texture Texture2D
 	 * @return ImTextureID 
 	 */
-	inline ImTextureID GetTextureID(const Texture2D* texture) {
+	inline ImTextureID GetTextureID(const Texture2D* texture)
+	{
 		return reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(texture->GetHandle()));
 	}
 
@@ -115,7 +118,8 @@ namespace SW::GUI {
 	 * @param rendererID u32
 	 * @return ImTextureID 
 	 */
-	inline ImTextureID GetTextureID(u32 rendererID) {
+	inline ImTextureID GetTextureID(u32 rendererID)
+	{
 		return reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(rendererID));
 	}
 
@@ -124,7 +128,8 @@ namespace SW::GUI {
 	 * 
 	 * @return ImRect 
 	 */
-	inline ImRect GetItemRect() {
+	inline ImRect GetItemRect()
+	{
 		return ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
 	}
 
@@ -136,12 +141,14 @@ namespace SW::GUI {
 	 * @param y Y-axis amount to expand by.
 	 * @return ImRect 
 	 */
-	inline ImRect RectExpanded(const ImRect& rect, float x, float y) {
+	inline ImRect RectExpanded(const ImRect& rect, float x, float y)
+	{
 		ImRect result = rect;
 		result.Min.x -= x;
 		result.Min.y -= y;
 		result.Max.x += x;
 		result.Max.y += y;
+
 		return result;
 	}
 

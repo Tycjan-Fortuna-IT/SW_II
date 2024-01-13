@@ -2,7 +2,8 @@
 
 namespace SW {
 
-	void BufferLayout::CalculateOffsetsAndStride() {
+	void BufferLayout::CalculateOffsetsAndStride()
+	{
 		u32 offset = 0;
 
 		for (BufferElement& element : m_Elements) {

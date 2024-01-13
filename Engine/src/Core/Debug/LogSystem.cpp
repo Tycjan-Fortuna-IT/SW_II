@@ -93,7 +93,8 @@ namespace SW {
 	 */
 	#define ANSI_COLOR_RESET   "\x1b[0m"
 
-	void LogSystem::Initialize() {
+	void LogSystem::Initialize()
+	{
 		std::vector<spdlog::sink_ptr> logSinks;
 
 		logSinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
@@ -113,13 +114,15 @@ namespace SW {
 		spdlog::register_logger(s_AppLogger);
 	}
 
-	void LogSystem::Shutdown() {
+	void LogSystem::Shutdown()
+	{
 		s_EngineLogger.reset();
 		s_AppLogger.reset();
 		spdlog::drop_all();
 	}
 
-    void LogSystem::ReportAssertionFailure(const char* expression, const char* message, const char* file, i16 line) {
+    void LogSystem::ReportAssertionFailure(const char* expression, const char* message, const char* file, i16 line)
+	{
 		LogSystem::PrintMessage(LogType::ENGINE, LogLevel::LOG_LEVEL_FATAL, "Assertion Failure: {}, message: '{}', in file: {}, line: {}\n", expression, message, file, line);
     }
 

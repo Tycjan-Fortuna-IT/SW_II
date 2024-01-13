@@ -49,7 +49,6 @@ namespace SW {
     class LogSystem final
     {
     public:
-
 		/**
 		 * @brief Initializes the log system.
 		 * @warning This method should be called before any logging is done!!
@@ -74,7 +73,8 @@ namespace SW {
 		 * @param args The arguments to the message to be formatted.
 		 */
 		template <typename... Args>
-        static void PrintMessage(LogType type, LogLevel level, const std::string& message, Args&&... args) {
+        static void PrintMessage(LogType type, LogLevel level, const std::string& message, Args&&... args)
+		{
 			const std::shared_ptr<spdlog::logger>& logger = type == LogType::ENGINE ? s_EngineLogger : s_AppLogger;
 
 			switch (level) {

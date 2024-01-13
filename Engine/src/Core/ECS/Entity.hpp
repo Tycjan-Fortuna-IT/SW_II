@@ -12,26 +12,30 @@ namespace SW {
         Entity(const Entity& other) = default;
 
         template <typename T>
-        bool HasComponent() const {
+        bool HasComponent() const
+		{
             return EntityRegistry::Get().all_of<T>(m_Handle);
         }
 
         template <typename T, typename... Args>
-        T& AddComponent(Args&&... args) {
+        T& AddComponent(Args&&... args)
+		{
             ASSERT(!HasComponent<T>(), "Entity already has component!");
 
             return EntityRegistry::Get().emplace<T>(m_Handle, std::forward<Args>(args)...);
         }
 
         template <typename T>
-        T& GetComponent() {
+        T& GetComponent()
+		{
             ASSERT(HasComponent<T>(), "Entity does not have component!");
 
             return EntityRegistry::Get().get<T>(m_Handle);
         }
 
         template <typename T>
-        void RemoveComponent() {
+        void RemoveComponent()
+		{
             ASSERT(HasComponent<T>(), "Entity does not have component!");
 
             EntityRegistry::Get().remove<T>(m_Handle);

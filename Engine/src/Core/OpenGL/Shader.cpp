@@ -6,17 +6,20 @@
 #include "Core/Utils/Utils.hpp"
 
 namespace SW {
-    Shader::Shader(const std::string& vertexFilePath, const std::string& fragmentFilePath) {
+    Shader::Shader(const std::string& vertexFilePath, const std::string& fragmentFilePath)
+	{
         ShaderData data = this->ProcessShaderFiles(vertexFilePath, fragmentFilePath);
 
         this->CompileShaders(data);
     }
 
-    Shader::~Shader() {
+    Shader::~Shader()
+	{
         glDeleteProgram(m_ShaderHandle);
     }
 
-    ShaderData Shader::ProcessShaderFiles(const std::string& vertexFilePath, const std::string& fragmentFilePath) const {
+    ShaderData Shader::ProcessShaderFiles(const std::string& vertexFilePath, const std::string& fragmentFilePath) const
+	{
         return {
             .vertexSourcePath = vertexFilePath,
             .vertexSource = Utils::ReadFile(vertexFilePath),
@@ -25,7 +28,8 @@ namespace SW {
         };
     }
 
-    void Shader::CompileShaders(const ShaderData& data) {
+    void Shader::CompileShaders(const ShaderData& data)
+	{
         const u32 program = glCreateProgram();
 
         u32 vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -120,19 +124,23 @@ namespace SW {
         m_ShaderHandle = program;
     }
 
-    void Shader::Bind() const {
+    void Shader::Bind() const
+	{
         glUseProgram(m_ShaderHandle);
     }
 
-    void Shader::Unbind() const {
+    void Shader::Unbind() const
+	{
         glUseProgram(0);
     }
 
-    void Shader::UploadUniformInt(const std::string& name, int value) const {
+    void Shader::UploadUniformInt(const std::string& name, int value) const
+	{
         glUniform1i(glGetUniformLocation(m_ShaderHandle, name.c_str()), value);
     }
 
-    void Shader::UploadUniformMat4(const std::string& name, const Matrix4<f32>& value) const {
+    void Shader::UploadUniformMat4(const std::string& name, const Matrix4<f32>& value) const
+	{
         glUniformMatrix4fv(glGetUniformLocation(m_ShaderHandle, name.c_str()), 1, GL_FALSE, value.ValuePtr());
     }
 }

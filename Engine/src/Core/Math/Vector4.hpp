@@ -32,7 +32,8 @@ namespace SW {
 		 * 
 		 * @param x X, Y, Z, W coordinate of the vector.
 		 */
-        Vector4(T x) {
+        Vector4(T x)
+		{
             data[0] = static_cast<T>(x);
             data[1] = static_cast<T>(x);
             data[2] = static_cast<T>(x);
@@ -47,7 +48,8 @@ namespace SW {
 		 * @param z Z coordinate of the vector.
 		 * @param w W coordinate of the vector.
 		 */
-        Vector4(T x, T y, T z, T w) {
+        Vector4(T x, T y, T z, T w)
+		{
             data[0] = static_cast<T>(x);
             data[1] = static_cast<T>(y);
             data[2] = static_cast<T>(z);
@@ -62,7 +64,8 @@ namespace SW {
 		 * - One element: All fields will be filled with this value.
 		 * - Two, three, or four elements: They will be assigned in sequence, with the last value filling the remaining fields.
 		 */
-		Vector4(std::initializer_list<T> values) {
+		Vector4(std::initializer_list<T> values)
+		{
 			ASSERT(values.size() <= 4, "Too many arguments passed for the Vector4 constructor!");
 
 			auto it = values.begin();
@@ -108,7 +111,8 @@ namespace SW {
 		 * 
 		 * @return std::string String representation of the vector.
 		 */
-        std::string ToString() const {
+        std::string ToString() const
+		{
             const std::string str = "{ " + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ", " + std::to_string(w) + " }";
 
             return str;
@@ -119,23 +123,23 @@ namespace SW {
 		 * 
 		 * @return const T* Pointer to the beginning of the data of the vector.
 		 */
-        const T* ValuePtr() const {
-            return data;
-        }
+        const T* ValuePtr() const { return data; }
 
 		/**
 		 * @brief Calculates the length of the vector.
 		 * 
 		 * @return T Length of the vector. 
 		 */
-		T Length() const {
+		T Length() const
+		{
 			return static_cast<T>(sqrt(x * x + y * y + z * z + w * w));
 		}
 
 		/**
 		 * @brief Normalizes the vector.
 		 */
-		void Normalize() {
+		void Normalize()
+		{
 			const T length = Length();
 
 			x /= length;

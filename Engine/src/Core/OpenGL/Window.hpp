@@ -17,7 +17,8 @@ namespace SW {
 	/**
 	 * @brief Internal data of the embedded icon, helper structure.
 	 */
-	struct EmbeddedIcon final {
+	struct EmbeddedIcon final
+	{
 		const u8* Data = nullptr;			/** @brief Embedded binary icon of the application. */
 		const i32 Size = 0;					/** @brief Number of embedded binary fragments. */
 	};

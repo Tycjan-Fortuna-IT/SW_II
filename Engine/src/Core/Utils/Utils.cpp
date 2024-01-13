@@ -1,7 +1,8 @@
 #include "Utils.hpp"
 
 namespace SW {
-    std::string Utils::ReadFile(const std::string& filepath) {
+    std::string Utils::ReadFile(const std::string& filepath)
+	{
         std::string result;
 
         std::ifstream stream(filepath, std::ios::in | std::ios::binary);

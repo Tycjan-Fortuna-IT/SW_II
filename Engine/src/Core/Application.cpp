@@ -10,12 +10,14 @@ namespace SW {
     Application* Application::s_Instance = nullptr;
 
     Application::Application(const ApplicationSpecification& specification)
-        : m_Specification(specification) {
+        : m_Specification(specification)
+	{
         if (!this->OnInit())
             SW_ERROR("Application failed to initialize!");
     }
 
-    bool Application::OnInit() {
+    bool Application::OnInit()
+	{
         const WindowSpecification specification = {
             .Title = m_Specification.Title,
             .Width = m_Specification.Width,
@@ -55,7 +57,8 @@ namespace SW {
 		return true;
 	}
 
-	bool Application::OnShutdown() {
+	bool Application::OnShutdown()
+	{
 		EventSystem::Shutdown();
 
 		m_GuiLayer->OnDetach();
@@ -68,7 +71,8 @@ namespace SW {
 		return true;
 	}
 
-	void Application::Run() {
+	void Application::Run()
+	{
 		while (m_IsRunning) {
 			const float time = (float)glfwGetTime();
 			const float dt = time - m_LastFrameTime;
@@ -91,17 +95,20 @@ namespace SW {
 			SW_ERROR("Application failed to shut down!");
 	}
 
-	void Application::Close() {
+	void Application::Close()
+	{
 		m_IsRunning = false;
 	}
 
-	void Application::PushLayer(Layer* layer) {
+	void Application::PushLayer(Layer* layer)
+	{
 		m_Layers.emplace_back(layer);
 
 		layer->OnAttach();
 	}
 
-	void Application::PopLayer() {
+	void Application::PopLayer()
+	{
         if (m_Layers.empty())
             SW_FATAL("No Layer to pop!");
 

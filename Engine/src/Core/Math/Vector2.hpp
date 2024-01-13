@@ -32,7 +32,8 @@ namespace SW {
 		 * 
 		 * @param x X, Y coordinate of the vector.
 		 */
-		Vector2(T x) {
+		Vector2(T x)
+		{
 			data[0] = static_cast<T>(x);
 			data[1] = static_cast<T>(x);
 		}
@@ -44,7 +45,8 @@ namespace SW {
 		 * @param y Y coordinate of the vector.
 		 * @param z Z coordinate of the vector.
 		 */
-		Vector2(T x, T y, T z) {
+		Vector2(T x, T y, T z)
+		{
 			data[0] = static_cast<T>(x);
 			data[1] = static_cast<T>(y);
 		}
@@ -57,7 +59,8 @@ namespace SW {
 		 * - One element: All fields will be filled with this value.
 		 * - Two elements: They will be assigned in sequence, with the last value filling the remaining fields.
 		 */
-		Vector2(std::initializer_list<T> values) {
+		Vector2(std::initializer_list<T> values)
+		{
 			ASSERT(values.size() <= 2, "Too many arguments passed for the Vector2D constructor!");
 
 			auto it = values.begin();
@@ -98,7 +101,8 @@ namespace SW {
 		 * 
 		 * @return std::string String representation of the vector.
 		 */
-		std::string ToString() const {
+		std::string ToString() const
+		{
 			const std::string str = "{ " + std::to_string(x) + ", " + std::to_string(y) + " }";
 
 			return str;
@@ -109,23 +113,23 @@ namespace SW {
 		 * 
 		 * @return const T* Pointer to the beginning of the data of the vector.
 		 */
-		const T* ValuePtr() const {
-			return data;
-		}
+		const T* ValuePtr() const { return data; }
 
 		/**
 		 * @brief Calculates the length of the vector.
 		 * 
 		 * @return T Length of the vector. 
 		 */
-		T Length() const {
+		T Length() const
+		{
 			return static_cast<T>(sqrt(x * x + y * y));
 		}
 
 		/**
 		 * @brief Normalizes the vector.
 		 */
-		void Normalize() {
+		void Normalize()
+		{
 			const T length = Length();
 
 			x /= length;

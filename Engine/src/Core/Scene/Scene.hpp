@@ -12,7 +12,8 @@
 
 namespace SW {
 
-	class Scene final {
+	class Scene final
+	{
 	public:
 		Scene();
 		~Scene();

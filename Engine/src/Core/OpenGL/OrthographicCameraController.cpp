@@ -9,7 +9,8 @@ namespace SW {
 		: m_AspectRatio(aspectRatio),
 		m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio* m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel) {}
 
-	void OrthographicCameraController::OnUpdate(f32 dt) {
+	void OrthographicCameraController::OnUpdate(f32 dt)
+	{
 		if (Input::IsKeyPressed(KeyCode::A))
 			m_CameraPosition.x -= m_CameraMoveSpeed * dt;
 		else if (Input::IsKeyPressed(KeyCode::D))
@@ -31,17 +32,20 @@ namespace SW {
 		m_CameraMoveSpeed = m_ZoomLevel;
 	}
 
-	void OrthographicCameraController::OnResize(f32 width, f32 height) {
+	void OrthographicCameraController::OnResize(f32 width, f32 height)
+	{
 		m_AspectRatio = width / height;
 
 		CalculateView();
 	}
 
-	void OrthographicCameraController::CalculateView() {
+	void OrthographicCameraController::CalculateView()
+	{
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 	}
 
-	bool OrthographicCameraController::OnMouseScrolled(f32 xOffset, f32 yOffset) {
+	bool OrthographicCameraController::OnMouseScrolled(f32 xOffset, f32 yOffset)
+	{
 		m_ZoomLevel -= yOffset * 0.25f;
 		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
 
@@ -52,7 +56,8 @@ namespace SW {
 		return false;
 	}
 
-	bool OrthographicCameraController::OnWindowResized(i32 width, i32 height) {
+	bool OrthographicCameraController::OnWindowResized(i32 width, i32 height)
+	{
 		m_AspectRatio = static_cast<f32>(width) / static_cast<f32>(height);
 
 		APP_WARN("width {} height {}", width, height);

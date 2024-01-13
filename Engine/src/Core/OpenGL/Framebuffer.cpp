@@ -4,40 +4,47 @@
 
 namespace SW {
 
-	Framebuffer::Framebuffer(const FramebufferSpecification& specification) {
+	Framebuffer::Framebuffer(const FramebufferSpecification& specification)
+	{
 		m_Specification = specification;
 
 		Invalidate();
 	}
 
-	Framebuffer::~Framebuffer() {
+	Framebuffer::~Framebuffer()
+	{
 		glDeleteFramebuffers(1, &m_RendererID);
 		glDeleteTextures(1, &m_ColorAttachment);
 		glDeleteTextures(1, &m_DepthAttachment);
 	}
 
-	void Framebuffer::Resize(u32 width, u32 height) {
+	void Framebuffer::Resize(u32 width, u32 height)
+	{
 		m_Specification.Width = width;
 		m_Specification.Height = height;
 
 		Invalidate();
 	}
 
-	void Framebuffer::Bind() const {
+	void Framebuffer::Bind() const
+	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 		glViewport(0, 0, m_Specification.Width, m_Specification.Height);
 	}
 
-	void Framebuffer::Unbind() const {
+	void Framebuffer::Unbind() const
+	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void Framebuffer::Clear() const {
+	void Framebuffer::Clear() const
+	{
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
-	void Framebuffer::Invalidate() {
+	void Framebuffer::Invalidate()
+	{
 		if (m_RendererID) {
 			glDeleteFramebuffers(1, &m_RendererID);
 			glDeleteTextures(1, &m_ColorAttachment);

@@ -22,7 +22,8 @@ namespace SW {
 	/**
 	 * @brief The Framebuffer class is responsible for managing framebuffers.
 	 */
-	class Framebuffer final {
+	class Framebuffer final
+	{
 	public:
 		/**
 		 * @brief Construct a new Framebuffer object

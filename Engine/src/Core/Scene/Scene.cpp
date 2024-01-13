@@ -1,19 +1,23 @@
 #include "Scene.hpp"
 
 #include <entt.hpp>
+
 #include "Core/ECS/Components.hpp"
 
 namespace SW {
 
-	Scene::Scene() {
+	Scene::Scene()
+	{
 
 	}
 
-	Scene::~Scene() {
+	Scene::~Scene()
+	{
 
 	}
 
-	Entity Scene::CreateEntity(const std::string& tag) {
+	Entity Scene::CreateEntity(const std::string& tag)
+	{
 		Entity entity = { EntityRegistry::Get().create() };
 
 		entity.AddComponent<IDComponent>();
@@ -23,15 +27,18 @@ namespace SW {
 		return entity;
 	}
 
-	void Scene::DestroyEntity(Entity entity) {
+	void Scene::DestroyEntity(Entity entity)
+	{
 		EntityRegistry::Get().destroy(entity);
 	}
 
-	void Scene::OnUpdate(f32 dt) {
+	void Scene::OnUpdate(f32 dt)
+	{
 
 	}
 
-	void Scene::OnViewportResize(u32 width, u32 height) {
+	void Scene::OnViewportResize(u32 width, u32 height)
+	{
 		m_ViewportWidth = width;
 		m_ViewportHeight = height;
 

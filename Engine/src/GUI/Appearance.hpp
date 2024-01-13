@@ -20,7 +20,8 @@ namespace SW {
 		/**
 		 * @brief Position of the element in the window
 		 */
-		enum ElementPosition : i8 {
+		enum ElementPosition : i8
+		{
 			None = -1,
 			Left = 0,
 			Right = 1,
@@ -192,7 +193,8 @@ namespace SW {
 		/**
 		 * @brief Applies style to the GUI
 		 */
-		class Appearance final {
+		class Appearance final
+		{
 		public:
 			/**
 			 * @brief Applies style to the GUI

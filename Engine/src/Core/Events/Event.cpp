@@ -2,30 +2,35 @@
 
 namespace SW {
 
-    struct RegisteredEvent final {
+    struct RegisteredEvent final
+	{
         void* listener = nullptr;
         EventCallback callback = nullptr;
     };
 
-    struct EventCodeEntry final {
+    struct EventCodeEntry final
+	{
         std::vector<RegisteredEvent> events;
     };
 
     // To be expanded if necessary
     #define MAX_EVENT_CODES 24
 
-    struct EventSystemState final {
+    struct EventSystemState final
+	{
         EventCodeEntry registered[MAX_EVENT_CODES];
     };
 
     static EventSystemState* state = nullptr;
 
-    bool AreEventCallbacksEqual(const EventCallback& a, const EventCallback& b) {
+    bool AreEventCallbacksEqual(const EventCallback& a, const EventCallback& b)
+	{
         return a.target_type() == b.target_type() &&
                a.target<void(*)(Event, void*, void*)>() == b.target<void(*)(Event, void*, void*)>();
     }
 
-    bool EventSystem::Initialize() {
+    bool EventSystem::Initialize()
+	{
         state = new EventSystemState();
 
 		SW_INFO("Event system has been properly initialized");
@@ -33,7 +38,8 @@ namespace SW {
         return true;
     }
 
-    bool EventSystem::Shutdown() {
+    bool EventSystem::Shutdown()
+	{
         delete state;
 
         state = nullptr;
@@ -43,7 +49,8 @@ namespace SW {
         return true;
     }
 
-    bool EventSystem::Register(EventCode code, void* listener, EventCallback handler) {
+    bool EventSystem::Register(EventCode code, void* listener, EventCallback handler)
+	{
         ASSERT(state, "Event system must be initialized before registering a listener!");
 
         for (u64 i = 0; i < state->registered[code].events.size(); ++i) {
@@ -66,7 +73,8 @@ namespace SW {
         return true;
     }
 
-    bool EventSystem::UnRegister(EventCode code, void* listener, EventCallback handler) {
+    bool EventSystem::UnRegister(EventCode code, void* listener, EventCallback handler)
+	{
         ASSERT(state, "Event system must be initialized before unregistering a listener!");
 
         if (state->registered[code].events.empty()) {
@@ -88,7 +96,8 @@ namespace SW {
         return false;
     }
 
-    bool EventSystem::Emit(Event event, void* sender) {
+    bool EventSystem::Emit(Event event, void* sender)
+	{
         ASSERT(state, "Event system must be initialized before emitting an event!");
 
         if (state->registered[event.Code].events.empty()) {

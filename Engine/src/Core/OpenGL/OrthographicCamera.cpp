@@ -4,7 +4,8 @@
 
 namespace SW {
 
-	OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top) {
+	OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
+	{
 		m_ProjectionMatrix = Math::OrthogonalProjection<f32>(left, right, bottom, top, -1.f, 1.f);
 
 		m_ViewMatrix = { 1.0f };
@@ -14,7 +15,8 @@ namespace SW {
 		RecalculateViewMatrix();
 	}
 
-	void OrthographicCamera::SetProjection(f32 left, f32 right, f32 bottom, f32 top) {
+	void OrthographicCamera::SetProjection(f32 left, f32 right, f32 bottom, f32 top)
+	{
 		m_ProjectionMatrix = Math::OrthogonalProjection<f32>(left, right, bottom, top, -1.f, 1.f);
 
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
@@ -22,7 +24,8 @@ namespace SW {
 		RecalculateViewMatrix();
 	}
 
-	void OrthographicCamera::RecalculateViewMatrix() {
+	void OrthographicCamera::RecalculateViewMatrix()
+	{
 		Matrix4<f32> transform = { 1.0f };
 
 		transform.Translate(m_Position);

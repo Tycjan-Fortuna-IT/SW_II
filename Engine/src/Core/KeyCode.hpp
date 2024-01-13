@@ -1,8 +1,20 @@
+/**
+ * @file KeyCodes.hpp
+ * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
+ * @version 0.0.1
+ * @date 2024-01-02
+ *
+ * @copyright Copyright (c) 2024 Tycjan Fortuna
+ */
 #pragma once
 
 namespace SW {
 
-    enum KeyCode : u16 {
+	/**
+	 * @brief Enum for each possible key code.
+	 */
+    enum KeyCode : u16
+	{
         Space = 32,
         Apostrophe = 39, /* ' */
         Comma = 44, /* , */

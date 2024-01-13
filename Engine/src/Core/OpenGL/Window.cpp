@@ -8,12 +8,14 @@
 
 namespace SW {
 
-    void errorCallback(int error, const char* description) {
+    void errorCallback(int error, const char* description)
+	{
         fprintf(stderr, "GLFW Error %d: %s\n", error, description);
     }
 
     Window::Window(const WindowSpecification& specification)
-        : m_Specification(specification) {
+        : m_Specification(specification)
+	{
         SW_INFO("Creating window: {}, width: {} px, height: {} px", m_Specification.Title, m_Specification.Width, m_Specification.Height);
 
         glfwSetErrorCallback(errorCallback);
@@ -122,16 +124,19 @@ namespace SW {
 		});
     }
 
-    Window::~Window() {
+    Window::~Window()
+	{
         glfwDestroyWindow(m_Handle);
     }
 
-    void Window::OnUpdate() const {
+    void Window::OnUpdate() const
+	{
         glfwPollEvents();
         glfwSwapBuffers(m_Handle);
     }
 
-    void Window::SetVSync(bool enabled) {
+    void Window::SetVSync(bool enabled)
+	{
         if (enabled)
             glfwSwapInterval(1);
         else
@@ -140,19 +145,23 @@ namespace SW {
         m_Specification.VSync = enabled;
     }
 
-    void Window::RegisterOverTitlebar(bool over) {
+    void Window::RegisterOverTitlebar(bool over)
+	{
 		m_Specification.OverTitlebar = over;
     }
 
-    void Window::Minimize() const {
+    void Window::Minimize() const
+	{
 		glfwIconifyWindow(m_Handle);
     }
 
-    void Window::Maximize() const {
+    void Window::Maximize() const
+	{
 		glfwMaximizeWindow(m_Handle);
     }
 
-    void Window::Restore() const {
+    void Window::Restore() const
+	{
 		glfwRestoreWindow(m_Handle);
     }
 

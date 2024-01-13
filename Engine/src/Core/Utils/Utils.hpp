@@ -19,7 +19,8 @@ namespace SW {
 		 * @param text Pointer to the char8_t string to convert.
 		 * @return Pointer to the converted char string.
 		 */
-		[[nodiscard]] static const char* FromChar8T(const char8_t* text) {
+		[[nodiscard]] static const char* FromChar8T(const char8_t* text)
+		{
 			return reinterpret_cast<const char*>(text);
 		}
 

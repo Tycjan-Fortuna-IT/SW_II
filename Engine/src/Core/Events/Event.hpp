@@ -102,7 +102,6 @@ namespace SW {
     class EventSystem final
     {
     public:
-
 		/**
 		 * @brief Initializes the event system.
 		 * @warning This function must be called before any other event system function.

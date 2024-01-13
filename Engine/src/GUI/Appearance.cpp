@@ -8,7 +8,8 @@ namespace SW::GUI {
 	Colors Appearance::s_Colors;
 	Fonts Appearance::s_Fonts;
 
-	void Appearance::ApplyStyle(const Style& style) {
+	void Appearance::ApplyStyle(const Style& style)
+	{
 		ImGuiStyle& s = ImGui::GetStyle();
 
 		s_Style = style;
@@ -57,7 +58,8 @@ namespace SW::GUI {
 		s.SelectableTextAlign = ImVec2(style.SelectableTextAlign.x, style.SelectableTextAlign.y);
 	}
 
-	void Appearance::ApplyColors(const Colors& colors) {
+	void Appearance::ApplyColors(const Colors& colors)
+	{
 		ImGuiStyle& s = ImGui::GetStyle();
 		ImVec4* c = s.Colors;
 
@@ -137,7 +139,8 @@ namespace SW::GUI {
 		c[ImGuiCol_ModalWindowDimBg] = ImVec4(colors.ModalWindowDimBackground.x, colors.ModalWindowDimBackground.y, colors.ModalWindowDimBackground.z, colors.ModalWindowDimBackground.w);
 	}
 
-	void Appearance::ApplyFonts(const FontSpecification& spec) {
+	void Appearance::ApplyFonts(const FontSpecification& spec)
+	{
 		const ImGuiIO& io = ImGui::GetIO();
 
 		s_Fonts.SmallSize = spec.SmallSize;

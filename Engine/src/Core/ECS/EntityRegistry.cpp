@@ -7,7 +7,8 @@ namespace SW {
 
     entt::registry EntityRegistry::s_EnttHandle = {};
 
-    Entity EntityRegistry::CreateEntity() {
+    Entity EntityRegistry::CreateEntity()
+	{
         Entity entity{ s_EnttHandle.create() };
 
         entity.AddComponent<IDComponent>();
@@ -15,7 +16,8 @@ namespace SW {
         return entity;
     }
 
-    void EntityRegistry::DestroyEntity(Entity entity) {
+    void EntityRegistry::DestroyEntity(Entity entity)
+	{
         s_EnttHandle.destroy(entity);
     }
 

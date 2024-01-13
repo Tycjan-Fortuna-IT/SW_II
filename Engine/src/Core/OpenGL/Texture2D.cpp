@@ -7,7 +7,8 @@
 
 namespace SW {
 
-    Texture2D::Texture2D(const std::string& filepath, bool flipped) {
+    Texture2D::Texture2D(const std::string& filepath, bool flipped)
+	{
         stbi_set_flip_vertically_on_load(flipped);
         stbi_uc* data = stbi_load(filepath.c_str(), &m_Width, &m_Height, &m_Channels, 0);
 
@@ -42,11 +43,13 @@ namespace SW {
 		SW_INFO("Texture2D `{}` created successfully!", filepath);
     }
 
-    Texture2D::~Texture2D() {
+    Texture2D::~Texture2D()
+	{
         glDeleteTextures(1, &m_TextureHandle);
     }
 
-    void Texture2D::Bind(u32 slot) const {
+    void Texture2D::Bind(u32 slot) const
+	{
         glBindTextureUnit(slot, m_TextureHandle);
     }
 

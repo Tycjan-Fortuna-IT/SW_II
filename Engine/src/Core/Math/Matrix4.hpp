@@ -33,7 +33,8 @@ namespace SW {
 		 * @note It is an identity matrix.
 		 * @param x Initial value of the matrix.
 		 */
-        Matrix4(T x) {
+        Matrix4(T x)
+		{
             data[0] = static_cast<T>(x);
             data[5] = static_cast<T>(x);
             data[10] = static_cast<T>(x);
@@ -70,7 +71,8 @@ namespace SW {
 		 * data[12], data[13], data[14], data[15] }
 		 * @return std::string 
 		 */
-        std::string ToString() const {
+        std::string ToString() const
+		{
             const std::string str =
                 "\n{ " + std::to_string(data[0]) + ", " + std::to_string(data[1]) + ", " + std::to_string(data[2]) + ", " + std::to_string(data[3]) + "\n" +
                 "  " + std::to_string(data[4]) + ", " + std::to_string(data[5]) + ", " + std::to_string(data[6]) + ", " + std::to_string(data[7]) + "\n" +
@@ -85,16 +87,15 @@ namespace SW {
 		 * 
 		 * @return const T* Pointer to the beginning of the data of the matrix.
 		 */
-        const T* ValuePtr() const {
-            return data;
-        }
+        const T* ValuePtr() const { return data; }
 
 		/**
 		 * @brief Translates the matrix by the given vector.
 		 * 
 		 * @param translation Vector by which the matrix will be translated.
 		 */
-		void Translate(const Vector3<T>& translation) {
+		void Translate(const Vector3<T>& translation)
+		{
 	        data[12] += translation.x;
 			data[13] += translation.y;
 			data[14] += translation.z;
@@ -105,7 +106,8 @@ namespace SW {
 		 * 
 		 * @param radians Angle in radians.
 		 */
-        void RotateX(f32 radians) {
+        void RotateX(f32 radians)
+		{
             data[5] = static_cast<T>(cos(radians));
             data[6] = static_cast<T>(sin(radians));
             data[9] = static_cast<T>(-sin(radians));
@@ -117,7 +119,8 @@ namespace SW {
 		 * 
 		 * @param radians Angle in radians.
 		 */
-        void RotateY(f32 radians) {
+        void RotateY(f32 radians)
+		{
             data[0] = static_cast<T>(cos(radians));
             data[2] = static_cast<T>(-sin(radians));
             data[8] = static_cast<T>(sin(radians));
@@ -129,7 +132,8 @@ namespace SW {
 		 * 
 		 * @param radians Angle in radians.
 		 */
-        void RotateZ(f32 radians) {
+        void RotateZ(f32 radians)
+		{
             data[0] = static_cast<T>(cos(radians));
             data[1] = static_cast<T>(sin(radians));
             data[4] = static_cast<T>(-sin(radians));
@@ -142,7 +146,8 @@ namespace SW {
 		 * @param index The index of the row to access.
 		 * @return A pointer to the row at the given index.
 		 */
-		T& operator[](u64 index) {
+		T& operator[](u64 index)
+		{
 			ASSERT(index <= 15, "Index out of bounds for Matrix4!");
 
 			return data[index];
@@ -154,7 +159,8 @@ namespace SW {
 		 * @param index The index of the row to access.
 		 * @return A const pointer to the row at the given index.
 		 */
-		const T& operator[](u64 index) const {
+		const T& operator[](u64 index) const
+		{
 			ASSERT(index <= 15, "Index out of bounds for Matrix4!");
 
 			return data[index];
@@ -166,7 +172,8 @@ namespace SW {
 		 * @param other Matrix to multiply by.
 		 * @return Matrix4 
 		 */
-		Matrix4 operator*(const Matrix4& other) const {
+		Matrix4 operator*(const Matrix4& other) const
+		{
 			Matrix4 result;
 
 			result[0] = this->data[0] * other[0] + this->data[1] * other[4] + this->data[2] * other[8] + this->data[3] * other[12];

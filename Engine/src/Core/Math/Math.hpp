@@ -23,7 +23,8 @@ namespace SW {
 		 * @param degrees Degrees to convert. 
 		 * @return constexpr f32 
 		 */
-        constexpr f32 ToRadians(f32 degrees) {
+        constexpr f32 ToRadians(f32 degrees)
+		{
             return degrees * 0.017453292519943295f;
         }
 
@@ -33,7 +34,8 @@ namespace SW {
 		 * @param radians Radians to convert.
 		 * @return constexpr f32 
 		 */
-        constexpr f32 ToDegrees(f32 radians) {
+        constexpr f32 ToDegrees(f32 radians)
+		{
             return radians * 57.29577951308232f;
         }
 
@@ -55,7 +57,8 @@ namespace SW {
 		 */
 		template <typename T>
     		requires std::is_arithmetic_v<T>
-		inline Matrix4<T> OrthogonalProjection(T left, T right, T bottom, T top, T near, T far) {
+		inline Matrix4<T> OrthogonalProjection(T left, T right, T bottom, T top, T near, T far)
+		{
 			Matrix4<T> result = { static_cast<T>(1) };
 
 			result[0] = static_cast<T>(2) / (right - left);
@@ -76,7 +79,8 @@ namespace SW {
 		 */
 		template <typename T>
 			requires std::is_arithmetic_v<T>
-		inline Matrix4<T> Inverse(const Matrix4<T>& matrix) {
+		inline Matrix4<T> Inverse(const Matrix4<T>& matrix)
+		{
 			Matrix4<T> result;
 
 			const T det_2x2_1 = matrix[10] * matrix[15] - matrix[11] * matrix[14];
