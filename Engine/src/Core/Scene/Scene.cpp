@@ -42,7 +42,7 @@ namespace SW {
 		for (auto entity : group) {
 			const auto& [transform, sprite] = group.get<TransformComponent, SpriteComponent>(entity);
 
-			Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+			Renderer2D::DrawQuad(transform.GetTransform(), sprite);
 		}
 
 		Renderer2D::EndScene();

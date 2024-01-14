@@ -18,7 +18,7 @@ namespace SW {
 
 		m_Shader = std::make_shared<Shader>("assets/shaders/Initial.vert.glsl", "assets/shaders/Initial.frag.glsl");
 
-		boxTexture = new Texture2D("assets/textures/container_512x512.jpg");
+		boxTexture = std::make_shared<Texture2D>("assets/textures/container_512x512.jpg");
 		faceTexture = new Texture2D("assets/textures/awesomeface_512x512.png");
 		m_IconTexture = new Texture2D("assets/icons/SW_Icon.png", false);
 		m_CloseIconTexture = new Texture2D("assets/icons/editor/windows/Close.png", false);
@@ -63,12 +63,12 @@ namespace SW {
 		//m_CameraEntity.AddComponent<CameraComponent>();
 
 		m_Square1 = m_Scene.CreateEntity("Square Entity Test - 1");
-		m_Square1.AddComponent<SpriteComponent>(Vector4<f32>(0.5f, 0.5f, 0.5f, 1.0f));
+		m_Square1.AddComponent<SpriteComponent>(Vector4<f32>(0.25f, 0.5f, 0.25f, 1.0f));
 
 		m_Square2 = m_Scene.CreateEntity("Square Entity Test - 1");
-		m_Square2.AddComponent<SpriteComponent>(Vector4<f32>(1.f, 0.f, 0.f, 1.0f));
+		m_Square2.AddComponent<SpriteComponent>(boxTexture, Vector4<f32>(1.0f, 0.f, 0.f, 1.0f));
 
-		m_Square2.GetComponent<TransformComponent>().Position = { 0.25f, 0.25f, 0.0f };
+		m_Square2.GetComponent<TransformComponent>().Position = { 1.25f, 1.25f, 0.0f };
 
 		Application::Get()->GetWindow()->Maximize();
 		Application::Get()->GetWindow()->SetVSync(true);
@@ -77,7 +77,6 @@ namespace SW {
 	}
 
 	void TestLayer::OnDetach() {
-		delete boxTexture;
 		delete faceTexture;
 		delete m_IconTexture;
 		delete m_CloseIconTexture;

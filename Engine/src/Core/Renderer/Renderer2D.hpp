@@ -13,6 +13,7 @@
 #include "Core/Math/Vector4.hpp"
 #include "Core/Math/Matrix4.hpp"
 #include "Core/Scene/SceneCamera.hpp"
+#include "Core/ECS/Components.hpp"
 
 namespace SW {
 
@@ -44,7 +45,7 @@ namespace SW {
 
 		static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, u32 indexCount);
 
-		static void DrawQuad(const Matrix4<f32>& transform, const Vector4<f32>& color);
+		static void DrawQuad(const Matrix4<f32>& transform, const SpriteComponent& sprite);
 	};
 
 }

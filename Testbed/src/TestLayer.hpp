@@ -26,7 +26,7 @@ namespace SW {
 		Entity m_Square2;
 
 		std::shared_ptr<Shader> m_Shader = nullptr;
-		Texture2D* boxTexture = nullptr;
+		std::shared_ptr<Texture2D> boxTexture = nullptr;
 		Texture2D* faceTexture = nullptr;
 
 		Texture2D* m_IconTexture = nullptr;

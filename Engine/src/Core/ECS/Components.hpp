@@ -13,6 +13,7 @@
 #include "Core/Utils/Random.hpp"
 #include "Core/Scene/SceneCamera.hpp"
 #include "Core/Math/Math.hpp"
+#include "Core/OpenGL/Texture2D.hpp"
 
 namespace SW {
 
@@ -99,10 +100,14 @@ namespace SW {
     struct SpriteComponent final
     {
         Vector4<f32> Color = { 1.0f };
+		std::shared_ptr<Texture2D> Texture = nullptr;
+		f32 TilingFactor = 1.0f;
 
         SpriteComponent() = default;
         SpriteComponent(const Vector4<f32>& color)
             : Color(color) {}
+		SpriteComponent(const std::shared_ptr<Texture2D>& texture, const Vector4<f32>& tint = { 1.f }, f32 tilingFactor = 1.f)
+			: Texture(texture), Color(tint), TilingFactor(tilingFactor) {}
 
         SpriteComponent(const SpriteComponent& other) = default;
         SpriteComponent(SpriteComponent&& other) = default;

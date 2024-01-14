@@ -15,8 +15,8 @@ namespace SW {
 		Vector4<f32> Color;
 		Vector2<f32> TexCoord;
 
-		float TexIndex;
-		float TilingFactor;
+		f32 TexIndex;
+		f32 TilingFactor;
 	};
 
 	struct Renderer2DData final
@@ -83,8 +83,8 @@ namespace SW {
 
 		s_Data.WhiteTexture = std::make_shared<Texture2D>(1, 1);
 
-		u32 whiteTextureData = 0xffffffff;
-		s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(u32));
+		uint32_t whiteTextureData = 0xffffffff;
+		s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
 		int samplers[s_Data.MaxTextureSlots];
 		for (int i = 0; i < s_Data.MaxTextureSlots; i++) {
@@ -166,24 +166,38 @@ namespace SW {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	void Renderer2D::DrawQuad(const Matrix4<f32>& transform, const Vector4<f32>& color)
+	void Renderer2D::DrawQuad(const Matrix4<f32>& transform, const SpriteComponent& sprite)
 	{
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 			FlushAndReset();
 
-		constexpr u32 textureIndex = 0; // White Texture
-		constexpr f32 tilingFactor = 1.0f;
+		f32 textureIndex = 0.f; // White Texture
 
 		Vector2<f32> texCoords[] = { 
 			{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } 
 		};
 
+		if (sprite.Texture) {
+			for (f32 i = 1; i < s_Data.TextureSlotIndex; i++) {
+				if (*s_Data.TextureSlots[i] == *sprite.Texture) {
+					textureIndex = static_cast<f32>(i);
+					break;
+				}
+			}
+
+			if (textureIndex == 0.0f) {
+				textureIndex = (float)s_Data.TextureSlotIndex;
+				s_Data.TextureSlots[s_Data.TextureSlotIndex] = sprite.Texture;
+				s_Data.TextureSlotIndex++;
+			}
+		}
+
 		for (int i = 0; i < 4; i++) {
 			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
-			s_Data.QuadVertexBufferPtr->Color = color;
+			s_Data.QuadVertexBufferPtr->Color = sprite.Color;
 			s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			s_Data.QuadVertexBufferPtr->TilingFactor = sprite.TilingFactor;
 			s_Data.QuadVertexBufferPtr++;
 		}
 
