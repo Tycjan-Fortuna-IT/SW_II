@@ -3,7 +3,6 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
-#include "Core/Debug/LogSystem.hpp"
 #include "Core/ECS/Components.hpp"
 #include "Core/Events/Event.hpp"
 #include "Core/Math/Math.hpp"
@@ -30,7 +29,7 @@ namespace SW {
 		const FramebufferSpecification spec = { 1280, 720 };
 		framebuffer = new Framebuffer(spec);
 
-		m_SceneCamera = new SceneCamera(spec.Width / spec.Height);
+		m_SceneCamera = new SceneCamera((f32)(spec.Width / spec.Height));
 
 		const GUI::FontSpecification fontSpec("assets/fonts/Roboto/Roboto-Regular.ttf", "assets/fonts/Roboto/Roboto-Bold.ttf");
 
@@ -55,7 +54,7 @@ namespace SW {
 
 			if (!m_IsViewportFocused) return false;
 
-			m_SceneCamera->OnViewportResize(width, height);
+			m_SceneCamera->OnViewportResize((f32)width, (f32)height);
 
 			return false;
 		});
@@ -91,7 +90,7 @@ namespace SW {
 		Renderer2D::Shutdown();
 	}
 
-	void TestLayer::OnUpdate(float dt) {
+	void TestLayer::OnUpdate(Timestep dt) {
 		FramebufferSpecification spec = framebuffer->GetSpecification();
 
 		if (m_IsViewportFocused)
@@ -270,10 +269,6 @@ namespace SW {
 
 		ImGui::Begin("Components");
 
-		//ImGui::InputFloat3("Position", m_Square1.GetComponent<TransformComponent>().Position.data);
-		//ImGui::InputFloat3("Rotation", m_Square1.GetComponent<TransformComponent>().Rotation.data);
-		//ImGui::InputFloat3("Scale", m_Square1.GetComponent<TransformComponent>().Scale.data);
-
 		ImGui::End();
 
 		ImGui::Begin("Assets");
@@ -286,8 +281,31 @@ namespace SW {
 
 		ImGui::Begin("Statistics");
 
-		ImGui::Text("FPS: %d", (int)ImGui::GetIO().Framerate);
-		ImGui::Text("Frame Time: %f ms", 1000.0f / ImGui::GetIO().Framerate);
+		static float m_FpsValues[200];
+		static std::vector<f32> m_FrameTimes;
+
+		f32 avg = 0.0f;
+
+		const size_t size = m_FrameTimes.size();
+		if (size >= 200)
+			m_FrameTimes.erase(m_FrameTimes.begin());
+
+		m_FrameTimes.emplace_back(ImGui::GetIO().Framerate);
+
+		for (u32 i = 0; i < size; i++) {
+			const float frameTime = m_FrameTimes[i];
+			m_FpsValues[i] = frameTime;
+			avg += frameTime;
+		}
+
+		avg /= static_cast<f32>(size);
+
+		ImGui::PushItemWidth(-1);
+		ImGui::PlotLines("##FPS", m_FpsValues, static_cast<int>(size));
+		ImGui::PopItemWidth();
+
+		ImGui::Text("FPS: %lf", static_cast<f64>(avg));
+		ImGui::Text("Frame time (ms): %lf", (1.0 / static_cast<f64>(avg)) * 1000.0f);
 
 		static bool VSync = true;
 		if (ImGui::Checkbox("VSync", &VSync)) {

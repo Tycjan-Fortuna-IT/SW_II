@@ -10,6 +10,7 @@
 #include "Core/OpenGL/Framebuffer.hpp"
 #include "Core/Scene/Scene.hpp"
 #include "Core/Scene/SceneCamera.hpp"
+#include "Core/Timestep.hpp"
 
 namespace SW {
 
@@ -49,7 +50,7 @@ namespace SW {
 		void OnAttach() override;
 		void OnDetach() override;
 
-		void OnUpdate(float dt) override;
+		void OnUpdate(Timestep dt) override;
 		void OnRender() override;
 
 		f32 DrawTitleBar();
