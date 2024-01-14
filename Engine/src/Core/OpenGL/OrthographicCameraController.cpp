@@ -9,7 +9,7 @@ namespace SW {
 		: m_AspectRatio(aspectRatio),
 		m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio* m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel) {}
 
-	void OrthographicCameraController::OnUpdate(f32 dt)
+	void OrthographicCameraController::OnUpdate(Timestep dt)
 	{
 		if (Input::IsKeyPressed(KeyCode::A))
 			m_CameraPosition.x -= m_CameraMoveSpeed * dt;

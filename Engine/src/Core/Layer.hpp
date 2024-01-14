@@ -8,6 +8,8 @@
  */
 #pragma once
 
+#include "Core/Timestep.hpp"
+
 namespace SW {
 
     struct Event;
@@ -47,7 +49,7 @@ namespace SW {
 		 * 
 		 * @param dt Time elapsed since the last frame.
 		 */
-        virtual void OnUpdate(float dt) {}
+        virtual void OnUpdate(Timestep dt) {}
 
 		/**
 		 * @brief Called every frame to render the layer.

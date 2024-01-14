@@ -10,6 +10,7 @@
 
 #include "Core/ECS/Entity.hpp"
 #include "Core/Scene/SceneCamera.hpp"
+#include "Core/Timestep.hpp"
 
 namespace SW {
 
@@ -22,7 +23,7 @@ namespace SW {
 		Entity CreateEntity(const std::string& tag = "Entity");
 		void DestroyEntity(Entity entity);
 
-		void OnUpdate(f32 dt, const SceneCamera& camera);
+		void OnUpdate(Timestep dt, const SceneCamera& camera);
 
 		void OnViewportResize(u32 width, u32 height);
 

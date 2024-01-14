@@ -32,7 +32,7 @@ namespace SW {
 		ImGui::DestroyContext();
 	}
 
-	void GuiLayer::OnUpdate(float dt)
+	void GuiLayer::OnUpdate(Timestep dt)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		Application* app = Application::Get();

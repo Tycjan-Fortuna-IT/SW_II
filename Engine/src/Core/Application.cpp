@@ -75,7 +75,7 @@ namespace SW {
 	{
 		while (m_IsRunning) {
 			const float time = (float)glfwGetTime();
-			const float dt = time - m_LastFrameTime;
+			const Timestep dt = time - m_LastFrameTime;
 			m_LastFrameTime = time;
 
 			m_Window->OnUpdate();

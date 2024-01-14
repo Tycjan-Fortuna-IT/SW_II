@@ -6,7 +6,7 @@
 
 namespace SW {
 
-	SceneCamera::SceneCamera(u32 aspectRatio)
+	SceneCamera::SceneCamera(f32 aspectRatio)
 		: m_AspectRatio(aspectRatio)
 	{
 		m_ViewMatrix = { 1.0f };
@@ -25,7 +25,7 @@ namespace SW {
 		RecalculateViewMatrix();
     }
 
-	void SceneCamera::OnUpdate(f32 dt)
+	void SceneCamera::OnUpdate(Timestep dt)
 	{
 		if (Input::IsKeyPressed(KeyCode::A))
 			m_CameraPosition.x -= m_CameraMoveSpeed * dt;

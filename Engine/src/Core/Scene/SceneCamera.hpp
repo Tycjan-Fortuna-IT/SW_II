@@ -9,18 +9,19 @@
 #pragma once
 
 #include "Core/Renderer/Camera.hpp"
+#include "Core/Timestep.hpp"
 
 namespace SW {
 
 	class SceneCamera final : public Camera
 	{
 	public:
-		SceneCamera(u32 aspectRatio);
+		SceneCamera(f32 aspectRatio);
 		~SceneCamera() override = default;
 
 		void SetViewportSize(u32 width, u32 height);
 
-		void OnUpdate(f32 dt);
+		void OnUpdate(Timestep dt);
 
 		void OnViewportResize(f32 width, f32 height);
 		void OnMouseScrolled(f32 xOffset, f32 yOffset);
@@ -48,7 +49,7 @@ namespace SW {
 		f32 m_CameraRotation = 0.0f;
 
 		f32 m_CameraMoveSpeed = 20.0f;
-		f32 m_CameraRotationSpeed = 20.0f;
+		f32 m_CameraRotationSpeed = 30.0f;
 
 		Matrix4<f32> m_ProjectionMatrix;
 		Matrix4<f32> m_ViewMatrix;

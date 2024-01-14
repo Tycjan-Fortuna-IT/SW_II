@@ -51,7 +51,7 @@ namespace SW {
 	void Renderer2D::Init(const std::shared_ptr<Shader>& shader)
 	{
 		s_Data.QuadVertexArray = std::make_shared<VertexArray>();
-		s_Data.QuadVertexBuffer = std::make_shared<VertexBuffer>(s_Data.MaxVertices * sizeof(QuadVertex));
+		s_Data.QuadVertexBuffer = std::make_shared<VertexBuffer>(static_cast<u32>(s_Data.MaxVertices * sizeof(QuadVertex)));
 
 		s_Data.QuadVertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" },

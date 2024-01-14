@@ -44,7 +44,7 @@ namespace SW {
 		 * 
 		 * @param dt Time elapsed since the last frame.
 		 */
-		void OnUpdate(float dt) override;
+		void OnUpdate(Timestep dt) override;
 
 		/**
 		 * @brief Called every frame to render the layer.

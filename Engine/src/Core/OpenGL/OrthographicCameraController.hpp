@@ -9,6 +9,7 @@
 #pragma once
 
 #include "OrthographicCamera.hpp"
+#include "Core/Timestep.hpp"
 
 namespace SW {
 
@@ -36,7 +37,7 @@ namespace SW {
 		 * 
 		 * @param dt Delta time.
 		 */
-		void OnUpdate(f32 dt);
+		void OnUpdate(Timestep dt);
 
 		/**
 		 * @brief Orthographic camera controller method to resize the camera view.
