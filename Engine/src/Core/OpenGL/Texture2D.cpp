@@ -78,7 +78,9 @@ namespace SW {
 	{
 		u32 bpp = m_DataFormat == GL_RGBA ? 4 : 3;
 
-		glTextureSubImage2D(m_Height, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
+		ASSERT(size == m_Width * m_Height * bpp, "Data must be entire texture!");
+
+		glTextureSubImage2D(m_Handle, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 	}
 
 }
