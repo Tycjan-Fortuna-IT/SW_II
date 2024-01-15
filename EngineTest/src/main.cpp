@@ -1,20 +1,24 @@
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+/*
+	REQUIRE - this level will immediately quit the test case if the assert fails and will mark the test case as failed.
+	CHECK - this level will mark the test case as failed if the assert fails but will continue with the test case.
+	WARN - this level will only print a message if the assert fails but will not mark the test case as failed.
+*/
+
+#define DOCTEST_CONFIG_IMPLEMENT
 #include <doctest.h>
 
-#include <Core/Defines.hpp>
-#include <Core/Math/Vector2.hpp>
+#include "Math_UT/Vector2_UT.hpp"
 
-int factorial(int number) { return number <= 1 ? number : factorial(number - 1) * number; }
+#include <Core/Debug/LogSystem.hpp>
 
-TEST_CASE("testing the factorial function") {
-	CHECK(factorial(1) == 1);
-	CHECK(factorial(2) == 2);
-	CHECK(factorial(3) == 6);
-	CHECK(factorial(10) == 3628800);
-}
+int main(int argc, char** argv) {
+	doctest::Context context;
 
-TEST_CASE("Vector2 tests") {
-	SW::Vector2<f32> vector = { 1.f };
+	SW::LogSystem::Initialize();
 
-	CHECK(vector.x == 1.f);
+	int res = context.run();
+
+	SW::LogSystem::Shutdown();
+
+	return res;
 }

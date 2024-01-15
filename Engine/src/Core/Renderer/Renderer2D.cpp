@@ -178,7 +178,7 @@ namespace SW {
 		};
 
 		if (sprite.Texture) {
-			for (f32 i = 1; i < s_Data.TextureSlotIndex; i++) {
+			for (u32 i = 1; i < s_Data.TextureSlotIndex; i++) {
 				if (*s_Data.TextureSlots[i] == *sprite.Texture) {
 					textureIndex = static_cast<f32>(i);
 					break;

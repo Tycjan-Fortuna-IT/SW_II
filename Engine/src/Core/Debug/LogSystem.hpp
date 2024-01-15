@@ -117,6 +117,7 @@ namespace SW {
 		static std::shared_ptr<spdlog::logger> s_AppLogger;
     };
 
+#ifndef SW_DISABLE_LOGS
     /**
      * @brief Asserts that an expression is true. (Engine use only.)
      *        If the expression is false, the application will be halted.
@@ -262,3 +263,22 @@ namespace SW {
 	 */
 	#define APP_TRACE(msg, ...) SW_LOG(::SW::APP, ::SW::LOG_LEVEL_TRACE, msg, ##__VA_ARGS__)
 }
+#else
+
+	#define ASSERT(x, msg)
+
+	#define SW_LOG(type, level, msg, ...)
+	#define SW_FATAL(msg, ...)
+	#define SW_WARN(msg, ...)
+	#define SW_INFO(msg, ...)
+	#define SW_DEBUG(msg, ...)
+	#define SW_TRACE(msg, ...)
+
+	#define APP_LOG(type, level, msg, ...)
+	#define APP_FATAL(msg, ...)
+	#define APP_WARN(msg, ...)
+	#define APP_INFO(msg, ...)
+	#define APP_DEBUG(msg, ...)
+	#define APP_TRACE(msg, ...)
+
+#endif // !DISABLE_LOGS

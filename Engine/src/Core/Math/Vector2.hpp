@@ -1,8 +1,8 @@
 /**
  * @file Vector2.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.2
- * @date 2024-01-06
+ * @version 0.1.0
+ * @date 2024-01-15
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -15,22 +15,21 @@ namespace SW {
 	/**
 	 * @brief Vector2 is a structure representing mathematical vector in 2D space.
 	 * 
-	 * @param T Type of the vector.
+	 * @tparam T The type of the vector's components. This should be an arithmetic type.
 	 */
 	template <typename T>
 		requires std::is_arithmetic_v<T>
 	struct Vector2 final
 	{
 		/**
-		 * @brief Construct a new Vector2 object.
-		 * @note Vector is initialized with zeros.
+		 * @brief Default constructor. Initializes the vector with zeros.
 		 */
 		Vector2() = default;
 
 		/**
-		 * @brief Construct a new Vector2 object.
+		 * @brief Constructs a new Vector2 object with both components (X and Y) set to the same value.
 		 * 
-		 * @param x X, Y coordinate of the vector.
+		 * @param x The value to set both components to.
 		 */
 		Vector2(T x)
 		{
@@ -39,25 +38,24 @@ namespace SW {
 		}
 
 		/**
-		 * @brief Construct a new Vector2 object.
+		 * @brief Constructs a new Vector2 object with the specified components.
 		 * 
-		 * @param x X coordinate of the vector.
-		 * @param y Y coordinate of the vector.
-		 * @param z Z coordinate of the vector.
+		 * @param x The x-coordinate of the vector.
+		 * @param y The y-coordinate of the vector.
 		 */
-		Vector2(T x, T y, T z)
+		Vector2(T x, T y)
 		{
 			data[0] = static_cast<T>(x);
 			data[1] = static_cast<T>(y);
 		}
 
 		/**
-		 * @brief Construct a new Vector2 object from braced initialize list.
+		 * @brief Constructs a new Vector2 object from an initializer list.
 		 *
-		 * @param values Initializer list containing the data. The behavior depends on the number of elements:
+		 * @param values An initializer list containing the vector's components. The behavior depends on the number of elements:
 		 * - No elements: The vector will be filled with zeros.
-		 * - One element: All fields will be filled with this value.
-		 * - Two elements: They will be assigned in sequence, with the last value filling the remaining fields.
+		 * - One element: Both components will be set to this value.
+		 * - Two elements: The components will be set to these values, in order.
 		 */
 		Vector2(std::initializer_list<T> values)
 		{
@@ -78,28 +76,164 @@ namespace SW {
 		Vector2& operator=(Vector2&& other) = default;
 
 		/**
-		 * @brief Destroy the Vector 2 object
+		 * @brief Destructor.
 		 */
 		~Vector2() = default;
 
 		/**
-		 * @brief The data of the vector stored in an array.
-		 * @note Data can be accessed by using pairs of names (x, y), (r, g), (s, t), (u, v).
+		 * @brief The components of the vector, stored in an array.
+		 * @note The components can be accessed using the names x and y, or r and g, or s and t, or u and v.
 		 */
-		union {
+		union
+		{
 			T data[2] = { static_cast<T>(0) };
 
-			struct {
+			struct
+			{
 				union { T x, r, s, u; };
 				union { T y, g, t, v; };
 			};
 		};
+		
+		/**
+		 * @brief Adds two Vector2 objects.
+		 * 
+		 * @param other The other Vector2 to add.
+		 * @return Vector2<T> The result of the addition.
+		 */
+		Vector2<T> operator+(const Vector2<T>& other) const
+		{
+			return Vector2<T>(x + other.x, y + other.y);
+		}
+
+		/**
+		 * @brief Subtracts two Vector2 objects.
+		 * 
+		 * @param other The other Vector2 to subtract.
+		 * @return Vector2<T> The result of the subtraction.
+		 */
+		Vector2<T> operator-(const Vector2<T>& other) const
+		{
+			return Vector2<T>(x - other.x, y - other.y);
+		}
+
+		/**
+		 * @brief Multiplies two Vector2 objects.
+		 * 
+		 * @param other The other Vector2 to multiply by.
+		 * @return Vector2<T> The result of the multiplication.
+		 */
+		Vector2<T> operator*(const Vector2<T>& other) const
+		{
+			return Vector2<T>(x * other.x, y * other.y);
+		}
+
+		/**
+		 * @brief Divides two Vector2 objects.
+		 * 
+		 * @param other The other Vector2 to divide by.
+		 * @return Vector2<T> The result of the division.
+		 * @note If the other vector's x or y component is zero, an error message is logged and the division is not performed.
+		 */
+		Vector2<T> operator/(const Vector2<T>& other) const
+		{
+			if (other.x == static_cast<T>(0) || other.y == static_cast<T>(0)) {
+				SW_WARN("Cannot divide component of Vector2<T> by zero!");
+				return *this;
+			}
+
+			return Vector2<T>(x / other.x, y / other.y);
+		}
+
+		/**
+         * @brief Adds another Vector2 to this vector.
+         * 
+         * @param other The other Vector2 to add.
+         * @return Vector2<T>& A reference to this vector after the addition.
+         */
+        Vector2<T>& operator+=(const Vector2<T>& other)
+        {
+            x += other.x; 
+            y += other.y;
+
+            return *this;
+        }
+
+        /**
+         * @brief Subtracts another Vector2 from this vector.
+         * 
+         * @param other The other Vector2 to subtract.
+         * @return Vector2<T>& A reference to this vector after the subtraction.
+         */
+        Vector2<T>& operator-=(const Vector2<T>& other)
+        {
+            x -= other.x; 
+            y -= other.y;
+
+            return *this;
+        }
+
+        /**
+         * @brief Multiplies this vector by another Vector2.
+         * 
+         * @param other The other Vector2 to multiply by.
+         * @return Vector2<T>& A reference to this vector after the multiplication.
+         */
+        Vector2<T>& operator*=(const Vector2<T>& other)
+        {
+            x *= other.x; 
+            y *= other.y;
+
+            return *this;
+        }
+
+        /**
+         * @brief Divides this vector by another Vector2.
+         * 
+         * @param other The other Vector2 to divide by.
+         * @return Vector2<T>& A reference to this vector after the division.
+         * @note If the other vector's x or y component is zero, an error message is logged and the division is not performed.
+         */
+        Vector2<T>& operator/=(const Vector2<T>& other)
+        {
+            if (other.x == static_cast<T>(0) || other.y == static_cast<T>(0)) {
+                SW_WARN("Cannot divide component of Vector2<T> by zero!");
+                return *this;
+            }
+
+            x /= other.x; 
+            y /= other.y;
+
+            return *this;
+        }
+
+		/**
+		 * @brief Checks if the current vector is equal to another vector.
+		 *
+		 * @param other The vector to compare against.
+		 * @return True if the vectors are equal, false otherwise.
+		 */
+		bool operator==(const Vector2<T>& other) const
+		{
+			return x == other.x && y == other.y;
+		}
+
+		/**
+		 * @brief Checks if the current vector is not equal to another vector.
+		 *
+		 * @param other The vector to compare against.
+		 * @return True if the vectors are not equal, false otherwise.
+		 */
+		bool operator!=(const Vector2<T>& other) const
+		{
+			return !(x == other.x && y == other.y);
+		}
 
 		/**
 		 * @brief Returns a string representation of the vector.
-		 * @note In format: { x, y }, e.g. { 1.0, 2.0 }.
+		 * @note The format is: { x, y }, e.g. { 1.0, 2.0 }.
 		 * 
-		 * @return std::string String representation of the vector.
+		 * @return std::string A string representation of the vector.
 		 */
 		std::string ToString() const
 		{
@@ -109,16 +243,16 @@ namespace SW {
 		}
 
 		/**
-		 * @brief Returns a pointer to the beginning of the data of the vector.
+		 * @brief Returns a pointer to the first component of the vector (to the beginning of the internal data array).
 		 * 
-		 * @return const T* Pointer to the beginning of the data of the vector.
+		 * @return const T* A pointer to the first component of the vector.
 		 */
 		const T* ValuePtr() const { return data; }
 
 		/**
-		 * @brief Calculates the length of the vector.
+		 * @brief Calculates the length (magnitude) of the vector.
 		 * 
-		 * @return T Length of the vector. 
+		 * @return T The length of the vector. 
 		 */
 		T Length() const
 		{
@@ -126,14 +260,51 @@ namespace SW {
 		}
 
 		/**
-		 * @brief Normalizes the vector.
+		 * @brief Normalizes the vector, making its length 1 while preserving its direction.
 		 */
 		void Normalize()
 		{
 			const T length = Length();
 
+			if (length == static_cast<T>(0)) {
+				SW_WARN("Cant normalize Vector2<T> with length of 0!");
+				return;
+			}
+
 			x /= length;
 			y /= length;
+		}
+
+		/**
+		 * @brief Returns a normalized version of the vector.
+		 * @note This does not modify the original vector.
+		 * 
+		 * @return Vector2<T> A normalized version of the vector.
+		 */
+		Vector2<T> Normalized() {
+			const T length = Length();
+			
+			Vector2<T> result = *this;
+
+			if (length == static_cast<T>(0)) {
+				return result;
+			}
+
+			result.x /= length;
+			result.y /= length;
+
+			return result;
+		}
+
+		/**
+		 * @brief Returns the dot product of two vectors.
+		 * 
+		 * @param other Vector to calculate the dot product with.
+		 * @return T Dot product of two vectors.
+		 */
+		T Dot(const Vector2<T>& other) const
+		{
+			return x * other.x + y * other.y;
 		}
 	};
 
