@@ -13,7 +13,8 @@
 
 namespace SW {
 
-	void TestLayer::OnAttach() {
+	void TestLayer::OnAttach()
+	{
 		APP_TRACE("TestLayer::OnAttach()");
 
 		m_Shader = std::make_shared<Shader>("assets/shaders/Initial.vert.glsl", "assets/shaders/Initial.frag.glsl");
@@ -76,7 +77,8 @@ namespace SW {
 		Renderer2D::Init(m_Shader);
 	}
 
-	void TestLayer::OnDetach() {
+	void TestLayer::OnDetach()
+	{
 		delete faceTexture;
 		delete m_IconTexture;
 		delete m_CloseIconTexture;
@@ -89,7 +91,8 @@ namespace SW {
 		Renderer2D::Shutdown();
 	}
 
-	void TestLayer::OnUpdate(Timestep dt) {
+	void TestLayer::OnUpdate(Timestep dt)
+	{
 		FramebufferSpecification spec = framebuffer->GetSpecification();
 
 		if (m_IsViewportFocused)
@@ -115,7 +118,8 @@ namespace SW {
 		framebuffer->Unbind();
 	}
 
-	f32 TestLayer::DrawTitleBar() {
+	f32 TestLayer::DrawTitleBar()
+	{
 		constexpr f32 titlebarHeight = 57.0f;
 		const ImVec2 windowPadding = ImGui::GetCurrentWindow()->WindowPadding;
 
@@ -149,6 +153,13 @@ namespace SW {
 
 		if (ImGui::IsItemHovered()) {
 			Application::Get()->GetWindow()->RegisterOverTitlebar(true);
+		}
+
+		{
+			const float logoOffset = 16.0f * 2.0f + 41.0f + windowPadding.x;
+			ImGui::SetCursorPos(ImVec2(logoOffset, 4.0f));
+
+			DrawMenuBar();
 		}
 
 		// Minimize Button
@@ -199,11 +210,21 @@ namespace SW {
 		return titlebarHeight;
 	}
 
-	void TestLayer::DrawMenuBar() {
-		
+	void TestLayer::DrawMenuBar()
+	{
+		const ImRect menuBarRect = { 
+			ImGui::GetCursorPos(), { ImGui::GetContentRegionAvail().x + ImGui::GetCursorScreenPos().x, ImGui::GetFrameHeightWithSpacing() }
+		};
+
+		ImGui::BeginGroup();
+
+		ImGui::Text("asdasd");
+
+		ImGui::EndGroup();
 	}
 
-	void TestLayer::OnRender() {
+	void TestLayer::OnRender()
+	{
 		Application::Get()->GetWindow()->RegisterOverTitlebar(false);
 
 		ImGuiIO& io = ImGui::GetIO();

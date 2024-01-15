@@ -1,34 +1,35 @@
-project "Engine"
-    kind "StaticLib"
+project "EngineTest"
+    kind "ConsoleApp"
 
     targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 
     files {
         "src/**.hpp",
-        "src/**.cpp",
-        "vendor/ImGui/backends/imgui_impl_glfw.cpp",
-        "vendor/ImGui/backends/imgui_impl_opengl3.cpp",
+        "src/**.cpp"
     }
 
-    pchheader "pch.hpp"
-    pchsource "src/pch.cpp"
-
-    forceincludes { "pch.hpp" }
-
-    defines {
+    defines { 
         "GLFW_INCLUDE_NONE",
         "IMGUI_DEFINE_MATH_OPERATORS",
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
     }
 
+    links { "Engine" }
+
     includedirs {
-        "src"
+        "src",
+        "../Engine/src",
+        "../Engine/vendor",
     }
 
-    IncludeEngineDependencies()
+    IncludeEngineDependencies({
+        {
+            IncludeDir = "%{wks.location}/Engine/vendor/doctest",
+        }
+    })
     LinkEngineDependencies()
-    
+
     filter "configurations:Debug"
         defines { "SW_DEBUG_BUILD" }
         runtime "Debug"
@@ -45,14 +46,3 @@ project "Engine"
         runtime "Release"
         optimize "On"
         symbols "Off"
-
-    group "Engine/Dependencies"
-        include "Engine/vendor/GLFW"
-        include "Engine/vendor/GLAD"
-        include "Engine/vendor/spdlog"
-        include "Engine/vendor/ImGui"
-    group ""
-
-    group "Engine"
-        include "EngineTest/Build-EngineTest.lua"
-    group ""

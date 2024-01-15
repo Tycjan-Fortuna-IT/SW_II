@@ -28,11 +28,17 @@ Dependencies = {
     },
 }
 
-function IncludeEngineDependencies()
+function IncludeEngineDependencies(additional)
     includetable = {}
 
     for name, dependency in pairs(Dependencies) do
         table.insert(includetable, dependency.IncludeDir)
+    end
+
+    if additional == nil then additional = {} end
+
+    for name, dependency in pairs(additional) do
+        table.insert(includetable, dependency)
     end
 
     includedirs(includetable)
