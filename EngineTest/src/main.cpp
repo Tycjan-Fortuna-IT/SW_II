@@ -12,6 +12,7 @@
 
 #include "Math_UT/Vector2_UT.hpp"
 #include "Math_UT/Vector3_UT.hpp"
+#include "Math_UT/Vector4_UT.hpp"
 
 int main(int argc, char** argv) {
 	doctest::Context context;

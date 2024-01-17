@@ -344,7 +344,7 @@ namespace SW {
 
 		/**
 		 * @brief Returns a string representation of the vector.
-		 * @note The format is: { x, y }, e.g. { 1.0, 2.0 }.
+		 * @note The format: { x, y }, e.g. { 1.0, 2.0 }.
 		 * 
 		 * @return std::string A string representation of the vector.
 		 */

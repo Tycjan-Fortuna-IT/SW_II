@@ -92,10 +92,12 @@ namespace SW {
 		 * @brief The components of the vector, stored in an array.
 		 * @note The components can be accessed using the names: (x, y, z), (r, g, b), (s, t, p), (u, v, w).
 		 */
-        union {
+        union
+		{
             T data[3] = { static_cast<T>(0) };
 
-            struct {
+            struct
+			{
                 union { T x, r, s, u; };
                 union { T y, g, t, v; };
                 union { T z, b, p, w; };
@@ -108,7 +110,8 @@ namespace SW {
 		 * @param other The other Vector3 to add.
 		 * @return Vector3<T> The result of the addition.
 		 */
-		Vector3<T> operator+(const Vector3<T>& other) const {
+		Vector3<T> operator+(const Vector3<T>& other) const
+		{
 			return Vector3<T>(x + other.x, y + other.y, z + other.z);
 		}
 
@@ -118,7 +121,8 @@ namespace SW {
 		 * @param other The scalar value to add.
 		 * @return Vector3<T> The result of the addition.
 		 */
-		Vector3<T> operator+(const T& other) const {
+		Vector3<T> operator+(const T& other) const
+		{
 			return Vector3<T>(x + other, y + other, z + other);
 		}
 
@@ -128,7 +132,8 @@ namespace SW {
 		 * @param other The other Vector3 to subtract.
 		 * @return Vector3<T> The result of the subtraction.
 		 */
-		Vector3<T> operator-(const Vector3<T>& other) const {
+		Vector3<T> operator-(const Vector3<T>& other) const
+		{
 			return Vector3<T>(x - other.x, y - other.y, z - other.z);
 		}
 
@@ -138,7 +143,8 @@ namespace SW {
 		 * @param other The scalar value to subtract.
 		 * @return Vector3<T> The result of the subtraction.
 		 */
-		Vector3<T> operator-(const T& other) const {
+		Vector3<T> operator-(const T& other) const
+		{
 			return Vector3<T>(x - other, y - other, z - other);
 		}
 
@@ -148,7 +154,8 @@ namespace SW {
 		 * @param other The other Vector3 to multiply by.
 		 * @return Vector3<T> The result of the multiplication.
 		 */
-		Vector3<T> operator*(const Vector3<T>& other) const {
+		Vector3<T> operator*(const Vector3<T>& other) const
+		{
 			return Vector3<T>(x * other.x, y * other.y, z * other.z);
 		}
 
@@ -158,7 +165,8 @@ namespace SW {
 		 * @param other The scalar value to multiply by.
 		 * @return Vector3<T> The result of the multiplication.
 		 */
-		Vector3<T> operator*(const T& other) const {
+		Vector3<T> operator*(const T& other) const
+		{
 			return Vector3<T>(x * other, y * other, z * other);
 		}
 
@@ -167,9 +175,10 @@ namespace SW {
 		 *
 		 * @param other The other Vector3 to divide by.
 		 * @return Vector3<T> The result of the division.
-		 * @note If the other vector's x or y component is zero, an error message is logged and the division is not performed.
+		 * @note If the other vector's x, y or z component is zero, an error message is logged and the division is not performed.
 		 */
-		Vector3<T> operator/(const Vector3<T>& other) const {
+		Vector3<T> operator/(const Vector3<T>& other) const
+		{
 			if (other.x == static_cast<T>(0) || other.y == static_cast<T>(0) || other.z == static_cast<T>(0)) {
 				SW_WARN("Cannot divide component of Vector3<T> by zero!");
 				return *this;
@@ -184,7 +193,8 @@ namespace SW {
 		 * @param other The scalar value to divide by.
 		 * @return Vector3<T> The result of the division.
 		 */
-		Vector3<T> operator/(const T& other) const {
+		Vector3<T> operator/(const T& other) const
+		{
 			if (other == static_cast<T>(0)) {
 				SW_WARN("Cannot divide component of Vector3<T> by zero!");
 				return *this;
@@ -199,7 +209,8 @@ namespace SW {
 		 * @param other The other Vector3 to add.
 		 * @return Vector3<T>& A reference to this vector after the addition.
 		 */
-		Vector3<T>& operator+=(const Vector3<T>& other) {
+		Vector3<T>& operator+=(const Vector3<T>& other)
+		{
 			x += other.x;
 			y += other.y;
 			z += other.z;
@@ -213,7 +224,8 @@ namespace SW {
 		 * @param other The scalar value to add.
 		 * @return Vector3<T>& A reference to this vector after the addition.
 		 */
-		Vector3<T>& operator+=(const T& other) {
+		Vector3<T>& operator+=(const T& other)
+		{
 			x += other;
 			y += other;
 			z += other;
@@ -227,7 +239,8 @@ namespace SW {
 		 * @param other The other Vector3 to subtract.
 		 * @return Vector3<T>& A reference to this vector after the subtraction.
 		 */
-		Vector3<T>& operator-=(const Vector3<T>& other) {
+		Vector3<T>& operator-=(const Vector3<T>& other)
+		{
 			x -= other.x;
 			y -= other.y;
 			z -= other.z;
@@ -241,7 +254,8 @@ namespace SW {
 		 * @param other The scalar value to subtract.
 		 * @return Vector3<T>& A reference to this vector after the subtraction.
 		 */
-		Vector3<T>& operator-=(const T& other) {
+		Vector3<T>& operator-=(const T& other)
+		{
 			x -= other;
 			y -= other;
 			z -= other;
@@ -255,7 +269,8 @@ namespace SW {
 		 * @param other The other Vector3 to multiply by.
 		 * @return Vector3<T>& A reference to this vector after the multiplication.
 		 */
-		Vector3<T>& operator*=(const Vector3<T>& other) {
+		Vector3<T>& operator*=(const Vector3<T>& other)
+		{
 			x *= other.x;
 			y *= other.y;
 			z *= other.z;
@@ -269,7 +284,8 @@ namespace SW {
 		 * @param other The scalar value to multiply by.
 		 * @return Vector3<T>& A reference to this vector after the multiplication.
 		 */
-		Vector3<T>& operator*=(const T& other) {
+		Vector3<T>& operator*=(const T& other)
+		{
 			x *= other;
 			y *= other;
 			z *= other;
@@ -279,12 +295,13 @@ namespace SW {
 
 		/**
 		 * @brief Divides this vector by another Vector3.
-		 * @note If the other vector's x or y component is zero, an error message is logged and the division is not performed.
+		 * @note If the other vector's x, y or z component is zero, an error message is logged and the division is not performed.
 		 *
 		 * @param other The other Vector3 to divide by.
 		 * @return Vector3<T>& A reference to this vector after the division.
 		 */
-		Vector3<T>& operator/=(const Vector3<T>& other) {
+		Vector3<T>& operator/=(const Vector3<T>& other)
+		{
 			if (other.x == static_cast<T>(0) || other.y == static_cast<T>(0) || other.z == static_cast<T>(0)) {
 				SW_WARN("Cannot divide component of Vector3<T> by zero!");
 				return *this;
@@ -303,7 +320,8 @@ namespace SW {
 		 * @param other The scalar value to divide by.
 		 * @return Vector3<T>& A reference to this vector after the division.
 		 */
-		Vector3<T>& operator/=(const T& other) {
+		Vector3<T>& operator/=(const T& other)
+		{
 			if (other == static_cast<T>(0)) {
 				SW_WARN("Cannot divide component of Vector3<T> by zero!");
 				return *this;
@@ -322,7 +340,8 @@ namespace SW {
 		 * @param other The vector to compare against.
 		 * @return True if the vectors are equal, false otherwise.
 		 */
-		bool operator==(const Vector3<T>& other) const {
+		bool operator==(const Vector3<T>& other) const
+		{
 			return x == other.x && y == other.y && z == other.z;
 		}
 
@@ -332,13 +351,14 @@ namespace SW {
 		 * @param other The vector to compare against.
 		 * @return True if the vectors are not equal, false otherwise.
 		 */
-		bool operator!=(const Vector3<T>& other) const {
+		bool operator!=(const Vector3<T>& other) const
+		{
 			return !(x == other.x && y == other.y && z == other.z);
 		}
 
 		/**
 		 * @brief Returns a string representation of the vector.
-		 * @note In format is: { x, y, z }, e.g. { 1.0, 2.0, 3.0 }.
+		 * @note In format: { x, y, z }, e.g. { 1.0, 2.0, 3.0 }.
 		 * 
 		 * @return std::string A string representation of the vector.
 		 */
@@ -389,7 +409,8 @@ namespace SW {
 		 *
 		 * @return Vector3<T> A normalized version of the vector.
 		 */
-		Vector3<T> Normalized() {
+		Vector3<T> Normalized()
+		{
 			const T length = Length();
 
 			Vector3<T> result = *this;
