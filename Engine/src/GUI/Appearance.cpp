@@ -2,6 +2,9 @@
 
 #include <imgui.h>
 
+#include <icons/IconsMaterialDesignIcons.h>
+#include <icons/MaterialDesign.inl>
+
 namespace SW::GUI {
 
 	Style Appearance::s_Style;
@@ -148,6 +151,8 @@ namespace SW::GUI {
 		s_Fonts.BigSize = spec.BigSize;
 
 		s_Fonts.DefaultFont = io.Fonts->AddFontFromFileTTF(spec.FontPath.c_str(), spec.DefaultSize);
+		AppendIconFont(spec.DefaultSize);
+		
 		s_Fonts.SmallFont = io.Fonts->AddFontFromFileTTF(spec.FontPath.c_str(), spec.SmallSize);
 		s_Fonts.BigFont = io.Fonts->AddFontFromFileTTF(spec.FontPath.c_str(), spec.BigSize);
 
@@ -156,4 +161,21 @@ namespace SW::GUI {
 		s_Fonts.BigBoldFont = io.Fonts->AddFontFromFileTTF(spec.BoldFontPath.c_str(), spec.BigSize);
 	}
 
+	void Appearance::AppendIconFont(f32 size)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+
+		static constexpr ImWchar icons_ranges[] = { ICON_MIN_MDI, ICON_MAX_MDI, 0 };
+
+		ImFontConfig iconsConfig;
+
+		iconsConfig.MergeMode = true;
+		iconsConfig.PixelSnapH = true;
+		iconsConfig.GlyphOffset.y = 1.0f;
+		iconsConfig.OversampleH = iconsConfig.OversampleV = 1;
+		iconsConfig.GlyphMinAdvanceX = 4.0f;
+		iconsConfig.SizePixels = 12.0f;
+
+		io.Fonts->AddFontFromMemoryCompressedTTF(MaterialDesign_compressed_data, MaterialDesign_compressed_size, size, &iconsConfig, icons_ranges);
+	}
 }

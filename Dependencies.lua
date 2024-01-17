@@ -26,6 +26,9 @@ Dependencies = {
         IncludeDir = "%{wks.location}/Engine/vendor/ImGui",
         LinkAs = "ImGui",
     },
+    MATERIAL_ICONS = {
+        IncludeDir = "%{wks.location}/Engine/vendor/icons/include",
+    },
 }
 
 function IncludeEngineDependencies(additional)

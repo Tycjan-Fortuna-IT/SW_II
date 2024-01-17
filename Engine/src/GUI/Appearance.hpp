@@ -236,6 +236,13 @@ namespace SW {
 			static Style s_Style;		/** @brief Current app's style */
 			static Colors s_Colors;		/** @brief Current app's colors */
 			static Fonts s_Fonts;		/** @brief Current app's fonts */
+
+			/**
+			 * @brief Adds icon font to the application for each font size
+			 * 
+			 * @param size Size of the font
+			 */
+			static void AppendIconFont(f32 size);
 		};
 
 	}

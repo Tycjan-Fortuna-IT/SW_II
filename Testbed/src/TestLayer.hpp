@@ -11,6 +11,7 @@
 #include "Core/Scene/Scene.hpp"
 #include "Core/Scene/SceneCamera.hpp"
 #include "Core/Timestep.hpp"
+#include "Core/KeyCode.hpp"
 
 namespace SW {
 
@@ -52,6 +53,8 @@ namespace SW {
 
 		void OnUpdate(Timestep dt) override;
 		void OnRender() override;
+
+		bool OnKeyPressed(KeyCode code);
 
 		f32 DrawTitleBar();
 		void DrawMenuBar();

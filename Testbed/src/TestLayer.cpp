@@ -2,6 +2,7 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <icons/IconsMaterialDesignIcons.h>
 
 #include "Core/ECS/Components.hpp"
 #include "Core/Events/Event.hpp"
@@ -10,6 +11,8 @@
 #include "GUI/Colors.hpp"
 #include "GUI/GUI.hpp"
 #include "Core/Renderer/Renderer2D.hpp"
+#include "Core/Utils/Input.hpp"
+#include "Core/Utils/Utils.hpp"
 
 namespace SW {
 
@@ -58,6 +61,12 @@ namespace SW {
 			m_SceneCamera->OnViewportResize((f32)width, (f32)height);
 
 			return false;
+		});
+
+		EventSystem::Register(EVENT_CODE_KEY_PRESSED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+			KeyCode code = (KeyCode)event.Payload.u16[0];
+
+			return OnKeyPressed(code);
 		});
 
 		//m_CameraEntity = m_Scene.CreateEntity("Camera Entity Test - 1");
@@ -240,7 +249,7 @@ namespace SW {
 
 				}
 
-				if (ImGui::MenuItem("Close Editor")) {
+				if (ImGui::MenuItem("Close Editor", "Esc")) {
 					Application::Get()->Close();
 				}
 
@@ -371,6 +380,22 @@ namespace SW {
 		ImGui::End();
 
 		//ImGui::ShowDemoWindow();
+	}
+
+	bool TestLayer::OnKeyPressed(KeyCode code)
+	{
+		const bool shift = Input::IsKeyPressed(KeyCode::LeftShift) || Input::IsKeyPressed(KeyCode::RightShift);
+		const bool ctrl = Input::IsKeyPressed(KeyCode::LeftControl) || Input::IsKeyPressed(KeyCode::RightControl);
+		const bool alt = Input::IsKeyPressed(KeyCode::LeftAlt) || Input::IsKeyPressed(KeyCode::RightAlt);
+
+		switch (code) {
+			case KeyCode::Escape:
+				Application::Get()->Close();
+			default:
+				break;
+		}
+
+		return true;
 	}
 
 }
