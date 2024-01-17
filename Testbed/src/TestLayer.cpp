@@ -147,8 +147,9 @@ namespace SW {
 		}
 
 		const f32 w = ImGui::GetContentRegionAvail().x;
-		constexpr f32 buttonsAreaWidth = 120;
+		constexpr f32 buttonsAreaWidth = 300; // just so it doesn't interfere with buttons on the right
 
+		ImGui::SetCursorPosX(180); // just so it doesn't interfere with the menubar on the left
 		ImGui::InvisibleButton("##titleBarDragZone", ImVec2(w - buttonsAreaWidth, titlebarHeight));
 
 		if (ImGui::IsItemHovered()) {
@@ -184,12 +185,10 @@ namespace SW {
 			if (m_WindowMaximized) {
 				GUI::ImageButton(*m_RestoreIconTexture, { 40.f, 40.f }, [&]() {
 					Application::Get()->GetWindow()->Restore();
-					m_WindowMaximized = false;
 				});
 			} else {
 				GUI::ImageButton(*m_MaximizeIconTexture, { 40.f, 40.f }, [&]() {
 					Application::Get()->GetWindow()->Maximize();
-					m_WindowMaximized = true;
 				});
 			}
 		}
@@ -212,13 +211,44 @@ namespace SW {
 
 	void TestLayer::DrawMenuBar()
 	{
+		ImGui::SetCursorPosX(120); // just so it doesn't interfere with the SW logo
+
 		const ImRect menuBarRect = { 
 			ImGui::GetCursorPos(), { ImGui::GetContentRegionAvail().x + ImGui::GetCursorScreenPos().x, ImGui::GetFrameHeightWithSpacing() }
 		};
 
 		ImGui::BeginGroup();
 
-		ImGui::Text("asdasd");
+		if (GUI::BeginMenuBar(menuBarRect)) {
+			GUI::ScopedColor HeaderColor(ImGuiCol_Header, Color::DarkGray);
+			GUI::ScopedColor HeaderHoveredColor(ImGuiCol_HeaderHovered, Color::DarkGray);
+
+			if (ImGui::BeginMenu("File")) {
+				if (ImGui::MenuItem("Create Project...", "Ctrl+N")) {
+					
+				}
+
+				if (ImGui::MenuItem("Open Project...", "Ctrl+O")) {
+
+				}
+
+				if (ImGui::MenuItem("Save Project", "Ctrl+S")) {
+
+				}
+
+				if (ImGui::MenuItem("Save Project As...", "Ctrl+Shift+S")) {
+
+				}
+
+				if (ImGui::MenuItem("Close Editor")) {
+					Application::Get()->Close();
+				}
+
+				ImGui::EndMenu();
+			}
+		}
+		GUI::EndMenuBar();
+
 
 		ImGui::EndGroup();
 	}
@@ -243,9 +273,9 @@ namespace SW {
 		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-		const bool isMaximized = Application::Get()->GetWindow()->IsCurrentlyMaximized();
+		m_WindowMaximized = Application::Get()->GetWindow()->IsCurrentlyMaximized();
 
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, isMaximized ? ImVec2(6.0f, 6.0f) : ImVec2(1.0f, 1.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, m_WindowMaximized ? ImVec2(6.0f, 6.0f) : ImVec2(1.0f, 1.0f));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
 
 		ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4{ 0.0f, 0.0f, 0.0f, 0.0f });
