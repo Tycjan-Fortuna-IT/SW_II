@@ -2,7 +2,7 @@
  * @file Vector2.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
  * @version 0.1.0
- * @date 2024-01-15
+ * @date 2024-01-16
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -22,7 +22,8 @@ namespace SW {
 	struct Vector2 final
 	{
 		/**
-		 * @brief Default constructor. Initializes the vector with zeros.
+		 * @brief Default constructor.
+		 * @note Initializes the vector with zeros.
 		 */
 		Vector2() = default;
 
@@ -59,7 +60,9 @@ namespace SW {
 		 */
 		Vector2(std::initializer_list<T> values)
 		{
-			ASSERT(values.size() <= 2, "Too many arguments passed for the Vector2D constructor!");
+			if (values.size() > 2) {
+				SW_WARN("Too many arguments passed for the Vector2D constructor! Expected 0, 1 or 2, received: {}", values.size());
+			}
 
 			auto it = values.begin();
 			data[0] = it != values.end() ? *it++ : 0;
@@ -82,7 +85,7 @@ namespace SW {
 
 		/**
 		 * @brief The components of the vector, stored in an array.
-		 * @note The components can be accessed using the names x and y, or r and g, or s and t, or u and v.
+		 * @note The components can be accessed using the names: (x, y), (r, g), (s, t), or (u, v).
 		 */
 		union
 		{
@@ -107,6 +110,17 @@ namespace SW {
 		}
 
 		/**
+		 * @brief Adds a scalar value to this vector.
+		 * 
+		 * @param other The scalar value to add.
+		 * @return Vector2<T> The result of the addition.
+		 */
+		Vector2<T> operator+(const T& other) const
+		{
+			return Vector2<T>(x + other, y + other);
+		}
+
+		/**
 		 * @brief Subtracts two Vector2 objects.
 		 * 
 		 * @param other The other Vector2 to subtract.
@@ -118,6 +132,17 @@ namespace SW {
 		}
 
 		/**
+		 * @brief Subtracts a scalar value from this vector.
+		 * 
+		 * @param other The scalar value to subtract.
+		 * @return Vector2<T> The result of the subtraction.
+		 */
+		Vector2<T> operator-(const T& other) const
+		{
+			return Vector2<T>(x - other, y - other);
+		}
+
+		/**
 		 * @brief Multiplies two Vector2 objects.
 		 * 
 		 * @param other The other Vector2 to multiply by.
@@ -126,6 +151,17 @@ namespace SW {
 		Vector2<T> operator*(const Vector2<T>& other) const
 		{
 			return Vector2<T>(x * other.x, y * other.y);
+		}
+
+		/**
+		 * @brief Multiplies this vector by a scalar value.
+		 * 
+		 * @param other The scalar value to multiply by.
+		 * @return Vector2<T> The result of the multiplication.
+		 */
+		Vector2<T> operator*(const T& other) const
+		{
+			return Vector2<T>(x * other, y * other);
 		}
 
 		/**
@@ -146,6 +182,22 @@ namespace SW {
 		}
 
 		/**
+		 * @brief Divides this vector by a scalar value.
+		 * 
+		 * @param other The scalar value to divide by.
+		 * @return Vector2<T> The result of the division.
+		 */
+		Vector2<T> operator/(const T& other) const
+		{
+			if (other == static_cast<T>(0)) {
+				SW_WARN("Cannot divide component of Vector2<T> by zero!");
+				return *this;
+			}
+
+			return Vector2<T>(x / other, y / other);
+		}
+
+		/**
          * @brief Adds another Vector2 to this vector.
          * 
          * @param other The other Vector2 to add.
@@ -158,6 +210,20 @@ namespace SW {
 
             return *this;
         }
+
+		/**
+		 * @brief Adds a scalar value to this vector.
+		 * 
+		 * @param other The scalar value to add.
+		 * @return Vector2<T>& A reference to this vector after the addition.
+		 */
+		Vector2<T>& operator+=(const T& other)
+		{
+			x += other;
+			y += other;
+
+			return *this;
+		}
 
         /**
          * @brief Subtracts another Vector2 from this vector.
@@ -173,6 +239,20 @@ namespace SW {
             return *this;
         }
 
+		/**
+		 * @brief Subtracts a scalar value from this vector.
+		 * 
+		 * @param other The scalar value to subtract.
+		 * @return Vector2<T>& A reference to this vector after the subtraction.
+		 */
+		Vector2<T>& operator-=(const T& other)
+		{
+			x -= other;
+			y -= other;
+
+			return *this;
+		}
+
         /**
          * @brief Multiplies this vector by another Vector2.
          * 
@@ -187,12 +267,26 @@ namespace SW {
             return *this;
         }
 
+		/**
+		 * @brief Multiplies this vector by a scalar value.
+		 * 
+		 * @param other The scalar value to multiply by.
+		 * @return Vector2<T>& A reference to this vector after the multiplication.
+		 */
+		Vector2<T>& operator*=(const T& other)
+		{
+			x *= other;
+			y *= other;
+
+			return *this;
+		}
+
         /**
          * @brief Divides this vector by another Vector2.
+         * @note If the other vector's x or y component is zero, an error message is logged and the division is not performed.
          * 
          * @param other The other Vector2 to divide by.
          * @return Vector2<T>& A reference to this vector after the division.
-         * @note If the other vector's x or y component is zero, an error message is logged and the division is not performed.
          */
         Vector2<T>& operator/=(const Vector2<T>& other)
         {
@@ -206,6 +300,25 @@ namespace SW {
 
             return *this;
         }
+
+		/**
+		 * @brief Divides this vector by a scalar value.
+		 * 
+		 * @param other The scalar value to divide by.
+		 * @return Vector2<T>& A reference to this vector after the division.
+		 */
+		Vector2<T>& operator/=(const T& other)
+		{
+			if (other == static_cast<T>(0)) {
+				SW_WARN("Cannot divide component of Vector2<T> by zero!");
+				return *this;
+			}
+
+			x /= other;
+			y /= other;
+
+			return *this;
+		}
 
 		/**
 		 * @brief Checks if the current vector is equal to another vector.
@@ -287,6 +400,7 @@ namespace SW {
 			Vector2<T> result = *this;
 
 			if (length == static_cast<T>(0)) {
+				SW_WARN("Cant normalize Vector2<T> with length of 0!");
 				return result;
 			}
 
@@ -304,7 +418,7 @@ namespace SW {
 		 */
 		T Dot(const Vector2<T>& other) const
 		{
-			return x * other.x + y * other.y;
+			return static_cast<T>(x * other.x + y * other.y);
 		}
 	};
 

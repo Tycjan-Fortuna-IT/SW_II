@@ -1,10 +1,8 @@
 #pragma once
 
-#include <Core/Defines.hpp>
 #include <Core/Math/Vector2.hpp>
 
-
-void Vector2ContentCheck(const SW::Vector2<f32>& vector, f32 x, f32 y)
+inline void Vector2ContentCheck(const SW::Vector2<f32>& vector, f32 x, f32 y)
 {
 	CHECK(vector.x == x);
 	CHECK(vector.r == x);
@@ -41,6 +39,16 @@ TEST_CASE("Vector2 - constructors - tests")
 		Vector2ContentCheck(vector, 2.f, -5.f);
 	}
 
+	SUBCASE("Vector2(std::initializer_list<T> values)")
+	{
+		SW::Vector2<f32> vector1({ 2.f });
+		SW::Vector2<f32> vector2({ 2.f, -5.f });
+		SW::Vector2<f32> vector3({ 2.f, -5.f, 6.f, 8.f });
+
+		Vector2ContentCheck(vector1, 2.f, 2.f);
+		Vector2ContentCheck(vector2, 2.f, -5.f);
+		Vector2ContentCheck(vector3, 2.f, -5.f);
+	}
 }
 
 TEST_CASE("Vector2 - ToString - tests")
@@ -242,6 +250,105 @@ TEST_CASE("Vector2 - Vector2 to Vector2 operators - tests")
 		SW::Vector2<f32> vector5 = { 3.f, 4.f };
 
 		SW::Vector2<f32> vector6 = vector5 / vector4;
+
+		Vector2ContentCheck(vector6, 3.f, 4.f);
+	}
+}
+
+TEST_CASE("Vector2 - Vector2 to scalar operators - tests")
+{
+	SUBCASE("Vector2 += T")
+	{
+		SW::Vector2<f32> vector = { 2.f, -5.f };
+
+		vector += 3.f;
+
+		Vector2ContentCheck(vector, 5.f, -2.f);
+	}
+
+	SUBCASE("Vector2 -= T")
+	{
+		SW::Vector2<f32> vector = { 2.f, -5.f };
+
+		vector -= 3.f;
+
+		Vector2ContentCheck(vector, -1.f, -8.f);
+	}
+
+	SUBCASE("Vector2 *= T")
+	{
+		SW::Vector2<f32> vector = { 2.f, -5.f };
+
+		vector *= 3.f;
+
+		Vector2ContentCheck(vector, 6.f, -15.f);
+	}
+
+	SUBCASE("Vector2 /= T")
+	{
+		SW::Vector2<f32> vector = { 2.f, -5.f };
+
+		vector /= 3.f;
+
+		Vector2ContentCheck(vector, 0.66666669f, -1.6666666f);
+
+		SW::Vector2<f32> vector2 = { 0.f, 0.f };
+
+		vector2 /= 3.f;
+
+		Vector2ContentCheck(vector2, 0.f, 0.f);
+
+		SW::Vector2<f32> vector3 = { 3.f, 4.f };
+
+		vector3 /= 0.f;
+
+		Vector2ContentCheck(vector3, 3.f, 4.f);
+	}
+
+	SUBCASE("Vector2 + T")
+	{
+		SW::Vector2<f32> vector1 = { 2.f, -5.f };
+
+		SW::Vector2<f32> vector2 = vector1 + 3.f;
+
+		Vector2ContentCheck(vector2, 5.f, -2.f);
+	}
+
+	SUBCASE("Vector2 - T")
+	{
+		SW::Vector2<f32> vector1 = { 2.f, -5.f };
+
+		SW::Vector2<f32> vector2 = vector1 - 3.f;
+
+		Vector2ContentCheck(vector2, -1.f, -8.f);
+	}
+
+	SUBCASE("Vector2 * T")
+	{
+		SW::Vector2<f32> vector1 = { 2.f, -5.f };
+
+		SW::Vector2<f32> vector2 = vector1 * 3.f;
+
+		Vector2ContentCheck(vector2, 6.f, -15.f);
+	}
+
+	SUBCASE("Vector2 / T")
+	{
+		SW::Vector2<f32> vector1 = { 2.f, -5.f };
+
+		SW::Vector2<f32> vector2 = vector1 / 3.f;
+
+		Vector2ContentCheck(vector2, 0.66666669f, -1.6666666f);
+
+		SW::Vector2<f32> vector3 = { 0.f, 0.f };
+
+		SW::Vector2<f32> vector4 = vector3 / 3.f;
+
+		Vector2ContentCheck(vector4, 0.f, 0.f);
+
+		SW::Vector2<f32> vector5 = { 3.f, 4.f };
+
+		SW::Vector2<f32> vector6 = vector5 / 0.f;
 
 		Vector2ContentCheck(vector6, 3.f, 4.f);
 	}

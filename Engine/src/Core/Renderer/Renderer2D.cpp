@@ -193,7 +193,7 @@ namespace SW {
 		}
 
 		for (int i = 0; i < 4; i++) {
-			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
+			s_Data.QuadVertexBufferPtr->Position = Vector3<f32>::FromVector4(transform * s_Data.QuadVertexPositions[i]);
 			s_Data.QuadVertexBufferPtr->Color = sprite.Color;
 			s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
