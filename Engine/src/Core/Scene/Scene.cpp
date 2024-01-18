@@ -20,7 +20,7 @@ namespace SW {
 
 	Entity Scene::CreateEntity(const std::string& tag)
 	{
-		Entity entity = { EntityRegistry::Get().create() };
+		Entity entity = { EntityRegistry::GetRegistry().create() };
 
 		entity.AddComponent<IDComponent>();
 		entity.AddComponent<TagComponent>(tag);
@@ -31,18 +31,15 @@ namespace SW {
 
 	void Scene::DestroyEntity(Entity entity)
 	{
-		EntityRegistry::Get().destroy(entity);
+		EntityRegistry::GetRegistry().destroy(entity);
 	}
 
 	void Scene::OnUpdate(Timestep dt, const SceneCamera& camera)
 	{
 		Renderer2D::BeginScene(camera);
 
-		const auto& group = EntityRegistry::Get().group<TransformComponent>(entt::get<SpriteComponent>);
-		for (auto entity : group) {
-			const auto& [transform, sprite] = group.get<TransformComponent, SpriteComponent>(entity);
-
-			Renderer2D::DrawQuad(transform.GetTransform(), sprite);
+		for (auto&& [entity, tc, sc] : EntityRegistry::GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
+			Renderer2D::DrawQuad(tc.GetTransform(), sc);
 		}
 
 		Renderer2D::EndScene();
@@ -53,12 +50,8 @@ namespace SW {
 		m_ViewportWidth = width;
 		m_ViewportHeight = height;
 
-		auto view = EntityRegistry::Get().view<CameraComponent>();
-
-		for (auto entity : view) {
-			CameraComponent& cameraComponent = view.get<CameraComponent>(entity);
-
-			cameraComponent.Camera.SetViewportSize(width, height);
+		for (auto&& [entity, cc] : EntityRegistry::GetEntitiesWith<CameraComponent>().each()) {
+			cc.Camera.SetViewportSize(width, height);
 		}
 	}
 
