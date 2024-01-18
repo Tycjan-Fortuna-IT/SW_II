@@ -20,11 +20,11 @@ namespace SW::GUI {
 			IM_ROUND(
 				ImMax(window->Pos.x, bar.Min.x + window->WindowBorderSize + window->Pos.x - 10.0f)),
 				IM_ROUND(bar.Min.y + window->WindowBorderSize + window->Pos.y
-				),
+			),
 			IM_ROUND(ImMax(
 				bar.Min.x + window->Pos.x, bar.Max.x - ImMax(window->WindowRounding, window->WindowBorderSize))),
 				IM_ROUND(bar.Max.y + window->Pos.y
-				)
+			)
 		);
 
 		clip.ClipWith(window->OuterRectClipped);

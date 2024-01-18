@@ -1,6 +1,11 @@
 #include "TestLayer.hpp"
 
 #include "Panels/StatisticsPanel.hpp"
+#include "Panels/ConsolePanel.hpp"
+#include "Panels/AssetPanel.hpp"
+#include "Panels/SceneHierarchyPanel.hpp"
+#include "Panels/SceneViewportPanel.hpp"
+#include "Panels/PropertiesPanel.hpp"
 
 namespace SW {
 
@@ -58,6 +63,11 @@ namespace SW {
 		});
 
 		m_Panels.emplace_back(new StatisticsPanel("Statistics"));
+		m_Panels.emplace_back(new ConsolePanel());
+		m_Panels.emplace_back(new AssetPanel());
+		m_Panels.emplace_back(new SceneHierarchyPanel());
+		m_Panels.emplace_back(new SceneViewportPanel());
+		m_Panels.emplace_back(new PropertiesPanel());
 
 		//m_CameraEntity = m_Scene.CreateEntity("Camera Entity Test - 1");
 		//m_CameraEntity.AddComponent<CameraComponent>();
@@ -305,13 +315,6 @@ namespace SW {
 
 		ImGui::End();
 
-		ImGui::Begin("Scene");
-
-		static bool check = true;
-		ImGui::Checkbox("The label", &check);
-
-		ImGui::End();
-
 		ImGui::Begin("Viewport");
 
 		m_IsViewportFocused = ImGui::IsWindowFocused();
@@ -322,18 +325,6 @@ namespace SW {
 
 		const ImTextureID textureID = GUI::GetTextureID(framebuffer->GetColorAttachmentRendererID());
 		ImGui::Image(textureID, currentViewportSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-
-		ImGui::End();
-
-		ImGui::Begin("Components");
-
-		ImGui::End();
-
-		ImGui::Begin("Assets");
-
-		ImGui::End();
-
-		ImGui::Begin("Console");
 
 		ImGui::End();
 
