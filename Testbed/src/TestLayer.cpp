@@ -2,7 +2,6 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
-#include <icons/IconsMaterialDesignIcons.h>
 
 #include "Core/ECS/Components.hpp"
 #include "Core/Events/Event.hpp"
@@ -13,6 +12,7 @@
 #include "Core/Renderer/Renderer2D.hpp"
 #include "Core/Utils/Input.hpp"
 #include "Core/Utils/Utils.hpp"
+#include "Panels/StatisticsPanel.hpp"
 
 namespace SW {
 
@@ -69,6 +69,8 @@ namespace SW {
 			return OnKeyPressed(code);
 		});
 
+		m_Panels.emplace_back(new StatisticsPanel("Statistics"));
+
 		//m_CameraEntity = m_Scene.CreateEntity("Camera Entity Test - 1");
 		//m_CameraEntity.AddComponent<CameraComponent>();
 
@@ -97,11 +99,20 @@ namespace SW {
 		delete m_SceneCamera;
 		delete framebuffer;
 
+		for (Panel* panel : m_Panels) {
+			delete panel;
+		}
+
 		Renderer2D::Shutdown();
 	}
 
 	void TestLayer::OnUpdate(Timestep dt)
 	{
+		for (Panel* panel : m_Panels) {
+			if (panel->IsShowing())
+				panel->OnUpdate(dt);
+		}
+
 		FramebufferSpecification spec = framebuffer->GetSpecification();
 
 		if (m_IsViewportFocused)
@@ -338,46 +349,10 @@ namespace SW {
 
 		ImGui::End();
 
-		ImGui::Begin("Statistics");
-
-		static float m_FpsValues[200];
-		static std::vector<f32> m_FrameTimes;
-
-		f32 avg = 0.0f;
-
-		const size_t size = m_FrameTimes.size();
-		if (size >= 200)
-			m_FrameTimes.erase(m_FrameTimes.begin());
-
-		m_FrameTimes.emplace_back(ImGui::GetIO().Framerate);
-
-		for (u32 i = 0; i < size; i++) {
-			const float frameTime = m_FrameTimes[i];
-			m_FpsValues[i] = frameTime;
-			avg += frameTime;
+		for (Panel* panel : m_Panels) {
+			if (panel->IsShowing())
+				panel->OnRender();
 		}
-
-		avg /= static_cast<f32>(size);
-
-		ImGui::PushItemWidth(-1);
-		ImGui::PlotLines("##FPS", m_FpsValues, static_cast<int>(size));
-		ImGui::PopItemWidth();
-
-		ImGui::Text("FPS: %lf", static_cast<f64>(avg));
-		ImGui::Text("Frame time (ms): %lf", (1.0 / static_cast<f64>(avg)) * 1000.0f);
-
-		static bool VSync = true;
-		if (ImGui::Checkbox("VSync", &VSync)) {
-			Application::Get()->GetWindow()->SetVSync(VSync);
-		}
-
-		ImGui::Text("Renderer2D Stats:");
-		ImGui::Text("Draw Calls: %d", Renderer2D::GetStats().DrawCalls);
-		ImGui::Text("Quads: %d", Renderer2D::GetStats().QuadCount);
-		ImGui::Text("Vertices: %d", Renderer2D::GetStats().GetTotalVertexCount());
-		ImGui::Text("Indices: %d", Renderer2D::GetStats().GetTotalIndexCount());
-
-		ImGui::End();
 
 		//ImGui::ShowDemoWindow();
 	}

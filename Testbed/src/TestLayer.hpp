@@ -15,6 +15,8 @@
 
 namespace SW {
 
+	class Panel;
+
 	class TestLayer final : public Layer {
 	public:
 		explicit TestLayer(const std::string& name)
@@ -25,6 +27,8 @@ namespace SW {
 		Entity m_CameraEntity;
 		Entity m_Square1;
 		Entity m_Square2;
+
+		std::vector<Panel*> m_Panels;
 
 		std::shared_ptr<Shader> m_Shader = nullptr;
 		std::shared_ptr<Texture2D> boxTexture = nullptr;
