@@ -29,20 +29,24 @@ namespace SW {
 
         m_Window = new Window(specification);
 
+		EventSystem::Initialize();
+
+		EventSystem::Register(EventCode::EVENT_CODE_APPLICATION_QUIT, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+			Application::Close();
+
+			return true;
+		});
+
+		if (m_Specification.Fullscreen) {
+			m_Window->Maximize();
+		}
+
         m_IsRunning = true;
 
         s_Instance = this;
 
 		m_GuiLayer = new GuiLayer();
 		m_GuiLayer->OnAttach();
-
-        EventSystem::Initialize();
-
-        EventSystem::Register(EventCode::EVENT_CODE_APPLICATION_QUIT, nullptr, [this](Event event, void* sender, void* listener) -> bool {
-            Application::Close();
-
-            return true;
-        });
 
 		SW_INFO("Application has been properly initialized");
 

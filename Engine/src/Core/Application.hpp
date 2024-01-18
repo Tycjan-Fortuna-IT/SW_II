@@ -32,6 +32,7 @@ namespace SW {
         bool VSync = false;					/** @brief Whether the application should use VSync. */
 		EmbeddedIcon Icon = {};				/** @brief Window's icon, shown only if toolbar is enabled */
 		bool DisableToolbar = false;		/** @brief Whether the default window's toolbar should be visible. */
+		bool Fullscreen = false;			/** @brief Whether the window on start should be full screen */
     };
 
 	/**

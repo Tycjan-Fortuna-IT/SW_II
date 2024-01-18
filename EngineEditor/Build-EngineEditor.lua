@@ -1,4 +1,4 @@
-project "Testbed"
+project "EngineEditor"
     kind "ConsoleApp"
 
     targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
@@ -29,7 +29,7 @@ project "Testbed"
     LinkEngineDependencies()
 
     postbuildcommands {
-        "{COPY} assets %{wks.location}/bin/" .. outputdir .. "/Testbed/assets"
+        "{COPY} assets %{wks.location}/bin/" .. outputdir .. "/EngineEditor/assets"
     }
 
     filter "configurations:Debug"

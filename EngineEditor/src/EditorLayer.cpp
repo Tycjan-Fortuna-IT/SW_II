@@ -38,7 +38,6 @@ namespace SW {
 		m_Panels.emplace_back(new PropertiesPanel());
 		m_Panels.emplace_back(new SceneViewportPanel());
 
-		Application::Get()->GetWindow()->Maximize();
 		Application::Get()->GetWindow()->SetVSync(true);
 
 		Renderer2D::Init(m_Shader);

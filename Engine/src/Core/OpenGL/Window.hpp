@@ -34,7 +34,7 @@ namespace SW {
         bool VSync = false;					/** @brief Vertical synchronization. */
 		EmbeddedIcon Icon = {};				/** @brief Window's icon, shown only if toolbar is enabled */
 		bool DisableToolbar = false;		/** @brief Whether the default window's toolbar should be visible. */
-		bool OverTitlebar = false;
+		bool OverTitlebar = false;			/** @brief Whether the mouse cursor is hovering over custom titlebar */
 	};
 
 	/**

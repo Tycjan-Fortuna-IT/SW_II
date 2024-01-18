@@ -5,17 +5,17 @@
 
 #include "icons/embed/SW_Icon.embed"
 
-class SWEditor final : public SW::Application
+class EngineEditor final : public SW::Application
 {
 public:
-    explicit SWEditor(const SW::ApplicationSpecification& specification)
+    explicit EngineEditor(const SW::ApplicationSpecification& specification)
         : SW::Application(specification) {
 
         this->PushLayer(new SW::EditorLayer("Test"));
     }
 
 protected:
-    ~SWEditor() override {
+    ~EngineEditor() override {
         this->PopLayer();
     }
 };
@@ -31,7 +31,8 @@ SW::Application* CreateApplication() {
 			.Size = sizeof(e_SW_Icon)
 		},
 		.DisableToolbar = true,
+		.Fullscreen = true,
     };
 
-    return new SWEditor(spec);
+    return new EngineEditor(spec);
 }
