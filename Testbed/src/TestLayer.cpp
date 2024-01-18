@@ -1,17 +1,5 @@
 #include "TestLayer.hpp"
 
-#include <imgui.h>
-#include <imgui_internal.h>
-
-#include "Core/ECS/Components.hpp"
-#include "Core/Events/Event.hpp"
-#include "Core/Math/Math.hpp"
-#include "GUI/Appearance.hpp"
-#include "GUI/Colors.hpp"
-#include "GUI/GUI.hpp"
-#include "Core/Renderer/Renderer2D.hpp"
-#include "Core/Utils/Input.hpp"
-#include "Core/Utils/Utils.hpp"
 #include "Panels/StatisticsPanel.hpp"
 
 namespace SW {

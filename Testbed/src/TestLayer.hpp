@@ -2,16 +2,7 @@
 
 #include <Engine.hpp>
 
-#include "Core/OpenGL/Shader.hpp"
-#include "Core/OpenGL/Texture2D.hpp"
-#include "Core/Utils/Random.hpp"
-#include "Core/Math/Matrix4.hpp"
-#include "Core/Math/Vector2.hpp"
-#include "Core/OpenGL/Framebuffer.hpp"
-#include "Core/Scene/Scene.hpp"
-#include "Core/Scene/SceneCamera.hpp"
-#include "Core/Timestep.hpp"
-#include "Core/KeyCode.hpp"
+#include <imgui_internal.h>
 
 namespace SW {
 
