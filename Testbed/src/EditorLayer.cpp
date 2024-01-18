@@ -1,4 +1,4 @@
-#include "TestLayer.hpp"
+#include "EditorLayer.hpp"
 
 #include "Panels/StatisticsPanel.hpp"
 #include "Panels/ConsolePanel.hpp"
@@ -9,52 +9,21 @@
 
 namespace SW {
 
-	void TestLayer::OnAttach()
+	void EditorLayer::OnAttach()
 	{
-		APP_TRACE("TestLayer::OnAttach()");
-
 		m_Shader = std::make_shared<Shader>("assets/shaders/Initial.vert.glsl", "assets/shaders/Initial.frag.glsl");
 
-		boxTexture = std::make_shared<Texture2D>("assets/textures/container_512x512.jpg");
-		faceTexture = new Texture2D("assets/textures/awesomeface_512x512.png");
 		m_IconTexture = new Texture2D("assets/icons/SW_Icon.png", false);
 		m_CloseIconTexture = new Texture2D("assets/icons/editor/windows/Close.png", false);
 		m_MaximizeIconTexture = new Texture2D("assets/icons/editor/windows/Maximize.png", false);
 		m_MinimizeIconTexture = new Texture2D("assets/icons/editor/windows/Minimize.png", false);
 		m_RestoreIconTexture = new Texture2D("assets/icons/editor/windows/Restore.png", false);
 
-		const FramebufferSpecification spec = { 1280, 720 };
-		framebuffer = new Framebuffer(spec);
-
-		m_SceneCamera = new SceneCamera((f32)(spec.Width / spec.Height));
-
 		const GUI::FontSpecification fontSpec("assets/fonts/Roboto/Roboto-Regular.ttf", "assets/fonts/Roboto/Roboto-Bold.ttf");
 
 		GUI::Appearance::ApplyStyle(GUI::Style());
 		GUI::Appearance::ApplyColors(GUI::Colors());
 		GUI::Appearance::ApplyFonts(fontSpec);
-
-		EventSystem::Register(EVENT_CODE_MOUSE_WHEEL, nullptr, [this](Event event, void* sender, void* listener) -> bool {
-			const f32 xOffset = event.Payload.f32[0];
-			const f32 yOffset = event.Payload.f32[1];
-
-			if (!m_IsViewportFocused) return false;
-
-			m_SceneCamera->OnMouseScrolled(xOffset, yOffset);
-
-			return false;
-		});
-
-		EventSystem::Register(EVENT_CODE_WINDOW_RESIZED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
-			const i32 width = event.Payload.i32[0];
-			const i32 height = event.Payload.i32[1];
-
-			if (!m_IsViewportFocused) return false;
-
-			m_SceneCamera->OnViewportResize((f32)width, (f32)height);
-
-			return false;
-		});
 
 		EventSystem::Register(EVENT_CODE_KEY_PRESSED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
 			KeyCode code = (KeyCode)event.Payload.u16[0];
@@ -66,19 +35,8 @@ namespace SW {
 		m_Panels.emplace_back(new ConsolePanel());
 		m_Panels.emplace_back(new AssetPanel());
 		m_Panels.emplace_back(new SceneHierarchyPanel());
-		m_Panels.emplace_back(new SceneViewportPanel());
 		m_Panels.emplace_back(new PropertiesPanel());
-
-		//m_CameraEntity = m_Scene.CreateEntity("Camera Entity Test - 1");
-		//m_CameraEntity.AddComponent<CameraComponent>();
-
-		m_Square1 = m_Scene.CreateEntity("Square Entity Test - 1");
-		m_Square1.AddComponent<SpriteComponent>(Vector4<f32>(0.25f, 0.5f, 0.25f, 1.0f));
-
-		m_Square2 = m_Scene.CreateEntity("Square Entity Test - 1");
-		m_Square2.AddComponent<SpriteComponent>(boxTexture, Vector4<f32>(1.0f, 0.f, 0.f, 1.0f));
-
-		m_Square2.GetComponent<TransformComponent>().Position = { 1.25f, 1.25f, 0.0f };
+		m_Panels.emplace_back(new SceneViewportPanel());
 
 		Application::Get()->GetWindow()->Maximize();
 		Application::Get()->GetWindow()->SetVSync(true);
@@ -86,16 +44,13 @@ namespace SW {
 		Renderer2D::Init(m_Shader);
 	}
 
-	void TestLayer::OnDetach()
+	void EditorLayer::OnDetach()
 	{
-		delete faceTexture;
 		delete m_IconTexture;
 		delete m_CloseIconTexture;
 		delete m_MaximizeIconTexture;
 		delete m_MinimizeIconTexture;
 		delete m_RestoreIconTexture;
-		delete m_SceneCamera;
-		delete framebuffer;
 
 		for (Panel* panel : m_Panels) {
 			delete panel;
@@ -104,39 +59,15 @@ namespace SW {
 		Renderer2D::Shutdown();
 	}
 
-	void TestLayer::OnUpdate(Timestep dt)
+	void EditorLayer::OnUpdate(Timestep dt)
 	{
 		for (Panel* panel : m_Panels) {
 			if (panel->IsShowing())
 				panel->OnUpdate(dt);
 		}
-
-		FramebufferSpecification spec = framebuffer->GetSpecification();
-
-		if (m_IsViewportFocused)
-			m_SceneCamera->OnUpdate(dt);
-
-		if (
-			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && // if it's a valid size viewport
-			(spec.Width != (u32)m_ViewportSize.x || spec.Height != (u32)m_ViewportSize.y) // if it changed
-		) {
-			framebuffer->Resize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
-			m_SceneCamera->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
-			m_Scene.OnViewportResize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
-		}
-
-		Renderer2D::ResetStats();
-
-		framebuffer->Bind();
-
-		framebuffer->Clear();
-
-		m_Scene.OnUpdate(dt, *m_SceneCamera);
-
-		framebuffer->Unbind();
 	}
 
-	f32 TestLayer::DrawTitleBar()
+	f32 EditorLayer::DrawTitleBar()
 	{
 		constexpr f32 titlebarHeight = 57.0f;
 		const ImVec2 windowPadding = ImGui::GetCurrentWindow()->WindowPadding;
@@ -165,9 +96,9 @@ namespace SW {
 		}
 
 		const f32 w = ImGui::GetContentRegionAvail().x;
-		constexpr f32 buttonsAreaWidth = 300; // just so it doesn't interfere with buttons on the right
+		constexpr f32 buttonsAreaWidth = 350; // just so it doesn't interfere with buttons on the right
 
-		ImGui::SetCursorPosX(180); // just so it doesn't interfere with the menubar on the left
+		ImGui::SetCursorPosX(230); // just so it doesn't interfere with the menubar on the left
 		ImGui::InvisibleButton("##titleBarDragZone", ImVec2(w - buttonsAreaWidth, titlebarHeight));
 
 		if (ImGui::IsItemHovered()) {
@@ -227,7 +158,7 @@ namespace SW {
 		return titlebarHeight;
 	}
 
-	void TestLayer::DrawMenuBar()
+	void EditorLayer::DrawMenuBar()
 	{
 		ImGui::SetCursorPosX(120); // just so it doesn't interfere with the SW logo
 
@@ -264,6 +195,14 @@ namespace SW {
 
 				ImGui::EndMenu();
 			}
+
+			if (ImGui::BeginMenu("View")) {
+				if (ImGui::MenuItem("Show viewport")) {
+
+				}
+
+				ImGui::EndMenu();
+			}
 		}
 		GUI::EndMenuBar();
 
@@ -271,7 +210,7 @@ namespace SW {
 		ImGui::EndGroup();
 	}
 
-	void TestLayer::OnRender()
+	void EditorLayer::OnRender()
 	{
 		Application::Get()->GetWindow()->RegisterOverTitlebar(false);
 
@@ -315,19 +254,6 @@ namespace SW {
 
 		ImGui::End();
 
-		ImGui::Begin("Viewport");
-
-		m_IsViewportFocused = ImGui::IsWindowFocused();
-
-		const ImVec2 currentViewportSize = ImGui::GetContentRegionAvail();
-		m_ViewportSize.x = currentViewportSize.x;
-		m_ViewportSize.y = currentViewportSize.y;
-
-		const ImTextureID textureID = GUI::GetTextureID(framebuffer->GetColorAttachmentRendererID());
-		ImGui::Image(textureID, currentViewportSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-
-		ImGui::End();
-
 		for (Panel* panel : m_Panels) {
 			if (panel->IsShowing())
 				panel->OnRender();
@@ -336,7 +262,7 @@ namespace SW {
 		//ImGui::ShowDemoWindow();
 	}
 
-	bool TestLayer::OnKeyPressed(KeyCode code)
+	bool EditorLayer::OnKeyPressed(KeyCode code)
 	{
 		const bool shift = Input::IsKeyPressed(KeyCode::LeftShift) || Input::IsKeyPressed(KeyCode::RightShift);
 		const bool ctrl = Input::IsKeyPressed(KeyCode::LeftControl) || Input::IsKeyPressed(KeyCode::RightControl);

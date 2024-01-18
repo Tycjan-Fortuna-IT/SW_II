@@ -30,7 +30,7 @@ namespace SW {
 		/**
 		 * @brief Default destructor for the SceneViewportPanel class.
 		 */
-		~SceneViewportPanel() override = default;
+		~SceneViewportPanel() override;
 
 		/** @brief Copy constructor (deleted). */
 		SceneViewportPanel(const SceneViewportPanel& other) = delete;
@@ -54,6 +54,10 @@ namespace SW {
 
 	private:
 		Scene m_Scene;
+		SceneCamera* m_SceneCamera = nullptr;
+		Framebuffer* m_Framebuffer = nullptr;
+		bool m_IsViewportFocused = false;
+		Vector2<f32> m_ViewportSize = { 50.f };
 	};
 
 }

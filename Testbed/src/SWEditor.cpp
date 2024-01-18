@@ -1,28 +1,28 @@
 #include <Engine.hpp>
 #include <Entrypoint.hpp>
 
-#include "TestLayer.hpp"
+#include "EditorLayer.hpp"
 
 #include "icons/embed/SW_Icon.embed"
 
-class Testbed final : public SW::Application
+class SWEditor final : public SW::Application
 {
 public:
-    explicit Testbed(const SW::ApplicationSpecification& specification)
+    explicit SWEditor(const SW::ApplicationSpecification& specification)
         : SW::Application(specification) {
 
-        this->PushLayer(new SW::TestLayer("Test"));
+        this->PushLayer(new SW::EditorLayer("Test"));
     }
 
 protected:
-    ~Testbed() override {
+    ~SWEditor() override {
         this->PopLayer();
     }
 };
 
 SW::Application* CreateApplication() {
     SW::ApplicationSpecification spec = {
-        .Title = "Testbed",
+        .Title = "SW Editor",
         .Width = 1280,
         .Height = 720,
         .VSync = false,
@@ -33,5 +33,5 @@ SW::Application* CreateApplication() {
 		.DisableToolbar = true,
     };
 
-    return new Testbed(spec);
+    return new SWEditor(spec);
 }
