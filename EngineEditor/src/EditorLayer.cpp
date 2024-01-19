@@ -118,26 +118,29 @@ namespace SW {
 			ImGui::SetCursorPosX(rightOffset - windowPadding.x);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
 			ImGui::SetItemAllowOverlap();
-			GUI::ImageButton(*m_MinimizeIconTexture, { 40.f, 40.f }, [&]() {
+
+			if (GUI::ImageButton(*m_MinimizeIconTexture, { 40.f, 40.f })) {
 				Application::Get()->GetWindow()->Minimize();
-			});
+			}
 		}
 
 		// Maximize / shrink button
 		{
 			const float rightOffset = ImGui::GetWindowWidth() - 80.0f;
+			
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(rightOffset - windowPadding.x);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
 			ImGui::SetItemAllowOverlap();
+
 			if (m_WindowMaximized) {
-				GUI::ImageButton(*m_RestoreIconTexture, { 40.f, 40.f }, [&]() {
+				if (GUI::ImageButton(*m_RestoreIconTexture, { 40.f, 40.f })) {
 					Application::Get()->GetWindow()->Restore();
-				});
+				}
 			} else {
-				GUI::ImageButton(*m_MaximizeIconTexture, { 40.f, 40.f }, [&]() {
+				if (GUI::ImageButton(*m_MaximizeIconTexture, { 40.f, 40.f })) {
 					Application::Get()->GetWindow()->Maximize();
-				});
+				}
 			}
 		}
 
@@ -149,9 +152,9 @@ namespace SW {
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
 			ImGui::SetItemAllowOverlap();
 
-			GUI::ImageButton(*m_CloseIconTexture, { 40.f, 40.f }, []() {
+			if (GUI::ImageButton(*m_CloseIconTexture, { 40.f, 40.f })) {
 				Application::Get()->Close();
-			});
+			}
 		}
 
 		return titlebarHeight;
