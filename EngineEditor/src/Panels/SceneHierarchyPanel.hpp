@@ -8,7 +8,12 @@
  */
 #pragma once
 
+#include <imgui.h>
+
 #include "GUI/Panel.hpp"
+#include "GUI/GUI.hpp"
+#include "Core/ECS/Components.hpp"
+#include "Core/ECS/Entity.hpp"
 
 namespace SW {
 
@@ -50,6 +55,11 @@ namespace SW {
 		 * @brief Called every frame to render the panel.
 		 */
 		void OnRender() override;
+
+		void RenderEntityNode(Entity entity, const IDComponent& idc, const TagComponent& tc);
+
+	private:
+		GUI::TextFilter m_SearchFilter;
 	};
 
 }
