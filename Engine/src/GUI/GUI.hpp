@@ -8,10 +8,12 @@
  */
 #pragma once
 
+#include <imgui.h>
 #include <imgui_internal.h>
 
 #include "Core/OpenGL/Texture2D.hpp"
 #include "Core/Math/Vector2.hpp"
+#include "Core/Math/Vector3.hpp"
 #include "Colors.hpp"
 #include "Core/Utils/Utils.hpp"
 #include "icons/IconsMaterialDesignIcons.h"
@@ -291,6 +293,90 @@ namespace SW::GUI {
 		}
 
 		return false;
+	}
+
+	/**
+	 * @brief Displays a nice modifiable 3 sliders for a Vector3.
+	 * 
+	 * @param vec The vector to display.
+	 * @param label The label to display next to the vector.
+	 * @param resetValue The value to reset the vector to when the reset button is pressed.
+	 * @param labelWidth The width of the label.
+	 * @param min The minimum value for the vector.
+	 * @param max The maximum value for the vector.
+	 * @param format The format to use when displaying the vector values.
+	 */
+	static void DisplayVector3Slider(
+		Vector3<f32>& vec, const std::string& label, f32 resetValue, 
+		f32 labelWidth = 80.0f, f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.3f"
+	) {
+		ImGui::PushID(label.c_str());
+
+		ImGui::Columns(2);
+		ImGui::SetColumnWidth(0, labelWidth);
+		ImGui::Text(label.c_str());
+		ImGui::NextColumn();
+		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 4.0f));
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+		if (ImGui::Button("X"))
+			vec.x = resetValue;
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+		ImGui::DragFloat("##X", &vec.x, 0.01f, min, max, format.c_str());
+		ImGui::SameLine();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+		if (ImGui::Button("Y"))
+			vec.y = resetValue;
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+		ImGui::DragFloat("##Y", &vec.y, 0.01f, min, max, format.c_str());
+
+		ImGui::SameLine();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
+		if (ImGui::Button("Z"))
+			vec.z = resetValue;
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+		ImGui::DragFloat("##Z", &vec.z, 0.01f, min, max, format.c_str());
+
+		ImGui::PopItemWidth();
+		ImGui::PopStyleVar();
+
+		ImGui::Columns(1);
+
+		ImGui::PopID();
+	}
+
+	/**
+	 * @brief Displays a nice color picker for a Vector4.
+	 * 
+	 * @param color The color to display.
+	 * @param label The label to display next to the color.
+	 */
+	static void DisplayColorPicker(Vector4<f32>& color, const std::string& label)
+	{
+		ImGui::Columns(1);
+
+		float widgetWidth = ImGui::GetContentRegionAvail().x - 40.f;
+
+		ImGui::PushID("Color: ");
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 4.0f));
+
+		ImGui::Text("Color");
+		ImGui::SameLine();
+
+		ImGui::SetNextItemWidth(widgetWidth);
+		ImGui::ColorEdit4("##Color", color.ValuePtr());
+
+		ImGui::PopStyleVar();
+		ImGui::PopID();
 	}
 
 	/**

@@ -4,7 +4,8 @@
 
 #include "Core/ECS/Components.hpp"
 #include "Core/Renderer/Camera.hpp"
-#include "../Renderer/Renderer2D.hpp"
+#include "Core/Renderer/Renderer2D.hpp"
+#include "Core/Utils/Random.hpp"
 
 namespace SW {
 
@@ -22,9 +23,13 @@ namespace SW {
 	{
 		Entity entity = { EntityRegistry::GetRegistry().create() };
 
-		entity.AddComponent<IDComponent>();
+		u64 id = CreateID();
+
+		entity.AddComponent<IDComponent>(id);
 		entity.AddComponent<TagComponent>(tag);
 		entity.AddComponent<TransformComponent>();
+
+		m_EntityMap[id] = (entt::entity)entity;
 
 		return entity;
 	}
@@ -53,6 +58,16 @@ namespace SW {
 		for (auto&& [entity, cc] : EntityRegistry::GetEntitiesWith<CameraComponent>().each()) {
 			cc.Camera.SetViewportSize(width, height);
 		}
+	}
+
+	Entity Scene::GetEntityByID(u64 id) const
+	{
+		if (m_EntityMap.find(id) != m_EntityMap.end())
+			return { m_EntityMap.at(id) };
+
+		ASSERT(false, "Entity not found!"); // to do allow in ASSERTS to format strings
+
+		return {};
 	}
 
 }
