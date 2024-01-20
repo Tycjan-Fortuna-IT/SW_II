@@ -39,7 +39,7 @@ namespace SW {
 		Entity m_Square1 = m_Scene.CreateEntity("Square Entity Test - 1");
 		m_Square1.AddComponent<SpriteComponent>(Vector4<f32>(0.25f, 0.5f, 0.25f, 1.0f));
 
-		Entity m_Square2 = m_Scene.CreateEntity("Square Entity Test - 1");
+		Entity m_Square2 = m_Scene.CreateEntity("Square Entity Test - 2");
 		m_Square2.AddComponent<SpriteComponent>(Vector4<f32>(0.25f, 0.5f, 0.25f, 1.0f));
 		m_Square2.GetComponent<TransformComponent>().Position = { 1.25f, 1.25f, 0.0f };
 	}

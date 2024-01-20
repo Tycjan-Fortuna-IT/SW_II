@@ -13,6 +13,8 @@
 #include "Core/OpenGL/Texture2D.hpp"
 #include "Core/Math/Vector2.hpp"
 #include "Colors.hpp"
+#include "Core/Utils/Utils.hpp"
+#include "icons/IconsMaterialDesignIcons.h"
 
 namespace SW::GUI {
 
@@ -77,7 +79,7 @@ namespace SW::GUI {
 	 *		  so that we easily can avoid many calls to Push/Pop ID.
 	 *		  This way more advanced UI code doesn't get so clustered.
 	 */
-	class ScopedID
+	class ScopedID final
 	{
 	public:
 		ScopedID(const ScopedID&) = delete;
@@ -89,6 +91,60 @@ namespace SW::GUI {
 		ScopedID(T id) { ImGui::PushID(id); }
 
 		~ScopedID() { ImGui::PopID(); }
+	};
+
+	/**
+	 * @brief Utility helper class to create a fast search input field.
+	 */
+	class TextFilter final
+	{
+	public:
+		TextFilter() = default;
+		~TextFilter() = default;
+
+		/**
+		 * @brief Whether the user has typed anything into the search field.
+		 * 
+		 * @return true If the user has typed anything into the search field.
+		 */
+		bool IsDirty() const { return m_Buffer[0] != '\0'; }
+
+		/**
+		 * @brief Draws the search field.
+		 * 
+		 * @param label The label to display next to the search field.
+		 * @param padding The padding to apply to the search field.
+		 */
+		void OnRender(const char* label, const ImVec2& padding = { 0.f, 6.f })
+		{
+			GUI::ScopedStyle FramePadding(ImGuiStyleVar_FramePadding, padding);
+			GUI::ScopedColor TextColor(ImGuiCol_Text, Color::White);
+
+			static const std::string initialLabel = "  " + (std::string)String::FromChar8T(ICON_MDI_MAGNIFY) + "  Search ... ";
+			ImGui::InputTextWithHint("##search", initialLabel.c_str(), m_Buffer, sizeof(m_Buffer));
+		}
+
+		/**
+		 * @brief Checks if the given string passes the filter.
+		 * @note Only a partial match is required for the string to pass the filter.
+		 * 		 We don't require a full match from the beginning of the string.
+		 * 
+		 * @param check The string to check.
+		 * @return true If the string passes the filter.
+		 */
+		bool FilterPass(const std::string& check) const
+		{
+			if (!IsDirty())
+				return true;
+
+			if (check.find(m_Buffer) == std::string::npos)
+				return false;
+
+			return true;
+		}
+
+	private:
+		char m_Buffer[256] = {};   /**< The buffer containing the search string. */
 	};
 
 	/**
