@@ -45,7 +45,7 @@ namespace SW {
 
 				char buffer[256];
 
-				memcpy_s(buffer, sizeof(buffer), tc.Tag.c_str(), tc.Tag.size() + 1);
+				memcpy(buffer, tc.Tag.c_str(), std::min(sizeof(buffer), tc.Tag.size() + 1));
 
 				ImGui::SameLine();
 

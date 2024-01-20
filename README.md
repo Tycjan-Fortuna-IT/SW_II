@@ -12,7 +12,7 @@ Just to have some fun with C++ and OpenGL
 </p>
 
 # Getting Started
-Visual Studio 2022 is recommended. Not available on linux, windows only.
+On Windows Visual Studio 2022 is recommended. On linux tested on Ubuntu 22.04 LTS with clang compiler.
 
 ## <ins>**1. Downloading the repository:**</ins>
 
@@ -22,7 +22,8 @@ If the repository was cloned non-recursively previously, use `git submodule upda
 
 ## <ins>**2. Generating solution:**</ins>
 
-Run the [Setup-Windows-VS2022.bat](https://github.com/Tycjan-Fortuna-IT/SW_II/blob/master/Setup-Windows-VS2022.bat) file. This will (using premake5) generate all neccessary projects, folder structure, links and solution automatically.
+- `Windows` - Run the [Setup-Windows-VS2022.bat](https://github.com/Tycjan-Fortuna-IT/SW_II/blob/master/Setup-Windows-VS2022.bat) file. This will (using premake5) generate all neccessary projects, folder structure, links and solution automatically.
+- `Linux` - Run the [Setup-Linux-Clang.sh](https://github.com/Tycjan-Fortuna-IT/SW_II/blob/master/Setup-Linux-Clang.sh) file. This ask and download all required libraries to compile and run the engine, also will install premake5 if not present. Follow the appearing instructions. When everything is set running the script again will (using premake5) generate all neccessary projects, folder structure, links and solution automatically.
 
 ## <ins>**3. Building engine for production:**</ins>
 

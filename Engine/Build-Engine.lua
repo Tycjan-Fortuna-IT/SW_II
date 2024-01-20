@@ -28,8 +28,6 @@ project "Engine"
 
     IncludeEngineDependencies()
     LinkEngineDependencies()
-
-    linkoptions { "/NODEFAULTLIB:LIBCMT" }
     
     filter "configurations:Debug"
         defines { "SW_DEBUG_BUILD" }
@@ -54,7 +52,8 @@ project "Engine"
         include "Engine/vendor/spdlog"
         include "Engine/vendor/ImGui"
     group ""
-
+    
     group "Engine"
         include "EngineTest/Build-EngineTest.lua"
     group ""
+

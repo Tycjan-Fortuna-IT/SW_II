@@ -23,7 +23,7 @@ namespace SW {
         ASSERT(glfwInit(), "Failed to initialize GLFW");
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		if (m_Specification.DisableToolbar) {
@@ -57,7 +57,7 @@ namespace SW {
         const int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
         ASSERT(status, "Failed to initialize GLAD");
-        ASSERT(GLVersion.major == 4 && GLVersion.minor >= 6, "Engine requires at least OpenGL version 4.6!")
+        ASSERT(GLVersion.major == 4 && GLVersion.minor >= 5, "Engine requires at least OpenGL version 4.6!")
 
         SW_WARN("Vendor: {}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
         SW_WARN("Renderer: {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));

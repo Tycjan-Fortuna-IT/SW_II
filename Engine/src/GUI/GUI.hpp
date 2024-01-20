@@ -314,7 +314,7 @@ namespace SW::GUI {
 
 		ImGui::Columns(2);
 		ImGui::SetColumnWidth(0, labelWidth);
-		ImGui::Text(label.c_str());
+		ImGui::Text("%s", label.c_str());
 		ImGui::NextColumn();
 		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 4.0f));
@@ -369,7 +369,7 @@ namespace SW::GUI {
 		ImGui::PushID("Color: ");
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 4.0f));
 
-		ImGui::Text("Color");
+		ImGui::Text("%s", "Color");
 		ImGui::SameLine();
 
 		ImGui::SetNextItemWidth(widgetWidth);

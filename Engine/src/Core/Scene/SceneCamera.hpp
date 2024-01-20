@@ -1,8 +1,8 @@
 /**
  * @file SceneCamera.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.1
- * @date 2024-01-13
+ * @version 0.0.2
+ * @date 2024-01-20
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -16,7 +16,9 @@ namespace SW {
 	class SceneCamera final : public Camera
 	{
 	public:
+		SceneCamera() = default;
 		SceneCamera(f32 aspectRatio);
+		
 		~SceneCamera() override = default;
 
 		void SetViewportSize(u32 width, u32 height);

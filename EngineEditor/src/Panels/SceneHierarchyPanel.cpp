@@ -111,7 +111,7 @@ namespace SW {
 			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, Color::DarkGray);
 		}
 
-		const bool opened = ImGui::TreeNodeEx(reinterpret_cast<void*>(idc.ID), flags, "%s %s", ICON_MDI_CUBE_OUTLINE, tag.c_str());
+		const bool opened = ImGui::TreeNodeEx(reinterpret_cast<void*>(idc.ID), flags, "%s %s", String::FromChar8T(ICON_MDI_CUBE_OUTLINE), tag.c_str());
 
 		if (selected)
 			ImGui::PopStyleColor(2);
@@ -135,7 +135,7 @@ namespace SW {
 		ImGui::TableNextColumn();
 		ImGui::TextUnformatted("  Entity");
 		ImGui::TableNextColumn();
-		ImGui::Text("  %s ", true ? ICON_MDI_EYE : ICON_MDI_EYE_OFF);
+		ImGui::Text("  %s ", true ? String::FromChar8T(ICON_MDI_EYE) : String::FromChar8T(ICON_MDI_EYE_OFF));
 	}
 
 }

@@ -54,9 +54,9 @@ namespace SW {
 				return GL_INT;
 			case ShaderDataType::Bool:     
 				return GL_BOOL;
+			default:
+				ASSERT(false, "Unknown ShaderDataType!");
 		}
-
-		ASSERT(false, "Unknown ShaderDataType!");
 
 		return 0;
 	}
@@ -80,9 +80,9 @@ namespace SW {
 			case ShaderDataType::Int3:   return 4 * 3;
 			case ShaderDataType::Int4:   return 4 * 4;
 			case ShaderDataType::Bool:   return 1;
+			default:
+				ASSERT(false, "Unknown ShaderDataType!");
 		}
-
-		ASSERT(false, "Unknown ShaderDataType!");
 
 		return 0;
 	}
@@ -125,9 +125,9 @@ namespace SW {
 				case ShaderDataType::Int3:   return 3;
 				case ShaderDataType::Int4:   return 4;
 				case ShaderDataType::Bool:   return 1;
+				default:
+					ASSERT(false, "Unknown ShaderDataType!");
 			}
-
-			ASSERT(false, "Unknown ShaderDataType!");
 
 			return 0;
 		}

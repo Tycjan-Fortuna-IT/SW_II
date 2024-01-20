@@ -18,7 +18,6 @@ project "EngineEditor"
     }
 
     links { "Engine" }
-    linkoptions { "/NODEFAULTLIB:LIBCMT" }
 
     includedirs {
         "assets",
@@ -33,7 +32,10 @@ project "EngineEditor"
     postbuildcommands {
         "{COPY} assets %{wks.location}/bin/" .. outputdir .. "/EngineEditor/assets"
     }
-
+    
+    filter "system:windows"
+	linkoptions { "/NODEFAULTLIB:LIBCMT" }
+	
     filter "configurations:Debug"
         defines { "SW_DEBUG_BUILD" }
         runtime "Debug"
