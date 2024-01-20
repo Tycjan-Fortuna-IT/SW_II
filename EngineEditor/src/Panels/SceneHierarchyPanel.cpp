@@ -9,8 +9,8 @@
 
 namespace SW {
 
-	SceneHierarchyPanel::SceneHierarchyPanel(const char* name)
-		: Panel(name, String::FromChar8T(ICON_MDI_VIEW_LIST), true) {}
+	SceneHierarchyPanel::SceneHierarchyPanel(Scene* context)
+		: Panel("Scene Hierarchy", String::FromChar8T(ICON_MDI_VIEW_LIST), true), m_Scene(context) {}
 
 	void SceneHierarchyPanel::OnUpdate(Timestep dt)
 	{
@@ -25,14 +25,26 @@ namespace SW {
 			const f32 lineHeight = ImGui::GetTextLineHeight();
 			const ImVec2 padding = ImGui::GetStyle().FramePadding;
 
-			//m_SearchFilter.Draw("###HierarchyFilter", ImGui::GetContentRegionAvail().x - 70.f);
-
 			m_SearchFilter.OnRender("###HierarchyFilter");
 
 			ImGui::SameLine();
 
 			if (GUI::Button("{} Add", { 90.f, 30.f }, String::FromChar8T(ICON_MDI_PLUS))) {
-				
+				ImGui::OpenPopup("AddEntity_Popup");
+			}
+
+			if (ImGui::BeginPopup("AddEntity_Popup")) {
+				if (ImGui::BeginMenu("Entities")) {
+					if (ImGui::MenuItem("Square Entity")) {
+						m_Scene->CreateEntity("Square");
+
+						ImGui::CloseCurrentPopup();
+					}
+
+					ImGui::EndMenu();
+				}
+
+				ImGui::EndPopup();
 			}
 
 			constexpr ImGuiTableFlags tableFlags = ImGuiTableFlags_RowBg

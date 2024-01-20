@@ -14,6 +14,7 @@
 #include "GUI/GUI.hpp"
 #include "Core/ECS/Components.hpp"
 #include "Core/ECS/Entity.hpp"
+#include "Core/Scene/Scene.hpp"
 
 namespace SW {
 
@@ -27,9 +28,9 @@ namespace SW {
 		/**
 		 * @brief Constructs a SceneHierarchyPanel object with an optional name.
 		 * 
-		 * @param name The name of the panel. Default is "Stats".
+		 * @param context Current scene context.
 		 */
-		explicit SceneHierarchyPanel(const char* name = "Scene Hierarchy");
+		explicit SceneHierarchyPanel(Scene* context);
 
 		/**
 		 * @brief Default destructor for the SceneHierarchyPanel class.
@@ -59,7 +60,9 @@ namespace SW {
 		void RenderEntityNode(Entity entity, const IDComponent& idc, const TagComponent& tc);
 
 	private:
-		GUI::TextFilter m_SearchFilter;
+		GUI::TextFilter m_SearchFilter;		/**< Search filter used to search for entities by their tag */
+
+		Scene* m_Scene = nullptr;			/**< The current scene context. */
 	};
 
 }

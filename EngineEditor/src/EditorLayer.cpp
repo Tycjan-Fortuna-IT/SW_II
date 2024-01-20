@@ -34,12 +34,12 @@ namespace SW {
 		m_Panels.emplace_back(new StatisticsPanel("Statistics"));
 		m_Panels.emplace_back(new ConsolePanel());
 		m_Panels.emplace_back(new AssetPanel());
-		m_Panels.emplace_back(new SceneHierarchyPanel());
 
 		SceneViewportPanel* viewport = new SceneViewportPanel();
 		
 		m_Panels.emplace_back(viewport);
 		m_Panels.emplace_back(new PropertiesPanel(viewport->GetCurrentScene()));
+		m_Panels.emplace_back(new SceneHierarchyPanel(viewport->GetCurrentScene()));
 
 		Application::Get()->GetWindow()->SetVSync(true);
 

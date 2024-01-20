@@ -16,7 +16,9 @@ project "EngineEditor"
         "IMGUI_DEFINE_MATH_OPERATORS",
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
     }
+
     links { "Engine" }
+    linkoptions { "/NODEFAULTLIB:LIBCMT" }
 
     includedirs {
         "assets",

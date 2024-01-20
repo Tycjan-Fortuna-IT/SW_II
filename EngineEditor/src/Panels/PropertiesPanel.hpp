@@ -23,7 +23,7 @@ namespace SW {
 		/**
 		 * @brief Constructs a PropertiesPanel object with an optional name.
 		 * 
-		 * @param Scene* Current scene context.
+		 * @param context Current scene context.
 		 */
 		explicit PropertiesPanel(Scene* context);
 
