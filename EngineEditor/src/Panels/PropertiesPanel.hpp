@@ -9,6 +9,7 @@
 #pragma once
 
 #include "GUI/Panel.hpp"
+#include "Core/Scene/Scene.hpp"
 
 namespace SW {
 
@@ -22,9 +23,9 @@ namespace SW {
 		/**
 		 * @brief Constructs a PropertiesPanel object with an optional name.
 		 * 
-		 * @param name The name of the panel. Default is "Properties".
+		 * @param Scene* Current scene context.
 		 */
-		explicit PropertiesPanel(const char* name = "Properties");
+		explicit PropertiesPanel(Scene* context);
 
 		/**
 		 * @brief Default destructor for the PropertiesPanel class.
@@ -50,6 +51,9 @@ namespace SW {
 		 * @brief Called every frame to render the panel.
 		 */
 		void OnRender() override;
+
+	private:
+		Scene* m_Scene = nullptr;	/**< The current scene context. */
 	};
 
 }

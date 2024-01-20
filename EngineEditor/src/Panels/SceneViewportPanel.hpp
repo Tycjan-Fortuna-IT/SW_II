@@ -52,6 +52,13 @@ namespace SW {
 		 */
 		void OnRender() override;
 
+		/**
+		 * @brief Gets the current scene.
+		 * 
+		 * @return Scene* The current scene.
+		 */
+		Scene* GetCurrentScene() { return &m_Scene; }
+
 	private:
 		Scene m_Scene;
 		SceneCamera* m_SceneCamera = nullptr;
