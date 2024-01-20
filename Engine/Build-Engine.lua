@@ -28,6 +28,8 @@ project "Engine"
 
     IncludeEngineDependencies()
     LinkEngineDependencies()
+
+    linkoptions { "/NODEFAULTLIB:LIBCMT" }
     
     filter "configurations:Debug"
         defines { "SW_DEBUG_BUILD" }

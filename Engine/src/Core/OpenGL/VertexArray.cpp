@@ -41,7 +41,7 @@ namespace SW {
 			glEnableVertexAttribArray(index);
 
 			glVertexAttribPointer(index, element.GetComponentCount(), ShaderDataTypeToOpenGLBaseType(element.Type),
-				GL_FALSE, layout.GetStride(), reinterpret_cast<const void*>(element.Offset));
+				GL_FALSE, layout.GetStride(), reinterpret_cast<const void*>(static_cast<uintptr_t>(element.Offset)));
 
 			index++;
 		}
