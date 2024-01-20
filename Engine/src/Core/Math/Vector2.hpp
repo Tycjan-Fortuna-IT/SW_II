@@ -1,8 +1,8 @@
 /**
  * @file Vector2.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.0
- * @date 2024-01-16
+ * @version 0.1.1
+ * @date 2024-01-20
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -357,10 +357,17 @@ namespace SW {
 
 		/**
 		 * @brief Returns a pointer to the first component of the vector (to the beginning of the internal data array).
-		 * 
+		 *
 		 * @return const T* A pointer to the first component of the vector.
 		 */
-		const T* ValuePtr() const { return data; }
+		T* ValuePtr() { return data; }
+
+		/**
+		 * @brief Returns a const pointer to the first component of the vector (to the beginning of the internal data array).
+		 *
+		 * @return const T* A pointer to the first component of the vector.
+		 */
+		const T* ValuePtrConst() const { return data; }
 
 		/**
 		 * @brief Calculates the length (magnitude) of the vector.

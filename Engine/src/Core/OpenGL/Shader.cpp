@@ -154,6 +154,6 @@ namespace SW {
 
     void Shader::UploadUniformMat4(const std::string& name, const Matrix4<f32>& value) const
 	{
-        glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, value.ValuePtr());
+        glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, value.ValuePtrConst());
     }
 }
