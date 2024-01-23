@@ -13,3 +13,6 @@
 [submodule "Engine/vendor/spdlog"]
 	path = Engine/vendor/spdlog
 	url = https://github.com/Tycjan-Fortuna-IT/spdlog.git
+[submodule "Engine/vendor/YamlCpp"]
+	path = Engine/vendor/YamlCpp
+	url = https://github.com/Tycjan-Fortuna-IT/yaml-cpp.git

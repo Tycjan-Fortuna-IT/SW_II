@@ -10,6 +10,7 @@
 
 #include "Core/Debug/LogSystem.hpp"
 #include "EntityRegistry.hpp"
+#include "Components.hpp"
 
 namespace SW {
 
@@ -44,7 +45,7 @@ namespace SW {
         template <typename T>
         bool HasComponent() const
 		{
-            return EntityRegistry::GetRegistry().all_of<T>(m_Handle);
+            return EntityRegistry::GetRegistryHandle().all_of<T>(m_Handle);
         }
 
 		/**
@@ -59,7 +60,7 @@ namespace SW {
 		{
             ASSERT(!HasComponent<T>(), "Entity already has component!");
 
-            return EntityRegistry::GetRegistry().emplace<T>(m_Handle, std::forward<Args>(args)...);
+            return EntityRegistry::GetRegistryHandle().emplace<T>(m_Handle, std::forward<Args>(args)...);
         }
 
 		/**
@@ -72,7 +73,7 @@ namespace SW {
 		{
             ASSERT(HasComponent<T>(), "Entity does not have component!");
 
-            return EntityRegistry::GetRegistry().get<T>(m_Handle);
+            return EntityRegistry::GetRegistryHandle().get<T>(m_Handle);
         }
 
 		/**
@@ -84,8 +85,22 @@ namespace SW {
 		{
             ASSERT(HasComponent<T>(), "Entity does not have component!");
 
-            EntityRegistry::GetRegistry().remove<T>(m_Handle);
+            EntityRegistry::GetRegistryHandle().remove<T>(m_Handle);
         }
+
+		/**
+		 * @brief Gets the entity ID.
+		 * 
+		 * @return u64 The entity ID.
+		 */
+		u64 GetID() { return GetComponent<IDComponent>().ID; }
+
+		/**
+		 * @brief Gets the entity tag.
+		 * 
+		 * @return const std::string& The entity tag.
+		 */
+		const std::string& GetTag() { return GetComponent<TagComponent>().Tag; }
 
 		/**
 		 * @brief Conversion operator to check if the entity is valid.

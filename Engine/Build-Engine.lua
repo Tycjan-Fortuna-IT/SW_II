@@ -20,6 +20,7 @@ project "Engine"
         "GLFW_INCLUDE_NONE",
         "IMGUI_DEFINE_MATH_OPERATORS",
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
+        "YAML_CPP_STATIC_DEFINE",
     }
 
     includedirs {
@@ -51,6 +52,7 @@ project "Engine"
         include "Engine/vendor/GLAD"
         include "Engine/vendor/spdlog"
         include "Engine/vendor/ImGui"
+        include "Engine/vendor/YamlCpp"
     group ""
     
     group "Engine"

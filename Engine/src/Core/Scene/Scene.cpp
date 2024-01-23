@@ -21,7 +21,7 @@ namespace SW {
 
 	Entity Scene::CreateEntity(const std::string& tag)
 	{
-		Entity entity = { EntityRegistry::GetRegistry().create() };
+		Entity entity = { EntityRegistry::GetRegistryHandle().create() };
 
 		u64 id = CreateID();
 
@@ -36,7 +36,7 @@ namespace SW {
 
 	void Scene::DestroyEntity(Entity entity)
 	{
-		EntityRegistry::GetRegistry().destroy(entity);
+		EntityRegistry::GetRegistryHandle().destroy(entity);
 	}
 
 	void Scene::OnUpdate(Timestep dt, const SceneCamera& camera)

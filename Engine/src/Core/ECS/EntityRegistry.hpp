@@ -63,7 +63,7 @@ namespace SW {
 		 * 
 		 * @return A reference to the entt::registry instance.
 		 */
-		static entt::registry& GetRegistry() { return s_EnttHandle; }
+		static entt::registry& GetRegistryHandle() { return s_EnttHandle; }
 
 	private:
 		static entt::registry s_EnttHandle;			///< The underlying entt::registry instance.

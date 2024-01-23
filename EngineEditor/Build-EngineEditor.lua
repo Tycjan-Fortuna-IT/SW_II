@@ -15,6 +15,7 @@ project "EngineEditor"
         "GLFW_INCLUDE_NONE",
         "IMGUI_DEFINE_MATH_OPERATORS",
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
+        "YAML_CPP_STATIC_DEFINE",
     }
 
     links { "Engine" }

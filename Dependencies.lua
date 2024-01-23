@@ -29,6 +29,9 @@ Dependencies = {
     MATERIAL_ICONS = {
         IncludeDir = "%{wks.location}/Engine/vendor/icons/include",
     },
+    YAML_CPP = {
+        IncludeDir = "%{wks.location}/Engine/vendor/YamlCpp/include",
+    },
 }
 
 function IncludeEngineDependencies(additional)
