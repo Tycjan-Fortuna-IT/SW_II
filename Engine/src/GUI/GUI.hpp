@@ -1,8 +1,8 @@
 ﻿/**
  * @file GUI.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.2
- * @date 2024-01-18
+ * @version 0.0.3
+ * @date 2024-01-23
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -243,6 +243,26 @@ namespace SW::GUI {
 		result.Max.y += y;
 
 		return result;
+	}
+
+	/**
+	 * @brief Moves the mouse cursor to the specified position on the x-axis.
+	 * 
+	 * @param x The x position to move the mouse cursor to.
+	 */
+	static void MoveMousePosX(f32 x)
+	{
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + x);
+	}
+
+	/**
+	 * @brief Moves the mouse cursor to the specified position on the y-axis.
+	 * 
+	 * @param y The y position to move the mouse cursor to.
+	 */
+	static void MoveMousePosY(f32 y)
+	{
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + y);
 	}
 
 	/**

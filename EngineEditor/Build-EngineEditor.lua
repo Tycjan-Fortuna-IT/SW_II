@@ -34,7 +34,7 @@ project "EngineEditor"
     }
     
     filter "system:windows"
-	linkoptions { "/NODEFAULTLIB:LIBCMT" }
+	    linkoptions { "/NODEFAULTLIB:LIBCMT" }
 	
     filter "configurations:Debug"
         defines { "SW_DEBUG_BUILD" }

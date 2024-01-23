@@ -27,6 +27,12 @@ namespace SW {
 
 			Entity entity = m_Scene->GetEntityByID(SelectionManager::GetSelectionID());
 
+			static const std::string identifiedLabel =
+				(std::string)String::FromChar8T(ICON_MDI_KEY) + "  ID";
+
+			static const std::string tagLabel =
+				(std::string)String::FromChar8T(ICON_MDI_TAG) + "  Tag";
+
 			static const std::string transformLabel = 
 				(std::string)String::FromChar8T(ICON_MDI_VECTOR_LINE) + "  Transform";
 
@@ -37,6 +43,17 @@ namespace SW {
 				ImGui::OpenPopup("AddComponent_Popup");
 			}
 
+			{
+				ImGui::SameLine();
+
+				IDComponent& id = entity.GetComponent<IDComponent>();
+
+				ImGui::Text(identifiedLabel.c_str());
+
+				ImGui::SameLine();
+
+				ImGui::TextDisabled(std::to_string(id.ID).c_str());
+			}
 
 			if (entity.HasComponent<TagComponent>()) {
 				TagComponent& tc = entity.GetComponent<TagComponent>();
@@ -47,7 +64,15 @@ namespace SW {
 
 				memcpy(buffer, tc.Tag.c_str(), std::min(sizeof(buffer), tc.Tag.size() + 1));
 
-				ImGui::SameLine();
+				const f32 oldMouseX = ImGui::GetCursorPosX();
+				const f32 oldMouseY = ImGui::GetCursorPosY();
+				const f32 textWidth = ImGui::CalcTextSize(tagLabel.c_str()).x;
+				const f32 margin = 15.f;
+
+				ImGui::SetCursorPos(ImVec2(oldMouseX, oldMouseY + 6));
+				ImGui::Text(tagLabel.c_str());
+
+				ImGui::SetCursorPos(ImVec2(oldMouseX + textWidth + margin, oldMouseY));
 
 				if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
 					tc.Tag = buffer;
