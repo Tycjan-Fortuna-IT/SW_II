@@ -4,6 +4,7 @@
 #include "Core/KeyCode.hpp"
 #include "Events/Event.hpp"
 #include "GUI/GuiLayer.hpp"
+#include "Utils/Filesystem.hpp"
 
 namespace SW {
 
@@ -29,6 +30,7 @@ namespace SW {
 
         m_Window = new Window(specification);
 
+		FileSystem::Initialize();
 		EventSystem::Initialize();
 
 		EventSystem::Register(EventCode::EVENT_CODE_APPLICATION_QUIT, nullptr, [this](Event event, void* sender, void* listener) -> bool {
@@ -55,6 +57,7 @@ namespace SW {
 
 	bool Application::OnShutdown()
 	{
+		FileSystem::Shutdown();
 		EventSystem::Shutdown();
 
 		m_GuiLayer->OnDetach();

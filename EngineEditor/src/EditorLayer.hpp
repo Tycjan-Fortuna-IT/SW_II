@@ -4,6 +4,8 @@
 
 #include <imgui_internal.h>
 
+#include "Panels/SceneViewportPanel.hpp"
+
 namespace SW {
 
 	class Panel;
@@ -22,6 +24,8 @@ namespace SW {
 		Texture2D* m_MaximizeIconTexture = nullptr;
 		Texture2D* m_MinimizeIconTexture = nullptr;
 		Texture2D* m_RestoreIconTexture = nullptr;
+
+		SceneViewportPanel* m_Viewport = nullptr;
 
 		bool m_WindowMaximized = true;
 

@@ -1,11 +1,14 @@
 #include "EditorLayer.hpp"
 
+#include <filesystem>
+
 #include "Panels/StatisticsPanel.hpp"
 #include "Panels/ConsolePanel.hpp"
 #include "Panels/AssetPanel.hpp"
 #include "Panels/SceneHierarchyPanel.hpp"
-#include "Panels/SceneViewportPanel.hpp"
 #include "Panels/PropertiesPanel.hpp"
+#include "Core/Scene/SceneSerializer.hpp"
+#include "Core/Utils/Filesystem.hpp"
 
 namespace SW {
 
@@ -35,11 +38,11 @@ namespace SW {
 		m_Panels.emplace_back(new ConsolePanel());
 		m_Panels.emplace_back(new AssetPanel());
 
-		SceneViewportPanel* viewport = new SceneViewportPanel();
+		m_Viewport = new SceneViewportPanel();
 		
-		m_Panels.emplace_back(viewport);
-		m_Panels.emplace_back(new PropertiesPanel(viewport->GetCurrentScene()));
-		m_Panels.emplace_back(new SceneHierarchyPanel(viewport->GetCurrentScene()));
+		m_Panels.emplace_back(m_Viewport);
+		m_Panels.emplace_back(new PropertiesPanel(m_Viewport->GetCurrentScene()));
+		m_Panels.emplace_back(new SceneHierarchyPanel(m_Viewport->GetCurrentScene()));
 
 		Application::Get()->GetWindow()->SetVSync(true);
 
@@ -191,7 +194,11 @@ namespace SW {
 				}
 
 				if (ImGui::MenuItem("Save Project As...", "Ctrl+Shift+S")) {
+					std::filesystem::path filepath = FileSystem::SaveFileDialog({ { "SW Engine Scene file", "sw" } });
 
+					if (!filepath.empty()) {
+						SceneSerializer::Serialize(m_Viewport->GetCurrentScene(), filepath.string());
+					}
 				}
 
 				if (ImGui::MenuItem("Close Editor", "Esc")) {
