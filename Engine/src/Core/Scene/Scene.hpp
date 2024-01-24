@@ -38,10 +38,23 @@ namespace SW {
 		Entity CreateEntity(const std::string& tag = "Entity");
 
 		/**
+		 * @brief Creates a new entity in the scene with id and an optional tag.
+		 * @param id The id to assign to the entity.
+		 * @param tag The tag to assign to the entity (default is "Entity").
+		 * @return The created entity.
+		 */
+		Entity CreateEntityWithID(u64 id, const std::string& tag = "Entity");
+
+		/**
 		 * @brief Destroys the specified entity in the scene.
 		 * @param entity The entity to destroy.
 		 */
 		void DestroyEntity(Entity entity);
+
+		/**
+		 * @brief Destroys all present entities in the scene.
+		 */
+		void DestroyAllEntities();
 
 		/**
 		 * @brief Updates the scene with the specified timestep and camera.

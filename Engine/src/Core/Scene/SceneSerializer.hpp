@@ -32,7 +32,7 @@ namespace SW {
 		 * @param scene Scene to deserialize.
 		 * @param path Path to file.
 		 */
-		static void Deserialize(Scene** scene, const std::string& path);
+		static void Deserialize(Scene* scene, const std::string& path);
 	};
 
 }

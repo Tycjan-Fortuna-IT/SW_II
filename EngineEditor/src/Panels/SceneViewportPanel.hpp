@@ -57,10 +57,10 @@ namespace SW {
 		 * 
 		 * @return Scene* The current scene.
 		 */
-		Scene* GetCurrentScene() { return &m_Scene; }
+		Scene* GetCurrentScene() { return m_Scene; }
 
 	private:
-		Scene m_Scene;
+		Scene* m_Scene = nullptr;
 		SceneCamera* m_SceneCamera = nullptr;
 		Framebuffer* m_Framebuffer = nullptr;
 		bool m_IsViewportFocused = false;

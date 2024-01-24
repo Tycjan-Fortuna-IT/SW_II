@@ -21,4 +21,9 @@ namespace SW {
         s_EnttHandle.destroy(entity);
     }
 
+    void EntityRegistry::DestroyAllEntities()
+    {
+		s_EnttHandle.clear();
+    }
+
 }

@@ -36,10 +36,12 @@ namespace SW {
 
 		m_SceneCamera = new SceneCamera((f32)(spec.Width / spec.Height));
 
-		Entity m_Square1 = m_Scene.CreateEntity("Square Entity Test - 1");
+		m_Scene = new Scene();
+
+		Entity m_Square1 = m_Scene->CreateEntity("Square Entity Test - 1");
 		m_Square1.AddComponent<SpriteComponent>(Vector4<f32>(0.25f, 0.5f, 0.25f, 1.0f));
 
-		Entity m_Square2 = m_Scene.CreateEntity("Square Entity Test - 2");
+		Entity m_Square2 = m_Scene->CreateEntity("Square Entity Test - 2");
 		m_Square2.AddComponent<SpriteComponent>(Vector4<f32>(0.25f, 0.5f, 0.25f, 1.0f));
 		m_Square2.GetComponent<TransformComponent>().Position = { 1.25f, 1.25f, 0.0f };
 	}
@@ -48,6 +50,7 @@ namespace SW {
 	{
 		delete m_SceneCamera;
 		delete m_Framebuffer;
+		delete m_Scene;
 	}
 
 	void SceneViewportPanel::OnUpdate(Timestep dt)
@@ -63,7 +66,7 @@ namespace SW {
 		) {
 			m_Framebuffer->Resize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
 			m_SceneCamera->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
-			m_Scene.OnViewportResize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
+			m_Scene->OnViewportResize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
 		}
 
 		Renderer2D::ResetStats();
@@ -72,7 +75,7 @@ namespace SW {
 
 		m_Framebuffer->Clear();
 
-		m_Scene.OnUpdate(dt, *m_SceneCamera);
+		m_Scene->OnUpdate(dt, *m_SceneCamera);
 
 		m_Framebuffer->Unbind();
 	}

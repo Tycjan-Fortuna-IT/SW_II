@@ -21,6 +21,56 @@ namespace YAML {
 		return out;
 	}
 
+	template<>
+	struct convert<SW::Vector3<f32>> {
+		static Node encode(const SW::Vector3<f32>& rhs)
+		{
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			node.push_back(rhs.z);
+			node.SetStyle(EmitterStyle::Flow);
+			return node;
+		}
+
+		static bool decode(const Node& node, SW::Vector3<f32>& rhs)
+		{
+			if (!node.IsSequence() || node.size() != 3)
+				return false;
+
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			rhs.z = node[2].as<float>();
+			return true;
+		}
+	};
+
+	template<>
+	struct convert<SW::Vector4<f32>> {
+		static Node encode(const SW::Vector4<f32>& rhs)
+		{
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			node.push_back(rhs.z);
+			node.push_back(rhs.w);
+			node.SetStyle(EmitterStyle::Flow);
+			return node;
+		}
+
+		static bool decode(const Node& node, SW::Vector4<f32>& rhs)
+		{
+			if (!node.IsSequence() || node.size() != 4)
+				return false;
+
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			rhs.z = node[2].as<float>();
+			rhs.w = node[3].as<float>();
+			return true;
+		}
+	};
+
 }
 
 namespace SW {
@@ -84,9 +134,45 @@ namespace SW {
 		fout << output.c_str();
 	}
 
-	void SceneSerializer::Deserialize(Scene** scene, const std::string& path)
+	void SceneSerializer::Deserialize(Scene* scene, const std::string& path)
 	{
+		YAML::Node data = YAML::LoadFile(path);
 
+		if (!data["Entities"]) {
+			SW_ERROR("Error while deserializing the scene: {}, no entities section found!", path);
+			return;
+		}
+
+		scene->DestroyAllEntities();
+
+		YAML::Node entities = data["Entities"];
+
+		for (auto entity : entities) {
+			YAML::Node idComponent = entity["Entity"]["IDComponent"];
+
+			u64 id = idComponent["ID"].as<u64>();
+
+			YAML::Node tagComponent = entity["Entity"]["TagComponent"];
+			std::string tag = tagComponent["Tag"].as<std::string>();
+
+			Entity deserialized = scene->CreateEntityWithID(id, tag);
+
+			auto transformComponent = entity["Entity"]["TransformComponent"];
+			if (transformComponent) {
+				TransformComponent& tc = deserialized.GetComponent<TransformComponent>();
+
+				tc.Position = transformComponent["Transform"].as<Vector3<f32>>();
+				tc.Rotation = transformComponent["Rotation"].as<Vector3<f32>>();
+				tc.Scale = transformComponent["Scale"].as<Vector3<f32>>();
+			}
+
+			auto spriteComponent = entity["Entity"]["SpriteComponent"];
+			if (spriteComponent) {
+				auto& sprite = deserialized.AddComponent<SpriteComponent>();
+
+				sprite.Color = spriteComponent["Color"].as<Vector4<f32>>();
+			}
+		}
 	}
 
 }

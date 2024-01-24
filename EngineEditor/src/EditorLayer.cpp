@@ -186,7 +186,11 @@ namespace SW {
 				}
 
 				if (ImGui::MenuItem("Open Project...", "Ctrl+O")) {
+					std::filesystem::path filepath = FileSystem::OpenFileDialog({ { "SW Engine Scene file", "sw" } });
 
+					if (!filepath.empty()) {
+						SceneSerializer::Deserialize(m_Viewport->GetCurrentScene(), filepath.string());
+					}
 				}
 
 				if (ImGui::MenuItem("Save Project", "Ctrl+S")) {

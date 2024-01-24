@@ -47,6 +47,11 @@ namespace SW {
 		void DestroyEntity(Entity entity);
 
 		/**
+		 * @brief Destroys all present entities in the scene.
+		 */
+		static void DestroyAllEntities();
+
+		/**
 		 * @brief Gets a view of entities with the given components.
 		 * 
 		 * @tparam Args The component types.

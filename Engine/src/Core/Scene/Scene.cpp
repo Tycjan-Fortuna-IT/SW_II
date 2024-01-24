@@ -19,11 +19,24 @@ namespace SW {
 
 	}
 
-	Entity Scene::CreateEntity(const std::string& tag)
+	Entity Scene::CreateEntity(const std::string& tag /*= "Entity"*/)
 	{
 		Entity entity = { EntityRegistry::GetRegistryHandle().create() };
 
 		u64 id = CreateID();
+
+		entity.AddComponent<IDComponent>(id);
+		entity.AddComponent<TagComponent>(tag);
+		entity.AddComponent<TransformComponent>();
+
+		m_EntityMap[id] = (entt::entity)entity;
+
+		return entity;
+	}
+
+	Entity Scene::CreateEntityWithID(u64 id, const std::string& tag /*= "Entity"*/)
+	{
+		Entity entity = { EntityRegistry::GetRegistryHandle().create() };
 
 		entity.AddComponent<IDComponent>(id);
 		entity.AddComponent<TagComponent>(tag);
@@ -39,7 +52,14 @@ namespace SW {
 		EntityRegistry::GetRegistryHandle().destroy(entity);
 	}
 
-	void Scene::OnUpdate(Timestep dt, const SceneCamera& camera)
+    void Scene::DestroyAllEntities()
+    {
+		EntityRegistry::DestroyAllEntities();
+
+		m_EntityMap.clear();
+    }
+
+    void Scene::OnUpdate(Timestep dt, const SceneCamera& camera)
 	{
 		Renderer2D::BeginScene(camera);
 
