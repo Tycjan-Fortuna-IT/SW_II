@@ -5,6 +5,7 @@
 #include "Events/Event.hpp"
 #include "GUI/GuiLayer.hpp"
 #include "Utils/Filesystem.hpp"
+#include "AssetManager.hpp"
 
 namespace SW {
 
@@ -31,6 +32,7 @@ namespace SW {
         m_Window = new Window(specification);
 
 		FileSystem::Initialize();
+		AssetManager::Initialize();
 		EventSystem::Initialize();
 
 		EventSystem::Register(EventCode::EVENT_CODE_APPLICATION_QUIT, nullptr, [this](Event event, void* sender, void* listener) -> bool {
@@ -58,6 +60,7 @@ namespace SW {
 	bool Application::OnShutdown()
 	{
 		FileSystem::Shutdown();
+		AssetManager::Shutdown();
 		EventSystem::Shutdown();
 
 		m_GuiLayer->OnDetach();

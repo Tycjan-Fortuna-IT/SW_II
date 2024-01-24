@@ -6,6 +6,7 @@
 #include "Core/OpenGL/IndexBuffer.hpp"
 #include "Core/OpenGL/Shader.hpp"
 #include "Core/Math/Math.hpp"
+#include "Core/AssetManager.hpp"
 
 namespace SW {
 
@@ -32,13 +33,12 @@ namespace SW {
 		std::shared_ptr<VertexBuffer> QuadVertexBuffer;
 
 		std::shared_ptr<Shader> TextureShader;
-		std::shared_ptr<Texture2D> WhiteTexture;
 
 		u32 QuadIndexCount = 0;
 		QuadVertex* QuadVertexBufferBase = nullptr;
 		QuadVertex* QuadVertexBufferPtr = nullptr;
 
-		std::array<std::shared_ptr<Texture2D>, MaxTextureSlots> TextureSlots;
+		std::array<Texture2D*, MaxTextureSlots> TextureSlots;
 		u32 TextureSlotIndex = 1; // 0 = white texture
 
 		Vector4<f32> QuadVertexPositions[4] = {};
@@ -81,11 +81,6 @@ namespace SW {
 
 		delete[] quadIndices;
 
-		s_Data.WhiteTexture = std::make_shared<Texture2D>(1, 1);
-
-		uint32_t whiteTextureData = 0xffffffff;
-		s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
-
 		int samplers[s_Data.MaxTextureSlots];
 		for (int i = 0; i < s_Data.MaxTextureSlots; i++) {
 			samplers[i] = i;
@@ -95,7 +90,7 @@ namespace SW {
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->UploadUniformIntArray("u_Texture", samplers, s_Data.MaxTextureSlots);
 
-		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
+		s_Data.TextureSlots[0] = AssetManager::GetWhiteTexture();
 
 		s_Data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };

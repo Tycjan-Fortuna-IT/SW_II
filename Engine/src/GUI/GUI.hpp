@@ -293,7 +293,6 @@ namespace SW::GUI {
 		return false;
 	}
 
-
 	/**
 	* @brief Displays a button with an custom text.
 	*

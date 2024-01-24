@@ -9,6 +9,8 @@ workspace "SW_II"
     language "C++"
 	cppdialect "C++20"
 	staticruntime "Off"
+	externalwarnings "off"
+	rtti "off"
 
     defines {
         -- Disable warnings for using unsafe functions

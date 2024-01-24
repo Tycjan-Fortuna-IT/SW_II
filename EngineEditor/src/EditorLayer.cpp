@@ -10,6 +10,7 @@
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Core/Utils/Filesystem.hpp"
 #include "Managers/SelectionManager.hpp"
+#include "Core/AssetManager.hpp"
 
 namespace SW {
 
@@ -17,11 +18,11 @@ namespace SW {
 	{
 		m_Shader = std::make_shared<Shader>("assets/shaders/Initial.vert.glsl", "assets/shaders/Initial.frag.glsl");
 
-		m_IconTexture = new Texture2D("assets/icons/SW_Icon.png", false);
-		m_CloseIconTexture = new Texture2D("assets/icons/editor/windows/Close.png", false);
-		m_MaximizeIconTexture = new Texture2D("assets/icons/editor/windows/Maximize.png", false);
-		m_MinimizeIconTexture = new Texture2D("assets/icons/editor/windows/Minimize.png", false);
-		m_RestoreIconTexture = new Texture2D("assets/icons/editor/windows/Restore.png", false);
+		m_IconTexture = AssetManager::GetTexture2D("assets/icons/SW_Icon.png", false);
+		m_CloseIconTexture = AssetManager::GetTexture2D("assets/icons/editor/windows/Close.png", false);
+		m_MaximizeIconTexture = AssetManager::GetTexture2D("assets/icons/editor/windows/Maximize.png", false);
+		m_MinimizeIconTexture = AssetManager::GetTexture2D("assets/icons/editor/windows/Minimize.png", false);
+		m_RestoreIconTexture = AssetManager::GetTexture2D("assets/icons/editor/windows/Restore.png", false);
 
 		const GUI::FontSpecification fontSpec("assets/fonts/Roboto/Roboto-Regular.ttf", "assets/fonts/Roboto/Roboto-Bold.ttf");
 
@@ -52,12 +53,6 @@ namespace SW {
 
 	void EditorLayer::OnDetach()
 	{
-		delete m_IconTexture;
-		delete m_CloseIconTexture;
-		delete m_MaximizeIconTexture;
-		delete m_MinimizeIconTexture;
-		delete m_RestoreIconTexture;
-
 		for (Panel* panel : m_Panels) {
 			delete panel;
 		}
