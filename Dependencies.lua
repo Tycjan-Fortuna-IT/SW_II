@@ -31,6 +31,11 @@ Dependencies = {
     },
     YAML_CPP = {
         IncludeDir = "%{wks.location}/Engine/vendor/YamlCpp/include",
+        LinkAs = "yaml-cpp",
+    },
+    NFD_EXTENDED = {
+        IncludeDir = "%{wks.location}/Engine/vendor/NFD-Extended/src/include",
+        LinkAs = "NFD-Extended",
     },
 }
 

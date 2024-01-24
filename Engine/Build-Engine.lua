@@ -53,6 +53,7 @@ project "Engine"
         include "Engine/vendor/spdlog"
         include "Engine/vendor/ImGui"
         include "Engine/vendor/YamlCpp"
+        include "Engine/vendor/NFD-Extended"
     group ""
     
     group "Engine"
