@@ -9,6 +9,7 @@
 #include "Panels/PropertiesPanel.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Core/Utils/Filesystem.hpp"
+#include "Managers/SelectionManager.hpp"
 
 namespace SW {
 
@@ -186,11 +187,7 @@ namespace SW {
 				}
 
 				if (ImGui::MenuItem("Open Project...", "Ctrl+O")) {
-					std::filesystem::path filepath = FileSystem::OpenFileDialog({ { "SW Engine Scene file", "sw" } });
-
-					if (!filepath.empty()) {
-						SceneSerializer::Deserialize(m_Viewport->GetCurrentScene(), filepath.string());
-					}
+					OpenProject();
 				}
 
 				if (ImGui::MenuItem("Save Project", "Ctrl+S")) {
@@ -198,11 +195,7 @@ namespace SW {
 				}
 
 				if (ImGui::MenuItem("Save Project As...", "Ctrl+Shift+S")) {
-					std::filesystem::path filepath = FileSystem::SaveFileDialog({ { "SW Engine Scene file", "sw" } });
-
-					if (!filepath.empty()) {
-						SceneSerializer::Serialize(m_Viewport->GetCurrentScene(), filepath.string());
-					}
+					SaveProjectAs();
 				}
 
 				if (ImGui::MenuItem("Close Editor", "Esc")) {
@@ -226,7 +219,7 @@ namespace SW {
 		ImGui::EndGroup();
 	}
 
-	void EditorLayer::OnRender()
+    void EditorLayer::OnRender()
 	{
 		Application::Get()->GetWindow()->RegisterOverTitlebar(false);
 
@@ -287,11 +280,36 @@ namespace SW {
 		switch (code) {
 			case KeyCode::Escape:
 				Application::Get()->Close();
+			case KeyCode::S:
+				if (ctrl && shift) SaveProjectAs();
+			case KeyCode::O:
+				if (ctrl) OpenProject();
 			default:
 				break;
 		}
 
 		return true;
+	}
+
+	void EditorLayer::OpenProject()
+	{
+		std::filesystem::path filepath = FileSystem::OpenFileDialog({ { "SW Engine Scene file", "sw" } });
+
+		if (!filepath.empty()) {
+			if (SelectionManager::IsSelected())
+				SelectionManager::Deselect();
+
+			SceneSerializer::Deserialize(m_Viewport->GetCurrentScene(), filepath.string());
+		}
+	}
+
+	void EditorLayer::SaveProjectAs()
+	{
+		std::filesystem::path filepath = FileSystem::SaveFileDialog({ { "SW Engine Scene file", "sw" } });
+
+		if (!filepath.empty()) {
+			SceneSerializer::Serialize(m_Viewport->GetCurrentScene(), filepath.string());
+		}
 	}
 
 }

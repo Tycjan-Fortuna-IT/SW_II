@@ -39,6 +39,9 @@ namespace SW {
 
 		f32 DrawTitleBar();
 		void DrawMenuBar();
+
+		void OpenProject();
+		void SaveProjectAs();
 	};
 
 }
