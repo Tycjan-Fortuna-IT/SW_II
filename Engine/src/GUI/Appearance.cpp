@@ -2,7 +2,6 @@
 
 #include <imgui.h>
 
-#include <icons/IconsMaterialDesignIcons.h>
 #include <icons/MaterialDesign.inl>
 
 namespace SW::GUI {
@@ -165,7 +164,7 @@ namespace SW::GUI {
 	{
 		ImGuiIO& io = ImGui::GetIO();
 
-		static constexpr ImWchar icons_ranges[] = { ICON_MIN_MDI, ICON_MAX_MDI, 0 };
+		static constexpr ImWchar icons_ranges[] = { 0x30, 0xFE7D, 0 };
 
 		ImFontConfig iconsConfig;
 

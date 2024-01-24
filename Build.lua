@@ -38,11 +38,18 @@ workspace "SW_II"
 
             -- This option enables the __cplusplus macro to report an accurate value for the C++
             -- language standard supported by the compiler.
-            "/Zc:__cplusplus"
+            "/Zc:__cplusplus",
+
+            -- This option enables the compiler to generate code that's compliant with the C++20 for char8_t literals.
+            "/Zc:char8_t-"
         }
 
     filter "system:linux"
         defines { "SW_LINUX" }
+        toolset "clang"
+        buildoptions {
+            "-fno-char8_t"
+        }
 
 -- Folder name containing compiled output in a following format: /[config]-[platform]-[architecture]/.
 -- e.g. folder Windows-x64/Debug

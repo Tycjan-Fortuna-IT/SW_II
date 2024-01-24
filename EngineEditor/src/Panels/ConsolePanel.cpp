@@ -1,13 +1,12 @@
 #include "ConsolePanel.hpp"
 
-#include <icons/IconsMaterialDesignIcons.h>
-
 #include "Core/Utils/Utils.hpp"
+#include "GUI/Icons.hpp"
 
 namespace SW {
 
 	ConsolePanel::ConsolePanel(const char* name)
-		: Panel(name, String::FromChar8T(ICON_MDI_CONSOLE), true) {}
+		: Panel(name, SW_ICON_CONSOLE, true) {}
 
 	void ConsolePanel::OnUpdate(Timestep dt)
 	{

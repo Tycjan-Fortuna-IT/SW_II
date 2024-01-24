@@ -16,7 +16,7 @@
 #include "Core/Math/Vector3.hpp"
 #include "Colors.hpp"
 #include "Core/Utils/Utils.hpp"
-#include "icons/IconsMaterialDesignIcons.h"
+#include "GUI/Icons.hpp"
 
 namespace SW::GUI {
 
@@ -122,8 +122,7 @@ namespace SW::GUI {
 			GUI::ScopedStyle FramePadding(ImGuiStyleVar_FramePadding, padding);
 			GUI::ScopedColor TextColor(ImGuiCol_Text, Color::White);
 
-			static const std::string initialLabel = "  " + (std::string)String::FromChar8T(ICON_MDI_MAGNIFY) + "  Search ... ";
-			ImGui::InputTextWithHint("##search", initialLabel.c_str(), m_Buffer, sizeof(m_Buffer));
+			ImGui::InputTextWithHint("##search", "  " SW_ICON_MAGNIFY "  Search ... ", m_Buffer, sizeof(m_Buffer));
 		}
 
 		/**

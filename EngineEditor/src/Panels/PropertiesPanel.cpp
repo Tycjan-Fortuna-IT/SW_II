@@ -1,17 +1,16 @@
 #include "PropertiesPanel.hpp"
 
-#include <icons/IconsMaterialDesignIcons.h>
-
 #include "Core/Utils/Utils.hpp"
 #include "imgui.h"
 #include "Managers/SelectionManager.hpp"
 #include "GUI/GUI.hpp"
 #include "Core/ECS/Components.hpp"
+#include "GUI/Icons.hpp"
 
 namespace SW {
 
 	PropertiesPanel::PropertiesPanel(Scene* context)
-		: Panel("Properties", String::FromChar8T(ICON_MDI_INFORMATION), true), m_Scene(context) {}
+		: Panel("Properties", SW_ICON_INFORMATION, true), m_Scene(context) {}
 
 	void PropertiesPanel::OnUpdate(Timestep dt)
 	{
@@ -27,19 +26,7 @@ namespace SW {
 
 			Entity entity = m_Scene->GetEntityByID(SelectionManager::GetSelectionID());
 
-			static const std::string identifiedLabel =
-				(std::string)String::FromChar8T(ICON_MDI_KEY) + "  ID";
-
-			static const std::string tagLabel =
-				(std::string)String::FromChar8T(ICON_MDI_TAG) + "  Tag";
-
-			static const std::string transformLabel = 
-				(std::string)String::FromChar8T(ICON_MDI_VECTOR_LINE) + "  Transform";
-
-			static const std::string spriteLabel = 
-				(std::string)String::FromChar8T(ICON_MDI_IMAGE_SIZE_SELECT_ACTUAL) + "  Sprite";
-
-			if (GUI::Button("{} Add", { 90.f, 30.f }, String::FromChar8T(ICON_MDI_PLUS))) {
+			if (GUI::Button("{} Add", { 90.f, 30.f }, SW_ICON_PLUS)) {
 				ImGui::OpenPopup("AddComponent_Popup");
 			}
 
@@ -48,7 +35,7 @@ namespace SW {
 
 				IDComponent& id = entity.GetComponent<IDComponent>();
 
-				ImGui::Text(identifiedLabel.c_str());
+				ImGui::Text(SW_ICON_KEY "  ID");
 
 				ImGui::SameLine();
 
@@ -66,11 +53,11 @@ namespace SW {
 
 				const f32 oldMouseX = ImGui::GetCursorPosX();
 				const f32 oldMouseY = ImGui::GetCursorPosY();
-				const f32 textWidth = ImGui::CalcTextSize(tagLabel.c_str()).x;
+				const f32 textWidth = ImGui::CalcTextSize(SW_ICON_TAG "  Tag").x;
 				const f32 margin = 15.f;
 
 				ImGui::SetCursorPos(ImVec2(oldMouseX, oldMouseY + 6));
-				ImGui::Text(tagLabel.c_str());
+				ImGui::Text(SW_ICON_TAG "  Tag");
 
 				ImGui::SetCursorPos(ImVec2(oldMouseX + textWidth + margin, oldMouseY));
 
@@ -102,7 +89,7 @@ namespace SW {
 				ImGui::EndPopup();
 			}
 
-			if (ImGui::CollapsingHeader(transformLabel.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+			if (ImGui::CollapsingHeader(SW_ICON_VECTOR_LINE "  Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
 				TransformComponent& tc = entity.GetComponent<TransformComponent>();
 
 				GUI::DisplayVector3Slider(tc.Position, "Position: ", 0.0f);
@@ -111,7 +98,7 @@ namespace SW {
 			}
 
 			if (entity.HasComponent<SpriteComponent>()) {
-				if (ImGui::CollapsingHeader(spriteLabel.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+				if (ImGui::CollapsingHeader(SW_ICON_IMAGE_SIZE_SELECT_ACTUAL "  Sprite", ImGuiTreeNodeFlags_DefaultOpen)) {
 					SpriteComponent& sc = entity.GetComponent<SpriteComponent>();
 
 					GUI::DisplayColorPicker(sc.Color, "Color");

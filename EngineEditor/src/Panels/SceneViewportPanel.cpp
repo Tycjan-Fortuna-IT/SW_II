@@ -1,13 +1,12 @@
 #include "SceneViewportPanel.hpp"
 
-#include <icons/IconsMaterialDesignIcons.h>
-
 #include "Core/Utils/Utils.hpp"
+#include "GUI/Icons.hpp"
 
 namespace SW {
 
 	SceneViewportPanel::SceneViewportPanel(const char* name)
-		: Panel(name, String::FromChar8T(ICON_MDI_TERRAIN), true)
+		: Panel(name, SW_ICON_TERRAIN, true)
 	{
 		EventSystem::Register(EVENT_CODE_MOUSE_WHEEL, nullptr, [this](Event event, void* sender, void* listener) -> bool {
 			const f32 xOffset = event.Payload.f32[0];

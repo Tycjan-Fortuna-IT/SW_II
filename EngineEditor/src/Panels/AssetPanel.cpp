@@ -1,13 +1,12 @@
 #include "AssetPanel.hpp"
 
-#include <icons/IconsMaterialDesignIcons.h>
-
 #include "Core/Utils/Utils.hpp"
+#include "GUI/Icons.hpp"
 
 namespace SW {
 
 	AssetPanel::AssetPanel(const char* name)
-		: Panel(name, String::FromChar8T(ICON_MDI_FOLDER_STAR), true) {}
+		: Panel(name, SW_ICON_FOLDER_STAR, true) {}
 
 	void AssetPanel::OnUpdate(Timestep dt)
 	{

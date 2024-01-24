@@ -1,16 +1,16 @@
 #include "SceneHierarchyPanel.hpp"
 
 #include <imgui.h>
-#include <icons/IconsMaterialDesignIcons.h>
 
 #include "Core/Utils/Utils.hpp"
 #include "Core/ECS/EntityRegistry.hpp"
 #include "Managers/SelectionManager.hpp"
+#include "GUI/Icons.hpp"
 
 namespace SW {
 
 	SceneHierarchyPanel::SceneHierarchyPanel(Scene* context)
-		: Panel("Scene Hierarchy", String::FromChar8T(ICON_MDI_VIEW_LIST), true), m_Scene(context) {}
+		: Panel("Scene Hierarchy", SW_ICON_VIEW_LIST, true), m_Scene(context) {}
 
 	void SceneHierarchyPanel::OnUpdate(Timestep dt)
 	{
@@ -29,7 +29,7 @@ namespace SW {
 
 			ImGui::SameLine();
 
-			if (GUI::Button("{} Add", { 90.f, 30.f }, String::FromChar8T(ICON_MDI_PLUS))) {
+			if (GUI::Button("{} Add", { 90.f, 30.f }, SW_ICON_PLUS)) {
 				ImGui::OpenPopup("AddEntity_Popup");
 			}
 
@@ -53,11 +53,9 @@ namespace SW {
 				| ImGuiTableFlags_ScrollY;
 
 			if (ImGui::BeginTable("HierarchyTable", 3, tableFlags)) {
-				static const std::string visibility = "  " + (std::string)String::FromChar8T(ICON_MDI_EYE);
-
 				ImGui::TableSetupColumn(" Label", ImGuiTableColumnFlags_NoHide | ImGuiTableColumnFlags_NoClip);
 				ImGui::TableSetupColumn(" Type", ImGuiTableColumnFlags_WidthFixed, lineHeight * 3.0f);
-				ImGui::TableSetupColumn(visibility.c_str(), ImGuiTableColumnFlags_WidthFixed, lineHeight * 2.0f);
+				ImGui::TableSetupColumn("  " SW_ICON_EYE, ImGuiTableColumnFlags_WidthFixed, lineHeight * 2.0f);
 
 				ImGui::TableSetupScrollFreeze(0, 1);
 
@@ -111,7 +109,7 @@ namespace SW {
 			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, Color::DarkGray);
 		}
 
-		const bool opened = ImGui::TreeNodeEx(reinterpret_cast<void*>(idc.ID), flags, "%s %s", String::FromChar8T(ICON_MDI_CUBE_OUTLINE), tag.c_str());
+		const bool opened = ImGui::TreeNodeEx(reinterpret_cast<void*>(idc.ID), flags, "%s %s", SW_ICON_CUBE_OUTLINE, tag.c_str());
 
 		if (selected)
 			ImGui::PopStyleColor(2);
@@ -125,7 +123,7 @@ namespace SW {
 		}
 
 		if (ImGui::BeginPopupContextItem()) {
-			if (ImGui::MenuItemEx("Delete", String::FromChar8T(ICON_MDI_DELETE), "Del")) {
+			if (ImGui::MenuItemEx("Delete", SW_ICON_DELETE, "Del")) {
 
 			}
 
@@ -135,7 +133,7 @@ namespace SW {
 		ImGui::TableNextColumn();
 		ImGui::TextUnformatted("  Entity");
 		ImGui::TableNextColumn();
-		ImGui::Text("  %s ", true ? String::FromChar8T(ICON_MDI_EYE) : String::FromChar8T(ICON_MDI_EYE_OFF));
+		ImGui::Text("  %s ", true ? SW_ICON_EYE : SW_ICON_EYE_OFF);
 	}
 
 }

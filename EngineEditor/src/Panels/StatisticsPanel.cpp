@@ -1,16 +1,16 @@
 #include "StatisticsPanel.hpp"
 
 #include <imgui.h>
-#include <icons/IconsMaterialDesignIcons.h>
 
 #include "Core/Utils/Utils.hpp"
 #include "Core/Application.hpp"
 #include "Core/Renderer/Renderer2D.hpp"
+#include "GUI/Icons.hpp"
 
 namespace SW {
 
 	StatisticsPanel::StatisticsPanel(const char* name)
-		: Panel(name, String::FromChar8T(ICON_MDI_INFORMATION_VARIANT), true) {}
+		: Panel(name, SW_ICON_INFORMATION_VARIANT, true) {}
 
 	void StatisticsPanel::OnRender()
 	{
