@@ -17,6 +17,7 @@
 #define SW_ICON_KEY u8"\uF306"
 #define SW_ICON_TAG u8"\uF4F9"
 #define SW_ICON_VECTOR_LINE u8"\uF55E"
+#define SW_ICON_IMAGE u8"\uF2E9"
 #define SW_ICON_IMAGE_SIZE_SELECT_ACTUAL u8"\uFC69"
 #define SW_ICON_PLUS u8"\uF415"
 #define SW_ICON_DELETE u8"\uF1C0"
@@ -24,3 +25,4 @@
 #define SW_ICON_EYE u8"\uF208"
 #define SW_ICON_EYE_OFF u8"\uF209"
 #define SW_ICON_CUBE_OUTLINE u8"\uF1A7"
+#define SW_ICON_TEXTURE u8"\uF50C"

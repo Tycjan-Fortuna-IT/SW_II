@@ -6,6 +6,7 @@
 #include "GUI/GUI.hpp"
 #include "Core/ECS/Components.hpp"
 #include "GUI/Icons.hpp"
+#include "Core/AssetManager.hpp"
 
 namespace SW {
 
@@ -102,6 +103,24 @@ namespace SW {
 					SpriteComponent& sc = entity.GetComponent<SpriteComponent>();
 
 					GUI::DisplayColorPicker(sc.Color, "Color");
+
+					const u32 textureId = sc.Texture != nullptr ? sc.Texture->GetHandle() : AssetManager::GetBlackTexture()->GetHandle();
+
+					const float frameHeight = ImGui::GetFrameHeight();
+					const float buttonSize = frameHeight * 3.0f;
+					const ImVec2 xButtonSize = { buttonSize / 4.0f, buttonSize };
+
+					GUI::ScopedStyle NoSpacing(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+
+					ImGui::Text(SW_ICON_TEXTURE "  Texture     ");
+					ImGui::SameLine();
+					ImGui::ImageButton("Image", GUI::GetTextureID(textureId), { buttonSize, buttonSize }, { 0, 1 }, { 1, 0 });
+
+					ImGui::SameLine();
+
+					if (ImGui::Button("x", xButtonSize)) {
+						sc.Texture = nullptr; // TODO: maybe remove unused textures from memory
+					}
 				}
 			}
 

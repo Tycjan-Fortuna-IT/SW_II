@@ -100,7 +100,7 @@ namespace SW {
     struct SpriteComponent final
     {
         Vector4<f32> Color = { 1.0f };
-		Texture2D* Texture = nullptr;
+		Texture2D* Texture = nullptr;	/** @brief Texture of the entity, can be nullptr! */
 		f32 TilingFactor = 1.0f;
 
         SpriteComponent() = default;

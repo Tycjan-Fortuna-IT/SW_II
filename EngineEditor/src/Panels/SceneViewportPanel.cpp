@@ -2,6 +2,7 @@
 
 #include "Core/Utils/Utils.hpp"
 #include "GUI/Icons.hpp"
+#include "Core/AssetManager.hpp"
 
 namespace SW {
 
@@ -36,6 +37,8 @@ namespace SW {
 		m_SceneCamera = new SceneCamera((f32)(spec.Width / spec.Height));
 
 		m_Scene = new Scene();
+		auto entt = m_Scene->CreateEntity();
+		entt.AddComponent<SpriteComponent>(AssetManager::GetTexture2D("assets/icons/SW_Icon.png", false));
 	}
 
 	SceneViewportPanel::~SceneViewportPanel()

@@ -18,11 +18,11 @@ namespace SW {
 	{
 		m_Shader = std::make_shared<Shader>("assets/shaders/Initial.vert.glsl", "assets/shaders/Initial.frag.glsl");
 
-		m_IconTexture = AssetManager::GetTexture2D("assets/icons/SW_Icon.png", false);
-		m_CloseIconTexture = AssetManager::GetTexture2D("assets/icons/editor/windows/Close.png", false);
-		m_MaximizeIconTexture = AssetManager::GetTexture2D("assets/icons/editor/windows/Maximize.png", false);
-		m_MinimizeIconTexture = AssetManager::GetTexture2D("assets/icons/editor/windows/Minimize.png", false);
-		m_RestoreIconTexture = AssetManager::GetTexture2D("assets/icons/editor/windows/Restore.png", false);
+		m_IconTexture = AssetManager::GetTexture2D("assets/icons/SW_Icon.png");
+		m_CloseIconTexture = AssetManager::GetTexture2D("assets/icons/editor/windows/Close.png");
+		m_MaximizeIconTexture = AssetManager::GetTexture2D("assets/icons/editor/windows/Maximize.png");
+		m_MinimizeIconTexture = AssetManager::GetTexture2D("assets/icons/editor/windows/Minimize.png");
+		m_RestoreIconTexture = AssetManager::GetTexture2D("assets/icons/editor/windows/Restore.png");
 
 		const GUI::FontSpecification fontSpec("assets/fonts/Roboto/Roboto-Regular.ttf", "assets/fonts/Roboto/Roboto-Bold.ttf");
 
@@ -93,7 +93,7 @@ namespace SW {
 			const ImVec2 logoRectStart = { ImGui::GetItemRectMin().x + logoOffset.x, ImGui::GetItemRectMin().y + logoOffset.y };
 			const ImVec2 logoRectMax = { logoRectStart.x + logoWidth, logoRectStart.y + logoHeight };
 
-			drawList->AddImage(GUI::GetTextureID(m_IconTexture), logoRectStart, logoRectMax);
+			drawList->AddImage(GUI::GetTextureID(m_IconTexture), logoRectStart, logoRectMax, { 0, 1 }, { 1, 0 });
 		}
 
 		const f32 w = ImGui::GetContentRegionAvail().x;

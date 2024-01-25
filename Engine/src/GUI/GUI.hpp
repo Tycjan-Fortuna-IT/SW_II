@@ -286,9 +286,9 @@ namespace SW::GUI {
 		const ImTextureID ID = GUI::GetTextureID(texture);
 
 		if (ImGui::IsItemHovered())
-			drawList->AddImage(ID, rect.Min, rect.Max, ImVec2(0, 0), ImVec2(1, 1), tintHovered);
+			drawList->AddImage(ID, rect.Min, rect.Max, { 0, 1 }, { 1, 0 }, tintHovered);
 		else
-			drawList->AddImage(ID, rect.Min, rect.Max, ImVec2(0, 0), ImVec2(1, 1));
+			drawList->AddImage(ID, rect.Min, rect.Max, { 0, 1 }, { 1, 0 });
 
 		return false;
 	}
