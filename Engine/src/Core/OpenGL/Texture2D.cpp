@@ -9,10 +9,12 @@ namespace SW {
 
     Texture2D::Texture2D(const std::string& filepath, bool flipped)
 	{
-        stbi_set_flip_vertically_on_load(flipped);
-        stbi_uc* data = stbi_load(filepath.c_str(), &m_Width, &m_Height, &m_Channels, 0);
+		m_Path = filepath;
 
-        ASSERT(data, ("Failed to load the image: " + filepath).c_str());
+        stbi_set_flip_vertically_on_load(flipped);
+        stbi_uc* data = stbi_load(m_Path.c_str(), &m_Width, &m_Height, &m_Channels, 0);
+
+		ASSERT(data, ("Failed to load the image: " + m_Path).c_str());
 
         GLenum internalFormat = 0, dataFormat = 0;
 

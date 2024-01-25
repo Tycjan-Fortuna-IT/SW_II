@@ -50,6 +50,9 @@ namespace SW {
 
 	void Renderer2D::Init(const std::shared_ptr<Shader>& shader)
 	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		s_Data.QuadVertexArray = std::make_shared<VertexArray>();
 		s_Data.QuadVertexBuffer = std::make_shared<VertexBuffer>(static_cast<u32>(s_Data.MaxVertices * sizeof(QuadVertex)));
 

@@ -391,7 +391,7 @@ namespace SW::GUI {
 		ImGui::SameLine();
 
 		ImGui::SetNextItemWidth(widgetWidth);
-		ImGui::ColorEdit4("##Color", color.ValuePtr());
+		ImGui::ColorEdit4("##Color", color.ValuePtr(), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreviewHalf);
 
 		ImGui::PopStyleVar();
 		ImGui::PopID();

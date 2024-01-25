@@ -1,8 +1,8 @@
 /**
  * @file Texture2D.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.2
- * @date 2024-01-09
+ * @version 0.1.3
+ * @date 2024-01-25
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -82,13 +82,21 @@ namespace SW {
 			return m_Handle == ((Texture2D&)other).m_Handle;
 		}
 
+		/**
+		 * @brief Get the path to the original texture file from which the texture was loaded.
+		 *
+		 * @return std::string
+		 */
+		const std::string& GetPath() const { return m_Path; }
+
     private:
-        u32 m_Handle;			/** @brief OpenGL texture handle */
-		i32 m_Width;			/** @brief Texture width */
-		i32 m_Height;			/** @brief Texture height */
-		i32 m_Channels;			/** @brief Texture channels */
-		u32 m_DataFormat;
-		u32 m_InternalFormat;
-    };
+        u32 m_Handle;				/** @brief OpenGL texture handle */
+		i32 m_Width;				/** @brief Texture width */
+		i32 m_Height;				/** @brief Texture height */
+		i32 m_Channels;				/** @brief Texture channels */
+		u32 m_DataFormat;			/** @brief Texture data format */
+		u32 m_InternalFormat;		/** @brief Texture internal format */
+		std::string m_Path = "";	/** @brief Path to the texture file */
+	};
 
 }
