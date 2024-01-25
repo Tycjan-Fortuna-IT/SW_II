@@ -66,6 +66,13 @@ namespace SW {
 		i32 GetHeight() const { return m_Height; }
 
 		/**
+		 * @brief Get only the estimated size of the texture on the GPU
+		 *
+		 * @return u32
+		 */
+		u32 GetEstimatedSize() const { return m_Width * m_Height * 4; }
+
+		/**
 		 * @brief Set the texture data
 		 * @warning Data must be whole texture data, width * height * channels
 		 */

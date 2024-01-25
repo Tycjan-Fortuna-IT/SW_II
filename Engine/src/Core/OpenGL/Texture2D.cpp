@@ -55,6 +55,7 @@ namespace SW {
 
 		m_Width = width;
 		m_Height = height;
+		m_Channels = 0;
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_Handle);
 		glTextureStorage2D(m_Handle, 1, GL_RGBA8, m_Width, m_Height);
@@ -69,6 +70,8 @@ namespace SW {
 	Texture2D::~Texture2D()
 	{
 		glDeleteTextures(1, &m_Handle);
+
+		SW_INFO("Texture2D `{}` unloaded successfully!", m_Path);
 	}
 
 	void Texture2D::Bind(u32 slot) const

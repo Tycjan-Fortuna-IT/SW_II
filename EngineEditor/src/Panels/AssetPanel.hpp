@@ -8,9 +8,27 @@
  */
 #pragma once
 
+#include <filesystem>
+
 #include "GUI/Panel.hpp"
 
 namespace SW {
+
+	class Texture2D;
+
+	enum class FileType
+	{
+		Unknown = 0,
+		Texture,
+	};
+
+	struct File final
+	{
+		std::string Name;
+		bool IsDirectory = false;
+		Texture2D* Thumbnail = nullptr;
+		FileType Type = FileType::Unknown;
+	};
 
 	/**
 	 * @brief The AssetPanel class represents a panel that displays the console window.
@@ -44,12 +62,19 @@ namespace SW {
 		 * @brief Called every frame to update the panel.
 		 * @param dt The time since the last frame.
 		 */
-		void OnUpdate(Timestep dt) override;
+		void OnUpdate(Timestep dt) final override;
 
 		/**
 		 * @brief Called every frame to render the panel.
 		 */
-		void OnRender() override;
+		void OnRender() final override;
+	
+	private:
+		std::filesystem::path m_AssetsDirectory;
+		std::filesystem::path m_CurrentDirectory;
+		std::vector<File> m_DirectoryEntries = {};
+
+		void LoadDirectoryEntries();
 	};
 
 }
