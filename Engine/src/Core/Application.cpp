@@ -6,6 +6,7 @@
 #include "GUI/GuiLayer.hpp"
 #include "Utils/Filesystem.hpp"
 #include "AssetManager.hpp"
+#include "Renderer/RendererAPI.hpp"
 
 namespace SW {
 
@@ -34,6 +35,7 @@ namespace SW {
 		FileSystem::Initialize();
 		AssetManager::Initialize();
 		EventSystem::Initialize();
+		RendererAPI::Initialize();
 
 		EventSystem::Register(EventCode::EVENT_CODE_APPLICATION_QUIT, nullptr, [this](Event event, void* sender, void* listener) -> bool {
 			Application::Close();
@@ -62,6 +64,7 @@ namespace SW {
 		FileSystem::Shutdown();
 		AssetManager::Shutdown();
 		EventSystem::Shutdown();
+		RendererAPI::Shutdown();
 
 		m_GuiLayer->OnDetach();
 

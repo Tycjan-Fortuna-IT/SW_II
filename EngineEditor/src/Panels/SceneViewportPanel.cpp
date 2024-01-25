@@ -31,7 +31,12 @@ namespace SW {
 			return false;
 		});
 
-		const FramebufferSpecification spec = { 1280, 720 };
+		const FramebufferSpecification spec = { 
+			.Width = 1280,
+			.Height = 720,
+			.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth }
+		};
+
 		m_Framebuffer = new Framebuffer(spec);
 
 		m_SceneCamera = new SceneCamera((f32)(spec.Width / spec.Height));

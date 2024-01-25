@@ -48,7 +48,7 @@ namespace SW {
 
 		Application::Get()->GetWindow()->SetVSync(true);
 
-		Renderer2D::Init(m_Shader);
+		Renderer2D::Initialize(m_Shader);
 	}
 
 	void EditorLayer::OnDetach()

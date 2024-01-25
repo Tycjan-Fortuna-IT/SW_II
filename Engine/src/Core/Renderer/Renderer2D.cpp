@@ -7,6 +7,7 @@
 #include "Core/OpenGL/Shader.hpp"
 #include "Core/Math/Math.hpp"
 #include "Core/AssetManager.hpp"
+#include "RendererAPI.hpp"
 
 namespace SW {
 
@@ -29,7 +30,7 @@ namespace SW {
 		static constexpr u32 MaxIndices = MaxQuads * 6;
 		static constexpr u32 MaxTextureSlots = 32;
 
-		std::shared_ptr<VertexArray> QuadVertexArray;
+		VertexArray* QuadVertexArray = nullptr;
 		std::shared_ptr<VertexBuffer> QuadVertexBuffer;
 
 		std::shared_ptr<Shader> TextureShader;
@@ -48,12 +49,9 @@ namespace SW {
 
 	static Renderer2DData s_Data;
 
-	void Renderer2D::Init(const std::shared_ptr<Shader>& shader)
+	void Renderer2D::Initialize(const std::shared_ptr<Shader>& shader)
 	{
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		s_Data.QuadVertexArray = std::make_shared<VertexArray>();
+		s_Data.QuadVertexArray = new VertexArray();
 		s_Data.QuadVertexBuffer = std::make_shared<VertexBuffer>(static_cast<u32>(s_Data.MaxVertices * sizeof(QuadVertex)));
 
 		s_Data.QuadVertexBuffer->SetLayout({
@@ -104,6 +102,7 @@ namespace SW {
 	void Renderer2D::Shutdown()
 	{
 		delete[] s_Data.QuadVertexBufferBase;
+		delete s_Data.QuadVertexArray;
 	}
 
 	const Renderer2DStatistics& Renderer2D::GetStats()
@@ -139,7 +138,7 @@ namespace SW {
 		for (u32 i = 0; i < s_Data.TextureSlotIndex; i++)
 			s_Data.TextureSlots[i]->Bind(i);
 
-		DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+		RendererAPI::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
 
 		s_Data.Stats.DrawCalls++;
 	}
@@ -151,17 +150,6 @@ namespace SW {
 		s_Data.QuadIndexCount = 0;
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
 		s_Data.TextureSlotIndex = 1;
-	}
-
-	void Renderer2D::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, u32 indexCount)
-	{
-		u32 count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
-
-		if (indexCount == 0)
-			return;
-
-		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
-		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	void Renderer2D::DrawQuad(const Matrix4<f32>& transform, const SpriteComponent& sprite)
