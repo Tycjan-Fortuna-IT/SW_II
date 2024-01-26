@@ -116,6 +116,13 @@ namespace SW {
 					ImGui::SameLine();
 					ImGui::ImageButton("Image", GUI::GetTextureID(textureId), { buttonSize, buttonSize }, { 0, 1 }, { 1, 0 });
 
+					if (ImGui::BeginDragDropTarget()) {
+						if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+							sc.Texture = AssetManager::GetTexture2D(static_cast<char*>(payload->Data));
+						}
+						ImGui::EndDragDropTarget();
+					}
+
 					ImGui::SameLine();
 
 					if (ImGui::Button("x", xButtonSize)) {

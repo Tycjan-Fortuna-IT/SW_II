@@ -19,7 +19,7 @@ namespace SW {
 	AssetPanel::AssetPanel(const char* name)
 		: Panel(name, SW_ICON_FOLDER_STAR, true)
 	{
-		m_AssetsDirectory = std::filesystem::current_path() / "assets" / "textures";
+		m_AssetsDirectory = "assets";
 		m_CurrentDirectory = m_AssetsDirectory;
 
 		LoadDirectoryEntries();
@@ -33,16 +33,62 @@ namespace SW {
 	void AssetPanel::OnRender()
 	{
 		if (OnBegin()) {
+			static i32 cols = 10;
+			static f32 thumbnailSize = 64.f;
+
+			bool atAssetsDir = m_CurrentDirectory == m_AssetsDirectory;
+
+			ImGui::Columns(3, 0, false);
+
+			if (GUI::Button(SW_ICON_REFRESH, { 30.f, 30.f })) {
+				LoadDirectoryEntries();
+			}
+
+			if (!atAssetsDir) {
+				ImGui::SameLine();
+				if (GUI::Button(SW_ICON_ARROW_LEFT_BOLD, { 30.f, 30.f })) {
+					m_CurrentDirectory = m_CurrentDirectory.parent_path();
+					LoadDirectoryEntries();
+				}
+			}
+			ImGui::NextColumn();
+
+			ImGui::DragInt("Items per row", &cols, 1, 1, 10);
+
+			ImGui::NextColumn();
+
+			ImGui::DragFloat("Thumbnail size", &thumbnailSize, 8.f, 32.f);
+			
+			ImGui::Columns(1);
+
+			ImGui::Columns(cols, 0 , false);
 
 			for (File entry : m_DirectoryEntries) {
-				ImGui::Image(GUI::GetTextureID(entry.Thumbnail), { 60.f, 60.f }, { 0, 1 }, { 1, 0 });
+				ImGui::Image(GUI::GetTextureID(entry.Thumbnail), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
+
 				if (ImGui::IsItemHovered()) {
 					ImGui::BeginTooltip();
 					ImGui::Text("Mem: %s", String::BytesToString(entry.Thumbnail->GetEstimatedSize()).c_str());
 					ImGui::EndTooltip();
+
+					if (ImGui::IsMouseDoubleClicked(0)) {
+						m_CurrentDirectory = m_CurrentDirectory / entry.Name;
+						LoadDirectoryEntries();
+					}
 				}
-				ImGui::SameLine();
+
+				ImGui::Text(entry.Name.c_str());
+
+				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+					ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", entry.FilePath.data(), entry.FilePath.size() + 1);
+					ImGui::TextUnformatted(entry.FilePath.c_str());
+					ImGui::EndDragDropSource();
+				}
+
+				ImGui::NextColumn();
 			}
+
+			ImGui::Columns(1);
 
 			OnEnd();
 		}
@@ -54,7 +100,9 @@ namespace SW {
 
 		for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(m_CurrentDirectory)) {
 			FileType fileType = FileType::Unknown;
-			Texture2D* thumbnail = AssetManager::GetWhiteTexture(); // todo
+
+			// todo, introduce separate thumbnail system with lower resolution textures (like 128 x 128)
+			Texture2D* thumbnail = AssetManager::GetBlackTexture();
 
 			bool isDirectory = entry.is_directory();
 
@@ -66,9 +114,17 @@ namespace SW {
 
 				if (fileType == FileType::Texture)
 					thumbnail = AssetManager::GetTexture2D(entry.path().string().c_str());
+			} else {
+				thumbnail = AssetManager::GetTexture2D("assets/icons/editor/DirectoryIcon.png");
 			}
 
-			File file = { .Name = entry.path().filename().string(), .IsDirectory = isDirectory, .Thumbnail = thumbnail, .Type = fileType};
+			File file = { 
+				.Name = entry.path().filename().string(),
+				.FilePath = entry.path().string(),
+				.IsDirectory = isDirectory, 
+				.Thumbnail = thumbnail, 
+				.Type = fileType
+			};
 
 			m_DirectoryEntries.emplace_back(file);
 		}

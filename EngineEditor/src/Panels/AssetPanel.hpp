@@ -25,6 +25,7 @@ namespace SW {
 	struct File final
 	{
 		std::string Name;
+		std::string FilePath;
 		bool IsDirectory = false;
 		Texture2D* Thumbnail = nullptr;
 		FileType Type = FileType::Unknown;

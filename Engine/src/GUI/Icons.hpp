@@ -26,3 +26,5 @@
 #define SW_ICON_EYE_OFF u8"\uF209"
 #define SW_ICON_CUBE_OUTLINE u8"\uF1A7"
 #define SW_ICON_TEXTURE u8"\uF50C"
+#define SW_ICON_REFRESH u8"\uF450"
+#define SW_ICON_ARROW_LEFT_BOLD u8"\uF730"
