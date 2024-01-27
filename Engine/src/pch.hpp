@@ -19,3 +19,14 @@
 
 #include "Core/Defines.hpp"
 #include "Core/Debug/LogSystem.hpp"
+
+namespace SW {
+
+	/**
+	 * @brief Get the total size of all allocations made by the engine.
+	 * 
+	 * @return size_t The total size of all allocations made by the engine.
+	 */
+	size_t GetAllocationSizeSum();
+
+}

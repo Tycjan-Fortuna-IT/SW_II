@@ -6,6 +6,7 @@
 
 #include "Core/Math/Vector3.hpp"
 #include "Core/Math/Vector4.hpp"
+#include "Core/AssetManager.hpp"
 
 namespace YAML {
 
@@ -120,6 +121,11 @@ namespace SW {
 				output << YAML::Key << "SpriteComponent";
 				output << YAML::BeginMap;
 				output << YAML::Key << "Color" << YAML::Value << sc.Color;
+
+				if (sc.Texture) {
+					output << YAML::Key << "TexturePath" << YAML::Value << sc.Texture->GetPath();
+				}
+
 				output << YAML::EndMap;
 			}
 
@@ -173,6 +179,12 @@ namespace SW {
 				auto& sprite = deserialized.AddComponent<SpriteComponent>();
 
 				sprite.Color = spriteComponent["Color"].as<Vector4<f32>>();
+
+				if (spriteComponent["TexturePath"]) {
+					std::string path = spriteComponent["TexturePath"].as<std::string>();
+
+					sprite.Texture = AssetManager::GetTexture2D(path.c_str());
+				}
 			}
 		}
 	}

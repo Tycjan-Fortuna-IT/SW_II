@@ -6,6 +6,7 @@
 #include "Core/OpenGL/Texture2D.hpp"
 #include "Core/AssetManager.hpp"
 #include "GUI/GUI.hpp"
+#include "GUI/Colors.hpp"
 
 namespace SW {
 
@@ -71,19 +72,19 @@ namespace SW {
 					ImGui::Text("Mem: %s", String::BytesToString(entry.Thumbnail->GetEstimatedSize()).c_str());
 					ImGui::EndTooltip();
 
-					if (ImGui::IsMouseDoubleClicked(0)) {
+					if (ImGui::IsMouseDoubleClicked(0) && entry.IsDirectory) {
 						m_CurrentDirectory = m_CurrentDirectory / entry.Name;
 						LoadDirectoryEntries();
 					}
 				}
-
-				ImGui::Text(entry.Name.c_str());
 
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
 					ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", entry.FilePath.data(), entry.FilePath.size() + 1);
 					ImGui::TextUnformatted(entry.FilePath.c_str());
 					ImGui::EndDragDropSource();
 				}
+
+				ImGui::Text(entry.Name.c_str());
 
 				ImGui::NextColumn();
 			}
@@ -114,6 +115,8 @@ namespace SW {
 
 				if (fileType == FileType::Texture)
 					thumbnail = AssetManager::GetTexture2D(entry.path().string().c_str());
+				else
+					thumbnail = AssetManager::GetTexture2D("assets/icons/editor/TextFile.png");
 			} else {
 				thumbnail = AssetManager::GetTexture2D("assets/icons/editor/DirectoryIcon.png");
 			}

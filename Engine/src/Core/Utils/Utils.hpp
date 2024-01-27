@@ -51,6 +51,21 @@ namespace SW {
 			return std::string(buffer);
 		}
 
+		/**
+		 * @brief Returns a string representation of the sum of allocated memory 
+		 *		  in the program.
+		 *
+		 * @return std::string The string representation of the sum of allocated memory.
+		 */
+		std::string GetAllocatedMemoryString();
+
+		/**
+		 * @brief Returns a string representation of the sum of allocated memory
+		 *		  in the program.
+		 *
+		 * @return std::string The string representation of the sum of allocated memory. (bytes)
+		 */
+		std::string GetAllocatedMemoryStringRaw();
 	}
 
 }

@@ -48,6 +48,11 @@ namespace SW {
 		constexpr ImU32 BarbiePink = IM_COL32(255, 0, 127, 255);		/** @brief barbie pink */
 
 		constexpr ImU32 TitleBar = IM_COL32(12, 14, 18, 255);			/** @brief dark gray */
+
+		constexpr ImU32 Muted = IM_COL32(77, 77, 77, 255);
+
+		constexpr ImU32 TextDarker = IM_COL32(128, 128, 128, 255);
+		constexpr ImU32 BorderDarker = IM_COL32(40, 40, 40, 255);
 	}
 
 }

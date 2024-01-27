@@ -113,6 +113,30 @@ namespace SW {
 			DrawMenuBar();
 		}
 
+		{
+			GUI::ScopedColor TextColor(ImGuiCol_Text, Color::TextDarker);
+			GUI::ScopedColor BorderColor(ImGuiCol_Border, Color::BorderDarker);
+
+			const std::string memoryText = "MEM: " + String::GetAllocatedMemoryString();
+
+			const ImVec2 textSize = ImGui::CalcTextSize(memoryText.c_str());
+
+			const float rightOffset = ImGui::GetWindowWidth() - 280.0f;
+			
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(rightOffset - windowPadding.x);
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f + windowPadding.y);
+			ImGui::Text(memoryText.c_str());
+
+			GUI::DrawBorder(GUI::RectExpanded(GUI::GetItemRect(), 24.0f, 68.0f), 1.0f, 3.0f, 0.0f, -60.0f);
+
+			if (ImGui::IsItemHovered()) {
+				ImGui::BeginTooltip();
+				ImGui::Text("Memory usage: %s b", String::GetAllocatedMemoryStringRaw().c_str());
+				ImGui::EndTooltip();
+			}
+		}
+
 		// Minimize Button
 		{
 			const float rightOffset = ImGui::GetWindowWidth() - 120.0f;
@@ -274,11 +298,11 @@ namespace SW {
 
 		switch (code) {
 			case KeyCode::Escape:
-				Application::Get()->Close();
+				Application::Get()->Close(); break;
 			case KeyCode::S:
-				if (ctrl && shift) SaveProjectAs();
+				if (ctrl && shift) SaveProjectAs(); break;
 			case KeyCode::O:
-				if (ctrl) OpenProject();
+				if (ctrl) OpenProject(); break;
 			default:
 				break;
 		}

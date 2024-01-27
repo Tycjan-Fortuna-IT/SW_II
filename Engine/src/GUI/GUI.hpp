@@ -265,6 +265,33 @@ namespace SW::GUI {
 	}
 
 	/**
+	 * @brief Draws a border around the specified rectangle.
+	 * 
+	 * @param rect The rectangle to draw a border around.
+	 * @param thickness The thickness of the border.
+	 * @param rounding The rounding of the border.
+	 * @param offsetX The offset of the border on the x-axis.
+	 * @param offsetY The offset of the border on the y-axis.
+	 */
+	static void DrawBorder(ImRect rect, float thickness = 1.0f, float rounding = 0.0f, float offsetX = 0.0f, float offsetY = 0.0f)
+	{
+		ImVec2 min = rect.Min;
+		min.x -= thickness;
+		min.y -= thickness;
+		min.x += offsetX;
+		min.y += offsetY;
+
+		ImVec2 max = rect.Max;
+		max.x += thickness;
+		max.y += thickness;
+		max.x += offsetX;
+		max.y += offsetY;
+
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+		drawList->AddRect(min, max, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_Border)), rounding, 0, thickness);
+	};
+
+	/**
 	 * @brief Displays a button with an image. (centered image inside button without any text)
 	 *
 	 * @param texture Texture to be displayed.

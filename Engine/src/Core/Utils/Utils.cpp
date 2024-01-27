@@ -19,4 +19,18 @@ namespace SW {
 
         return result;
     }
+
+	namespace String {
+
+		std::string GetAllocatedMemoryString()
+		{
+			return BytesToString((u32)GetAllocationSizeSum());
+		}
+
+		std::string GetAllocatedMemoryStringRaw()
+		{
+			return std::to_string(GetAllocationSizeSum());
+		}
+	}
+
 }
