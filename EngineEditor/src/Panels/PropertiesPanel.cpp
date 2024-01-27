@@ -10,12 +10,78 @@
 
 namespace SW {
 
+	static std::unordered_map<size_t, std::string> s_ComponentNames;
+
+	template<typename Component>
+	static void AddComponentName(const std::string& name)
+	{
+		const size_t id = entt::type_id<Component>().hash();
+		s_ComponentNames[id] = name;
+	}
+
 	PropertiesPanel::PropertiesPanel(Scene* context)
-		: Panel("Properties", SW_ICON_INFORMATION, true), m_Scene(context) {}
+		: Panel("Properties", SW_ICON_INFORMATION, true), m_Scene(context)
+	{
+		AddComponentName<TransformComponent>(SW_ICON_VECTOR_LINE "  Transform");
+		AddComponentName<SpriteComponent>(SW_ICON_IMAGE_SIZE_SELECT_ACTUAL "  Sprite");
+	}
 
 	void PropertiesPanel::OnUpdate(Timestep dt)
 	{
 
+	}
+
+	template<typename T, typename Fn>
+		requires std::is_invocable_v<Fn, T&>
+	static void DrawComponent(Entity entity, Fn fn, bool removable = true)
+	{
+		if (!entity.HasComponent<T>())
+			return;
+
+		static constexpr ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen
+			| ImGuiTreeNodeFlags_SpanAvailWidth
+			| ImGuiTreeNodeFlags_AllowItemOverlap
+			| ImGuiTreeNodeFlags_Framed
+			| ImGuiTreeNodeFlags_FramePadding;
+
+		T& component = entity.GetComponent<T>();
+
+		const f32 lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + lineHeight * 0.25f);
+
+		const size_t id = entt::type_id<T>().hash();
+		const bool open = ImGui::TreeNodeEx(reinterpret_cast<void*>(id), treeFlags, "%s", s_ComponentNames[id].c_str());
+
+		bool removeComponent = false;
+
+		if (removable) {
+			ImGui::PushID(static_cast<int>(id));
+
+			const f32 frameHeight = ImGui::GetFrameHeight();
+
+			ImGui::SameLine(ImGui::GetContentRegionMax().x - frameHeight * 1.2f);
+
+			if (ImGui::Button(SW_ICON_SETTINGS, ImVec2{ frameHeight * 1.2f, frameHeight }))
+				ImGui::OpenPopup("ComponentSettings");
+
+			if (ImGui::BeginPopup("ComponentSettings")) {
+				if (ImGui::MenuItem("Remove Component"))
+					removeComponent = true;
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopID();
+		}
+
+		if (open) {
+			fn(component);
+			ImGui::TreePop();
+		}
+
+		if (removeComponent)
+			entity.RemoveComponent<T>();
 	}
 
 	void PropertiesPanel::OnRender()
@@ -90,46 +156,44 @@ namespace SW {
 				ImGui::EndPopup();
 			}
 
-			if (ImGui::CollapsingHeader(SW_ICON_VECTOR_LINE "  Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
-				TransformComponent& tc = entity.GetComponent<TransformComponent>();
+			ImGui::BeginChild("PropertiesBody");
+						
+			DrawComponent<TransformComponent>(entity, [](TransformComponent& component) {
+				GUI::DisplayVector3Slider(component.Position, "Position: ", 0.0f);
+				GUI::DisplayVector3Slider(component.Rotation, "Rotation: ", 0.0f);
+				GUI::DisplayVector3Slider(component.Scale, "Scale: ", 0.0f);
+			}, false);
 
-				GUI::DisplayVector3Slider(tc.Position, "Position: ", 0.0f);
-				GUI::DisplayVector3Slider(tc.Rotation, "Rotation: ", 0.0f);
-				GUI::DisplayVector3Slider(tc.Scale, "Scale: ", 0.0f);
-			}
+			DrawComponent<SpriteComponent>(entity, [](SpriteComponent& component) {
+				GUI::DisplayColorPicker(component.Color, "Color");
 
-			if (entity.HasComponent<SpriteComponent>()) {
-				if (ImGui::CollapsingHeader(SW_ICON_IMAGE_SIZE_SELECT_ACTUAL "  Sprite", ImGuiTreeNodeFlags_DefaultOpen)) {
-					SpriteComponent& sc = entity.GetComponent<SpriteComponent>();
+				const u32 textureId = component.Texture != nullptr ? component.Texture->GetHandle() : AssetManager::GetBlackTexture()->GetHandle();
 
-					GUI::DisplayColorPicker(sc.Color, "Color");
+				const f32 frameHeight = ImGui::GetFrameHeight();
+				const f32 buttonSize = frameHeight * 3.0f;
+				const ImVec2 xButtonSize = { buttonSize / 4.0f, buttonSize };
 
-					const u32 textureId = sc.Texture != nullptr ? sc.Texture->GetHandle() : AssetManager::GetBlackTexture()->GetHandle();
+				GUI::ScopedStyle NoSpacing(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
 
-					const float frameHeight = ImGui::GetFrameHeight();
-					const float buttonSize = frameHeight * 3.0f;
-					const ImVec2 xButtonSize = { buttonSize / 4.0f, buttonSize };
+				ImGui::Text(SW_ICON_TEXTURE "  Texture     ");
+				ImGui::SameLine();
+				ImGui::ImageButton("Image", GUI::GetTextureID(textureId), { buttonSize, buttonSize }, { 0, 1 }, { 1, 0 });
 
-					GUI::ScopedStyle NoSpacing(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
-
-					ImGui::Text(SW_ICON_TEXTURE "  Texture     ");
-					ImGui::SameLine();
-					ImGui::ImageButton("Image", GUI::GetTextureID(textureId), { buttonSize, buttonSize }, { 0, 1 }, { 1, 0 });
-
-					if (ImGui::BeginDragDropTarget()) {
-						if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-							sc.Texture = AssetManager::GetTexture2D(static_cast<char*>(payload->Data));
-						}
-						ImGui::EndDragDropTarget();
+				if (ImGui::BeginDragDropTarget()) {
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+						component.Texture = AssetManager::GetTexture2D(static_cast<char*>(payload->Data));
 					}
-
-					ImGui::SameLine();
-
-					if (ImGui::Button("x", xButtonSize)) {
-						sc.Texture = nullptr; // TODO: maybe remove unused textures from memory
-					}
+					ImGui::EndDragDropTarget();
 				}
-			}
+
+				ImGui::SameLine();
+
+				if (ImGui::Button("x", xButtonSize)) {
+					component.Texture = nullptr; // TODO: maybe remove unused textures from memory
+				}
+			}, true);
+			
+			ImGui::EndChild();
 
 			OnEnd();
 		}

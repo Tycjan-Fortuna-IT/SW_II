@@ -124,7 +124,11 @@ namespace SW {
 
 		if (ImGui::BeginPopupContextItem()) {
 			if (ImGui::MenuItemEx("Delete", SW_ICON_DELETE, "Del")) {
+				if (SelectionManager::GetSelectionID() == idc.ID) {
+					SelectionManager::Deselect();
 
+					m_Scene->DestroyEntity(entity);
+				}
 			}
 
 			ImGui::EndPopup();
