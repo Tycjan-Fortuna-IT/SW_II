@@ -59,12 +59,22 @@ namespace SW {
 		 */
 		Scene* GetCurrentScene() { return m_Scene; }
 
+		/**
+		 * @brief Renders the scene toolbar.
+		 */
+		void RenderSceneToolbar();
+
+		/**
+		 * @brief Renders the gizmo toolbar.
+		 */
+		void RenderGizmoToolbar();
+
 	private:
-		Scene* m_Scene = nullptr;
-		SceneCamera* m_SceneCamera = nullptr;
-		Framebuffer* m_Framebuffer = nullptr;
-		bool m_IsViewportFocused = false;
-		Vector2<f32> m_ViewportSize = { 50.f };
+		Scene* m_Scene = nullptr;				/** @brief The current scene. */
+		SceneCamera* m_SceneCamera = nullptr;	/** @brief The current scene camera. */
+		Framebuffer* m_Framebuffer = nullptr;	/** @brief The current framebuffer. */
+		bool m_IsViewportFocused = false;		/** @brief Is the viewport focused. */
+		Vector2<f32> m_ViewportSize = { 50.f };	/** @brief The viewport size. */
 	};
 
 }

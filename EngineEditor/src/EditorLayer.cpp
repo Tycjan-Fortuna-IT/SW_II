@@ -84,7 +84,9 @@ namespace SW {
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 
 		drawList->AddRectFilled(titlebarMin, titlebarMax, Color::TitleBar);
-		drawList->AddRectFilledMultiColor(titlebarMin, ImVec2(titlebarMin.x + 600.0f, titlebarMax.y), Color::LightBlack, Color::TitleBar, Color::TitleBar, Color::LightBlack);
+		ImU32 gradientColor = m_Viewport->GetCurrentScene()->GetCurrentState() == SceneState::Edit ?
+			Color::LightBlack : IM_COL32(55, 91, 71, 255);
+		drawList->AddRectFilledMultiColor(titlebarMin, ImVec2(titlebarMin.x + 600.0f, titlebarMax.y), gradientColor, Color::TitleBar, Color::TitleBar, gradientColor);
 
 		{
 			const f32 logoWidth = (f32)m_IconTexture->GetWidth() / 3.f;

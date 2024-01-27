@@ -64,7 +64,9 @@ namespace SW {
 
 			ImGui::Columns(cols, 0 , false);
 
-			for (File entry : m_DirectoryEntries) {
+			bool refreshDirectory = false;
+
+			for (const File& entry : m_DirectoryEntries) {
 				ImGui::Image(GUI::GetTextureID(entry.Thumbnail), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
 
 				if (ImGui::IsItemHovered()) {
@@ -74,7 +76,7 @@ namespace SW {
 
 					if (ImGui::IsMouseDoubleClicked(0) && entry.IsDirectory) {
 						m_CurrentDirectory = m_CurrentDirectory / entry.Name;
-						LoadDirectoryEntries();
+						refreshDirectory = true;
 					}
 				}
 
@@ -87,6 +89,11 @@ namespace SW {
 				ImGui::Text(entry.Name.c_str());
 
 				ImGui::NextColumn();
+			}
+
+			if (refreshDirectory) {
+				refreshDirectory = false;
+				LoadDirectoryEntries();
 			}
 
 			ImGui::Columns(1);

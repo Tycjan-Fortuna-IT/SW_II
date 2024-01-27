@@ -1,8 +1,8 @@
 /**
  * @file Scene.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.2
- * @date 2024-01-20
+ * @version 0.0.3
+ * @date 2024-01-27
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -13,6 +13,16 @@
 #include "Core/Timestep.hpp"
 
 namespace SW {
+
+	/**
+	 * @brief Represents the state of the scene.
+	 */
+	enum class SceneState {
+		Edit = 0,		//< The scene is in edit mode. Entities can be added, removed and modified.
+		Play = 1,		//< The scene is in play mode. The scene is being simulated.
+		Pause = 2,		//< The scene is in pause mode. The scene is not being simulated.
+		Simulate = 3	//< The scene is in simulate mode. The scene is being simulated, but the editor is still usable.
+	};
 
 	/**
 	 * @brief Represents a scene in the game engine.
@@ -83,6 +93,21 @@ namespace SW {
 		 */
 		Entity GetEntityByID(u64 id) const;
 
+		/**
+		 * @brief Retrieves current state of the scene.
+		 * 
+		 * @return SceneState The current state of the scene.
+		 */
+		SceneState GetCurrentState() const { return m_SceneState; }
+
+		/**
+		 * @brief Sets new state of the scene.
+		 * @note Remember that the state will impact the way the scene is updated.
+		 * 
+		 * @param state The new state of the scene.
+		 */
+		void SetNewState(SceneState state) { m_SceneState = state; }
+
 	private:
 		EntityRegistry m_Registry; /**< The entity registry of the scene. */
 
@@ -90,6 +115,8 @@ namespace SW {
 
 		u32 m_ViewportWidth = 0; /**< The width of the viewport. */
 		u32 m_ViewportHeight = 0; /**< The height of the viewport. */
+
+		SceneState m_SceneState = SceneState::Edit;	/**< The current state of the scene. */
 	};
 
 }

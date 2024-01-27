@@ -80,6 +80,36 @@ namespace SW {
 		m_Framebuffer->Unbind();
 	}
 
+	void SceneViewportPanel::RenderSceneToolbar()
+	{
+		ImVec2 windowPosition = ImGui::GetWindowPos();
+		ImVec2 windowSize = ImGui::GetWindowSize();
+
+		ImGui::SetNextWindowPos(
+			ImVec2(windowPosition.x + windowSize.x / 2.0f - 27.5f, windowPosition.y + 40.f)
+		);
+		ImGui::SetNextWindowBgAlpha(0.0f);
+		
+		bool isOpen = true;
+
+		ImGui::Begin("##scene_toolbar", &isOpen, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoDecoration);
+
+		Texture2D* buttonTexture = m_Scene->GetCurrentState() == SceneState::Edit ?
+			AssetManager::GetTexture2D("assets/icons/editor/PlayButton.png") :
+			AssetManager::GetTexture2D("assets/icons/editor/StopButton.png");
+
+		if (GUI::ImageButton(*buttonTexture, { 40.f, 40.f })) {
+			m_Scene->SetNewState(m_Scene->GetCurrentState() == SceneState::Edit ? SceneState::Play : SceneState::Edit);
+		}
+
+		ImGui::End();
+	}
+
+	void SceneViewportPanel::RenderGizmoToolbar()
+	{
+
+	}
+
 	void SceneViewportPanel::OnRender()
 	{
 		if (OnBegin()) {
@@ -91,6 +121,8 @@ namespace SW {
 
 			const ImTextureID textureID = GUI::GetTextureID(m_Framebuffer->GetColorAttachmentRendererID());
 			ImGui::Image(textureID, currentViewportSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+			RenderSceneToolbar();
 
 			OnEnd();
 		}
