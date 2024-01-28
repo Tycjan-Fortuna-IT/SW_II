@@ -159,38 +159,18 @@ namespace SW {
 			ImGui::BeginChild("PropertiesBody");
 						
 			DrawComponent<TransformComponent>(entity, [](TransformComponent& component) {
-				GUI::DisplayVector3Slider(component.Position, "Position: ", 0.0f);
-				GUI::DisplayVector3Slider(component.Rotation, "Rotation: ", 0.0f);
-				GUI::DisplayVector3Slider(component.Scale, "Scale: ", 0.0f);
+				GUI::BeginProperties("##transform_property");
+				GUI::DrawVector3ControlProperty(component.Position, "Position: ", "Position of the entity");
+				GUI::DrawVector3ControlProperty(component.Rotation, "Rotation: ", "Rotation of the entity in degrees");
+				GUI::DrawVector3ControlProperty(component.Scale, "Scale: ", "Scale of the entity", 1.f);
+				GUI::EndProperties();
 			}, false);
 
 			DrawComponent<SpriteComponent>(entity, [](SpriteComponent& component) {
-				GUI::DisplayColorPicker(component.Color, "Color");
-
-				const u32 textureId = component.Texture != nullptr ? component.Texture->GetHandle() : AssetManager::GetBlackTexture()->GetHandle();
-
-				const f32 frameHeight = ImGui::GetFrameHeight();
-				const f32 buttonSize = frameHeight * 3.0f;
-				const ImVec2 xButtonSize = { buttonSize / 4.0f, buttonSize };
-
-				GUI::ScopedStyle NoSpacing(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
-
-				ImGui::Text(SW_ICON_TEXTURE "  Texture     ");
-				ImGui::SameLine();
-				ImGui::ImageButton("Image", GUI::GetTextureID(textureId), { buttonSize, buttonSize }, { 0, 1 }, { 1, 0 });
-
-				if (ImGui::BeginDragDropTarget()) {
-					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-						component.Texture = AssetManager::GetTexture2D(static_cast<char*>(payload->Data));
-					}
-					ImGui::EndDragDropTarget();
-				}
-
-				ImGui::SameLine();
-
-				if (ImGui::Button("x", xButtonSize)) {
-					component.Texture = nullptr; // TODO: maybe remove unused textures from memory
-				}
+				GUI::BeginProperties("##sprite_property");
+				GUI::DrawVector4ColorPickerProperty(component.Color, "Color");
+				GUI::DrawTextureProperty(&component.Texture, "Texture");
+				GUI::EndProperties();
 			}, true);
 			
 			ImGui::EndChild();

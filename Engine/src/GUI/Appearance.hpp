@@ -1,8 +1,8 @@
 ﻿/**
  * @file Appearance.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.1
- * @date 2024-01-08
+ * @version 0.1.1
+ * @date 2024-01-28
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -182,8 +182,8 @@ namespace SW {
 		struct FontSpecification
 		{
 			f32 SmallSize = 12.f;		/** @brief Size of the small font */
-			f32 DefaultSize = 18.f;		/** @brief Size of the default font */
-			f32 BigSize = 24.f;			/** @brief Size of the big font */
+			f32 DefaultSize = 16.f;		/** @brief Size of the default font */
+			f32 BigSize = 20.f;			/** @brief Size of the big font */
 			std::string FontPath;		/** @brief Path to the .ttf file with normal font */
 			std::string BoldFontPath;	/** @brief Path to the .ttf file with bold font */
 
@@ -197,8 +197,8 @@ namespace SW {
 		struct Fonts final
 		{
 			f32 SmallSize = 12.f;		/** @brief Size of the small font */
-			f32 DefaultSize = 18.f;		/** @brief Size of the default font */
-			f32 BigSize = 24.f;			/** @brief Size of the big font */
+			f32 DefaultSize = 16.f;		/** @brief Size of the default font */
+			f32 BigSize = 20.f;			/** @brief Size of the big font */
 
 			ImFont* SmallFont = nullptr;
 			ImFont* DefaultFont = nullptr;

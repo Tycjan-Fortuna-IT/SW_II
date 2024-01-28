@@ -1,8 +1,8 @@
 ﻿/**
  * @file GUI.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.3
- * @date 2024-01-23
+ * @version 0.1.1
+ * @date 2024-01-28
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -17,6 +17,8 @@
 #include "Colors.hpp"
 #include "Core/Utils/Utils.hpp"
 #include "GUI/Icons.hpp"
+#include "Appearance.hpp"
+#include "Core/AssetManager.hpp"
 
 namespace SW::GUI {
 
@@ -531,6 +533,255 @@ namespace SW::GUI {
 		window->DC.LayoutType = ImGuiLayoutType_Vertical;
 		window->DC.NavLayerCurrent = ImGuiNavLayer_Main;
 		window->DC.MenuBarAppending = false;
+	}
+
+	/**
+	 * Begins a table for displaying properties in the GUI.
+	 * @warning This function must always be paired with a call to EndProperties(). Failure to do so will result in undefined behavior.
+	 * 
+	 * @param name The name of the table.
+	 * @param flags The flags to customize the table's behavior (optional).
+	 */
+	static void BeginProperties(
+		const char* name,
+		ImGuiTableFlags flags = ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingStretchProp |
+								ImGuiTableFlags_BordersInner
+	) {
+		constexpr ImGuiTableFlags tableFlags = ImGuiTableFlags_PadOuterX;
+		ImGui::BeginTable(name, 2, tableFlags | flags);
+		ImGui::TableSetupColumn("PropertyName", 0, 0.5f);
+		ImGui::TableSetupColumn("Property");
+	}
+
+	/**
+	 * Ends a table for displaying properties in the GUI.
+	 * @warning This function must always be paired with a call to BeginProperties(). Failure to do so will result in undefined behavior.
+	 */
+	static void EndProperties()
+	{
+		ImGui::EndTable();
+	}
+
+	/**
+	 * @brief Begins a property grid section in the GUI. This function starts a new row in the ImGui table
+	 * 		  and sets up the necessary layout for a property grid.
+	 * @warning This function must always be paired with a call to EndPropertyGrid(). Failure to do so will result in undefined behavior.
+	 *
+	 * @param label The label for the property grid section.
+	 * @param tooltip An optional tooltip to display when hovering over the label.
+	 * @param rightAlignNextColumn Whether to right-align the next column in the table.
+	 */
+	static void BeginPropertyGrid(const char* label, const char* tooltip = nullptr, bool rightAlignNextColumn = true)
+	{
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+
+		ImGui::PushID(label);
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + ImGui::GetStyle().FramePadding.y * 0.5f);
+		ImGui::TextUnformatted(label);
+		if (tooltip && ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
+			ImGui::BeginTooltip();
+			ImGui::TextUnformatted(tooltip);
+			ImGui::EndTooltip();
+		}
+
+		ImGui::TableNextColumn();
+
+		if (rightAlignNextColumn)
+			ImGui::SetNextItemWidth(-FLT_MIN);
+	}
+
+	/**
+	 * @brief Ends a property grid section in the GUI. This function ends the current row in the ImGui table.
+	 * @warning This function must always be paired with a call to BeginPropertyGrid(). Failure to do so will result in undefined behavior.
+	 */
+	static void EndPropertyGrid()
+	{
+		ImGui::PopID();
+	}
+
+	/**
+	 * @brief Draws a control property for a Vector3.
+	 *
+	 * This function is used to draw a control property for a Vector3, allowing the user to modify its values.
+	 * The control property consists of three input fields for the X, Y, and Z components of the vector.
+	 * Additionally, buttons are provided to reset each component to a specified value.
+	 *
+	 * @param vector The Vector3 to be modified by the control property.
+	 * @param label The label to be displayed for the control property.
+	 * @param tooltip An optional tooltip to be displayed when hovering over the control property.
+	 * @param resetValue The value to which each component of the vector will be reset when the corresponding reset button is pressed.
+	 * @param min The minimum value allowed for each component of the vector.
+	 * @param max The maximum value allowed for each component of the vector.
+	 * @param format The format string used to display the values of the vector components.
+	 */
+	static void DrawVector3ControlProperty(
+		Vector3<f32>& vector, const char* label, const char* tooltip = nullptr, f32 resetValue = 0.f,
+		f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
+	) {
+		BeginPropertyGrid(label, tooltip, false);
+
+		ImGuiIO& io = ImGui::GetIO();
+		
+		ImFont* boldFont = GUI::Appearance::GetFonts().DefaultBoldFont;
+
+		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+
+		float frameHeight = ImGui::GetFrameHeight();
+		ImVec2 buttonSize = { frameHeight + 3.0f, frameHeight };
+
+		ImVec2 innerItemSpacing = ImGui::GetStyle().ItemInnerSpacing;
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, innerItemSpacing);
+
+		// X
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 1.0f, 1.0f, 1.0f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+			ImGui::PushFont(boldFont);
+			if (ImGui::Button("X", buttonSize))
+				vector.x = resetValue;
+			ImGui::PopFont();
+			ImGui::PopStyleColor(4);
+
+			ImGui::SameLine();
+			ImGui::DragFloat("##X", &vector.x, 0.05f, min, max, format.c_str());
+			ImGui::PopItemWidth();
+			ImGui::PopStyleVar();
+		}
+
+		ImGui::SameLine();
+
+		// Y
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 1.0f, 1.0f, 1.0f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+			ImGui::PushFont(boldFont);
+			if (ImGui::Button("Y", buttonSize))
+				vector.y = resetValue;
+			ImGui::PopFont();
+			ImGui::PopStyleColor(4);
+
+			ImGui::SameLine();
+			ImGui::DragFloat("##Y", &vector.y, 0.05f, min, max, format.c_str());
+			ImGui::PopItemWidth();
+			ImGui::PopStyleVar();
+		}
+
+		ImGui::SameLine();
+
+		// Z
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 1.0f, 1.0f, 1.0f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.2f, 0.35f, 0.9f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
+			ImGui::PushFont(boldFont);
+			if (ImGui::Button("Z", buttonSize))
+				vector.z = resetValue;
+			ImGui::PopFont();
+			ImGui::PopStyleColor(4);
+
+			ImGui::SameLine();
+			ImGui::DragFloat("##Z", &vector.z, 0.05f, min, max, format.c_str());
+			ImGui::PopItemWidth();
+			ImGui::PopStyleVar();
+		}
+
+		ImGui::PopStyleVar();
+
+		EndPropertyGrid();
+	}
+
+	/**
+	 * Draws a color picker property for a Vector4.
+	 *
+	 * @param vector The Vector4 to edit.
+	 * @param label The label for the color picker.
+	 * @param tooltip The tooltip for the color picker (optional).
+	 */
+	static void DrawVector4ColorPickerProperty(
+		Vector4<f32>& vector, const char* label, const char* tooltip = nullptr
+	) {
+		BeginPropertyGrid(label, tooltip, true);
+
+		ImGui::ColorEdit4("##Color", vector.ValuePtr(), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreviewHalf);
+
+		EndPropertyGrid();
+	}
+
+	/**
+	 * @brief Draws a texture property in the GUI.
+	 * 
+	 * This function displays a texture property in the GUI, allowing the user to select a texture from the content browser.
+	 * The selected texture is assigned to the provided texture pointer.
+	 * 
+	 * @param texture A pointer to a pointer to a Texture2D object. This is the texture property to be displayed and modified.
+	 * @param label The label to be displayed for the texture property.
+	 * @param tooltip (optional) The tooltip to be displayed when hovering over the texture property.
+	 */
+	static void DrawTextureProperty(Texture2D** texture, const char* label, const char* tooltip = nullptr)
+	{
+		BeginPropertyGrid(label, tooltip);
+
+		bool changed = false;
+
+		float frameHeight = ImGui::GetFrameHeight();
+		const float buttonSize = frameHeight * 3.0f;
+		const ImVec2 xButtonSize = { buttonSize / 4.0f, buttonSize };
+		const float tooltipSize = frameHeight * 11.0f;
+
+		ImGui::SetCursorPos({ ImGui::GetContentRegionMax().x - buttonSize - xButtonSize.x, ImGui::GetCursorPosY() + ImGui::GetStyle().FramePadding.y });
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.25f, 0.25f, 0.25f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.35f, 0.35f, 0.35f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.25f, 0.25f, 0.25f, 1.0f });
+
+		Texture2D* textureCopy = *texture;
+
+		if (!textureCopy)
+			textureCopy = AssetManager::GetBlackTexture();
+
+		u32 textureId = textureCopy->GetHandle();
+
+		ImGui::ImageButton(GUI::GetTextureID(textureId), { buttonSize, buttonSize }, { 0, 1 }, { 1, 0 }, 0);
+
+		if (*texture && ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
+			ImGui::BeginTooltip();
+			ImGui::TextUnformatted((*texture)->GetPath().c_str());
+			ImGui::Spacing();
+			ImGui::Image(GUI::GetTextureID(textureId), { tooltipSize, tooltipSize }, { 0, 1 }, { 1, 0 });
+			ImGui::EndTooltip();
+		}
+
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+				*texture = AssetManager::GetTexture2D(static_cast<char*>(payload->Data)); // todo perform validation of the file
+			}
+			ImGui::EndDragDropTarget();
+		}
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.3f, 0.3f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+
+		if (ImGui::Button("x", xButtonSize)) {
+			*texture = nullptr; // TODO: maybe remove unused textures from memory
+		}
+
+		ImGui::PopStyleColor(3);
+		ImGui::PopStyleVar();
+
+		EndPropertyGrid();
 	}
 
 	/**
