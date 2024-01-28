@@ -785,6 +785,105 @@ namespace SW::GUI {
 	}
 
 	/**
+	 * @brief Draws a boolean property in the GUI.
+	 *
+	 * @param value The boolean value to represent with the checkbox.
+	 * @param label The label text to display next to the checkbox.
+	 * @param tooltip (optional) Additional information to display as a tooltip.
+	 */
+	static void DrawBooleanProperty(bool& value, const char* label, const char* tooltip = nullptr)
+	{
+		BeginPropertyGrid(label, tooltip);
+
+		GUI::MoveMousePosX(ImGui::GetColumnWidth() / 2.0f - ImGui::GetStyle().FramePadding.x - 15.f);
+		
+		ImGui::Checkbox("##property_checkbox", &value);
+
+		EndPropertyGrid();
+	}
+
+	/**
+	 * @brief Draws an integral property in the GUI.
+	 * 
+	 * This function is used to draw an integral property in the GUI using ImGui. It provides a slider or a drag input depending on the range of values specified.
+	 * 
+	 * @tparam T The integral type of the property.
+	 * @param value The reference to the integral property value.
+	 * @param label The label for the property.
+	 * @param tooltip The tooltip for the property (optional).
+	 * @param min The minimum value for the property (optional).
+	 * @param max The maximum value for the property (optional).
+	 */
+	template<std::integral T>
+	static void DrawIntegralProperty(
+		T& value, const char* label, const char* tooltip = nullptr, T min = 0, T max = 0
+	) {
+		BeginPropertyGrid(label, tooltip);
+
+		int dataType = ImGuiDataType_S32;
+
+		if constexpr (std::is_signed_v<T>) {
+			if constexpr (sizeof(T) == 1)
+				dataType = ImGuiDataType_S8;
+			else if constexpr (sizeof(T) == 2)
+				dataType = ImGuiDataType_S16;
+			else if constexpr (sizeof(T) == 4)
+				dataType = ImGuiDataType_S32;
+			else if constexpr (sizeof(T) == 8)
+				dataType = ImGuiDataType_S64;
+		} else {
+			if constexpr (sizeof(T) == 1)
+				dataType = ImGuiDataType_U8;
+			else if constexpr (sizeof(T) == 2)
+				dataType = ImGuiDataType_U16;
+			else if constexpr (sizeof(T) == 4)
+				dataType = ImGuiDataType_U32;
+			else if constexpr (sizeof(T) == 8)
+				dataType = ImGuiDataType_U64;
+		}
+
+		if (max > min)
+			ImGui::SliderScalar("##property_integral", dataType, &value, &min, &max);
+		else
+			ImGui::DragScalar("##property_integral", dataType, &value);
+
+		EndPropertyGrid();
+	}
+
+	/**
+	 * @brief Draws a floating-point property in the GUI.
+	 *
+	 * This function is used to draw a floating-point property in the GUI. It provides options for setting the value, label, tooltip, minimum and maximum values, delta, and format.
+	 *
+	 * @tparam T The type of the floating-point value.
+	 * @param value The reference to the floating-point value to be displayed and modified.
+	 * @param label The label for the property.
+	 * @param tooltip The tooltip for the property (optional).
+	 * @param min The minimum value for the property (optional).
+	 * @param max The maximum value for the property (optional).
+	 * @param delta The delta value for the property (optional).
+	 * @param format The format string for displaying the value (optional).
+	 */
+	template<std::floating_point T>
+	static void DrawFloatingPointProperty(
+		T& value, const char* label, const char* tooltip = nullptr, T min = 0, T max = 0, float delta = 0.1f, const char* format = "%.3f"
+	) {
+		BeginPropertyGrid(label, tooltip);
+		
+		int dataType = ImGuiDataType_Float;
+
+		if constexpr (sizeof(T) == 8)
+			dataType = ImGuiDataType_Double;			
+
+		if (max > min)
+			ImGui::SliderScalar("##property_floating_point", dataType, &value, &min, &max, format);
+		else
+			ImGui::DragScalar("##property_floating_point", dataType, &value, delta, nullptr, nullptr, format);
+
+		EndPropertyGrid();
+	}
+
+	/**
 	 * @brief Renders clipped text on the GUI.
 	 *
 	 * This function performs CPU side clipping for a single clipped element to avoid using scissor state.

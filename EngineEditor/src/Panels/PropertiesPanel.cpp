@@ -170,6 +170,7 @@ namespace SW {
 				GUI::BeginProperties("##sprite_property");
 				GUI::DrawVector4ColorPickerProperty(component.Color, "Color");
 				GUI::DrawTextureProperty(&component.Texture, "Texture");
+				GUI::DrawFloatingPointProperty(component.TilingFactor, "Tiling", nullptr, 0.f, 10.f);
 				GUI::EndProperties();
 			}, true);
 			
