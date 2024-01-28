@@ -8,6 +8,8 @@
  */
 #pragma once
 
+#include <imgui.h>
+
 #include "Core/Math/Vector2.hpp"
 #include "Core/Math/Vector4.hpp"
 
@@ -155,6 +157,23 @@ namespace SW {
 			Vector4<f32> NavWindowingDimBackground = { 0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 0.501960813999176f };
 
 			Vector4<f32> ModalWindowDimBackground = { 0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 0.501960813999176f };
+
+			ImVec4 WindowBackgroundTemp = { 0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f };
+
+			static ImVec4 Darken(ImVec4 c, float p)
+			{
+				return { std::max(0.f, c.x - 1.0f * p), std::max(0.f, c.y - 1.0f * p), std::max(0.f, c.z - 1.0f * p), c.w };
+			}
+
+			static ImVec4 Lighten(ImVec4 c, float p)
+			{
+				return { std::max(0.f, c.x + 1.0f * p), std::max(0.f, c.y + 1.0f * p), std::max(0.f, c.z + 1.0f * p), c.w };
+			}
+
+			static ImVec4 Disabled(ImVec4 c) { return Darken(c, 0.6f); }
+			static ImVec4 Hovered(ImVec4 c) { return Lighten(c, 0.2f); }
+			static ImVec4 Active(ImVec4 c) { return Lighten(ImVec4(c.x, c.y, c.z, 1.0f), 0.1f); }
+			static ImVec4 Collapsed(ImVec4 c) { return Darken(c, 0.2f); }
 		};
 
 		/**

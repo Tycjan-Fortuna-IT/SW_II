@@ -86,8 +86,9 @@ namespace SW {
 		ImVec2 windowSize = ImGui::GetWindowSize();
 
 		ImGui::SetNextWindowPos(
-			ImVec2(windowPosition.x + windowSize.x / 2.0f - 27.5f, windowPosition.y + 40.f)
+			ImVec2(windowPosition.x + windowSize.x / 2.0f - 23.f, windowPosition.y + 40.f)
 		);
+		ImGui::SetNextWindowSize({ 48.f, 48.f });
 		ImGui::SetNextWindowBgAlpha(0.0f);
 		
 		bool isOpen = true;
@@ -97,6 +98,9 @@ namespace SW {
 		Texture2D* buttonTexture = m_Scene->GetCurrentState() == SceneState::Edit ?
 			AssetManager::GetTexture2D("assets/icons/editor/PlayButton.png") :
 			AssetManager::GetTexture2D("assets/icons/editor/StopButton.png");
+
+		const ImVec2& pos = ImGui::GetCursorPos();
+		ImGui::SetCursorPos({ pos.x + 4.f, pos.y + 4.f });
 
 		if (GUI::ImageButton(*buttonTexture, { 40.f, 40.f })) {
 			m_Scene->SetNewState(m_Scene->GetCurrentState() == SceneState::Edit ? SceneState::Play : SceneState::Edit);
@@ -112,6 +116,8 @@ namespace SW {
 
 	void SceneViewportPanel::OnRender()
 	{
+		GUI::ScopedStyle NoWindowPadding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.f , 0.f });
+
 		if (OnBegin()) {
 			m_IsViewportFocused = ImGui::IsWindowFocused();
 

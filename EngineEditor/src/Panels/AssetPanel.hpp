@@ -1,14 +1,15 @@
 /**
  * @file AssetPanel.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.1
- * @date 2024-01-18
+ * @version 0.1.2
+ * @date 2024-01-28
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
 #pragma once
 
 #include <filesystem>
+#include <imgui.h>
 
 #include "GUI/Panel.hpp"
 
@@ -16,19 +17,27 @@ namespace SW {
 
 	class Texture2D;
 
-	enum class FileType
+	/**
+	 * @brief The FileType enum class represents the type of a file.
+	 */
+	enum class FileType : int
 	{
-		Unknown = 0,
-		Texture,
+		Unknown = 0,	///< Unknown file type.
+		Texture,		///< Texture file type.
+		Directory,		///< Directory file type.
 	};
 
+	/**
+	 * @brief The File struct represents a file.
+	 */
 	struct File final
 	{
-		std::string Name = "Invalid";
-		std::string FilePath = "Invalid";
-		bool IsDirectory = false;
-		Texture2D* Thumbnail = nullptr;
-		FileType Type = FileType::Unknown;
+		std::string Name = "Invalid";		/** @brief The name of the file. */
+		std::string FilePath = "Invalid";	/** @brief The path to the file. */
+		Texture2D* Thumbnail = nullptr;		/** @brief The thumbnail of the file. */
+		FileType Type = FileType::Unknown;	/** @brief The type of the file. */
+		std::string TypeString = "Unknown";	/** @brief The type of the file as a string. */
+		ImVec4 ColorIndicator;				/** @brief The color indicator of the file. */
 	};
 
 	/**
@@ -71,10 +80,13 @@ namespace SW {
 		void OnRender() final override;
 	
 	private:
-		std::filesystem::path m_AssetsDirectory;
-		std::filesystem::path m_CurrentDirectory;
-		std::vector<File> m_DirectoryEntries = {};
+		std::filesystem::path m_AssetsDirectory;	/** @brief The path to the assets directory. */
+		std::filesystem::path m_CurrentDirectory;	/** @brief The path to the current directory fetched by the panel. */
+		std::vector<File> m_DirectoryEntries = {};	/** @brief The directory entries. */
 
+		/**
+		 * @brief Loads the directory entries.
+		 */
 		void LoadDirectoryEntries();
 	};
 

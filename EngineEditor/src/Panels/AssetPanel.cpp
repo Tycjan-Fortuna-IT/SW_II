@@ -7,14 +7,25 @@
 #include "Core/AssetManager.hpp"
 #include "GUI/GUI.hpp"
 #include "GUI/Colors.hpp"
+#include "GUI/Appearance.hpp"
 
 namespace SW {
 
 	static std::unordered_map<std::string, FileType> s_FileTypes = {
-		{ ".png",		FileType::Texture },
-		{ ".jpg",		FileType::Texture },
-		{ ".jpeg",		FileType::Texture },
-		{ ".bmp",		FileType::Texture },
+		{ ".png",	FileType::Texture },
+		{ ".jpg",	FileType::Texture },
+		{ ".jpeg",	FileType::Texture },
+		{ ".bmp",	FileType::Texture },
+	};
+
+	static const std::unordered_map<FileType, ImVec4> s_FileTypeColors = {
+		{ FileType::Texture,  { 0.80f, 0.20f, 0.30f, 1.00f } },
+		{ FileType::Directory, { 1.0f, 1.0f, 0.80f, 1.00f } }
+	};
+
+	static const std::unordered_map<FileType, std::string> s_FileTypeString = {
+		{ FileType::Texture,  "Texture" },
+		{ FileType::Directory, "Directory" }
 	};
 
 	AssetPanel::AssetPanel(const char* name)
@@ -34,12 +45,11 @@ namespace SW {
 	void AssetPanel::OnRender()
 	{
 		if (OnBegin()) {
-			static i32 cols = 10;
-			static f32 thumbnailSize = 64.f;
+			static f32 customThumbnailSize = 200.f;
 
 			bool atAssetsDir = m_CurrentDirectory == m_AssetsDirectory;
 
-			ImGui::Columns(3, 0, false);
+			ImGui::Columns(2, 0, false);
 
 			if (GUI::Button(SW_ICON_REFRESH, { 30.f, 30.f })) {
 				LoadDirectoryEntries();
@@ -54,49 +64,105 @@ namespace SW {
 			}
 			ImGui::NextColumn();
 
-			ImGui::DragInt("Items per row", &cols, 1, 1, 10);
-
-			ImGui::NextColumn();
-
-			ImGui::DragFloat("Thumbnail size", &thumbnailSize, 8.f, 32.f);
+			ImGui::DragFloat("Thumbnail size", &customThumbnailSize, 8.f, 64.f, 256.f);
 			
 			ImGui::Columns(1);
 
-			ImGui::Columns(cols, 0 , false);
-
 			bool refreshDirectory = false;
 
-			for (const File& entry : m_DirectoryEntries) {
-				ImGui::Image(GUI::GetTextureID(entry.Thumbnail), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
+			constexpr float padding = 4.0f;
+			const float scaledThumbnailSize = customThumbnailSize * ImGui::GetIO().FontGlobalScale;
+			const float scaledThumbnailSizeX = scaledThumbnailSize * 0.55f;
+			const float cellSize = scaledThumbnailSizeX + 2 * padding + scaledThumbnailSizeX * 0.1f;
 
-				if (ImGui::IsItemHovered()) {
-					ImGui::BeginTooltip();
-					ImGui::Text("Mem: %s", String::BytesToString(entry.Thumbnail->GetEstimatedSize()).c_str());
-					ImGui::EndTooltip();
+			constexpr float overlayPaddingY = 6.0f * padding;
+			constexpr float thumbnailPadding = overlayPaddingY * 0.5f;
+			const float thumbnailSize = scaledThumbnailSizeX - thumbnailPadding;
 
-					if (ImGui::IsMouseDoubleClicked(0) && entry.IsDirectory) {
-						m_CurrentDirectory = m_CurrentDirectory / entry.Name;
-						refreshDirectory = true;
+			const ImVec2 backgroundThumbnailSize = { scaledThumbnailSizeX + padding * 2, scaledThumbnailSize + padding * 2 };
+
+			const f32 panelWidth = ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ScrollbarSize;
+			int columnCount = static_cast<int>(panelWidth / cellSize);
+
+			ImGuiTableFlags flags = ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_ScrollY
+				| ImGuiTableFlags_PadOuterX | ImGuiTableFlags_SizingFixedFit;
+
+			ImTextureID whiteTexId = GUI::GetTextureID(AssetManager::GetWhiteTexture()->GetHandle());
+
+			if (ImGui::BeginTable("BodyTable", columnCount, flags)) {
+				int i = 0;
+
+				for (const File& entry : m_DirectoryEntries) {
+					ImGui::PushID(i);
+
+					bool isDirectory = entry.Type == FileType::Directory;
+					const char* filename = entry.Name.data();
+					const char* filenameEnd = filename + entry.Name.size();
+					ImTextureID textureId = GUI::GetTextureID(entry.Thumbnail);
+
+					ImGui::TableNextColumn();
+
+					ImVec2 cursorPos = ImGui::GetCursorPos();
+
+					ImVec4 backgroundColor = GUI::Colors::Lighten(GUI::Appearance::GetColors().WindowBackgroundTemp, 0.05f);
+
+					// Foreground Image
+					ImGui::SetCursorPos({ cursorPos.x + padding, cursorPos.y + padding });
+					ImGui::SetItemAllowOverlap();
+					ImGui::Image(whiteTexId, { backgroundThumbnailSize.x - padding * 2.0f, backgroundThumbnailSize.y - padding * 2.0f },
+						{ 0, 0 }, { 1, 1 }, backgroundColor);
+
+					if (ImGui::IsItemHovered()) {
+						ImGui::BeginTooltip();
+						ImGui::Text("Mem: %s", String::BytesToString(entry.Thumbnail->GetEstimatedSize()).c_str());
+						ImGui::EndTooltip();
+
+						if (ImGui::IsMouseDoubleClicked(0) && isDirectory) {
+							m_CurrentDirectory = m_CurrentDirectory / entry.Name;
+							refreshDirectory = true;
+						}
 					}
+
+					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+						ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", entry.FilePath.data(), entry.FilePath.size() + 1);
+						ImGui::TextUnformatted(entry.FilePath.c_str());
+						ImGui::EndDragDropSource();
+					}
+
+					// Thumbnail Image
+					ImGui::SetCursorPos({ cursorPos.x + thumbnailPadding * 0.75f, cursorPos.y + thumbnailPadding });
+					ImGui::SetItemAllowOverlap();
+					ImGui::Image(reinterpret_cast<ImTextureID>(textureId), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
+
+					// Type Color frame
+					const ImVec2 typeColorFrameSize = { scaledThumbnailSizeX, scaledThumbnailSizeX * 0.03f };
+					ImGui::SetCursorPosX(cursorPos.x + padding);
+					ImGui::Image(whiteTexId, typeColorFrameSize, { 0, 0 }, { 1, 1 }, entry.ColorIndicator);
+
+					const ImVec2 rectMin = ImGui::GetItemRectMin();
+					const ImVec2 rectSize = ImGui::GetItemRectSize();
+					const ImRect clipRect = ImRect({ rectMin.x + padding * 1.0f, rectMin.y + padding * 2.0f },
+						{ rectMin.x + rectSize.x, rectMin.y + scaledThumbnailSizeX - GUI::Appearance::GetFonts().SmallFont->FontSize - padding * 4.0f });
+					GUI::ClippedText(clipRect.Min, clipRect.Max, filename, filenameEnd, nullptr, { 0, 0 }, nullptr, clipRect.GetSize().x);
+
+					ImGui::SetCursorPos({ cursorPos.x + padding * 2.0f, cursorPos.y + backgroundThumbnailSize.y - GUI::Appearance::GetFonts().DefaultBoldFont->FontSize - padding * 2.0f });
+					ImGui::BeginDisabled();
+					ImGui::PushFont(GUI::Appearance::GetFonts().DefaultBoldFont);
+					ImGui::TextUnformatted(entry.TypeString.c_str());
+					ImGui::PopFont();
+					ImGui::EndDisabled();
+
+					ImGui::PopID(); ++i;
 				}
 
-				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-					ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", entry.FilePath.data(), entry.FilePath.size() + 1);
-					ImGui::TextUnformatted(entry.FilePath.c_str());
-					ImGui::EndDragDropSource();
-				}
 
-				ImGui::Text(entry.Name.c_str());
-
-				ImGui::NextColumn();
+				ImGui::EndTable();
 			}
 
 			if (refreshDirectory) {
 				refreshDirectory = false;
 				LoadDirectoryEntries();
 			}
-
-			ImGui::Columns(1);
 
 			OnEnd();
 		}
@@ -112,28 +178,43 @@ namespace SW {
 			// todo, introduce separate thumbnail system with lower resolution textures (like 128 x 128)
 			Texture2D* thumbnail = AssetManager::GetBlackTexture();
 
-			bool isDirectory = entry.is_directory();
+			ImVec4 colorIndicator = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-			if (!isDirectory) {
+			if (!entry.is_directory()) {
 				auto it = s_FileTypes.find(entry.path().extension().string());
 
 				if (it != s_FileTypes.end())
 					fileType = it->second;
 
-				if (fileType == FileType::Texture)
+				if (fileType == FileType::Texture) {
 					thumbnail = AssetManager::GetTexture2D(entry.path().string().c_str());
-				else
+				} else {
 					thumbnail = AssetManager::GetTexture2D("assets/icons/editor/TextFile.png");
+				}
 			} else {
+				fileType = FileType::Directory;
 				thumbnail = AssetManager::GetTexture2D("assets/icons/editor/DirectoryIcon.png");
 			}
+
+			auto colorIt = s_FileTypeColors.find(fileType);
+
+			if (colorIt != s_FileTypeColors.end())
+				colorIndicator = colorIt->second;
+
+			std::string typeString = "Unknown";
+
+			auto nameIt = s_FileTypeString.find(fileType);
+
+			if (nameIt != s_FileTypeString.end())
+				typeString = nameIt->second;
 
 			File file = { 
 				.Name = entry.path().filename().string(),
 				.FilePath = entry.path().string(),
-				.IsDirectory = isDirectory, 
 				.Thumbnail = thumbnail, 
-				.Type = fileType
+				.Type = fileType,
+				.TypeString = typeString,
+				.ColorIndicator = colorIndicator,
 			};
 
 			m_DirectoryEntries.emplace_back(file);

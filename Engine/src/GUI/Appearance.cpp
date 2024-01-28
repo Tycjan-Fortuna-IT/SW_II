@@ -1,7 +1,5 @@
 ﻿#include "Appearance.hpp"
 
-#include <imgui.h>
-
 #include <icons/MaterialDesign.inl>
 
 namespace SW::GUI {
