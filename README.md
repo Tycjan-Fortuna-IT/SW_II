@@ -1,8 +1,12 @@
 # SW II - Game Engine
-Just to have some fun with C++ and OpenGL
+In-development game engine written in C++.
 
 <p align="center">
   <img src="./docs/icon.png" width="300">
+</p>
+
+<p align="center">
+  <img src="./docs/SW.png">
 </p>
 
 <p align="center">
@@ -10,6 +14,39 @@ Just to have some fun with C++ and OpenGL
   <img src="https://img.shields.io/badge/Visual%20Studio-5C2D91.svg?style=for-the-badge&logo=visual-studio&logoColor=white" width="210">
   <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" width="156">
 </p>
+
+## Features
+
+Right now, the engine is very bare-bones. Its most remarkable features are:
+
+| Feature               | Description                                                                           | Status   |
+| -------               | -----------                                                                           | ------   |
+| **ECS support**       | Entity Component System approach through *entt*.                                      | Done ✔️ |
+| **Scene system**      | Scene-based entity management. Scene serialization with YAML.                         | WIP 💻 |
+| **Project system**    | Project-based management of scenes and assets.                                        | TODO 📋 |
+| **2D Renderer**       | 2D batch renderer supporting OpenGL.                                                  | WIP 💻 |
+| **ImGui support**     | Basic game editor and in-game debug UI using *dear imgui*.                            | WIP 💻 |
+| **Asset manager**      | Basic asset handling API.                                 | TODO 📋 |
+| **Font**               | Extend the Renderer capabilities so it can draw text.     | TODO 📋  |
+| **2D Physics**        | 2D Physics using *Box2D* with Rigidbody, Box and Circle Colliders and joints.         | TODO 📋 |
+| **Scripting**         | Basic scripting in C#.                                                   | TODO 📋 |
+| **C# API**             | C# API for all the components.                            | TODO 📋  |
+| **Audio**             | Basic Sound API with spatialization..                              | TODO 📋 |
+| **Multithreading**    | Multithreading support.                                           | TODO 📋 |
+| **3D Renderer**       | Basic 3D renderer with lighting, IBL and PBR workflow supporting OpenGL.              | TODO 📋 |
+| **Shadow Support**    | Soft and Hard shadow support in OpenGL 3D Renderer.                                   | TODO 📋 |
+| **3D Physics**        | Basic 3D Physics using *Jolt Physics* with Rigidbody, Box and Sphere Colliders.   	  | TODO 📋 |
+
+## Dependencies
+  - [Dear imgui](https://github.com/ocornut/imgui) for GUI rendering.
+  - [entt](https://github.com/skypjack/entt) for ECS management.
+  - [GLAD](https://glad.dav1d.de) for OpenGL rendering.
+  - [GLFW](https://github.com/glfw/glfw) for OpenGL, OpenGL ES, window creation and input handling. More info at its [website](https://www.glfw.org/).
+  - [spdlog](https://github.com/gabime/spdlog) for logging.
+  - [stb_image.h](https://github.com/nothings/stb) for loading textures.
+  - [yaml-cpp](https://github.com/jbeder/yaml-cpp) for scene serialization in YAML.
+
+Projects are generated with [Premake 5](https://github.com/premake/premake-core/releases).
 
 # Getting Started
 On Windows Visual Studio 2022 is recommended. On linux tested on Ubuntu 22.04 LTS with clang compiler.
