@@ -9,7 +9,6 @@
 #pragma once
 
 #include <filesystem>
-#include <imgui.h>
 
 #include "GUI/Panel.hpp"
 

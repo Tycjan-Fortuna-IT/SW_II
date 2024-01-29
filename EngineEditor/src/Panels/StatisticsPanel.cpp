@@ -1,7 +1,5 @@
 #include "StatisticsPanel.hpp"
 
-#include <imgui.h>
-
 #include "Core/Utils/Utils.hpp"
 #include "Core/Application.hpp"
 #include "Core/Renderer/Renderer2D.hpp"

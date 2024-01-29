@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Engine.hpp>
-
-#include <imgui_internal.h>
-
 #include "Panels/SceneViewportPanel.hpp"
 
 namespace SW {

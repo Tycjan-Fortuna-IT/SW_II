@@ -17,8 +17,12 @@
 #include <functional>
 #include <utility>
 
-#include <Core/Defines.hpp>
-#include <Core/Debug/LogSystem.hpp>
+#include "Core/Defines.hpp"
+#include "Core/Debug/LogSystem.hpp"
+#include "Core/Base.hpp"
+
+#include <imgui.h>
+#include <imgui_internal.h>
 
 namespace SW {
 

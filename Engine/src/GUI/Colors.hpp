@@ -8,8 +8,6 @@
  */
 #pragma once
 
-#include <imgui.h>
-
 namespace SW {
 
 	namespace Color {

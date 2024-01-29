@@ -8,8 +8,6 @@
  */
 #pragma once
 
-#include <imgui.h>
-
 #include "GUI/Panel.hpp"
 #include "GUI/GUI.hpp"
 #include "Core/ECS/Components.hpp"

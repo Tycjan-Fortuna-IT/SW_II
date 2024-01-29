@@ -8,8 +8,6 @@
  */
 #pragma once
 
-#include <memory>
-
 namespace SW {
 
 	template<typename T>

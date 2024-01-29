@@ -1,7 +1,5 @@
 #include "SceneHierarchyPanel.hpp"
 
-#include <imgui.h>
-
 #include "Core/Utils/Utils.hpp"
 #include "Core/ECS/EntityRegistry.hpp"
 #include "Managers/SelectionManager.hpp"

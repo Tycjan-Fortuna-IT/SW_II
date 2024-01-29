@@ -1,6 +1,5 @@
 #include "GuiLayer.hpp"
 
-#include <imgui.h>
 #include <GLFW/glfw3.h>
 
 #include "GUI/ImGuiBuild.hpp"

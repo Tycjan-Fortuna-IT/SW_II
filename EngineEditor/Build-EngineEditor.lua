@@ -11,6 +11,11 @@ project "EngineEditor"
         "src/**.cpp"
     }
 
+    pchheader "pch.hpp"
+    pchsource "src/pch.cpp"
+
+    forceincludes { "pch.hpp" }
+
     defines { 
         "GLFW_INCLUDE_NONE",
         "IMGUI_DEFINE_MATH_OPERATORS",

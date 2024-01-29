@@ -8,9 +8,6 @@
  */
 #pragma once
 
-#include <imgui.h>
-#include <imgui_internal.h>
-
 #include "Core/OpenGL/Texture2D.hpp"
 #include "Core/Math/Vector2.hpp"
 #include "Core/Math/Vector3.hpp"

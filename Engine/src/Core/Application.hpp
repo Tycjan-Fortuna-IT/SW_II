@@ -10,7 +10,7 @@
 
 #include "Core/OpenGL/Window.hpp"
 #include "Core/Layer.hpp"
-#include "Core/Base.hpp"
+#include "OpenGL/Texture2D.hpp"
 
 int main();
 
@@ -101,6 +101,8 @@ namespace SW {
 		 * This function removes the top layer from the layer stack of the application.
 		 */
         void PopLayer();
+
+		Ref<Texture2D> s;
 
 	protected:
 		/**

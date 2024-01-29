@@ -1,7 +1,5 @@
 #include "Panel.hpp"
 
-#include <imgui.h>
-
 namespace SW {
 
 	Panel::Panel(const char* name, const char* icon, bool defaultShow)
