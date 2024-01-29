@@ -8,8 +8,6 @@
  */
 #pragma once
 
-#include <string>
-
 struct GLFWwindow;
 
 namespace SW {

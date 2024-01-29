@@ -8,11 +8,9 @@
  */
 #pragma once
 
-#include <vector>
-
-#include "Defines.hpp"
 #include "Core/OpenGL/Window.hpp"
 #include "Core/Layer.hpp"
+#include "Core/Base.hpp"
 
 int main();
 
@@ -104,7 +102,7 @@ namespace SW {
 		 */
         void PopLayer();
 
-    protected:
+	protected:
 		/**
 		 * @brief Construct a new Application.
 		 * @warning Only possible once and internally in derived client class.

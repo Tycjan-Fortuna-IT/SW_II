@@ -1,7 +1,5 @@
 #include "EditorLayer.hpp"
 
-#include <filesystem>
-
 #include "Panels/StatisticsPanel.hpp"
 #include "Panels/ConsolePanel.hpp"
 #include "Panels/AssetPanel.hpp"

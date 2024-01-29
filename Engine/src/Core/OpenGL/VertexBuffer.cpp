@@ -1,5 +1,7 @@
 #include "VertexBuffer.hpp"
 
+#include <glad/glad.h>
+
 namespace SW {
 
 	VertexBuffer::VertexBuffer(u32 size)

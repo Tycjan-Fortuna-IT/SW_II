@@ -5,7 +5,7 @@
 
 #include <cstring>
 #include <string>
-
+#include <memory>
 #include <vector>
 #include <array>
 #include <unordered_map>
@@ -17,8 +17,8 @@
 #include <functional>
 #include <utility>
 
-#include "Core/Defines.hpp"
-#include "Core/Debug/LogSystem.hpp"
+#include <Core/Defines.hpp>
+#include <Core/Debug/LogSystem.hpp>
 
 namespace SW {
 

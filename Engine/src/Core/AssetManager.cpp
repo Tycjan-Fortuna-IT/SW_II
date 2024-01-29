@@ -25,6 +25,8 @@ namespace SW {
 			delete ptr;
 		}
 
+		s_Textures.clear();
+
 		delete s_WhiteTexture;
 		delete s_BlackTexture;
 	}

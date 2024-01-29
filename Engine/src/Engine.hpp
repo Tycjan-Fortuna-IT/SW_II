@@ -1,5 +1,13 @@
 #pragma once
 
+#include <string>
+#include <memory>
+#include <vector>
+#include <filesystem>
+
+#include <Core/Defines.hpp>
+#include <Core/Debug/LogSystem.hpp>
+
 #include "Core/Application.hpp"
 #include "Core/Layer.hpp"
 #include "Core/Timestep.hpp"
