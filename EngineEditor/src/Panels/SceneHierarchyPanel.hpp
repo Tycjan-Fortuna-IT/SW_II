@@ -16,6 +16,8 @@
 
 namespace SW {
 
+	class SceneViewportPanel;
+
 	/**
 	 * @brief The SceneHierarchyPanel class represents a panel that displays all entities in the scene
 	 *        in a tree-like structure.
@@ -28,7 +30,7 @@ namespace SW {
 		 * 
 		 * @param context Current scene context.
 		 */
-		explicit SceneHierarchyPanel(Scene* context);
+		explicit SceneHierarchyPanel(SceneViewportPanel* sceneViewportPanel);
 
 		/**
 		 * @brief Default destructor for the SceneHierarchyPanel class.
@@ -60,7 +62,7 @@ namespace SW {
 	private:
 		GUI::TextFilter m_SearchFilter;		/**< Search filter used to search for entities by their tag */
 
-		Scene* m_Scene = nullptr;			/**< The current scene context. */
+		SceneViewportPanel* m_SceneViewportPanel = nullptr;	/**< The current scene viewport context. */
 	};
 
 }

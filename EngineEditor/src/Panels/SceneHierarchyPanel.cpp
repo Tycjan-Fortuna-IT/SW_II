@@ -4,11 +4,12 @@
 #include "Core/ECS/EntityRegistry.hpp"
 #include "Managers/SelectionManager.hpp"
 #include "GUI/Icons.hpp"
+#include "SceneViewportPanel.hpp"
 
 namespace SW {
 
-	SceneHierarchyPanel::SceneHierarchyPanel(Scene* context)
-		: Panel("Scene Hierarchy", SW_ICON_VIEW_LIST, true), m_Scene(context) {}
+	SceneHierarchyPanel::SceneHierarchyPanel(SceneViewportPanel* sceneViewportPanel)
+		: Panel("Scene Hierarchy", SW_ICON_VIEW_LIST, true), m_SceneViewportPanel(sceneViewportPanel) {}
 
 	void SceneHierarchyPanel::OnUpdate(Timestep dt)
 	{
@@ -23,6 +24,8 @@ namespace SW {
 			const f32 lineHeight = ImGui::GetTextLineHeight();
 			const ImVec2 padding = ImGui::GetStyle().FramePadding;
 
+			Scene* currentScene = m_SceneViewportPanel->GetCurrentScene();
+
 			m_SearchFilter.OnRender("###HierarchyFilter");
 
 			ImGui::SameLine();
@@ -32,12 +35,32 @@ namespace SW {
 			}
 
 			if (ImGui::BeginPopup("AddEntity_Popup")) {
-				if (ImGui::BeginMenu("Entities")) {
-					if (ImGui::MenuItem("Square Entity")) {
-						m_Scene->CreateEntity("Square");
+				if (ImGui::MenuItemEx("Empty Entity", SW_ICON_CUBE_OUTLINE)) {
+					currentScene->CreateEntity("Entity");
+				}
+
+				if (ImGui::BeginMenu("2D")) {
+					if (ImGui::MenuItemEx("Sprite", SW_ICON_IMAGE_SIZE_SELECT_ACTUAL)) {
+						Entity entity = currentScene->CreateEntity("Sprite");
+						entity.AddComponent<SpriteComponent>();
+						
+						ImGui::CloseCurrentPopup();
+					}
+
+					if (ImGui::MenuItemEx("Camera", SW_ICON_CAMERA)) {
+						Entity entity = currentScene->CreateEntity("Camera");
+						
+						SceneCamera camera(m_SceneViewportPanel->GetViewportAspectRatio());
+
+						entity.AddComponent<CameraComponent>(camera);
 
 						ImGui::CloseCurrentPopup();
 					}
+
+					ImGui::EndMenu();
+				}
+
+				if (ImGui::BeginMenu("3D")) {
 
 					ImGui::EndMenu();
 				}
@@ -125,7 +148,7 @@ namespace SW {
 				if (SelectionManager::GetSelectionID() == idc.ID) {
 					SelectionManager::Deselect();
 
-					m_Scene->DestroyEntity(entity);
+					m_SceneViewportPanel->GetCurrentScene()->DestroyEntity(entity);
 				}
 			}
 

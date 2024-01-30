@@ -43,7 +43,7 @@ namespace SW {
 		
 		m_Panels.emplace_back(m_Viewport);
 		m_Panels.emplace_back(new PropertiesPanel(m_Viewport));
-		m_Panels.emplace_back(new SceneHierarchyPanel(m_Viewport->GetCurrentScene()));
+		m_Panels.emplace_back(new SceneHierarchyPanel(m_Viewport));
 
 		Application::Get()->GetWindow()->SetVSync(true);
 

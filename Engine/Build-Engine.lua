@@ -64,6 +64,7 @@ project "Engine"
         include "Engine/vendor/ImGui"
         include "Engine/vendor/YamlCpp"
         include "Engine/vendor/NFD-Extended"
+        include "Engine/vendor/Box2D"
     group ""
     
     group "Engine"

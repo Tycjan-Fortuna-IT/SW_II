@@ -19,3 +19,6 @@
 [submodule "Engine/vendor/NFD-Extended"]
 	path = Engine/vendor/NFD-Extended
 	url = https://github.com/Tycjan-Fortuna-IT/NFD-Extended.git
+[submodule "Engine/vendor/box2d"]
+	path = Engine/vendor/box2d
+	url = https://github.com/Tycjan-Fortuna-IT/box2d.git

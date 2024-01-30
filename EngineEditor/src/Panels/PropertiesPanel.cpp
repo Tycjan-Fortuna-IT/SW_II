@@ -134,27 +134,21 @@ namespace SW {
 			}
 
 			if (ImGui::BeginPopup("AddComponent_Popup")) {
-				if (ImGui::BeginMenu("Components")) {
-					if (ImGui::MenuItem("Tag Component")) {
+				if (ImGui::BeginMenu("2D")) {
+					if (ImGui::MenuItemEx("Sprite Component", SW_ICON_IMAGE_SIZE_SELECT_ACTUAL)) {
+						if (!entity.HasComponent<SpriteComponent>()) {
+							entity.AddComponent<SpriteComponent>();
+						}
 
 						ImGui::CloseCurrentPopup();
 					}
 
-					if (ImGui::MenuItem("Transform Component")) {
+					if (ImGui::MenuItemEx("Camera Component", SW_ICON_CAMERA)) {
+						if (!entity.HasComponent<CameraComponent>()) {
+							SceneCamera camera(m_SceneViewportPanel->GetViewportAspectRatio());
 
-						ImGui::CloseCurrentPopup();
-					}
-
-					if (ImGui::MenuItem("Sprite Component")) {
-						entity.AddComponent<SpriteComponent>();
-
-						ImGui::CloseCurrentPopup();
-					}
-
-					if (ImGui::MenuItem("Camera Component")) {
-						SceneCamera camera(m_SceneViewportPanel->GetViewportAspectRatio());
-
-						entity.AddComponent<CameraComponent>(camera);
+							entity.AddComponent<CameraComponent>(camera);
+						}
 
 						ImGui::CloseCurrentPopup();
 					}
@@ -162,6 +156,11 @@ namespace SW {
 					ImGui::EndMenu();
 				}
 				
+				if (ImGui::BeginMenu("3D")) {
+
+					ImGui::EndMenu();
+				}
+
 				ImGui::EndPopup();
 			}
 

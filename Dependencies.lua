@@ -37,6 +37,10 @@ Dependencies = {
         IncludeDir = "%{wks.location}/Engine/vendor/NFD-Extended/src/include",
         LinkAs = "NFD-Extended",
     },
+    BOX2D = {
+        IncludeDir = "%{wks.location}/Engine/vendor/box2d/include",
+        LinkAs = "Box2D",
+    },
 }
 
 function IncludeEngineDependencies(additional)
