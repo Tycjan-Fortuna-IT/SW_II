@@ -61,7 +61,42 @@ namespace SW {
 
     void Scene::OnUpdate(Timestep dt, const SceneCamera& camera)
 	{
+		if (m_SceneState == SceneState::Play)
+			this->OnUpdateRuntime(dt);
+		else
+			this->OnUpdateEditor(dt, camera);
+	}
+
+    void Scene::OnUpdateEditor(Timestep dt, const SceneCamera& camera)
+    {
 		Renderer2D::BeginScene(camera);
+
+		for (auto&& [entity, tc, sc] : EntityRegistry::GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
+			Renderer2D::DrawQuad(tc.GetTransform(), sc);
+		}
+
+		Renderer2D::EndScene();
+    }
+
+	void Scene::OnUpdateRuntime(Timestep dt)
+	{
+		SceneCamera* mainCamera = nullptr;
+		Matrix4<f32> cameraTransform;
+
+		for (auto&& [Entity, tc, cc] : EntityRegistry::GetEntitiesWith<TransformComponent, CameraComponent>().each()) {
+			if (cc.Primary) {
+				mainCamera = &cc.Camera;
+				cameraTransform = tc.GetTransform();
+
+				break;
+			}
+		}
+
+		if (!mainCamera) {
+			return;
+		}
+
+		Renderer2D::BeginScene(*mainCamera, cameraTransform);
 
 		for (auto&& [entity, tc, sc] : EntityRegistry::GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
 			Renderer2D::DrawQuad(tc.GetTransform(), sc);

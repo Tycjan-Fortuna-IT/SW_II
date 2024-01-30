@@ -74,6 +74,19 @@ namespace SW {
 		void OnUpdate(Timestep dt, const SceneCamera& camera);
 
 		/**
+		 * @brief Updates the scene in edit mode with the specified timestep and camera.
+		 * @param dt The timestep since the last update.
+		 * @param camera The camera to use for rendering the scene.
+		 */
+		void OnUpdateEditor(Timestep dt, const SceneCamera& camera);
+
+		/**
+		 * @brief Updates the scene in runtime mode with the specified timestep.
+		 * @param dt The timestep since the last update.
+		 */
+		void OnUpdateRuntime(Timestep dt);
+
+		/**
 		 * @brief Handles viewport resize events.
 		 * @param width The new width of the viewport.
 		 * @param height The new height of the viewport.

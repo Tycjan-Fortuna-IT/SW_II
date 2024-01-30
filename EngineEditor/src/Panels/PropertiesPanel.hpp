@@ -1,15 +1,15 @@
 /**
  * @file PropertiesPanel.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.2
- * @date 2024-01-27
+ * @version 0.0.3
+ * @date 2024-01-30
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
 #pragma once
 
 #include "GUI/Panel.hpp"
-#include "Core/Scene/Scene.hpp"
+#include "SceneViewportPanel.hpp"
 
 namespace SW {
 
@@ -25,7 +25,7 @@ namespace SW {
 		 * 
 		 * @param context Current scene context.
 		 */
-		explicit PropertiesPanel(Scene* context);
+		explicit PropertiesPanel(SceneViewportPanel* sceneViewportPanel);
 
 		/**
 		 * @brief Default destructor for the PropertiesPanel class.
@@ -53,7 +53,7 @@ namespace SW {
 		void OnRender() override;
 
 	private:
-		Scene* m_Scene = nullptr;	/**< The current scene context. */
+		SceneViewportPanel* m_SceneViewportPanel = nullptr;	/**< The current scene viewport context. */
 	};
 
 }

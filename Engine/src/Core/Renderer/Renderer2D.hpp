@@ -66,6 +66,13 @@ namespace SW {
 		static void BeginScene(const SceneCamera& camera);
 
 		/**
+		 * @brief Begins a new rendering scene with the specified camera and transformation matrix.
+		 * @param camera The camera to be used for rendering the scene.
+		 * @param transform The transformation matrix of the scene.
+		 */
+		static void BeginScene(const SceneCamera& camera, const Matrix4<f32>& transform);
+
+		/**
 		 * @brief Ends the current rendering scene.
 		 */
 		static void EndScene();

@@ -29,3 +29,4 @@
 #define SW_ICON_REFRESH u8"\uF450"
 #define SW_ICON_ARROW_LEFT_BOLD u8"\uF730"
 #define SW_ICON_SETTINGS u8"\uF493"
+#define SW_ICON_CAMERA u8"\uF100"

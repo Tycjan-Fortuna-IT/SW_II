@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Panels/SceneViewportPanel.hpp"
-
 namespace SW {
 
 	class Panel;
+	class SceneViewportPanel;
 
 	class EditorLayer final : public Layer {
 	public:

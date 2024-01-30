@@ -42,6 +42,15 @@ project "EngineEditor"
     filter "system:windows"
 	    linkoptions { "/NODEFAULTLIB:LIBCMT" }
 	
+    filter "system:linux"
+        pic "On"
+        systemversion "latest"
+        linkoptions { "`pkg-config --libs gtk+-3.0`" }
+        links {
+            "GL:shared",
+            "dl:shared"
+        }
+
     filter "configurations:Debug"
         defines { "SW_DEBUG_BUILD" }
         runtime "Debug"

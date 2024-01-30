@@ -125,6 +125,17 @@ namespace SW {
 		s_Data.TextureSlotIndex = 1;
 	}
 
+	void Renderer2D::BeginScene(const SceneCamera& camera, const Matrix4<f32>& transform)
+	{
+		s_Data.TextureShader->Bind();
+		Matrix4<f32> trans = Math::Inverse(transform);
+		s_Data.TextureShader->UploadUniformMat4("u_ViewProjection", (camera.GetProjectionMatrix() * trans).Transpose());
+
+		s_Data.QuadIndexCount = 0;
+		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+		s_Data.TextureSlotIndex = 1;
+	}
+
 	void Renderer2D::EndScene()
 	{
 		u32 dataSize = (u32)((u8*)s_Data.QuadVertexBufferPtr - (u8*)s_Data.QuadVertexBufferBase);

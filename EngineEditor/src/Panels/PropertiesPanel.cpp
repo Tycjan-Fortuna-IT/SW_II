@@ -19,11 +19,12 @@ namespace SW {
 		s_ComponentNames[id] = name;
 	}
 
-	PropertiesPanel::PropertiesPanel(Scene* context)
-		: Panel("Properties", SW_ICON_INFORMATION, true), m_Scene(context)
+	PropertiesPanel::PropertiesPanel(SceneViewportPanel* sceneViewportPanel)
+		: Panel("Properties", SW_ICON_INFORMATION, true), m_SceneViewportPanel(sceneViewportPanel)
 	{
 		AddComponentName<TransformComponent>(SW_ICON_VECTOR_LINE "  Transform");
 		AddComponentName<SpriteComponent>(SW_ICON_IMAGE_SIZE_SELECT_ACTUAL "  Sprite");
+		AddComponentName<CameraComponent>(SW_ICON_CAMERA "  Camera");
 	}
 
 	void PropertiesPanel::OnUpdate(Timestep dt)
@@ -91,7 +92,7 @@ namespace SW {
 				OnEnd(); return;
 			}
 
-			Entity entity = m_Scene->GetEntityByID(SelectionManager::GetSelectionID());
+			Entity entity = m_SceneViewportPanel->GetCurrentScene()->GetEntityByID(SelectionManager::GetSelectionID());
 
 			if (GUI::Button("{} Add", { 90.f, 30.f }, SW_ICON_PLUS)) {
 				ImGui::OpenPopup("AddComponent_Popup");
@@ -150,6 +151,14 @@ namespace SW {
 						ImGui::CloseCurrentPopup();
 					}
 
+					if (ImGui::MenuItem("Camera Component")) {
+						SceneCamera camera(m_SceneViewportPanel->GetViewportAspectRatio());
+
+						entity.AddComponent<CameraComponent>(camera);
+
+						ImGui::CloseCurrentPopup();
+					}
+
 					ImGui::EndMenu();
 				}
 				
@@ -171,6 +180,12 @@ namespace SW {
 				GUI::DrawVector4ColorPickerProperty(component.Color, "Color");
 				GUI::DrawTextureProperty(&component.Texture, "Texture");
 				GUI::DrawFloatingPointProperty(component.TilingFactor, "Tiling", nullptr, 0.f, 10.f);
+				GUI::EndProperties();
+			}, true);
+
+			DrawComponent<CameraComponent>(entity, [](CameraComponent& component) {
+				GUI::BeginProperties("##camera_property");
+				GUI::DrawBooleanProperty(component.Primary, "Primary");
 				GUI::EndProperties();
 			}, true);
 			

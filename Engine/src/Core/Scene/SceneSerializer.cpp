@@ -129,6 +129,16 @@ namespace SW {
 				output << YAML::EndMap;
 			}
 
+			if (entity.HasComponent<CameraComponent>()) {
+				CameraComponent& cc = entity.GetComponent<CameraComponent>();
+
+				output << YAML::Key << "CameraComponent";
+				output << YAML::BeginMap;
+				output << YAML::Key << "Primary" << YAML::Value << cc.Primary;
+				output << YAML::Key << "AspectRatio" << YAML::Value << cc.Camera.GetAspectRatio();
+				output << YAML::EndMap;
+			}
+
 			output << YAML::EndMap; // End Entity components content
 
 			output << YAML::EndMap; // End Entity content
@@ -165,7 +175,7 @@ namespace SW {
 
 			Entity deserialized = scene->CreateEntityWithID(id, tag);
 
-			auto transformComponent = entity["Entity"]["TransformComponent"];
+			YAML::Node transformComponent = entity["Entity"]["TransformComponent"];
 			if (transformComponent) {
 				TransformComponent& tc = deserialized.GetComponent<TransformComponent>();
 
@@ -174,17 +184,26 @@ namespace SW {
 				tc.Scale = transformComponent["Scale"].as<Vector3<f32>>();
 			}
 
-			auto spriteComponent = entity["Entity"]["SpriteComponent"];
+			YAML::Node spriteComponent = entity["Entity"]["SpriteComponent"];
 			if (spriteComponent) {
-				auto& sprite = deserialized.AddComponent<SpriteComponent>();
+				SpriteComponent& sc = deserialized.AddComponent<SpriteComponent>();
 
-				sprite.Color = spriteComponent["Color"].as<Vector4<f32>>();
+				sc.Color = spriteComponent["Color"].as<Vector4<f32>>();
 
 				if (spriteComponent["TexturePath"]) {
 					std::string path = spriteComponent["TexturePath"].as<std::string>();
 
-					sprite.Texture = AssetManager::GetTexture2D(path.c_str());
+					sc.Texture = AssetManager::GetTexture2D(path.c_str());
 				}
+			}
+
+			YAML::Node cameraComponent = entity["Entity"]["CameraComponent"];
+			if (cameraComponent) {
+				SceneCamera camera(cameraComponent["AspectRatio"].as<f32>());
+
+				CameraComponent& cc = deserialized.AddComponent<CameraComponent>(camera);
+
+				cc.Primary = cameraComponent["Primary"].as<bool>();
 			}
 		}
 	}

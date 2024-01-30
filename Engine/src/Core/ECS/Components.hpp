@@ -124,8 +124,11 @@ namespace SW {
 	 */
 	struct CameraComponent {
 		SceneCamera Camera;
+		bool Primary = true;	/** @brief In case of many cameras only the first primary one will be used. */
 
 		CameraComponent() = default;
+		CameraComponent(const SceneCamera& camera)
+			: Camera(camera) {}
 
 		CameraComponent(const CameraComponent& other) = default;
 		CameraComponent(CameraComponent&& other) = default;

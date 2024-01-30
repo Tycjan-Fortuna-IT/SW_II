@@ -6,9 +6,10 @@
 #include "Panels/SceneHierarchyPanel.hpp"
 #include "Panels/PropertiesPanel.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
-#include "Core/Utils/Filesystem.hpp"
+#include "Core/Utils/FileSystem.hpp"
 #include "Managers/SelectionManager.hpp"
 #include "Core/AssetManager.hpp"
+#include "Panels/SceneViewportPanel.hpp"
 
 namespace SW {
 
@@ -41,7 +42,7 @@ namespace SW {
 		m_Viewport = new SceneViewportPanel();
 		
 		m_Panels.emplace_back(m_Viewport);
-		m_Panels.emplace_back(new PropertiesPanel(m_Viewport->GetCurrentScene()));
+		m_Panels.emplace_back(new PropertiesPanel(m_Viewport));
 		m_Panels.emplace_back(new SceneHierarchyPanel(m_Viewport->GetCurrentScene()));
 
 		Application::Get()->GetWindow()->SetVSync(true);

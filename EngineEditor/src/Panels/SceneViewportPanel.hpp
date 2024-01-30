@@ -1,8 +1,8 @@
 /**
  * @file SceneViewportPanel.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.1
- * @date 2024-01-18
+ * @version 0.1.1
+ * @date 2024-01-30
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -45,7 +45,7 @@ namespace SW {
 		 * @brief Called every frame to update the panel.
 		 * @param dt The time since the last frame.
 		 */
-		void OnUpdate(Timestep dt) override;
+		void OnUpdate(Timestep dt) final override;
 
 		/**
 		 * @brief Called every frame to render the panel.
@@ -68,6 +68,13 @@ namespace SW {
 		 * @brief Renders the gizmo toolbar.
 		 */
 		void RenderGizmoToolbar();
+
+		/**
+		 * @brief Renders the gizmo toolbar.
+		 * 
+		 * @return f32 Returns calculated aspect ratio of the scene viewport.
+		 */
+		f32 GetViewportAspectRatio() { return m_SceneCamera->GetAspectRatio(); }
 
 	private:
 		Scene* m_Scene = nullptr;				/** @brief The current scene. */
