@@ -1,13 +1,14 @@
 /**
  * @file Components.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.2
- * @date 2024-01-13
+ * @version 0.1.1
+ * @date 2024-02-01
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
 #pragma once
 
+#include "Core/Math/Vector2.hpp"
 #include "Core/Math/Vector3.hpp"
 #include "Core/Math/Vector4.hpp"
 #include "Core/Utils/Random.hpp"
@@ -134,6 +135,32 @@ namespace SW {
 		CameraComponent(CameraComponent&& other) = default;
 		CameraComponent& operator=(const CameraComponent& other) = default;
 		CameraComponent& operator=(CameraComponent&& other) = default;
+	};
+
+	enum class PhysicBodyType : u8
+	{
+		Static = 0,		/**< zero mass, zero velocity, may be manually moved */
+		Kinematic,		/**< zero mass, non-zero velocity set by user, moved by the physics system */
+		Dynamic			/**< positive mass, non-zero velocity determined by forces, moved by the physics system */
+	};
+
+	struct RigidBody2DComponent final
+	{
+		PhysicBodyType Type = PhysicBodyType::Static;	/**< By default the body is static */
+
+		void* Handle = nullptr;		/**< Internal box2D physics body handle */
+
+		f32 GravityScale = 1.0f;	/**< Scale the gravity applied to this body. */
+
+		bool AllowSleep = true;		/**< Set this flag to false if this body should never fall asleep. */
+	};
+
+	struct BoxCollider2DComponent final
+	{
+		void* Handle = nullptr;		/**< Internal box2D physics box collider handle */
+
+		Vector2<f32> Size = { 0.5f, 0.5f };		/**< Size of the collider */
+		Vector2<f32> Offset = { 0.0f, 0.0f };	/**< Center of the box in local coordinates */
 	};
 
 }

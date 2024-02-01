@@ -453,11 +453,11 @@ namespace SW::GUI {
 			IM_ROUND(
 				ImMax(window->Pos.x, bar.Min.x + window->WindowBorderSize + window->Pos.x - 10.0f)),
 				IM_ROUND(bar.Min.y + window->WindowBorderSize + window->Pos.y
-				),
+			),
 			IM_ROUND(ImMax(
 				bar.Min.x + window->Pos.x, bar.Max.x - ImMax(window->WindowRounding, window->WindowBorderSize))),
 				IM_ROUND(bar.Max.y + window->Pos.y
-				)
+			)
 		);
 
 		clip.ClipWith(window->OuterRectClipped);
@@ -595,6 +595,84 @@ namespace SW::GUI {
 	static void EndPropertyGrid()
 	{
 		ImGui::PopID();
+	}
+
+	/**
+	 * @brief Draws a control property for a Vector2.
+	 *
+	 * This function is used to draw a control property for a Vector2, allowing the user to modify its values.
+	 * The control property consists of three input fields for the X and Y components of the vector.
+	 * Additionally, buttons are provided to reset each component to a specified value.
+	 *
+	 * @param vector The Vector2 to be modified by the control property.
+	 * @param label The label to be displayed for the control property.
+	 * @param tooltip An optional tooltip to be displayed when hovering over the control property.
+	 * @param resetValue The value to which each component of the vector will be reset when the corresponding reset button is pressed.
+	 * @param min The minimum value allowed for each component of the vector.
+	 * @param max The maximum value allowed for each component of the vector.
+	 * @param format The format string used to display the values of the vector components.
+	 */
+	static void DrawVector2ControlProperty(
+		Vector2<f32>& vector, const char* label, const char* tooltip = nullptr, f32 resetValue = 0.f,
+		f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
+	) {
+		BeginPropertyGrid(label, tooltip, false);
+
+		ImGuiIO& io = ImGui::GetIO();
+
+		ImFont* boldFont = GUI::Appearance::GetFonts().DefaultBoldFont;
+
+		ImGui::PushMultiItemsWidths(2, ImGui::CalcItemWidth());
+
+		float frameHeight = ImGui::GetFrameHeight();
+		ImVec2 buttonSize = { frameHeight + 3.0f, frameHeight };
+
+		ImVec2 innerItemSpacing = ImGui::GetStyle().ItemInnerSpacing;
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, innerItemSpacing);
+
+		// X
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 1.0f, 1.0f, 1.0f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+			ImGui::PushFont(boldFont);
+			if (ImGui::Button("X", buttonSize))
+				vector.x = resetValue;
+			ImGui::PopFont();
+			ImGui::PopStyleColor(4);
+
+			ImGui::SameLine();
+			ImGui::DragFloat("##X", &vector.x, 0.05f, min, max, format.c_str());
+			ImGui::PopItemWidth();
+			ImGui::PopStyleVar();
+		}
+
+		ImGui::SameLine();
+
+		// Y
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 1.0f, 1.0f, 1.0f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+			ImGui::PushFont(boldFont);
+			if (ImGui::Button("Y", buttonSize))
+				vector.y = resetValue;
+			ImGui::PopFont();
+			ImGui::PopStyleColor(4);
+
+			ImGui::SameLine();
+			ImGui::DragFloat("##Y", &vector.y, 0.05f, min, max, format.c_str());
+			ImGui::PopItemWidth();
+			ImGui::PopStyleVar();
+		}
+
+		ImGui::PopStyleVar();
+
+		EndPropertyGrid();
 	}
 
 	/**

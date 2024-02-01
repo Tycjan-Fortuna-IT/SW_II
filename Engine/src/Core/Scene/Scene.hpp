@@ -11,6 +11,9 @@
 #include "Core/ECS/Entity.hpp"
 #include "Core/Scene/SceneCamera.hpp"
 #include "Core/Timestep.hpp"
+#include "Core/Math/Vector2.hpp"
+
+class b2World;
 
 namespace SW {
 
@@ -67,6 +70,16 @@ namespace SW {
 		void DestroyAllEntities();
 
 		/**
+		 * @brief This function is called when the scene is started (the state has changed)
+		 */
+		void OnRuntimeStart();
+
+		/**
+		 * @brief This function is called when the scene is stopped (the state has changed)
+		 */
+		void OnRuntimeStop();
+
+		/**
 		 * @brief Updates the scene with the specified timestep and camera.
 		 * @param dt The timestep since the last update.
 		 * @param camera The camera to use for rendering the scene.
@@ -119,7 +132,15 @@ namespace SW {
 		 * 
 		 * @param state The new state of the scene.
 		 */
-		void SetNewState(SceneState state) { m_SceneState = state; }
+		void SetNewState(SceneState state)
+		{ 
+			m_SceneState = state;
+
+			if (state == SceneState::Play)
+				OnRuntimeStart();
+			else if (state == SceneState::Edit)
+				OnRuntimeStop();
+		}
 
 	private:
 		EntityRegistry m_Registry; /**< The entity registry of the scene. */
@@ -130,6 +151,33 @@ namespace SW {
 		u32 m_ViewportHeight = 0; /**< The height of the viewport. */
 
 		SceneState m_SceneState = SceneState::Edit;	/**< The current state of the scene. */
+
+		b2World* m_PhysicsWorld2D;		/**< The physics world of the scene. */
+
+		Vector2<f32> m_Gravity = { 0.0f, -9.80665f };	/**< The gravity of the scene. */
+		u32 m_VelocityIterations = 8;			/**< The number of velocity iterations for the physics simulation. */
+		u32 m_PositionIterations = 3;			/**< The number of position iterations for the physics simulation. */
+		f32 m_PhysicsFrameAccumulator = 0.0f;	/**< The frame accumulator for the physics simulation. */
+
+		/**
+		 * @brief Register entity's rigidbody component in the physics world.
+		 * 
+		 * @param entity The entity which rigidbody will be registered.
+		 * @param tc The transform component of the entity.
+		 * @param rbc The rigidbody component to modify.
+		 */
+		void CreateRigidbody2D(Entity entity, const TransformComponent& tc, RigidBody2DComponent& rbc) const;
+
+		/**
+		 * @brief Register entity's box collider component in the physics world.
+		 * 		  The entity will act like a box collider.
+		 * 
+		 * @param entity The entity which box collider will be registered.
+		 * @param tc The transform component of the entity.
+		 * @param rbc The rigidbody component of the entity.
+		 * @param bcc The box collider component to modify.
+		 */		
+		void CreateBoxCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, BoxCollider2DComponent& bcc) const;
 	};
 
 }

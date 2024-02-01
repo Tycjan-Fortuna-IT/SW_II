@@ -25,6 +25,9 @@ namespace SW {
 		AddComponentName<TransformComponent>(SW_ICON_VECTOR_LINE "  Transform");
 		AddComponentName<SpriteComponent>(SW_ICON_IMAGE_SIZE_SELECT_ACTUAL "  Sprite");
 		AddComponentName<CameraComponent>(SW_ICON_CAMERA "  Camera");
+
+		AddComponentName<RigidBody2DComponent>(SW_ICON_SOCCER "  Rigid Body 2D");
+		AddComponentName<BoxCollider2DComponent>(SW_ICON_CHECKBOX_BLANK_OUTLINE "  Box Collider 2D");
 	}
 
 	void PropertiesPanel::OnUpdate(Timestep dt)
@@ -143,6 +146,18 @@ namespace SW {
 						ImGui::CloseCurrentPopup();
 					}
 
+					if (ImGui::MenuItemEx("Rigid Body 2D", SW_ICON_SOCCER)) {
+						if (!entity.HasComponent<RigidBody2DComponent>()) {
+							entity.AddComponent<RigidBody2DComponent>();
+						}
+					}
+
+					if (ImGui::MenuItemEx("Box Collider 2D", SW_ICON_CHECKBOX_BLANK_OUTLINE)) {
+						if (!entity.HasComponent<BoxCollider2DComponent>()) {
+							entity.AddComponent<BoxCollider2DComponent>();
+						}
+					}
+
 					if (ImGui::MenuItemEx("Camera Component", SW_ICON_CAMERA)) {
 						if (!entity.HasComponent<CameraComponent>()) {
 							SceneCamera camera(m_SceneViewportPanel->GetViewportAspectRatio());
@@ -187,6 +202,25 @@ namespace SW {
 				GUI::DrawBooleanProperty(component.Primary, "Primary");
 				GUI::EndProperties();
 			}, true);
+
+			DrawComponent<RigidBody2DComponent>(entity, [](RigidBody2DComponent& component) {
+				GUI::BeginProperties("##rigid_body_2d_property");
+				GUI::DrawSelectableProperty(component.Type, {
+					GUI::SelectOption<PhysicBodyType>{ "Static", PhysicBodyType::Static },
+					GUI::SelectOption<PhysicBodyType>{ "Kinematic", PhysicBodyType::Kinematic },
+					GUI::SelectOption<PhysicBodyType>{ "Dynamic", PhysicBodyType::Dynamic }
+				}, "Body Type");
+				GUI::DrawFloatingPointProperty(component.GravityScale, "Gravity Scale");
+				GUI::DrawBooleanProperty(component.AllowSleep, "Allow Sleep");
+				GUI::EndProperties();
+			}, false);
+
+			DrawComponent<BoxCollider2DComponent>(entity, [](BoxCollider2DComponent& component) {
+				GUI::BeginProperties("##box_collider_2d_property");
+				GUI::DrawVector2ControlProperty(component.Size, "Size", nullptr, 0.5f);
+				GUI::DrawVector2ControlProperty(component.Offset, "Offset", nullptr, 0.5f);
+				GUI::EndProperties();
+			}, false);
 			
 			ImGui::EndChild();
 
