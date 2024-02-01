@@ -881,6 +881,65 @@ namespace SW::GUI {
 	}
 
 	/**
+	 * @brief A struct representing a selectable option.
+	 * 
+	 * This struct is used to define an option that can be selected in a GUI.
+	 * It contains a label and a value of type T.
+	 * 
+	 * @tparam T The type of the value associated with the option.
+	 */
+	template <typename T>
+	struct SelectOption final
+	{
+		std::string Label = "No label";
+		T value = 0;
+	};
+
+	/**
+	 * @brief Draws a selectable property in the GUI.
+	 * 
+	 * This function displays a selectable property in the GUI, allowing the user to choose from a list of options.
+	 * The selected value is stored in the provided reference variable.
+	 * 
+	 * @tparam T The type of the property value.
+	 * @param value The reference to the property value.
+	 * @param options The list of selectable options.
+	 * @param label The label for the property.
+	 * @param tooltip The tooltip for the property (optional).
+	 */
+	template<typename T>
+	static void DrawSelectableProperty(
+		T& value, std::initializer_list<SelectOption<T>> options, const char* label, const char* tooltip = nullptr
+	) {
+		BeginPropertyGrid(label, tooltip);
+
+		std::string chosenName = "";
+
+		for (SelectOption<T> option : options) {
+			if (value == option.value) {
+				chosenName = option.Label;
+			}
+		}
+
+		if (ImGui::BeginCombo("##property_selectable", chosenName.data())) {
+			for (SelectOption<T> option : options) {
+				const bool isSelected = value == option.value;
+
+				if (ImGui::Selectable(option.Label.c_str(), isSelected)) {
+					value = option.value;
+				}
+
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+
+			ImGui::EndCombo();
+		}
+
+		EndPropertyGrid();
+	}
+
+	/**
 	 * @brief Renders clipped text on the GUI.
 	 *
 	 * This function performs CPU side clipping for a single clipped element to avoid using scissor state.
