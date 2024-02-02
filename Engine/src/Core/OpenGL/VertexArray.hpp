@@ -1,8 +1,8 @@
 /**
  * @file VertexArray.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.1
- * @date 2024-01-13
+ * @version 0.1.1
+ * @date 2024-02-02
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */

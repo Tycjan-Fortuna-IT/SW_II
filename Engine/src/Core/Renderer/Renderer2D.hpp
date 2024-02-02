@@ -39,9 +39,11 @@ namespace SW {
 	public:
 		/**
 		 * @brief Initializes the Renderer2D with the specified shader.
-		 * @param shader The shader to be used for rendering.
+		 * 
+		 * @param spriteShader The shader to be used for rendering sprites.
+		 * @param lineShader The shader to be used for rendering lines.
 		 */
-		static void Initialize(const std::shared_ptr<Shader>& shader);
+		static void Initialize(Shader* spriteShader, Shader* lineShader);
 
 		/**
 		 * @brief Shuts down the Renderer2D and releases any allocated resources.

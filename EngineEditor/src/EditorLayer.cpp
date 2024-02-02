@@ -15,7 +15,8 @@ namespace SW {
 
 	void EditorLayer::OnAttach()
 	{
-		m_Shader = std::make_shared<Shader>("assets/shaders/Initial.vert.glsl", "assets/shaders/Initial.frag.glsl");
+		m_SpriteShader = new Shader("assets/shaders/Builtin.2D.Sprite.vert.glsl", "assets/shaders/Builtin.2D.Sprite.frag.glsl");
+		m_LineShader = new Shader("assets/shaders/Builtin.2D.Line.vert.glsl", "assets/shaders/Builtin.2D.Line.frag.glsl");
 
 		m_IconTexture = AssetManager::GetTexture2D("assets/icons/SW_Icon.png");
 		m_CloseIconTexture = AssetManager::GetTexture2D("assets/icons/editor/windows/Close.png");
@@ -47,7 +48,7 @@ namespace SW {
 
 		Application::Get()->GetWindow()->SetVSync(true);
 
-		Renderer2D::Initialize(m_Shader);
+		Renderer2D::Initialize(m_SpriteShader, m_LineShader);
 	}
 
 	void EditorLayer::OnDetach()
@@ -57,6 +58,9 @@ namespace SW {
 		}
 
 		Renderer2D::Shutdown();
+
+		delete m_SpriteShader;
+		delete m_LineShader;
 	}
 
 	void EditorLayer::OnUpdate(Timestep dt)

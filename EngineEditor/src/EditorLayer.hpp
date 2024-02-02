@@ -12,7 +12,8 @@ namespace SW {
 
 		std::vector<Panel*> m_Panels;
 
-		std::shared_ptr<Shader> m_Shader = nullptr;
+		Shader* m_SpriteShader = nullptr;
+		Shader* m_LineShader = nullptr;
 
 		Texture2D* m_IconTexture = nullptr;
 		Texture2D* m_CloseIconTexture = nullptr;

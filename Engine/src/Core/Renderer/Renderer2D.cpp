@@ -21,6 +21,12 @@ namespace SW {
 		f32 TilingFactor;
 	};
 
+	struct LineVertex final
+	{
+		Vector3<f32> Position;
+		Vector4<f32> Color;
+	};
+
 	struct Renderer2DData final
 	{
 		Renderer2DData() = default;
@@ -33,11 +39,19 @@ namespace SW {
 		VertexArray* QuadVertexArray = nullptr;
 		std::shared_ptr<VertexBuffer> QuadVertexBuffer;
 
-		std::shared_ptr<Shader> TextureShader;
+		VertexArray* LineVertexArray = nullptr;
+		std::shared_ptr<VertexBuffer> LineVertexBuffer;
+
+		Shader* TextureShader = nullptr;
+		Shader* LineShader = nullptr;
 
 		u32 QuadIndexCount = 0;
 		QuadVertex* QuadVertexBufferBase = nullptr;
 		QuadVertex* QuadVertexBufferPtr = nullptr;
+
+		u32 LineVertexCount = 0;
+		LineVertex* LineVertexBufferBase = nullptr;
+		LineVertex* LineVertexBufferPtr = nullptr;
 
 		std::array<Texture2D*, MaxTextureSlots> TextureSlots;
 		u32 TextureSlotIndex = 1; // 0 = white texture
@@ -49,7 +63,7 @@ namespace SW {
 
 	static Renderer2DData s_Data;
 
-	void Renderer2D::Initialize(const std::shared_ptr<Shader>& shader)
+	void Renderer2D::Initialize(Shader* spriteShader, Shader* lineShader)
 	{
 		s_Data.QuadVertexArray = new VertexArray();
 		s_Data.QuadVertexBuffer = std::make_shared<VertexBuffer>(static_cast<u32>(s_Data.MaxVertices * sizeof(QuadVertex)));
@@ -82,12 +96,24 @@ namespace SW {
 
 		delete[] quadIndices;
 
+		// Lines
+		{
+			s_Data.LineVertexArray = new VertexArray();
+			s_Data.LineVertexBuffer = std::make_shared<VertexBuffer>(static_cast<u32>(Renderer2DData::MaxVertices * sizeof(LineVertex)));
+			s_Data.LineVertexBuffer->SetLayout({
+				{ ShaderDataType::Float3, "a_Position" },
+				{ ShaderDataType::Float4, "a_Color" }
+			});
+			s_Data.LineVertexArray->AddVertexBuffer(s_Data.LineVertexBuffer);
+			s_Data.LineVertexBufferBase = new LineVertex[Renderer2DData::MaxVertices];
+		}
+
 		int samplers[s_Data.MaxTextureSlots];
 		for (int i = 0; i < s_Data.MaxTextureSlots; i++) {
 			samplers[i] = i;
 		}
 		
-		s_Data.TextureShader = shader;
+		s_Data.TextureShader = spriteShader;
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->UploadUniformIntArray("u_Texture", samplers, s_Data.MaxTextureSlots);
 
@@ -97,6 +123,9 @@ namespace SW {
 		s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[2] = { 0.5f, 0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[3] = { -0.5f, 0.5f, 0.0f, 1.0f };
+
+		s_Data.QuadVertexArray->Bind();
+		s_Data.QuadVertexBuffer->Bind();
 	}
 
 	void Renderer2D::Shutdown()
