@@ -7,6 +7,7 @@
 #include "Core/ECS/Components.hpp"
 #include "GUI/Icons.hpp"
 #include "Core/AssetManager.hpp"
+#include "Core/ECS/Entity.hpp"
 
 namespace SW {
 

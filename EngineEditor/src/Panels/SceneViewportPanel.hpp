@@ -57,7 +57,7 @@ namespace SW {
 		 * 
 		 * @return Scene* The current scene.
 		 */
-		Scene* GetCurrentScene() { return m_Scene; }
+		Scene* GetCurrentScene() { return m_ActiveScene; }
 
 		/**
 		 * @brief Renders the scene toolbar.
@@ -77,7 +77,8 @@ namespace SW {
 		f32 GetViewportAspectRatio() { return m_SceneCamera->GetAspectRatio(); }
 
 	private:
-		Scene* m_Scene = nullptr;				/** @brief The current scene. */
+		Scene* m_ActiveScene = nullptr;			/** @brief The active scene (the one that is visible). */
+		Scene* m_EditorScene = nullptr;			/** @brief The editor-mode only scene (visible only in edit mode). */
 		SceneCamera* m_SceneCamera = nullptr;	/** @brief The current scene camera. */
 		Framebuffer* m_Framebuffer = nullptr;	/** @brief The current framebuffer. */
 		bool m_IsViewportFocused = false;		/** @brief Is the viewport focused. */

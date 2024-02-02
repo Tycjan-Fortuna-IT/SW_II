@@ -91,10 +91,10 @@ namespace SW {
 					ImGui::PopID();
 				}
 
-				const auto& view = EntityRegistry::GetEntitiesWith<IDComponent, TagComponent>();
+				const auto& view = m_SceneViewportPanel->GetCurrentScene()->GetRegistry().GetEntitiesWith<IDComponent, TagComponent>();
 
 				for (auto&& [handle, idc, tc] : view.each()) {
-					const Entity entity = { handle };
+					const Entity entity = { handle,  m_SceneViewportPanel->GetCurrentScene() };
 
 					RenderEntityNode(entity, idc, tc);
 				}

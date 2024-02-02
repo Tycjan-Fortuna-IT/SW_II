@@ -11,6 +11,7 @@
 #include "Core/Debug/LogSystem.hpp"
 #include "EntityRegistry.hpp"
 #include "Components.hpp"
+#include "Core/Scene/Scene.hpp"
 
 namespace SW {
 
@@ -29,7 +30,7 @@ namespace SW {
 		 * @brief Constructs an Entity object with the given entity handle.
 		 * @param entity The entity handle.
 		 */
-        Entity(entt::entity entity);
+        Entity(entt::entity entity, Scene* scene);
 	
 		/**
 		 * @brief Copy constructor.
@@ -45,7 +46,7 @@ namespace SW {
         template <typename T>
         bool HasComponent() const
 		{
-            return EntityRegistry::GetRegistryHandle().all_of<T>(m_Handle);
+            return m_Scene->GetRegistry().GetRegistryHandle().all_of<T>(m_Handle);
         }
 
 		/**
@@ -60,32 +61,32 @@ namespace SW {
 		{
             ASSERT(!HasComponent<T>(), "Entity already has component!");
 
-            return EntityRegistry::GetRegistryHandle().emplace<T>(m_Handle, std::forward<Args>(args)...);
-        }
+            return m_Scene->GetRegistry().GetRegistryHandle().emplace<T>(m_Handle, std::forward<Args>(args)...);
+		}
 
 		/**
 		 * @brief Gets the component of type T from the entity.
 		 * @tparam T The component type.
 		 * @return The reference to the component.
 		 */
-        template <typename T>
-        T& GetComponent()
+		template <typename T>
+		T& GetComponent()
 		{
-            ASSERT(HasComponent<T>(), "Entity does not have component!");
+			ASSERT(HasComponent<T>(), "Entity does not have component!");
 
-            return EntityRegistry::GetRegistryHandle().get<T>(m_Handle);
-        }
+			return m_Scene->GetRegistry().GetRegistryHandle().get<T>(m_Handle);
+		}
 
 		/**
 		 * @brief Removes the component of type T from the entity.
 		 * @tparam T The component type.
 		 */
-        template <typename T>
-        void RemoveComponent()
+		template <typename T>
+		void RemoveComponent()
 		{
-            ASSERT(HasComponent<T>(), "Entity does not have component!");
+			ASSERT(HasComponent<T>(), "Entity does not have component!");
 
-            EntityRegistry::GetRegistryHandle().remove<T>(m_Handle);
+			m_Scene->GetRegistry().GetRegistryHandle().remove<T>(m_Handle);
         }
 
 		/**
@@ -122,7 +123,8 @@ namespace SW {
         operator u32() const { return (u32)m_Handle; }
 
     private:
-        entt::entity m_Handle{ entt::null };	///< The entity handle.
+        entt::entity m_Handle{ entt::null };	/** @brief The internal entity handle. */
+		Scene* m_Scene = nullptr;				/** @brief The scene to which the entity belongs. */
     };
 
 }

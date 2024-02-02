@@ -7,14 +7,13 @@
 #include "Core/Renderer/Camera.hpp"
 #include "Core/Renderer/Renderer2D.hpp"
 #include "Core/Utils/Random.hpp"
+#include "Core/ECS/Entity.hpp"
 
 namespace SW {
 
 	Scene::Scene()
-	{
-
-	}
-
+		: m_Registry(this) {}
+	
 	Scene::~Scene()
 	{
 
@@ -22,7 +21,7 @@ namespace SW {
 
 	Entity Scene::CreateEntity(const std::string& tag /*= "Entity"*/)
 	{
-		Entity entity = { EntityRegistry::GetRegistryHandle().create() };
+		Entity entity = { m_Registry.GetRegistryHandle().create(), this };
 
 		u64 id = CreateID();
 
@@ -37,7 +36,7 @@ namespace SW {
 
 	Entity Scene::CreateEntityWithID(u64 id, const std::string& tag /*= "Entity"*/)
 	{
-		Entity entity = { EntityRegistry::GetRegistryHandle().create() };
+		Entity entity = { m_Registry.GetRegistryHandle().create(), this };
 
 		entity.AddComponent<IDComponent>(id);
 		entity.AddComponent<TagComponent>(tag);
@@ -50,12 +49,12 @@ namespace SW {
 
 	void Scene::DestroyEntity(Entity entity)
 	{
-		EntityRegistry::GetRegistryHandle().destroy(entity);
+		m_Registry.DestroyEntity(entity);
 	}
 
     void Scene::DestroyAllEntities()
     {
-		EntityRegistry::DestroyAllEntities();
+		m_Registry.DestroyAllEntities();
 
 		m_EntityMap.clear();
     }
@@ -66,8 +65,8 @@ namespace SW {
 
 		m_PhysicsWorld2D = new b2World({ m_Gravity.x, m_Gravity.y });
 
-		for (auto&& [handle, tc, rbc] : EntityRegistry::GetEntitiesWith<TransformComponent, RigidBody2DComponent>().each()) {
-			CreateRigidbody2D(handle, tc, rbc);
+		for (auto&& [handle, tc, rbc] : m_Registry.GetEntitiesWith<TransformComponent, RigidBody2DComponent>().each()) {
+			CreateRigidbody2D({ handle, this }, tc, rbc);
 		}
 	}
 
@@ -88,12 +87,12 @@ namespace SW {
     {
 		Renderer2D::BeginScene(camera);
 
-		for (auto&& [handle, tc, sc] : EntityRegistry::GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
+		for (auto&& [handle, tc, sc] : m_Registry.GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
 			Renderer2D::DrawQuad(tc.GetTransform(), sc);
 		}
 
 		Renderer2D::EndScene();
-    }
+	}
 
 	void Scene::OnUpdateRuntime(Timestep dt)
 	{
@@ -112,7 +111,7 @@ namespace SW {
 			m_PhysicsFrameAccumulator -= physicsTs;
 		}
 
-		for (auto&& [handle, tc, rbc] : EntityRegistry::GetEntitiesWith<TransformComponent, RigidBody2DComponent>().each()) {
+		for (auto&& [handle, tc, rbc] : m_Registry.GetEntitiesWith<TransformComponent, RigidBody2DComponent>().each()) {
 			const b2Body* body = static_cast<b2Body*>(rbc.Handle);
 
 			if (!body->IsAwake())
@@ -127,7 +126,7 @@ namespace SW {
 
 #pragma endregion
 
-		for (auto&& [handle, tc, cc] : EntityRegistry::GetEntitiesWith<TransformComponent, CameraComponent>().each()) {
+		for (auto&& [handle, tc, cc] : m_Registry.GetEntitiesWith<TransformComponent, CameraComponent>().each()) {
 			if (cc.Primary) {
 				mainCamera = &cc.Camera;
 				cameraTransform = tc.GetTransform();
@@ -142,7 +141,7 @@ namespace SW {
 
 		Renderer2D::BeginScene(*mainCamera, cameraTransform);
 
-		for (auto&& [entity, tc, sc] : EntityRegistry::GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
+		for (auto&& [entity, tc, sc] : m_Registry.GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
 			Renderer2D::DrawQuad(tc.GetTransform(), sc);
 		}
 
@@ -154,15 +153,15 @@ namespace SW {
 		m_ViewportWidth = width;
 		m_ViewportHeight = height;
 
-		for (auto&& [entity, cc] : EntityRegistry::GetEntitiesWith<CameraComponent>().each()) {
+		for (auto&& [entity, cc] : m_Registry.GetEntitiesWith<CameraComponent>().each()) {
 			cc.Camera.SetViewportSize(width, height);
 		}
 	}
 
-	Entity Scene::GetEntityByID(u64 id) const
+	Entity Scene::GetEntityByID(u64 id)
 	{
 		if (m_EntityMap.find(id) != m_EntityMap.end())
-			return { m_EntityMap.at(id) };
+			return { m_EntityMap.at(id), this };
 
 		ASSERT(false, "Entity not found!"); // to do allow in ASSERTS to format strings
 
@@ -176,7 +175,7 @@ namespace SW {
 		definition.fixedRotation = false;
 		definition.allowSleep = rbc.AllowSleep;
 		definition.gravityScale = rbc.GravityScale;
-		definition.position.Set(tc.Position.x, tc.Position.y);
+		definition.position.Set(-tc.Position.x, tc.Position.y);
 		definition.angle = tc.Rotation.z;
 
 		b2Body* rb = m_PhysicsWorld2D->CreateBody(&definition);

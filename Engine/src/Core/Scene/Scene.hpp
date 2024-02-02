@@ -8,15 +8,18 @@
  */
 #pragma once
 
-#include "Core/ECS/Entity.hpp"
 #include "Core/Scene/SceneCamera.hpp"
 #include "Core/Timestep.hpp"
 #include "Core/Math/Vector2.hpp"
+#include "Core/ECS/EntityRegistry.hpp"
+#include "../ECS/Components.hpp"
 
 class b2World;
 
 namespace SW {
 
+	class Entity;
+	
 	/**
 	 * @brief Represents the state of the scene.
 	 */
@@ -117,7 +120,7 @@ namespace SW {
 		 * @param id The ID of the entity.
 		 * @return The entity with the specified ID, or an invalid entity if not found.
 		 */
-		Entity GetEntityByID(u64 id) const;
+		Entity GetEntityByID(u64 id);
 
 		/**
 		 * @brief Retrieves current state of the scene.

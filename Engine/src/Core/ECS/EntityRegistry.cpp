@@ -2,14 +2,16 @@
 
 #include "Components.hpp"
 #include "Entity.hpp"
+#include "Core/Scene/Scene.hpp"
 
 namespace SW {
 
-    entt::registry EntityRegistry::s_EnttHandle = {};
+	EntityRegistry::EntityRegistry(Scene* scene)
+		: m_Scene(scene) {}
 
-    Entity EntityRegistry::CreateEntity()
+	Entity EntityRegistry::CreateEntity()
 	{
-        Entity entity{ s_EnttHandle.create() };
+        Entity entity{ s_EnttHandle.create(), m_Scene };
 
         entity.AddComponent<IDComponent>();
 

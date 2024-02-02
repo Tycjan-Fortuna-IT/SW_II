@@ -3,6 +3,7 @@
 #include "Core/Utils/Utils.hpp"
 #include "GUI/Icons.hpp"
 #include "Core/AssetManager.hpp"
+#include "Core/ECS/Entity.hpp"
 
 namespace SW {
 
@@ -41,8 +42,8 @@ namespace SW {
 
 		m_SceneCamera = new SceneCamera((f32)(spec.Width / spec.Height));
 
-		m_Scene = new Scene();
-		auto entt = m_Scene->CreateEntity();
+		m_ActiveScene = new Scene();
+		Entity entt = m_ActiveScene->CreateEntity();
 		entt.AddComponent<SpriteComponent>(AssetManager::GetTexture2D("assets/icons/SW_Icon.png", false));
 	}
 
@@ -50,7 +51,8 @@ namespace SW {
 	{
 		delete m_SceneCamera;
 		delete m_Framebuffer;
-		delete m_Scene;
+		delete m_ActiveScene;
+		delete m_EditorScene;
 	}
 
 	void SceneViewportPanel::OnUpdate(Timestep dt)
@@ -66,7 +68,7 @@ namespace SW {
 		) {
 			m_Framebuffer->Resize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
 			m_SceneCamera->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
-			m_Scene->OnViewportResize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
+			m_ActiveScene->OnViewportResize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
 		}
 
 		Renderer2D::ResetStats();
@@ -75,7 +77,7 @@ namespace SW {
 
 		m_Framebuffer->Clear();
 
-		m_Scene->OnUpdate(dt, *m_SceneCamera);
+		m_ActiveScene->OnUpdate(dt, *m_SceneCamera);
 
 		m_Framebuffer->Unbind();
 	}
@@ -95,7 +97,7 @@ namespace SW {
 
 		ImGui::Begin("##scene_toolbar", &isOpen, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoDecoration);
 
-		Texture2D* buttonTexture = m_Scene->GetCurrentState() == SceneState::Edit ?
+		Texture2D* buttonTexture = m_ActiveScene->GetCurrentState() == SceneState::Edit ?
 			AssetManager::GetTexture2D("assets/icons/editor/PlayButton.png") :
 			AssetManager::GetTexture2D("assets/icons/editor/StopButton.png");
 
@@ -103,7 +105,7 @@ namespace SW {
 		ImGui::SetCursorPos({ pos.x + 4.f, pos.y + 4.f });
 
 		if (GUI::ImageButton(*buttonTexture, { 40.f, 40.f })) {
-			m_Scene->SetNewState(m_Scene->GetCurrentState() == SceneState::Edit ? SceneState::Play : SceneState::Edit);
+			m_ActiveScene->SetNewState(m_ActiveScene->GetCurrentState() == SceneState::Edit ? SceneState::Play : SceneState::Edit);
 		}
 
 		ImGui::End();

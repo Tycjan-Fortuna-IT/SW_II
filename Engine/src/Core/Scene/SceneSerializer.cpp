@@ -7,6 +7,7 @@
 #include "Core/Math/Vector3.hpp"
 #include "Core/Math/Vector4.hpp"
 #include "Core/AssetManager.hpp"
+#include "Core/ECS/Entity.hpp"
 
 namespace YAML {
 
@@ -111,8 +112,8 @@ namespace SW {
 		output << YAML::BeginMap;
 		output << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 
-		for (auto&& [handle, idc] : EntityRegistry::GetEntitiesWith<IDComponent>().each()) {
-			Entity entity = { handle };
+		for (auto&& [handle, idc] : scene->GetRegistry().GetEntitiesWith<IDComponent>().each()) {
+			Entity entity = { handle, scene };
 
 			SW_DEBUG("Serialized scene entity with id: {}", idc.ID);
 

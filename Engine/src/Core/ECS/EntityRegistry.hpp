@@ -13,6 +13,7 @@
 namespace SW {
 
     class Entity;
+	class Scene;
 
 	/**
 	 * @brief The EntityRegistry class is responsible for managing entities in the ECS system.
@@ -25,7 +26,7 @@ namespace SW {
 		/**
 		 * @brief Default constructor.
 		 */
-		EntityRegistry() = default;
+		EntityRegistry(Scene* scene);
 
 		/**
 		 * @brief Default destructor.
@@ -49,7 +50,7 @@ namespace SW {
 		/**
 		 * @brief Destroys all present entities in the scene.
 		 */
-		static void DestroyAllEntities();
+		void DestroyAllEntities();
 
 		/**
 		 * @brief Gets a view of entities with the given components.
@@ -58,7 +59,7 @@ namespace SW {
 		 * @return A view of entities with the given components.
 		 */
 		template <typename... Args>
-		[[nodiscard]] static auto GetEntitiesWith()
+		[[nodiscard]] auto GetEntitiesWith()
 		{
 			return s_EnttHandle.view<Args...>();
 		}
@@ -68,10 +69,11 @@ namespace SW {
 		 * 
 		 * @return A reference to the entt::registry instance.
 		 */
-		static entt::registry& GetRegistryHandle() { return s_EnttHandle; }
+		entt::registry& GetRegistryHandle() { return s_EnttHandle; }
 
 	private:
-		static entt::registry s_EnttHandle;			///< The underlying entt::registry instance.
+		entt::registry s_EnttHandle;			///< The underlying entt::registry instance.
+		Scene* m_Scene = nullptr;				/** @brief The scene to which the entity belongs. */
 	};
 
 }
