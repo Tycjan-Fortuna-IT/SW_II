@@ -69,7 +69,7 @@ namespace SW {
     struct TransformComponent final
     {
         Vector3<f32> Position = { 0.0f, 0.0f , 0.0f };
-        Vector3<f32> Rotation = { 0.0f, 0.0f , 0.0f };
+        Vector3<f32> Rotation = { 0.0f, 0.0f , 0.0f };		/** @brief Rotation angles are in radians! */
         Vector3<f32> Scale =    { 1.0f, 1.0f , 1.0f };
 
         TransformComponent() = default;
@@ -88,7 +88,7 @@ namespace SW {
 		Matrix4<f32> GetTransform() const
 		{
 			return Math::Translate(Matrix4<f32>::Identity(), Position) *
-				Math::RotateZ(Matrix4<f32>::Identity(), Math::ToRadians(Rotation.z)) *
+				Math::RotateZ(Matrix4<f32>::Identity(), Rotation.z) *
 				Math::Scale(Matrix4<f32>::Identity(), Scale);
 		}
     };

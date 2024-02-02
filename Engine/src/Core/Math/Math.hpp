@@ -29,6 +29,17 @@ namespace SW {
         }
 
 		/**
+		 * Converts the given vector of degrees to vector of radians.
+		 *
+		 * @param degrees The vector of degrees to be converted.
+		 * @return The vector of radians.
+		 */
+		inline Vector3<f32> ToRadians(const Vector3<f32> degrees)
+		{
+			return { ToRadians(degrees.x), ToRadians(degrees.y), ToRadians(degrees.z) };
+		}
+
+		/**
 		 * @brief Converts radians to degrees.
 		 * 
 		 * @param radians Radians to convert.
@@ -38,6 +49,17 @@ namespace SW {
 		{
             return radians * 57.29577951308232f;
         }
+
+		/**
+		 * Converts the given vector of radians to vector of degrees.
+		 *
+		 * @param radians The vector of radians to convert.
+		 * @return The vector of degrees.
+		 */
+		inline Vector3<f32> ToDegrees(const Vector3<f32> radians)
+		{
+			return { ToDegrees(radians.x), ToDegrees(radians.y), ToDegrees(radians.z) };
+		}
 
 		/**
 		 * @brief Approximation of PI constant.

@@ -10,6 +10,12 @@
 
 namespace YAML {
 
+	Emitter& operator<<(Emitter& out, const SW::Vector2<f32>& v) {
+		out << Flow;
+		out << BeginSeq << v.x << v.y << EndSeq;
+		return out;
+	}
+
 	Emitter& operator<<(Emitter& out, const SW::Vector3<f32>& v) {
 		out << Flow;
 		out << BeginSeq << v.x << v.y << v.z << EndSeq;
@@ -21,6 +27,28 @@ namespace YAML {
 		out << BeginSeq << v.r << v.g << v.b << v.a << EndSeq;
 		return out;
 	}
+
+	template<>
+	struct convert<SW::Vector2<f32>> {
+		static Node encode(const SW::Vector2<f32>& rhs)
+		{
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			node.SetStyle(EmitterStyle::Flow);
+			return node;
+		}
+
+		static bool decode(const Node& node, SW::Vector2<f32>& rhs)
+		{
+			if (!node.IsSequence() || node.size() != 2)
+				return false;
+
+			rhs.x = node[0].as<f32>();
+			rhs.y = node[1].as<f32>();
+			return true;
+		}
+	};
 
 	template<>
 	struct convert<SW::Vector3<f32>> {
@@ -39,9 +67,9 @@ namespace YAML {
 			if (!node.IsSequence() || node.size() != 3)
 				return false;
 
-			rhs.x = node[0].as<float>();
-			rhs.y = node[1].as<float>();
-			rhs.z = node[2].as<float>();
+			rhs.x = node[0].as<f32>();
+			rhs.y = node[1].as<f32>();
+			rhs.z = node[2].as<f32>();
 			return true;
 		}
 	};
@@ -64,10 +92,10 @@ namespace YAML {
 			if (!node.IsSequence() || node.size() != 4)
 				return false;
 
-			rhs.x = node[0].as<float>();
-			rhs.y = node[1].as<float>();
-			rhs.z = node[2].as<float>();
-			rhs.w = node[3].as<float>();
+			rhs.x = node[0].as<f32>();
+			rhs.y = node[1].as<f32>();
+			rhs.z = node[2].as<f32>();
+			rhs.w = node[3].as<f32>();
 			return true;
 		}
 	};
@@ -139,6 +167,27 @@ namespace SW {
 				output << YAML::EndMap;
 			}
 
+			if (entity.HasComponent<RigidBody2DComponent>()) {
+				RigidBody2DComponent& rbc = entity.GetComponent<RigidBody2DComponent>();
+				
+				output << YAML::Key << "RigidBody2DComponent";
+				output << YAML::BeginMap;
+				output << YAML::Key << "Type" << YAML::Value << (int)rbc.Type;
+				output << YAML::Key << "GravityScale" << YAML::Value << rbc.GravityScale;
+				output << YAML::Key << "AllowSleep" << YAML::Value << rbc.AllowSleep;
+				output << YAML::EndMap;
+			}
+
+			if (entity.HasComponent<BoxCollider2DComponent>()) {
+				BoxCollider2DComponent& bcc = entity.GetComponent<BoxCollider2DComponent>();
+
+				output << YAML::Key << "BoxCollider2DComponent";
+				output << YAML::BeginMap;
+				output << YAML::Key << "Size" << YAML::Value << bcc.Size;
+				output << YAML::Key << "Offset" << YAML::Value << bcc.Offset;
+				output << YAML::EndMap;
+			}
+
 			output << YAML::EndMap; // End Entity components content
 
 			output << YAML::EndMap; // End Entity content
@@ -204,6 +253,23 @@ namespace SW {
 				CameraComponent& cc = deserialized.AddComponent<CameraComponent>(camera);
 
 				cc.Primary = cameraComponent["Primary"].as<bool>();
+			}
+
+			YAML::Node rigidBody2DComponent = entity["Entity"]["RigidBody2DComponent"];
+			if (rigidBody2DComponent) {
+				RigidBody2DComponent& rbc = deserialized.AddComponent<RigidBody2DComponent>();
+
+				rbc.Type = (PhysicBodyType)rigidBody2DComponent["Type"].as<int>();
+				rbc.GravityScale = rigidBody2DComponent["GravityScale"].as<f32>();
+				rbc.AllowSleep = rigidBody2DComponent["AllowSleep"].as<bool>();
+			}
+
+			YAML::Node boxCollider2DComponent = entity["Entity"]["BoxCollider2DComponent"];
+			if (boxCollider2DComponent) {
+				BoxCollider2DComponent& rbc = deserialized.AddComponent<BoxCollider2DComponent>();
+
+				rbc.Size = boxCollider2DComponent["Size"].as<Vector2<f32>>();
+				rbc.Offset = boxCollider2DComponent["Offset"].as<Vector2<f32>>();
 			}
 		}
 	}

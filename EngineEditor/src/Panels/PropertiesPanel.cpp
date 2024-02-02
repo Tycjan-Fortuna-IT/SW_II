@@ -184,7 +184,11 @@ namespace SW {
 			DrawComponent<TransformComponent>(entity, [](TransformComponent& component) {
 				GUI::BeginProperties("##transform_property");
 				GUI::DrawVector3ControlProperty(component.Position, "Position: ", "Position of the entity");
-				GUI::DrawVector3ControlProperty(component.Rotation, "Rotation: ", "Rotation of the entity in degrees");
+				
+				Vector3<f32> rotation = Math::ToDegrees(component.Rotation);
+				GUI::DrawVector3ControlProperty(rotation, "Rotation: ", "Rotation of the entity in degrees");
+				component.Rotation = Math::ToRadians(rotation);
+
 				GUI::DrawVector3ControlProperty(component.Scale, "Scale: ", "Scale of the entity", 1.f);
 				GUI::EndProperties();
 			}, false);

@@ -120,7 +120,7 @@ namespace SW {
 
 			const b2Vec2 position = body->GetPosition();
 
-			tc.Position.x = position.x;
+			tc.Position.x = -position.x;
 			tc.Position.y = position.y;
 			tc.Rotation.z = body->GetAngle();
 		}
@@ -173,6 +173,7 @@ namespace SW {
 	{
 		b2BodyDef definition;
 		definition.type = static_cast<b2BodyType>(rbc.Type);
+		definition.fixedRotation = false;
 		definition.allowSleep = rbc.AllowSleep;
 		definition.gravityScale = rbc.GravityScale;
 		definition.position.Set(tc.Position.x, tc.Position.y);
@@ -199,6 +200,10 @@ namespace SW {
 		b2FixtureDef fixtureDef;
 		fixtureDef.shape = &boxShape;
 		fixtureDef.userData.pointer = static_cast<u32>(entity);
+		fixtureDef.density = 1.f;
+		fixtureDef.friction = 0.5f;
+		fixtureDef.restitution = 0.f;
+		fixtureDef.restitutionThreshold = 0.5f;
 
 		b2Body* body = static_cast<b2Body*>(rbc.Handle);
 		b2Fixture* fixture = body->CreateFixture(&fixtureDef);
