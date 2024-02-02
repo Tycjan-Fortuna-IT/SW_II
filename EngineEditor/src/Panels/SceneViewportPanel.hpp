@@ -60,6 +60,13 @@ namespace SW {
 		Scene* GetCurrentScene() { return m_ActiveScene; }
 
 		/**
+		 * @brief Sets the current scene.
+		 * 
+		 * @param scene The scene to set as the current scene.
+		 */
+		void SetCurrentScene(Scene* scene) { m_ActiveScene = scene; }
+
+		/**
 		 * @brief Renders the scene toolbar.
 		 */
 		void RenderSceneToolbar();
@@ -78,10 +85,13 @@ namespace SW {
 
 	private:
 		Scene* m_ActiveScene = nullptr;			/** @brief The active scene (the one that is visible). */
-		Scene* m_EditorScene = nullptr;			/** @brief The editor-mode only scene (visible only in edit mode). */
+		Scene* m_SceneCopy = nullptr;
+
 		SceneCamera* m_SceneCamera = nullptr;	/** @brief The current scene camera. */
 		Framebuffer* m_Framebuffer = nullptr;	/** @brief The current framebuffer. */
+
 		bool m_IsViewportFocused = false;		/** @brief Is the viewport focused. */
+
 		Vector2<f32> m_ViewportSize = { 50.f };	/** @brief The viewport size. */
 	};
 

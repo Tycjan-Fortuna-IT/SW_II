@@ -1,8 +1,8 @@
 /**
  * @file Scene.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.3
- * @date 2024-01-27
+ * @version 0.1.1
+ * @date 2024-02-02
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -135,15 +135,14 @@ namespace SW {
 		 * 
 		 * @param state The new state of the scene.
 		 */
-		void SetNewState(SceneState state)
-		{ 
-			m_SceneState = state;
+		void SetNewState(SceneState state) { m_SceneState = state; }
 
-			if (state == SceneState::Play)
-				OnRuntimeStart();
-			else if (state == SceneState::Edit)
-				OnRuntimeStop();
-		}
+		/**
+		 * @brief Copies the scene. (deep copy with all components and entities)
+		 * 
+		 * @return Scene* The copy of the scene.
+		 */
+		Scene* DeepCopy();
 
 	private:
 		EntityRegistry m_Registry; /**< The entity registry of the scene. */

@@ -43,8 +43,6 @@ namespace SW {
 		m_SceneCamera = new SceneCamera((f32)(spec.Width / spec.Height));
 
 		m_ActiveScene = new Scene();
-		Entity entt = m_ActiveScene->CreateEntity();
-		entt.AddComponent<SpriteComponent>(AssetManager::GetTexture2D("assets/icons/SW_Icon.png", false));
 	}
 
 	SceneViewportPanel::~SceneViewportPanel()
@@ -52,7 +50,7 @@ namespace SW {
 		delete m_SceneCamera;
 		delete m_Framebuffer;
 		delete m_ActiveScene;
-		delete m_EditorScene;
+		delete m_SceneCopy;
 	}
 
 	void SceneViewportPanel::OnUpdate(Timestep dt)
@@ -82,6 +80,26 @@ namespace SW {
 		m_Framebuffer->Unbind();
 	}
 
+	void SceneViewportPanel::OnRender()
+	{
+		GUI::ScopedStyle NoWindowPadding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.f , 0.f });
+
+		if (OnBegin()) {
+			m_IsViewportFocused = ImGui::IsWindowFocused();
+
+			const ImVec2 currentViewportSize = ImGui::GetContentRegionAvail();
+			m_ViewportSize.x = currentViewportSize.x;
+			m_ViewportSize.y = currentViewportSize.y;
+
+			const ImTextureID textureID = GUI::GetTextureID(m_Framebuffer->GetColorAttachmentRendererID());
+			ImGui::Image(textureID, currentViewportSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+			RenderSceneToolbar();
+
+			OnEnd();
+		}
+	}
+
 	void SceneViewportPanel::RenderSceneToolbar()
 	{
 		ImVec2 windowPosition = ImGui::GetWindowPos();
@@ -105,7 +123,26 @@ namespace SW {
 		ImGui::SetCursorPos({ pos.x + 4.f, pos.y + 4.f });
 
 		if (GUI::ImageButton(*buttonTexture, { 40.f, 40.f })) {
-			m_ActiveScene->SetNewState(m_ActiveScene->GetCurrentState() == SceneState::Edit ? SceneState::Play : SceneState::Edit);
+			const SceneState currentState = m_ActiveScene->GetCurrentState();
+
+			if (currentState == SceneState::Edit) {
+				m_SceneCopy = m_ActiveScene->DeepCopy();
+
+				m_ActiveScene->SetNewState(SceneState::Play);
+				m_ActiveScene->OnRuntimeStart();
+			} else if (currentState == SceneState::Play) {
+				m_ActiveScene->OnRuntimeStop();
+
+				delete m_ActiveScene;
+				m_ActiveScene = nullptr;
+
+				m_ActiveScene = m_SceneCopy->DeepCopy();
+
+				delete m_SceneCopy;
+				m_SceneCopy = nullptr;
+
+				m_ActiveScene->SetNewState(SceneState::Edit);
+			}
 		}
 
 		ImGui::End();
@@ -114,26 +151,6 @@ namespace SW {
 	void SceneViewportPanel::RenderGizmoToolbar()
 	{
 
-	}
-
-	void SceneViewportPanel::OnRender()
-	{
-		GUI::ScopedStyle NoWindowPadding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.f , 0.f });
-
-		if (OnBegin()) {
-			m_IsViewportFocused = ImGui::IsWindowFocused();
-
-			const ImVec2 currentViewportSize = ImGui::GetContentRegionAvail();
-			m_ViewportSize.x = currentViewportSize.x;
-			m_ViewportSize.y = currentViewportSize.y;
-
-			const ImTextureID textureID = GUI::GetTextureID(m_Framebuffer->GetColorAttachmentRendererID());
-			ImGui::Image(textureID, currentViewportSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-
-			RenderSceneToolbar();
-
-			OnEnd();
-		}
 	}
 
 }
