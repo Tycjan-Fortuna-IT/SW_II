@@ -56,6 +56,8 @@ namespace SW {
 		std::array<Texture2D*, MaxTextureSlots> TextureSlots;
 		u32 TextureSlotIndex = 1; // 0 = white texture
 
+		f32 LineWidth = 2.0f;
+
 		Vector4<f32> QuadVertexPositions[4] = {};
 
 		Renderer2DStatistics Stats;
@@ -98,6 +100,7 @@ namespace SW {
 
 		// Lines
 		{
+			s_Data.LineShader = lineShader;
 			s_Data.LineVertexArray = new VertexArray();
 			s_Data.LineVertexBuffer = std::make_shared<VertexBuffer>(static_cast<u32>(Renderer2DData::MaxVertices * sizeof(LineVertex)));
 			s_Data.LineVertexBuffer->SetLayout({
@@ -123,9 +126,6 @@ namespace SW {
 		s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[2] = { 0.5f, 0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[3] = { -0.5f, 0.5f, 0.0f, 1.0f };
-
-		s_Data.QuadVertexArray->Bind();
-		s_Data.QuadVertexBuffer->Bind();
 	}
 
 	void Renderer2D::Shutdown()
@@ -146,50 +146,77 @@ namespace SW {
 
 	void Renderer2D::BeginScene(const SceneCamera& camera)
 	{
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->UploadUniformMat4("u_ViewProjection", camera.GetViewProjectionMatrix().Transpose());
+		const Matrix4<f32> viewProjection = camera.GetViewProjectionMatrix().Transpose();
 
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-		s_Data.TextureSlotIndex = 1;
+		s_Data.TextureShader->Bind();
+		s_Data.TextureShader->UploadUniformMat4("u_ViewProjection", viewProjection);
+
+		s_Data.LineShader->Bind();
+		s_Data.LineShader->UploadUniformMat4("u_ViewProjection", viewProjection);
+
+		StartBatch();
 	}
 
 	void Renderer2D::BeginScene(const SceneCamera& camera, const Matrix4<f32>& transform)
 	{
-		s_Data.TextureShader->Bind();
-		Matrix4<f32> trans = Math::Inverse(transform);
-		s_Data.TextureShader->UploadUniformMat4("u_ViewProjection", (camera.GetProjectionMatrix() * trans).Transpose());
+		const Matrix4<f32> viewProjection = (camera.GetProjectionMatrix() * Math::Inverse(transform)).Transpose();
 
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-		s_Data.TextureSlotIndex = 1;
+		s_Data.TextureShader->Bind();
+		s_Data.TextureShader->UploadUniformMat4("u_ViewProjection", viewProjection);
+
+		s_Data.LineShader->Bind();
+		s_Data.LineShader->UploadUniformMat4("u_ViewProjection", viewProjection);
+
+		StartBatch();
 	}
 
 	void Renderer2D::EndScene()
 	{
-		u32 dataSize = (u32)((u8*)s_Data.QuadVertexBufferPtr - (u8*)s_Data.QuadVertexBufferBase);
-		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
-
 		Flush();
+	}
+
+	void Renderer2D::StartBatch()
+	{
+		s_Data.QuadIndexCount = 0;
+		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+
+		s_Data.LineVertexCount = 0;
+		s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;
+
+		s_Data.TextureSlotIndex = 1;
 	}
 
 	void Renderer2D::Flush()
 	{
-		for (u32 i = 0; i < s_Data.TextureSlotIndex; i++)
-			s_Data.TextureSlots[i]->Bind(i);
+		if (s_Data.QuadIndexCount) {
+			const u32 dataSize = static_cast<u32>(reinterpret_cast<u8*>(s_Data.QuadVertexBufferPtr) - reinterpret_cast<u8*>(s_Data.QuadVertexBufferBase));
+			
+			s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
 
-		RendererAPI::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+			for (u32 i = 0; i < s_Data.TextureSlotIndex; i++)
+				s_Data.TextureSlots[i]->Bind(i);
+			
+			s_Data.TextureShader->Bind();
+			RendererAPI::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+			
+			s_Data.Stats.DrawCalls++;
+		}
 
-		s_Data.Stats.DrawCalls++;
+		if (s_Data.LineVertexCount) {
+			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.LineVertexBufferPtr - (uint8_t*)s_Data.LineVertexBufferBase);
+			s_Data.LineVertexBuffer->SetData(s_Data.LineVertexBufferBase, dataSize);
+
+			s_Data.LineShader->Bind();
+			RendererAPI::SetLineWidth(s_Data.LineWidth);
+			RendererAPI::DrawLines(s_Data.LineVertexArray, s_Data.LineVertexCount);
+			s_Data.Stats.DrawCalls++;
+		}
 	}
 
 	void Renderer2D::FlushAndReset()
 	{
 		EndScene();
-
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-		s_Data.TextureSlotIndex = 1;
+		StartBatch();
 	}
 
 	void Renderer2D::DrawQuad(const Matrix4<f32>& transform, const SpriteComponent& sprite)
@@ -230,6 +257,44 @@ namespace SW {
 		s_Data.QuadIndexCount += 6;
 
 		s_Data.Stats.QuadCount++;
+	}
+
+	void Renderer2D::DrawLine(const Vector3<f32>& p0, const Vector3<f32>& p1, const Vector4<f32>& color)
+	{
+		s_Data.LineVertexBufferPtr->Position = p0;
+		s_Data.LineVertexBufferPtr->Color = color;
+		s_Data.LineVertexBufferPtr++;
+
+		s_Data.LineVertexBufferPtr->Position = p1;
+		s_Data.LineVertexBufferPtr->Color = color;
+		s_Data.LineVertexBufferPtr++;
+
+		s_Data.LineVertexCount += 2;
+	}
+
+	void Renderer2D::DrawRect(const Vector3<f32>& position, const Vector2<f32>& size, const Vector4<f32>& color)
+	{
+		Vector3<f32> p0 = Vector3<f32>(position.x - size.x * 0.5f, position.y - size.y * 0.5f, position.z);
+		Vector3<f32> p1 = Vector3<f32>(position.x + size.x * 0.5f, position.y - size.y * 0.5f, position.z);
+		Vector3<f32> p2 = Vector3<f32>(position.x + size.x * 0.5f, position.y + size.y * 0.5f, position.z);
+		Vector3<f32> p3 = Vector3<f32>(position.x - size.x * 0.5f, position.y + size.y * 0.5f, position.z);
+
+		DrawLine(p0, p1, color);
+		DrawLine(p1, p2, color);
+		DrawLine(p2, p3, color);
+		DrawLine(p3, p0, color);
+	}
+
+	void Renderer2D::DrawRect(const Matrix4<f32>& transform, const Vector4<f32>& color)
+	{
+		Vector3<f32> lineVertices[4];
+		for (size_t i = 0; i < 4; i++)
+			lineVertices[i] = Vector3<f32>::FromVector4(transform * s_Data.QuadVertexPositions[i]);
+
+		DrawLine(lineVertices[0], lineVertices[1], color);
+		DrawLine(lineVertices[1], lineVertices[2], color);
+		DrawLine(lineVertices[2], lineVertices[3], color);
+		DrawLine(lineVertices[3], lineVertices[0], color);
 	}
 
 }

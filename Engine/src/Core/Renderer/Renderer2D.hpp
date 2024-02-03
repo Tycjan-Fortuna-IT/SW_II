@@ -80,6 +80,11 @@ namespace SW {
 		static void EndScene();
 
 		/**
+		 * @brief Starts a new batch of rendering commands.
+		 */
+		static void StartBatch();
+
+		/**
 		 * @brief Flushes any pending rendering commands to the GPU.
 		 */
 		static void Flush();
@@ -95,6 +100,12 @@ namespace SW {
 		 * @param sprite The sprite component of the quad.
 		 */
 		static void DrawQuad(const Matrix4<f32>& transform, const SpriteComponent& sprite);
+
+		static void DrawLine(const Vector3<f32>& p0, const Vector3<f32>& p1, const Vector4<f32>& color);
+
+		static void DrawRect(const Vector3<f32>& position, const Vector2<f32>& size, const Vector4<f32>& color);
+
+		static void DrawRect(const Matrix4<f32>& transform, const Vector4<f32>& color);
 	};
 
 }

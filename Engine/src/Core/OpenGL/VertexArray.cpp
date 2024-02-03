@@ -50,7 +50,7 @@ namespace SW {
 						ShaderDataTypeToOpenGLBaseType(element.Type),
 						 GL_FALSE,
 						layout.GetStride(),
-						(const void*)element.Offset);
+						reinterpret_cast<const void*>(static_cast<uintptr_t>(element.Offset)));
 					index++;
 					break;
 				}
@@ -65,7 +65,7 @@ namespace SW {
 						element.GetComponentCount(),
 						ShaderDataTypeToOpenGLBaseType(element.Type),
 						layout.GetStride(),
-						(const void*)element.Offset);
+						reinterpret_cast<const void*>(static_cast<uintptr_t>(element.Offset)));
 					index++;
 					break;
 				}
@@ -80,7 +80,7 @@ namespace SW {
 							ShaderDataTypeToOpenGLBaseType(element.Type),
 							 GL_FALSE,
 							layout.GetStride(),
-							(const void*)(element.Offset + sizeof(float) * count * i));
+							reinterpret_cast<const void*>(element.Offset + sizeof(float) * count * i));
 						glVertexAttribDivisor(index, 1);
 						index++;
 					}
