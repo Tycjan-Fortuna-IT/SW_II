@@ -91,6 +91,21 @@ namespace SW {
 			Renderer2D::DrawQuad(tc.GetTransform(), sc);
 		}
 
+		// Box Colliders
+		{
+			for (auto&& [handle, tc, bcc] : m_Registry.GetEntitiesWith<TransformComponent, BoxCollider2DComponent>().each()) {
+				Vector3<f32> translation = tc.Position + Vector3<f32>(bcc.Offset.x, bcc.Offset.y, 0.001f);
+				Vector3<f32> scale = tc.Scale * Vector3<f32>(bcc.Size.x * 2.0f, bcc.Size.y * 2.0f, 1.0f);
+
+				Matrix4<f32> transform = Math::Translate(Matrix4<f32>::Identity(), tc.Position) *
+					Math::RotateZ(Matrix4<f32>::Identity(), tc.Rotation.z) *
+					Math::Translate(Matrix4<f32>::Identity(), Vector3<f32>(bcc.Offset.x, bcc.Offset.y, 0.001f)) *
+					Math::Scale(Matrix4<f32>::Identity(), tc.Scale);
+
+				Renderer2D::DrawRect(transform, Vector4<f32>(1, 1, 0, 1));
+			}
+		}
+
 		Renderer2D::EndScene();
 	}
 

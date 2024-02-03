@@ -218,7 +218,7 @@ namespace SW {
 
 			u64 id = idComponent["ID"].as<u64>();
 
-			SW_DEBUG("Serialized scene entity with id: {}", id);
+			SW_DEBUG("Deserialized scene entity with id: {}", id);
 
 			YAML::Node tagComponent = entity["Entity"]["TagComponent"];
 			std::string tag = tagComponent["Tag"].as<std::string>();
