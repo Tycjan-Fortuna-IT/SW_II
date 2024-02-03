@@ -1,8 +1,8 @@
 /**
  * @file Renderer2D.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.
- * @date 2024-01-25
+ * @version 0.2.1
+ * @date 2024-02-03
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -101,10 +101,27 @@ namespace SW {
 		 */
 		static void DrawQuad(const Matrix4<f32>& transform, const SpriteComponent& sprite);
 
+		/**
+		 * @brief Draws a line with the specified start and end points and color.
+		 * @param p0 The start point of the line.
+		 * @param p1 The end point of the line.
+		 * @param color The color of the line.
+		 */
 		static void DrawLine(const Vector3<f32>& p0, const Vector3<f32>& p1, const Vector4<f32>& color);
 
+		/**
+		 * @brief Draws a rectangle with the specified position, size, and color.
+		 * @param position The position of the rectangle.
+		 * @param size The size of the rectangle.
+		 * @param color The color of the rectangle.
+		 */
 		static void DrawRect(const Vector3<f32>& position, const Vector2<f32>& size, const Vector4<f32>& color);
 
+		/**
+		 * @brief Draws a rectangle with the specified transformation matrix and color.
+		 * @param transform The transformation matrix of the rectangle.
+		 * @param color The color of the rectangle.
+		 */
 		static void DrawRect(const Matrix4<f32>& transform, const Vector4<f32>& color);
 	};
 

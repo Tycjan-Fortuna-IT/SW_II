@@ -222,7 +222,7 @@ namespace SW {
 
 			DrawComponent<BoxCollider2DComponent>(entity, [](BoxCollider2DComponent& component) {
 				GUI::BeginProperties("##box_collider_2d_property");
-				GUI::DrawVector2ControlProperty(component.Size, "Size", nullptr);
+				GUI::DrawVector2ControlProperty(component.Size, "Size", nullptr, 0.5f);
 				GUI::DrawVector2ControlProperty(component.Offset, "Offset", nullptr);
 				GUI::EndProperties();
 			}, false);

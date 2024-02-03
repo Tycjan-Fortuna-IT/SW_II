@@ -59,6 +59,45 @@ namespace SW {
 		m_EntityMap.clear();
     }
 
+	bool Scene::BeginRendering(SceneCamera* camera)
+	{
+		switch (m_SceneState) {
+			case SW::SceneState::Edit:
+				Renderer2D::BeginScene(*camera); break;
+			case SW::SceneState::Play: {
+				Matrix4<f32> cameraTransform;
+				SceneCamera* mainCamera = nullptr;
+
+				for (auto&& [handle, tc, cc] : m_Registry.GetEntitiesWith<TransformComponent, CameraComponent>().each()) {
+					if (cc.Primary) {
+						mainCamera = &cc.Camera;
+						cameraTransform = tc.GetTransform();
+
+						break;
+					}
+				}
+
+				if (!mainCamera)
+					return false;
+
+				Renderer2D::BeginScene(*mainCamera, cameraTransform);
+
+				break;
+			}
+			case SW::SceneState::Pause:
+				SW_FATAL("Not yet implemented!"); break;
+			case SW::SceneState::Simulate:
+				SW_FATAL("Not yet implemented!"); break;
+		}
+
+		return true;
+	}
+
+	void Scene::EndRendering()
+	{
+		Renderer2D::EndScene();
+	}
+
 	void Scene::OnRuntimeStart()
 	{
 		m_PhysicsFrameAccumulator = 0.0f;
@@ -85,35 +124,13 @@ namespace SW {
 
     void Scene::OnUpdateEditor(Timestep dt, const SceneCamera& camera)
     {
-		Renderer2D::BeginScene(camera);
-
 		for (auto&& [handle, tc, sc] : m_Registry.GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
 			Renderer2D::DrawQuad(tc.GetTransform(), sc);
 		}
-
-		// Box Colliders
-		{
-			for (auto&& [handle, tc, bcc] : m_Registry.GetEntitiesWith<TransformComponent, BoxCollider2DComponent>().each()) {
-				Vector3<f32> translation = tc.Position + Vector3<f32>(bcc.Offset.x, bcc.Offset.y, 0.001f);
-				Vector3<f32> scale = tc.Scale * Vector3<f32>(bcc.Size.x * 2.0f, bcc.Size.y * 2.0f, 1.0f);
-
-				Matrix4<f32> transform = Math::Translate(Matrix4<f32>::Identity(), tc.Position) *
-					Math::RotateZ(Matrix4<f32>::Identity(), tc.Rotation.z) *
-					Math::Translate(Matrix4<f32>::Identity(), Vector3<f32>(bcc.Offset.x, bcc.Offset.y, 0.001f)) *
-					Math::Scale(Matrix4<f32>::Identity(), tc.Scale);
-
-				Renderer2D::DrawRect(transform, Vector4<f32>(1, 1, 0, 1));
-			}
-		}
-
-		Renderer2D::EndScene();
 	}
 
 	void Scene::OnUpdateRuntime(Timestep dt)
 	{
-		SceneCamera* mainCamera = nullptr;
-		Matrix4<f32> cameraTransform;
-
 #pragma region Physics
 		constexpr f32 physicsStepRate = 50.0f;
 		constexpr f32 physicsTs = 1.0f / physicsStepRate;
@@ -141,26 +158,9 @@ namespace SW {
 
 #pragma endregion
 
-		for (auto&& [handle, tc, cc] : m_Registry.GetEntitiesWith<TransformComponent, CameraComponent>().each()) {
-			if (cc.Primary) {
-				mainCamera = &cc.Camera;
-				cameraTransform = tc.GetTransform();
-
-				break;
-			}
-		}
-
-		if (!mainCamera) {
-			return;
-		}
-
-		Renderer2D::BeginScene(*mainCamera, cameraTransform);
-
 		for (auto&& [entity, tc, sc] : m_Registry.GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
 			Renderer2D::DrawQuad(tc.GetTransform(), sc);
 		}
-
-		Renderer2D::EndScene();
 	}
 
 	void Scene::OnViewportResize(u32 width, u32 height)

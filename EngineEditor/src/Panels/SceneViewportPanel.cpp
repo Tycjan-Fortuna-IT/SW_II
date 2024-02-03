@@ -4,6 +4,7 @@
 #include "GUI/Icons.hpp"
 #include "Core/AssetManager.hpp"
 #include "Core/ECS/Entity.hpp"
+#include "Core/Editor/EditorSettings.hpp"
 
 namespace SW {
 
@@ -14,7 +15,11 @@ namespace SW {
 			const f32 xOffset = event.Payload.f32[0];
 			const f32 yOffset = event.Payload.f32[1];
 
-			if (!m_IsViewportFocused) return false;
+			if (!m_IsViewportFocused)
+				return false;
+
+			if (m_ActiveScene->GetCurrentState() != SceneState::Edit)
+				return false;
 
 			m_SceneCamera->OnMouseScrolled(xOffset, yOffset);
 
@@ -75,7 +80,29 @@ namespace SW {
 
 		m_Framebuffer->Clear();
 
-		m_ActiveScene->OnUpdate(dt, *m_SceneCamera);
+		if (m_ActiveScene->BeginRendering(m_SceneCamera)) {
+			m_ActiveScene->OnUpdate(dt, *m_SceneCamera);
+
+			if (EditorSettings::Get().ShowPhysicsColliders) {
+			
+				// Box Colliders
+				{
+					for (auto&& [handle, tc, bcc] : m_ActiveScene->GetRegistry().GetEntitiesWith<TransformComponent, BoxCollider2DComponent>().each()) {
+						Vector3<f32> translation = tc.Position + Vector3<f32>(bcc.Offset.x, bcc.Offset.y, 0.001f);
+						Vector3<f32> scale = tc.Scale * Vector3<f32>(bcc.Size.x * 2.0f, bcc.Size.y * 2.0f, 1.0f);
+
+						Matrix4<f32> transform = Math::Translate(Matrix4<f32>::Identity(), tc.Position) *
+							Math::RotateZ(Matrix4<f32>::Identity(), tc.Rotation.z) *
+							Math::Translate(Matrix4<f32>::Identity(), Vector3<f32>(bcc.Offset.x, bcc.Offset.y, 0.001f)) *
+							Math::Scale(Matrix4<f32>::Identity(), scale);
+
+						Renderer2D::DrawRect(transform, Vector4<f32>(1, 1, 0, 1));
+					}
+				}
+			}
+
+			m_ActiveScene->EndRendering();
+		}
 
 		m_Framebuffer->Unbind();
 	}

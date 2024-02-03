@@ -4,6 +4,8 @@
 #include "Core/Application.hpp"
 #include "Core/Renderer/Renderer2D.hpp"
 #include "GUI/Icons.hpp"
+#include "GUI/GUI.hpp"
+#include "Core/Editor/EditorSettings.hpp"
 
 namespace SW {
 
@@ -33,19 +35,36 @@ namespace SW {
 			ImGui::PlotLines("##FPS", m_FpsValues, static_cast<int>(size));
 			ImGui::PopItemWidth();
 
-			ImGui::Text("FPS: %lf", static_cast<f64>(avg));
-			ImGui::Text("Frame time (ms): %lf", (1.0 / static_cast<f64>(avg)) * 1000.0f);
+			static constexpr ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen
+				| ImGuiTreeNodeFlags_SpanAvailWidth
+				| ImGuiTreeNodeFlags_AllowItemOverlap
+				| ImGuiTreeNodeFlags_Framed
+				| ImGuiTreeNodeFlags_FramePadding
+				| ImGuiTreeNodeFlags_Bullet;
 
-			static bool VSync = true;
-			if (ImGui::Checkbox("VSync", &VSync)) {
-				Application::Get()->GetWindow()->SetVSync(VSync);
+			if (ImGui::TreeNodeEx("##stats_tree_node", treeFlags, "%s", SW_ICON_CHART_BAR "  Statistics")) {
+				GUI::BeginProperties("##renderer2d_properties");
+				GUI::DrawReadonlyTextProperty(std::to_string(static_cast<f64>(avg)).c_str(), "FPS");
+				GUI::DrawReadonlyTextProperty(std::to_string((1.0 / static_cast<f64>(avg)) * 1000.0f).c_str(), "Frame time (ms)");
+				GUI::DrawReadonlyTextProperty(std::to_string(Renderer2D::GetStats().DrawCalls).c_str(), "2D Draw Calls");
+				GUI::DrawReadonlyTextProperty(std::to_string(Renderer2D::GetStats().QuadCount).c_str(), "Quads");
+				GUI::DrawReadonlyTextProperty(std::to_string(Renderer2D::GetStats().GetTotalVertexCount()).c_str(), "Vertices");
+				GUI::DrawReadonlyTextProperty(std::to_string(Renderer2D::GetStats().GetTotalIndexCount()).c_str(), "Indices");
+				GUI::EndProperties();
+
+				ImGui::TreePop();
 			}
 
-			ImGui::Text("Renderer2D Stats:");
-			ImGui::Text("Draw Calls: %d", Renderer2D::GetStats().DrawCalls);
-			ImGui::Text("Quads: %d", Renderer2D::GetStats().QuadCount);
-			ImGui::Text("Vertices: %d", Renderer2D::GetStats().GetTotalVertexCount());
-			ImGui::Text("Indices: %d", Renderer2D::GetStats().GetTotalIndexCount());
+			if (ImGui::TreeNodeEx("##settings_tree_node", treeFlags, "%s", SW_ICON_SETTINGS_OUTLINE "  Editor Settings")) {
+				GUI::BeginProperties("##editor_settings");
+				if (GUI::DrawBooleanProperty(EditorSettings::Get().VSync, "Enable / Disable VSync")) {
+					Application::Get()->GetWindow()->SetVSync(EditorSettings::Get().VSync);
+				}
+				GUI::DrawBooleanProperty(EditorSettings::Get().ShowPhysicsColliders, "Show Physics Colliders");
+				GUI::EndProperties();
+				
+				ImGui::TreePop();
+			}
 
 			OnEnd();
 		}

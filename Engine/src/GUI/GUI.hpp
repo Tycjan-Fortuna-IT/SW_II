@@ -866,13 +866,33 @@ namespace SW::GUI {
 	 * @param label The label text to display next to the checkbox.
 	 * @param tooltip (optional) Additional information to display as a tooltip.
 	 */
-	static void DrawBooleanProperty(bool& value, const char* label, const char* tooltip = nullptr)
+	static bool DrawBooleanProperty(bool& value, const char* label, const char* tooltip = nullptr)
 	{
+		bool changed = false;
+
 		BeginPropertyGrid(label, tooltip);
 
 		GUI::MoveMousePosX(ImGui::GetColumnWidth() / 2.0f - ImGui::GetStyle().FramePadding.x - 15.f);
 		
-		ImGui::Checkbox("##property_checkbox", &value);
+		changed = ImGui::Checkbox("##property_checkbox", &value);
+
+		EndPropertyGrid();
+
+		return changed;
+	}
+
+	/**
+	 * @brief Draws a readonly text property in the property grid.
+	 * 
+	 * @param value The value to display as text.
+	 * @param label The label for the property.
+	 * @param tooltip (optional) The tooltip for the property.
+	 */
+	static void DrawReadonlyTextProperty(const char* value, const char* label, const char* tooltip = nullptr)
+	{
+		BeginPropertyGrid(label, tooltip);
+
+		ImGui::TextUnformatted(value);
 
 		EndPropertyGrid();
 	}

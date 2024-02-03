@@ -2,7 +2,7 @@
  * @file Scene.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
  * @version 0.1.1
- * @date 2024-02-02
+ * @date 2024-02-03
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -71,6 +71,19 @@ namespace SW {
 		 * @brief Destroys all present entities in the scene.
 		 */
 		void DestroyAllEntities();
+
+		/**
+		 * Begins the rendering process using the specified camera.
+		 *
+		 * @param camera The camera to be used for rendering.
+		 * @return Whether the scene rendering process can be proceeded.
+		 */
+		bool BeginRendering(SceneCamera* camera);
+
+		/**
+		 * Ends the rendering process for the scene.
+		 */
+		void EndRendering();
 
 		/**
 		 * @brief This function is called when the scene is started (the state has changed)
