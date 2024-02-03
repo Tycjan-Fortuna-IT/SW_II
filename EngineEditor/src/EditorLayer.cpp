@@ -323,7 +323,11 @@ namespace SW {
 			if (SelectionManager::IsSelected())
 				SelectionManager::Deselect();
 
-			SceneSerializer::Deserialize(m_Viewport->GetCurrentScene(), filepath.string());
+			delete m_Viewport->GetCurrentScene();
+
+			Scene* newScene = SceneSerializer::Deserialize(filepath.string());
+			
+			m_Viewport->SetCurrentScene(newScene);
 		}
 	}
 

@@ -258,7 +258,7 @@ namespace SW {
 	void Scene::CreateBoxCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, BoxCollider2DComponent& bcc) const
 	{
 		b2PolygonShape boxShape;
-		boxShape.SetAsBox(bcc.Size.x * tc.Scale.x, bcc.Size.y * tc.Scale.y, { bcc.Offset.x, bcc.Offset.y }, 0.0f);
+		boxShape.SetAsBox(bcc.Size.x * tc.Scale.x, bcc.Size.y * tc.Scale.y, { -bcc.Offset.x, bcc.Offset.y }, 0.0f);
 
 		b2FixtureDef fixtureDef;
 		fixtureDef.shape = &boxShape;

@@ -200,16 +200,16 @@ namespace SW {
 		fout << output.c_str();
 	}
 
-	void SceneSerializer::Deserialize(Scene* scene, const std::string& path)
+	Scene* SceneSerializer::Deserialize(const std::string& path)
 	{
+		Scene* scene = new Scene();
+
 		YAML::Node data = YAML::LoadFile(path);
 
 		if (!data["Entities"]) {
 			SW_ERROR("Error while deserializing the scene: {}, no entities section found!", path);
-			return;
+			return scene;
 		}
-
-		scene->DestroyAllEntities();
 
 		YAML::Node entities = data["Entities"];
 
@@ -273,6 +273,8 @@ namespace SW {
 				rbc.Offset = boxCollider2DComponent["Offset"].as<Vector2<f32>>();
 			}
 		}
+
+		return scene;
 	}
 
 }
