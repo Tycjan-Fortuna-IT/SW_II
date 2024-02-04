@@ -79,25 +79,40 @@ namespace SW {
         });
 
         glfwSetKeyCallback(m_Handle, [](GLFWwindow* window, i32 key, i32 scancode, i32 action, i32 mods) {
-            switch (action)
-            {
-                case GLFW_PRESS:
-                    EventSystem::Emit({
-                        .Code = EVENT_CODE_KEY_PRESSED,
-                        .Payload = {
-                            .u16 = { (u16)key }
-                        }
-                    }, nullptr);
+            switch (action) {
+				case GLFW_PRESS: {
+					EventSystem::Emit({
+						.Code = EVENT_CODE_KEY_PRESSED,
+						.Payload = {
+							.u16 = { (u16)key }
+						}
+					}, nullptr);
 
-                    break;
+					break;
+				}          
                 case GLFW_RELEASE:
-                    break;
                 case GLFW_REPEAT:
-                    break;
                 default:
-                    SW_WARN("Unsupported key action: {}", action);
+                    SW_WARN("Unsupported mouse action: {}", action);
             }
         });
+
+		glfwSetMouseButtonCallback(m_Handle, [](GLFWwindow* window, int button, int action, int mods) {
+			switch (action) {
+				case GLFW_PRESS: {
+					EventSystem::Emit({
+						.Code = EVENT_CODE_MOUSE_BUTTON_PRESSED,
+						.Payload = {
+							.u16 = { (u16)button }
+						}
+					}, nullptr);
+					break;
+				}
+				case GLFW_RELEASE:
+				default:
+					SW_WARN("Unsupported mouse action: {}", action);
+			}
+		});
 
 		glfwSetWindowSizeCallback(m_Handle, [](GLFWwindow* window, i32 width, i32 height) {
 			// todo update as well the glfwGetWindowUserPointer!

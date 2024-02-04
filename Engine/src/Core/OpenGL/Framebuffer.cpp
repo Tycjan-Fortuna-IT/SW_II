@@ -132,6 +132,20 @@ namespace SW {
 		RendererAPI::Clear();
 	}
 
+	int Framebuffer::ReadPixel(u32 attachmentIndex, int x, int y)
+	{
+		ASSERT(attachmentIndex < m_ColorAttachments.size(), "Wrong attachement index!");
+
+		Bind();
+
+		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+
+		int pixelData = 1;
+		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+		
+		return pixelData;
+	}
+
 	void Framebuffer::Invalidate()
 	{
 		if (m_RendererID) {

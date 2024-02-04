@@ -41,6 +41,12 @@ namespace SW {
 		 * @warning Context usage: 
 		 */
 		EVENT_CODE_WINDOW_RESIZED = 0x06,
+
+		/**
+		 * @brief Mouse button pressed.
+		 * @warning Context usage: u16 mouseCode = event.Payload.u16[0];
+		 */
+		EVENT_CODE_MOUSE_BUTTON_PRESSED = 0x07,
     };
 
 	/**

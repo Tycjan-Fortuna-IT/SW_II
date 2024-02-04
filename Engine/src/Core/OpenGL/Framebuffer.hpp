@@ -148,6 +148,16 @@ namespace SW {
 		 */
 		void Clear() const;
 
+		/**
+		 * Reads the pixel value at the specified coordinates from the framebuffer attachment.
+		 *
+		 * @param attachmentIndex The index of the attachment to read from.
+		 * @param x The x-coordinate of the pixel.
+		 * @param y The y-coordinate of the pixel.
+		 * @return The pixel value at the specified coordinates.
+		 */
+		int ReadPixel(u32 attachmentIndex, int x, int y);
+
 	private:
 		/**
 		 * @brief Invalidate the framebuffer.
