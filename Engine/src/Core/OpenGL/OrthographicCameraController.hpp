@@ -83,7 +83,7 @@ namespace SW {
 		f32 m_AspectRatio;      	/** @brief Aspect ratio of the camera. */
 		f32 m_ZoomLevel = 1.0f;		/** @brief Zoom level of the camera. */
 
-		Vector3<f32> m_CameraPosition = { 0.0f, 0.0f, 0.0f }; /** @brief Position of the camera. */
+		glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f }; /** @brief Position of the camera. */
 
 		f32 m_CameraRotation = 0.0f; 		/** @brief Rotation of the camera. */
 		f32 m_CameraMoveSpeed = 20.0f; 		/** @brief Speed of the camera. */

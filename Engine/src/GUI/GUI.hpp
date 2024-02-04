@@ -8,9 +8,9 @@
  */
 #pragma once
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Core/OpenGL/Texture2D.hpp"
-#include "Core/Math/Vector2.hpp"
-#include "Core/Math/Vector3.hpp"
 #include "Colors.hpp"
 #include "Core/Utils/Utils.hpp"
 #include "GUI/Icons.hpp"
@@ -183,7 +183,7 @@ namespace SW::GUI {
 		return reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(rendererID));
 	}
 
-	static Vector2<f32> GetIconButtonSize(const char* icon, const char* label)
+	static glm::vec2 GetIconButtonSize(const char* icon, const char* label)
 	{
 		float lineHeight = ImGui::GetTextLineHeight();
 		ImVec2 padding = ImGui::GetStyle().FramePadding;
@@ -298,7 +298,7 @@ namespace SW::GUI {
 	 * @param tintHovered Color of the button's icon when hovered.
 	 * @return bool True if the button was pressed, false otherwise.
 	 */
-	static bool ImageButton(const Texture2D& texture, const Vector2<f32>& size, ImU32 tintHovered = Color::DarkGray)
+	static bool ImageButton(const Texture2D& texture, const glm::vec2& size, ImU32 tintHovered = Color::DarkGray)
 	{
 		const f32 padding = (size.y - (f32)texture.GetHeight()) / 2.0f;
 
@@ -328,7 +328,7 @@ namespace SW::GUI {
 	* @return bool True if the button was pressed, false otherwise.
 	*/
 	template <typename... Args>
-	static bool Button(const char* label, const Vector2<f32>& size, Args&& ...args)
+	static bool Button(const char* label, const glm::vec2& size, Args&& ...args)
 	{
 		const std::string formatlbl = fmt::vformat(label, fmt::make_format_args(std::forward<Args>(args)...));
 
@@ -351,7 +351,7 @@ namespace SW::GUI {
 	 * @param format The format to use when displaying the vector values.
 	 */
 	static void DisplayVector3Slider(
-		Vector3<f32>& vec, const std::string& label, f32 resetValue, 
+		glm::vec3& vec, const std::string& label, f32 resetValue, 
 		f32 labelWidth = 80.0f, f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.3f"
 	) {
 		ImGui::PushID(label.c_str());
@@ -404,7 +404,7 @@ namespace SW::GUI {
 	 * @param color The color to display.
 	 * @param label The label to display next to the color.
 	 */
-	static void DisplayColorPicker(Vector4<f32>& color, const std::string& label)
+	static void DisplayColorPicker(glm::vec4& color, const std::string& label)
 	{
 		ImGui::Columns(1);
 
@@ -417,7 +417,7 @@ namespace SW::GUI {
 		ImGui::SameLine();
 
 		ImGui::SetNextItemWidth(widgetWidth);
-		ImGui::ColorEdit4("##Color", color.ValuePtr(), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreviewHalf);
+		ImGui::ColorEdit4("##Color", glm::value_ptr(color), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreviewHalf);
 
 		ImGui::PopStyleVar();
 		ImGui::PopID();
@@ -613,7 +613,7 @@ namespace SW::GUI {
 	 * @param format The format string used to display the values of the vector components.
 	 */
 	static void DrawVector2ControlProperty(
-		Vector2<f32>& vector, const char* label, const char* tooltip = nullptr, f32 resetValue = 0.f,
+		glm::vec2& vector, const char* label, const char* tooltip = nullptr, f32 resetValue = 0.f,
 		f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
 	) {
 		BeginPropertyGrid(label, tooltip, false);
@@ -691,7 +691,7 @@ namespace SW::GUI {
 	 * @param format The format string used to display the values of the vector components.
 	 */
 	static void DrawVector3ControlProperty(
-		Vector3<f32>& vector, const char* label, const char* tooltip = nullptr, f32 resetValue = 0.f,
+		glm::vec3& vector, const char* label, const char* tooltip = nullptr, f32 resetValue = 0.f,
 		f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
 	) {
 		BeginPropertyGrid(label, tooltip, false);
@@ -782,11 +782,11 @@ namespace SW::GUI {
 	 * @param tooltip The tooltip for the color picker (optional).
 	 */
 	static void DrawVector4ColorPickerProperty(
-		Vector4<f32>& vector, const char* label, const char* tooltip = nullptr
+		glm::vec4& vector, const char* label, const char* tooltip = nullptr
 	) {
 		BeginPropertyGrid(label, tooltip, true);
 
-		ImGui::ColorEdit4("##Color", vector.ValuePtr(), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreviewHalf);
+		ImGui::ColorEdit4("##Color", glm::value_ptr(vector), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreviewHalf);
 
 		EndPropertyGrid();
 	}

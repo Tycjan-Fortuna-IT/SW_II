@@ -72,7 +72,7 @@ namespace SW {
 		 * @param camera The camera to be used for rendering the scene.
 		 * @param transform The transformation matrix of the scene.
 		 */
-		static void BeginScene(const SceneCamera& camera, const Matrix4<f32>& transform);
+		static void BeginScene(const SceneCamera& camera, const glm::mat4& transform);
 
 		/**
 		 * @brief Ends the current rendering scene.
@@ -100,7 +100,7 @@ namespace SW {
 		 * @param sprite The sprite component of the quad.
 		 * @param entityID The ID of the entity.
 		 */
-		static void DrawQuad(const Matrix4<f32>& transform, const SpriteComponent& sprite, int entityID);
+		static void DrawQuad(const glm::mat4& transform, const SpriteComponent& sprite, int entityID);
 
 		/**
 		 * @brief Draws a line with the specified start and end points and color.
@@ -108,7 +108,7 @@ namespace SW {
 		 * @param p1 The end point of the line.
 		 * @param color The color of the line.
 		 */
-		static void DrawLine(const Vector3<f32>& p0, const Vector3<f32>& p1, const Vector4<f32>& color);
+		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color);
 
 		/**
 		 * @brief Draws a rectangle with the specified position, size, and color.
@@ -116,14 +116,14 @@ namespace SW {
 		 * @param size The size of the rectangle.
 		 * @param color The color of the rectangle.
 		 */
-		static void DrawRect(const Vector3<f32>& position, const Vector2<f32>& size, const Vector4<f32>& color);
+		static void DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
 
 		/**
 		 * @brief Draws a rectangle with the specified transformation matrix and color.
 		 * @param transform The transformation matrix of the rectangle.
 		 * @param color The color of the rectangle.
 		 */
-		static void DrawRect(const Matrix4<f32>& transform, const Vector4<f32>& color);
+		static void DrawRect(const glm::mat4& transform, const glm::vec4& color);
 	};
 
 }

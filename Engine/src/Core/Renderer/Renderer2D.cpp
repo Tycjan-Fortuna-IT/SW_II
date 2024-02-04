@@ -13,9 +13,9 @@ namespace SW {
 
 	struct QuadVertex final
 	{
-		Vector3<f32> Position;
-		Vector4<f32> Color;
-		Vector2<f32> TexCoord;
+		glm::vec3 Position;
+		glm::vec4 Color;
+		glm::vec2 TexCoord;
 
 		f32 TexIndex;
 		f32 TilingFactor;
@@ -25,8 +25,8 @@ namespace SW {
 
 	struct LineVertex final
 	{
-		Vector3<f32> Position;
-		Vector4<f32> Color;
+		glm::vec3 Position;
+		glm::vec4 Color;
 	};
 
 	struct Renderer2DData final
@@ -60,7 +60,7 @@ namespace SW {
 
 		f32 LineWidth = 2.0f;
 
-		Vector4<f32> QuadVertexPositions[4] = {};
+		glm::vec4 QuadVertexPositions[4] = {};
 
 		Renderer2DStatistics Stats;
 	};
@@ -149,7 +149,7 @@ namespace SW {
 
 	void Renderer2D::BeginScene(const SceneCamera& camera)
 	{
-		const Matrix4<f32> viewProjection = camera.GetViewProjectionMatrix().Transpose();
+		const glm::mat4 viewProjection = camera.GetViewProjectionMatrix();
 
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->UploadUniformMat4("u_ViewProjection", viewProjection);
@@ -160,9 +160,9 @@ namespace SW {
 		StartBatch();
 	}
 
-	void Renderer2D::BeginScene(const SceneCamera& camera, const Matrix4<f32>& transform)
+	void Renderer2D::BeginScene(const SceneCamera& camera, const glm::mat4& transform)
 	{
-		const Matrix4<f32> viewProjection = (camera.GetProjectionMatrix() * Math::Inverse(transform)).Transpose();
+		glm::mat4 viewProjection = camera.GetProjectionMatrix() * glm::inverse(transform);
 
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->UploadUniformMat4("u_ViewProjection", viewProjection);
@@ -222,14 +222,14 @@ namespace SW {
 		StartBatch();
 	}
 
-	void Renderer2D::DrawQuad(const Matrix4<f32>& transform, const SpriteComponent& sprite, int entityID)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const SpriteComponent& sprite, int entityID)
 	{
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 			FlushAndReset();
 
 		f32 textureIndex = 0.f; // White Texture
 
-		Vector2<f32> texCoords[] = { 
+		glm::vec2 texCoords[] = { 
 			{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } 
 		};
 
@@ -249,7 +249,7 @@ namespace SW {
 		}
 
 		for (int i = 0; i < 4; i++) {
-			s_Data.QuadVertexBufferPtr->Position = Vector3<f32>::FromVector4(transform * s_Data.QuadVertexPositions[i]);
+			s_Data.QuadVertexBufferPtr->Position = glm::vec3(transform * s_Data.QuadVertexPositions[i]);
 			s_Data.QuadVertexBufferPtr->Color = sprite.Color;
 			s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
@@ -263,7 +263,7 @@ namespace SW {
 		s_Data.Stats.QuadCount++;
 	}
 
-	void Renderer2D::DrawLine(const Vector3<f32>& p0, const Vector3<f32>& p1, const Vector4<f32>& color)
+	void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color)
 	{
 		s_Data.LineVertexBufferPtr->Position = p0;
 		s_Data.LineVertexBufferPtr->Color = color;
@@ -276,12 +276,12 @@ namespace SW {
 		s_Data.LineVertexCount += 2;
 	}
 
-	void Renderer2D::DrawRect(const Vector3<f32>& position, const Vector2<f32>& size, const Vector4<f32>& color)
+	void Renderer2D::DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 	{
-		Vector3<f32> p0 = Vector3<f32>(position.x - size.x * 0.5f, position.y - size.y * 0.5f, position.z);
-		Vector3<f32> p1 = Vector3<f32>(position.x + size.x * 0.5f, position.y - size.y * 0.5f, position.z);
-		Vector3<f32> p2 = Vector3<f32>(position.x + size.x * 0.5f, position.y + size.y * 0.5f, position.z);
-		Vector3<f32> p3 = Vector3<f32>(position.x - size.x * 0.5f, position.y + size.y * 0.5f, position.z);
+		glm::vec3 p0 = glm::vec3(position.x - size.x * 0.5f, position.y - size.y * 0.5f, position.z);
+		glm::vec3 p1 = glm::vec3(position.x + size.x * 0.5f, position.y - size.y * 0.5f, position.z);
+		glm::vec3 p2 = glm::vec3(position.x + size.x * 0.5f, position.y + size.y * 0.5f, position.z);
+		glm::vec3 p3 = glm::vec3(position.x - size.x * 0.5f, position.y + size.y * 0.5f, position.z);
 
 		DrawLine(p0, p1, color);
 		DrawLine(p1, p2, color);
@@ -289,11 +289,11 @@ namespace SW {
 		DrawLine(p3, p0, color);
 	}
 
-	void Renderer2D::DrawRect(const Matrix4<f32>& transform, const Vector4<f32>& color)
+	void Renderer2D::DrawRect(const glm::mat4& transform, const glm::vec4& color)
 	{
-		Vector3<f32> lineVertices[4];
+		glm::vec3 lineVertices[4];
 		for (size_t i = 0; i < 4; i++)
-			lineVertices[i] = Vector3<f32>::FromVector4(transform * s_Data.QuadVertexPositions[i]);
+			lineVertices[i] = glm::vec3(transform * s_Data.QuadVertexPositions[i]);
 
 		DrawLine(lineVertices[0], lineVertices[1], color);
 		DrawLine(lineVertices[1], lineVertices[2], color);

@@ -92,9 +92,9 @@ namespace SW {
 
 		bool m_IsViewportFocused = false;		/** @brief Is the viewport focused. */
 
-		Vector2<f32> m_ViewportSize = { 50.f };			/** @brief The viewport size. */
-		Vector2<f32> m_ViewportBoundsMin = { 0.f };		/** @brief The minimum bounds of the viewport. */
-		Vector2<f32> m_ViewportBoundsMax = { 0.f };		/** @brief The maximum bounds of the viewport. */
+		glm::vec2 m_ViewportSize = glm::vec2(50.f);			/** @brief The viewport size. */
+		glm::vec2 m_ViewportBoundsMin = glm::vec2(0.f);		/** @brief The minimum bounds of the viewport. */
+		glm::vec2 m_ViewportBoundsMax = glm::vec2(0.f);		/** @brief The maximum bounds of the viewport. */
 
 		int m_GizmoType = -1;
 

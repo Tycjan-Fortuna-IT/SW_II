@@ -69,7 +69,7 @@ namespace SW {
 		 * @param name The name of the uniform.
 		 * @param value The value of the uniform.
 		 */
-		void UploadUniformMat4(const std::string& name, const Matrix4<f32>& value) const;
+		void UploadUniformMat4(const std::string& name, const glm::mat4& value) const;
 
 	private:
 		u32 m_Handle; ///< The handle of the shader.

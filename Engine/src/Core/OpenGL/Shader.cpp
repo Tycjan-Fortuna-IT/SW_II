@@ -2,6 +2,7 @@
 #include "Shader.hpp"
 
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "Core/Utils/Utils.hpp"
 
@@ -152,8 +153,8 @@ namespace SW {
 		glUniform1iv(GetUniformLocation(name), count, values);
     }
 
-    void Shader::UploadUniformMat4(const std::string& name, const Matrix4<f32>& value) const
+    void Shader::UploadUniformMat4(const std::string& name, const glm::mat4& value) const
 	{
-        glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, value.ValuePtrConst());
+        glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
     }
 }

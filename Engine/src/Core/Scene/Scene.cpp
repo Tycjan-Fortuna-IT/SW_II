@@ -65,7 +65,7 @@ namespace SW {
 			case SW::SceneState::Edit:
 				Renderer2D::BeginScene(*camera); break;
 			case SW::SceneState::Play: {
-				Matrix4<f32> cameraTransform;
+				glm::mat4 cameraTransform;
 				SceneCamera* mainCamera = nullptr;
 
 				for (auto&& [handle, tc, cc] : m_Registry.GetEntitiesWith<TransformComponent, CameraComponent>().each()) {
@@ -151,7 +151,7 @@ namespace SW {
 
 			const b2Vec2 position = body->GetPosition();
 
-			tc.Position.x = -position.x;
+			tc.Position.x = position.x;
 			tc.Position.y = position.y;
 			tc.Rotation.z = body->GetAngle();
 		}
@@ -239,7 +239,7 @@ namespace SW {
 		definition.fixedRotation = false;
 		definition.allowSleep = rbc.AllowSleep;
 		definition.gravityScale = rbc.GravityScale;
-		definition.position.Set(-tc.Position.x, tc.Position.y);
+		definition.position.Set(tc.Position.x, tc.Position.y);
 		definition.angle = tc.Rotation.z;
 
 		b2Body* rb = m_PhysicsWorld2D->CreateBody(&definition);
@@ -258,7 +258,7 @@ namespace SW {
 	void Scene::CreateBoxCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, BoxCollider2DComponent& bcc) const
 	{
 		b2PolygonShape boxShape;
-		boxShape.SetAsBox(bcc.Size.x * tc.Scale.x, bcc.Size.y * tc.Scale.y, { -bcc.Offset.x, bcc.Offset.y }, 0.0f);
+		boxShape.SetAsBox(bcc.Size.x * tc.Scale.x, bcc.Size.y * tc.Scale.y, { bcc.Offset.x, bcc.Offset.y }, 0.0f);
 
 		b2FixtureDef fixtureDef;
 		fixtureDef.shape = &boxShape;

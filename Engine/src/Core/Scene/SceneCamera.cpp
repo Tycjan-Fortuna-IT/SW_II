@@ -1,6 +1,7 @@
 #include "SceneCamera.hpp"
 
-#include "Core/Math/Math.hpp"
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "Core/KeyCode.hpp"
 #include "Core/Utils/Input.hpp"
 
@@ -9,7 +10,7 @@ namespace SW {
 	SceneCamera::SceneCamera(f32 aspectRatio)
 		: m_AspectRatio(aspectRatio)
 	{
-		m_ViewMatrix = { 1.0f };
+		m_ViewMatrix = glm::mat4(1.0f);
 
 		RecalculateProjection();
 		RecalculateViewMatrix();
@@ -64,10 +65,10 @@ namespace SW {
 
 	void SceneCamera::RecalculateViewMatrix()
 	{
-		Matrix4<f32> transform = Math::Translate(Matrix4<f32>::Identity(), m_CameraPosition) *
-			Math::RotateZ(Matrix4<f32>::Identity(), Math::ToRadians(m_CameraRotation));
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_CameraPosition) *
+			glm::rotate(glm::mat4(1.0f), glm::radians(m_CameraRotation), glm::vec3(0, 0, 1));
 
-		m_ViewMatrix = Math::Inverse(transform);
+		m_ViewMatrix = glm::inverse(transform);
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
     }
 
@@ -78,9 +79,7 @@ namespace SW {
 		f32 orthoBottom = -m_OrthographicSize * 0.5f * m_ZoomLevel;
 		f32 orthoTop = m_OrthographicSize * 0.5f * m_ZoomLevel;
 
-		m_ProjectionMatrix = Math::OrthogonalProjection(
-			orthoLeft, orthoRight, orthoBottom, orthoTop, m_OrthographicNear, m_OrthographicFar
-		);
+		m_ProjectionMatrix = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, m_OrthographicNear, m_OrthographicFar);
 	}
 
 }

@@ -8,6 +8,7 @@
 #include "Core/ECS/Entity.hpp"
 #include "Core/Editor/EditorSettings.hpp"
 #include "Managers/SelectionManager.hpp"
+#include "glm/ext/matrix_transform.hpp"
 
 namespace SW {
 
@@ -99,15 +100,15 @@ namespace SW {
 				// Box Colliders
 				{
 					for (auto&& [handle, tc, bcc] : m_ActiveScene->GetRegistry().GetEntitiesWith<TransformComponent, BoxCollider2DComponent>().each()) {
-						Vector3<f32> translation = tc.Position + Vector3<f32>(bcc.Offset.x, bcc.Offset.y, 0.001f);
-						Vector3<f32> scale = tc.Scale * Vector3<f32>(bcc.Size.x * 2.0f, bcc.Size.y * 2.0f, 1.0f);
+						glm::vec3 translation = tc.Position + glm::vec3(bcc.Offset.x, bcc.Offset.y, 0.001f);
+						glm::vec3 scale = tc.Scale * glm::vec3(bcc.Size.x * 2.0f, bcc.Size.y * 2.0f, 1.0f);
 
-						Matrix4<f32> transform = Math::Translate(Matrix4<f32>::Identity(), tc.Position) *
-							Math::RotateZ(Matrix4<f32>::Identity(), tc.Rotation.z) *
-							Math::Translate(Matrix4<f32>::Identity(), Vector3<f32>(bcc.Offset.x, bcc.Offset.y, 0.001f)) *
-							Math::Scale(Matrix4<f32>::Identity(), scale);
+						glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.Position)
+							* glm::rotate(glm::mat4(1.0f), tc.Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f))
+							* glm::translate(glm::mat4(1.0f), glm::vec3(bcc.Offset, 0.001f))
+							* glm::scale(glm::mat4(1.0f), scale);
 
-						Renderer2D::DrawRect(transform, Vector4<f32>(1, 1, 0, 1));
+						Renderer2D::DrawRect(transform, glm::vec4(1, 1, 0, 1));
 					}
 				}
 			}
@@ -144,8 +145,8 @@ namespace SW {
 			// 	ImGuiIO& io = ImGui::GetIO();
 			// 	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 
-			// 	Matrix4<f32> cameraView = m_SceneCamera->GetViewMatrix();
-			// 	Matrix4<f32> cameraProjection = m_SceneCamera->GetProjectionMatrix();
+			// 	glm::mat4 cameraView = m_SceneCamera->GetViewMatrix();
+			// 	glm::mat4 cameraProjection = m_SceneCamera->GetProjectionMatrix();
 
 			// 	m_GizmoType = ImGuizmo::OPERATION::TRANSLATE; // todo remove
 
@@ -153,7 +154,7 @@ namespace SW {
 
 			// 	TransformComponent& tc = selected.GetComponent<TransformComponent>();
 
-			// 	Matrix4<f32> transform = tc.GetTransform();
+			// 	glm::mat4 transform = tc.GetTransform();
 
 			// 	const bool snap = ImGui::IsKeyDown(ImGuiKey_LeftCtrl);
 			// 	f32 snapValue = 0.5f;
@@ -248,7 +249,7 @@ namespace SW {
 		mouseX -= m_ViewportBoundsMin.x;
 		mouseY -= m_ViewportBoundsMin.y;
 
-		const Vector2<f32> viewportSize = m_ViewportBoundsMax - m_ViewportBoundsMin;
+		const glm::vec2 viewportSize = m_ViewportBoundsMax - m_ViewportBoundsMin;
 
 		mouseY = viewportSize.y - mouseY;
 

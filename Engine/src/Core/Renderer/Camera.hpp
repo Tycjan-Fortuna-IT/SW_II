@@ -1,19 +1,39 @@
+/**
+ * @file Camera.hpp
+ * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
+ * @version 0.1.1
+ * @date 2024-02-04
+ *
+ * @copyright Copyright (c) 2024 Tycjan Fortuna
+ */
 #pragma once
-
-#include "Core/Math/Matrix4.hpp"
 
 namespace SW {
 
+	/**
+	 * @brief Represents a camera in the rendering system.
+	 */
 	class Camera
 	{
 	public:
+		/**
+		 * @brief Default constructor.
+		 */
 		Camera() = default;
+
+		/**
+		 * @brief Default destructor.
+		 */
 		virtual ~Camera() = default;
 
-		const Matrix4<f32>& GetProjection() const { return m_Projection; }
+		/**
+		 * @brief Get the projection matrix of the camera.
+		 * @return The projection matrix.
+		 */
+		const glm::mat4& GetProjection() const { return m_Projection; }
 
 	protected:
-		Matrix4<f32> m_Projection = { 1.0f };
+		glm::mat4 m_Projection = glm::mat4(1.0f); /** @brief The projection matrix of the camera. */
 	};
 
 }

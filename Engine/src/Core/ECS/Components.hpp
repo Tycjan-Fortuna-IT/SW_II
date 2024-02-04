@@ -8,12 +8,11 @@
  */
 #pragma once
 
-#include "Core/Math/Vector2.hpp"
-#include "Core/Math/Vector3.hpp"
-#include "Core/Math/Vector4.hpp"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 #include "Core/Utils/Random.hpp"
 #include "Core/Scene/SceneCamera.hpp"
-#include "Core/Math/Math.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
 
 namespace SW {
@@ -68,14 +67,14 @@ namespace SW {
      */
     struct TransformComponent final
     {
-        Vector3<f32> Position = { 0.0f, 0.0f , 0.0f };
-        Vector3<f32> Rotation = { 0.0f, 0.0f , 0.0f };		/** @brief Rotation angles are in radians! */
-        Vector3<f32> Scale =    { 1.0f, 1.0f , 1.0f };
+        glm::vec3 Position = { 0.0f, 0.0f , 0.0f };
+        glm::vec3 Rotation = { 0.0f, 0.0f , 0.0f };		/** @brief Rotation angles are in radians! */
+        glm::vec3 Scale =    { 1.0f, 1.0f , 1.0f };
 
         TransformComponent() = default;
-        TransformComponent(const Vector3<f32>& position, const Vector3<f32>& rotation, const Vector3<f32>& scale)
+        TransformComponent(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
             : Position(position), Rotation(rotation), Scale(scale) {}
-        TransformComponent(const Vector3<f32>& position)
+        TransformComponent(const glm::vec3& position)
             : Position(position) {}
 
         TransformComponent(const TransformComponent& other) = default;
@@ -85,11 +84,11 @@ namespace SW {
 
         ~TransformComponent() = default;
 
-		Matrix4<f32> GetTransform() const
+		glm::mat4 GetTransform() const
 		{
-			return Math::Translate(Matrix4<f32>::Identity(), Position) *
-				Math::RotateZ(Matrix4<f32>::Identity(), Rotation.z) *
-				Math::Scale(Matrix4<f32>::Identity(), Scale);
+			return glm::translate(glm::mat4(1.0f), Position)
+				* glm::toMat4(glm::quat(Rotation))
+				* glm::scale(glm::mat4(1.0f), Scale);
 		}
     };
 
@@ -100,14 +99,14 @@ namespace SW {
      */
     struct SpriteComponent final
     {
-        Vector4<f32> Color = { 1.0f };
+        glm::vec4 Color = glm::vec4(1.0f);
 		Texture2D* Texture = nullptr;	/** @brief Texture of the entity, can be nullptr! */
 		f32 TilingFactor = 1.0f;
 
         SpriteComponent() = default;
-        SpriteComponent(const Vector4<f32>& color)
+        SpriteComponent(const glm::vec4& color)
             : Color(color) {}
-		SpriteComponent(Texture2D* texture, const Vector4<f32>& tint = { 1.f }, f32 tilingFactor = 1.f)
+		SpriteComponent(Texture2D* texture, const glm::vec4& tint = glm::vec4(1.f), f32 tilingFactor = 1.f)
 			: Texture(texture), Color(tint), TilingFactor(tilingFactor) {}
 
         SpriteComponent(const SpriteComponent& other) = default;
@@ -159,8 +158,8 @@ namespace SW {
 	{
 		void* Handle = nullptr;		/**< Internal box2D physics box collider handle */
 
-		Vector2<f32> Size = { 0.5f, 0.5f };		/**< Size of the collider */
-		Vector2<f32> Offset = { 0.0f, 0.0f };	/**< Center of the box in local coordinates */
+		glm::vec2 Size = { 0.5f, 0.5f };		/**< Size of the collider */
+		glm::vec2 Offset = { 0.0f, 0.0f };	/**< Center of the box in local coordinates */
 	};
 
 }

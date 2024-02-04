@@ -186,9 +186,9 @@ namespace SW {
 				GUI::BeginProperties("##transform_property");
 				GUI::DrawVector3ControlProperty(component.Position, "Position: ", "Position of the entity");
 				
-				Vector3<f32> rotation = Math::ToDegrees(component.Rotation);
+				glm::vec3 rotation = glm::degrees(component.Rotation);
 				GUI::DrawVector3ControlProperty(rotation, "Rotation: ", "Rotation of the entity in degrees");
-				component.Rotation = Math::ToRadians(rotation);
+				component.Rotation = glm::radians(rotation);
 
 				GUI::DrawVector3ControlProperty(component.Scale, "Scale: ", "Scale of the entity", 1.f);
 				GUI::EndProperties();

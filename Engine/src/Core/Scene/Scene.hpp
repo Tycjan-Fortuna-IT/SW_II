@@ -169,7 +169,7 @@ namespace SW {
 
 		b2World* m_PhysicsWorld2D;		/**< The physics world of the scene. */
 
-		Vector2<f32> m_Gravity = { 0.0f, -9.80665f };	/**< The gravity of the scene. */
+		glm::vec2 m_Gravity = { 0.0f, -9.80665f };	/**< The gravity of the scene. */
 		u32 m_VelocityIterations = 6;			/**< The number of velocity iterations for the physics simulation. */
 		u32 m_PositionIterations = 2;			/**< The number of position iterations for the physics simulation. */
 		f32 m_PhysicsFrameAccumulator = 0.0f;	/**< The frame accumulator for the physics simulation. */

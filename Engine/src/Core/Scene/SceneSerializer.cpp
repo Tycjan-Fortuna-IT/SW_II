@@ -11,27 +11,27 @@
 
 namespace YAML {
 
-	Emitter& operator<<(Emitter& out, const SW::Vector2<f32>& v) {
+	Emitter& operator<<(Emitter& out, const glm::vec2& v) {
 		out << Flow;
 		out << BeginSeq << v.x << v.y << EndSeq;
 		return out;
 	}
 
-	Emitter& operator<<(Emitter& out, const SW::Vector3<f32>& v) {
+	Emitter& operator<<(Emitter& out, const glm::vec3& v) {
 		out << Flow;
 		out << BeginSeq << v.x << v.y << v.z << EndSeq;
 		return out;
 	}
 
-	Emitter& operator<<(Emitter& out, const SW::Vector4<f32>& v) {
+	Emitter& operator<<(Emitter& out, const glm::vec4& v) {
 		out << Flow;
 		out << BeginSeq << v.r << v.g << v.b << v.a << EndSeq;
 		return out;
 	}
 
 	template<>
-	struct convert<SW::Vector2<f32>> {
-		static Node encode(const SW::Vector2<f32>& rhs)
+	struct convert<glm::vec2> {
+		static Node encode(const glm::vec2& rhs)
 		{
 			Node node;
 			node.push_back(rhs.x);
@@ -40,7 +40,7 @@ namespace YAML {
 			return node;
 		}
 
-		static bool decode(const Node& node, SW::Vector2<f32>& rhs)
+		static bool decode(const Node& node, glm::vec2& rhs)
 		{
 			if (!node.IsSequence() || node.size() != 2)
 				return false;
@@ -52,8 +52,8 @@ namespace YAML {
 	};
 
 	template<>
-	struct convert<SW::Vector3<f32>> {
-		static Node encode(const SW::Vector3<f32>& rhs)
+	struct convert<glm::vec3> {
+		static Node encode(const glm::vec3& rhs)
 		{
 			Node node;
 			node.push_back(rhs.x);
@@ -63,7 +63,7 @@ namespace YAML {
 			return node;
 		}
 
-		static bool decode(const Node& node, SW::Vector3<f32>& rhs)
+		static bool decode(const Node& node, glm::vec3& rhs)
 		{
 			if (!node.IsSequence() || node.size() != 3)
 				return false;
@@ -76,8 +76,8 @@ namespace YAML {
 	};
 
 	template<>
-	struct convert<SW::Vector4<f32>> {
-		static Node encode(const SW::Vector4<f32>& rhs)
+	struct convert<glm::vec4> {
+		static Node encode(const glm::vec4& rhs)
 		{
 			Node node;
 			node.push_back(rhs.x);
@@ -88,7 +88,7 @@ namespace YAML {
 			return node;
 		}
 
-		static bool decode(const Node& node, SW::Vector4<f32>& rhs)
+		static bool decode(const Node& node, glm::vec4& rhs)
 		{
 			if (!node.IsSequence() || node.size() != 4)
 				return false;
@@ -229,16 +229,16 @@ namespace SW {
 			if (transformComponent) {
 				TransformComponent& tc = deserialized.GetComponent<TransformComponent>();
 
-				tc.Position = transformComponent["Transform"].as<Vector3<f32>>();
-				tc.Rotation = transformComponent["Rotation"].as<Vector3<f32>>();
-				tc.Scale = transformComponent["Scale"].as<Vector3<f32>>();
+				tc.Position = transformComponent["Transform"].as<glm::vec3>();
+				tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
+				tc.Scale = transformComponent["Scale"].as<glm::vec3>();
 			}
 
 			YAML::Node spriteComponent = entity["Entity"]["SpriteComponent"];
 			if (spriteComponent) {
 				SpriteComponent& sc = deserialized.AddComponent<SpriteComponent>();
 
-				sc.Color = spriteComponent["Color"].as<Vector4<f32>>();
+				sc.Color = spriteComponent["Color"].as<glm::vec4>();
 
 				if (spriteComponent["TexturePath"]) {
 					std::string path = spriteComponent["TexturePath"].as<std::string>();
@@ -269,8 +269,8 @@ namespace SW {
 			if (boxCollider2DComponent) {
 				BoxCollider2DComponent& rbc = deserialized.AddComponent<BoxCollider2DComponent>();
 
-				rbc.Size = boxCollider2DComponent["Size"].as<Vector2<f32>>();
-				rbc.Offset = boxCollider2DComponent["Offset"].as<Vector2<f32>>();
+				rbc.Size = boxCollider2DComponent["Size"].as<glm::vec2>();
+				rbc.Offset = boxCollider2DComponent["Offset"].as<glm::vec2>();
 			}
 		}
 

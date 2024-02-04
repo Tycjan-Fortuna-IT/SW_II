@@ -44,6 +44,9 @@ Dependencies = {
     IMGUIZMO = {
         IncludeDir = "%{wks.location}/Engine/vendor/ImGuizmo",
     },
+    GLM = {
+        IncludeDir = "%{wks.location}/Engine/vendor/glm",
+    },
 }
 
 function IncludeEngineDependencies(additional)

@@ -112,19 +112,19 @@ namespace SW {
 		 * @brief Gets the projection matrix of the camera.
 		 * @return The projection matrix of the camera.
 		 */
-		const Matrix4<f32>& GetProjectionMatrix() const { return m_ProjectionMatrix; }
+		const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
 
 		/**
 		 * @brief Gets the view matrix of the camera.
 		 * @return The view matrix of the camera.
 		 */
-		const Matrix4<f32>& GetViewMatrix() const { return m_ViewMatrix; }
+		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 
 		/**
 		 * @brief Gets the view projection matrix of the camera.
 		 * @return The view projection matrix of the camera.
 		 */
-		const Matrix4<f32>& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
+		const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
 
 	private:
 		f32 m_OrthographicSize = 10.0f;		/**< The orthographic size of the camera. */
@@ -134,15 +134,15 @@ namespace SW {
 		f32 m_AspectRatio = 0.0f;	/**< The aspect ratio of the camera. */
 		f32 m_ZoomLevel = 1.0f;		/**< The zoom level of the camera. */
 
-		Vector3<f32> m_CameraPosition = { 0.0f, 0.0f, 0.0f };	/**< The position of the camera. */
+		glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };	/**< The position of the camera. */
 		f32 m_CameraRotation = 0.0f;							/**< The rotation of the camera. */
 
 		f32 m_CameraMoveSpeed = 20.0f;		/**< The speed at which the camera moves. */
 		f32 m_CameraRotationSpeed = 30.0f;	/**< The speed at which the camera rotates. */
 
-		Matrix4<f32> m_ProjectionMatrix;		/**< The projection matrix of the camera. */
-		Matrix4<f32> m_ViewMatrix;				/**< The view matrix of the camera. */
-		Matrix4<f32> m_ViewProjectionMatrix;	/**< The view projection matrix of the camera. */
+		glm::mat4 m_ProjectionMatrix;		/**< The projection matrix of the camera. */
+		glm::mat4 m_ViewMatrix;				/**< The view matrix of the camera. */
+		glm::mat4 m_ViewProjectionMatrix;	/**< The view projection matrix of the camera. */
 
 		/**
 		 * @brief Recalculates the view matrix based on the camera's position and rotation.
