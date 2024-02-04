@@ -7,8 +7,12 @@ project "Engine"
     files {
         "src/**.hpp",
         "src/**.cpp",
+
         "vendor/ImGui/backends/imgui_impl_glfw.cpp",
         "vendor/ImGui/backends/imgui_impl_opengl3.cpp",
+    
+        "vendor/ImGuizmo/ImGuizmo.h",
+        "vendor/ImGuizmo/ImGuizmo.cpp",
     }
 
     pchheader "pch.hpp"

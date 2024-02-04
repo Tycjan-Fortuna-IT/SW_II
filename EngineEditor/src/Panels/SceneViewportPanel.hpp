@@ -96,6 +96,8 @@ namespace SW {
 		Vector2<f32> m_ViewportBoundsMin = { 0.f };		/** @brief The minimum bounds of the viewport. */
 		Vector2<f32> m_ViewportBoundsMax = { 0.f };		/** @brief The maximum bounds of the viewport. */
 
+		int m_GizmoType = -1;
+
 		bool OnMouseButtonPressed(MouseCode code);
 	};
 

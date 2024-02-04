@@ -41,6 +41,9 @@ Dependencies = {
         IncludeDir = "%{wks.location}/Engine/vendor/box2d/include",
         LinkAs = "Box2D",
     },
+    IMGUIZMO = {
+        IncludeDir = "%{wks.location}/Engine/vendor/ImGuizmo",
+    },
 }
 
 function IncludeEngineDependencies(additional)

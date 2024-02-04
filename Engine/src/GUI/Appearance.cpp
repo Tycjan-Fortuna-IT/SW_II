@@ -1,6 +1,7 @@
 ﻿#include "Appearance.hpp"
 
 #include <icons/MaterialDesign.inl>
+#include <ImGuizmo.h>
 
 namespace SW::GUI {
 
@@ -137,6 +138,25 @@ namespace SW::GUI {
 		c[ImGuiCol_NavWindowingDimBg] = ImVec4(colors.NavWindowingDimBackground.x, colors.NavWindowingDimBackground.y, colors.NavWindowingDimBackground.z, colors.NavWindowingDimBackground.w);
 
 		c[ImGuiCol_ModalWindowDimBg] = ImVec4(colors.ModalWindowDimBackground.x, colors.ModalWindowDimBackground.y, colors.ModalWindowDimBackground.z, colors.ModalWindowDimBackground.w);
+	
+		ImGuizmo::Style* imguizmoStyle = &ImGuizmo::GetStyle();
+		ImVec4* gc = imguizmoStyle->Colors;
+
+		imguizmoStyle->TranslationLineThickness = 3.0f;
+		imguizmoStyle->TranslationLineArrowSize = 10.0f;
+		imguizmoStyle->RotationLineThickness = 3.0f;
+		imguizmoStyle->RotationOuterLineThickness = 5.0f;
+		imguizmoStyle->ScaleLineThickness = 3.0f;
+		imguizmoStyle->ScaleLineCircleSize = 8.0f;
+		imguizmoStyle->HatchedAxisLineThickness = 0.0f;
+		imguizmoStyle->CenterCircleSize = 6.0f;
+
+		gc[ImGuizmo::DIRECTION_X] = ImVec4(0.858f, 0.243f, 0.113f, 0.929f);
+		gc[ImGuizmo::DIRECTION_Y] = ImVec4(0.375f, 0.825f, 0.372f, 0.929f);
+		gc[ImGuizmo::DIRECTION_Z] = ImVec4(0.227f, 0.478f, 0.972f, 0.929f);
+		gc[ImGuizmo::PLANE_X] = gc[ImGuizmo::DIRECTION_X];
+		gc[ImGuizmo::PLANE_Y] = gc[ImGuizmo::DIRECTION_Y];
+		gc[ImGuizmo::PLANE_Z] = gc[ImGuizmo::DIRECTION_Z];
 	}
 
 	void Appearance::ApplyFonts(const FontSpecification& spec)

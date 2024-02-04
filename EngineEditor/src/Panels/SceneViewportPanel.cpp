@@ -1,5 +1,7 @@
 #include "SceneViewportPanel.hpp"
 
+#include <ImGuizmo.h>
+
 #include "Core/Utils/Utils.hpp"
 #include "GUI/Icons.hpp"
 #include "Core/AssetManager.hpp"
@@ -131,6 +133,46 @@ namespace SW {
 			ImGui::Image(textureID, currentViewportSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
 			RenderSceneToolbar();
+
+			// if (SelectionManager::IsSelected()) {
+			// 	ImGuizmo::SetID(1);
+			// 	ImGuizmo::SetOrthographic(false);
+			// 	ImGuizmo::SetDrawlist();
+			// 	ImGuizmo::SetRect(m_ViewportBoundsMin.x, m_ViewportBoundsMin.y, m_ViewportBoundsMax.x - m_ViewportBoundsMin.x, m_ViewportBoundsMax.y - m_ViewportBoundsMin.y);
+			// 	ImGuizmo::Enable(true);
+
+			// 	ImGuiIO& io = ImGui::GetIO();
+			// 	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
+			// 	Matrix4<f32> cameraView = m_SceneCamera->GetViewMatrix();
+			// 	Matrix4<f32> cameraProjection = m_SceneCamera->GetProjectionMatrix();
+
+			// 	m_GizmoType = ImGuizmo::OPERATION::TRANSLATE; // todo remove
+
+			// 	Entity selected = m_ActiveScene->GetEntityByID(SelectionManager::GetSelectionID());
+
+			// 	TransformComponent& tc = selected.GetComponent<TransformComponent>();
+
+			// 	Matrix4<f32> transform = tc.GetTransform();
+
+			// 	const bool snap = ImGui::IsKeyDown(ImGuiKey_LeftCtrl);
+			// 	f32 snapValue = 0.5f;
+			// 	if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
+			// 		snapValue = 45.0f;
+
+			// 	f32 snapValues[3] = { snapValue, snapValue, snapValue };
+			// 	f32 bounds[6] = { -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f };
+
+			// 	ImGuizmo::Manipulate(
+			// 		cameraView.ValuePtrConst(), cameraProjection.ValuePtrConst(),
+			// 		static_cast<ImGuizmo::OPERATION>(m_GizmoType), ImGuizmo::LOCAL,
+			// 		transform.ValuePtr()
+			// 	);
+
+			// 	if (ImGuizmo::IsUsing()) {
+
+			// 	}
+			// }
 
 			OnEnd();
 		}
