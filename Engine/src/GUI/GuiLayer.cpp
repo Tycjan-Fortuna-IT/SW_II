@@ -1,6 +1,7 @@
 #include "GuiLayer.hpp"
 
 #include <GLFW/glfw3.h>
+#include <ImGuizmo.h>
 
 #include "GUI/ImGuiBuild.hpp"
 #include "Core/Application.hpp"
@@ -49,6 +50,7 @@ namespace SW {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+		ImGuizmo::BeginFrame();
 	}
 
 	void GuiLayer::End() const

@@ -312,7 +312,7 @@ namespace SW {
 				break;
 		}
 
-		return true;
+		return false;
 	}
 
 	void EditorLayer::OpenProject()

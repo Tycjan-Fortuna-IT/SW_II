@@ -96,9 +96,12 @@ namespace SW {
 		glm::vec2 m_ViewportBoundsMin = glm::vec2(0.f);		/** @brief The minimum bounds of the viewport. */
 		glm::vec2 m_ViewportBoundsMax = glm::vec2(0.f);		/** @brief The maximum bounds of the viewport. */
 
+		glm::mat4 m_CubeViewMatrix = glm::mat4(1.0f);
+
 		int m_GizmoType = -1;
 
 		bool OnMouseButtonPressed(MouseCode code);
+		bool OnKeyPressed(KeyCode code);
 	};
 
 }

@@ -142,14 +142,14 @@ namespace SW::GUI {
 		ImGuizmo::Style* imguizmoStyle = &ImGuizmo::GetStyle();
 		ImVec4* gc = imguizmoStyle->Colors;
 
-		imguizmoStyle->TranslationLineThickness = 3.0f;
+		/*imguizmoStyle->TranslationLineThickness = 3.0f;
 		imguizmoStyle->TranslationLineArrowSize = 10.0f;
 		imguizmoStyle->RotationLineThickness = 3.0f;
 		imguizmoStyle->RotationOuterLineThickness = 5.0f;
 		imguizmoStyle->ScaleLineThickness = 3.0f;
 		imguizmoStyle->ScaleLineCircleSize = 8.0f;
 		imguizmoStyle->HatchedAxisLineThickness = 0.0f;
-		imguizmoStyle->CenterCircleSize = 6.0f;
+		imguizmoStyle->CenterCircleSize = 6.0f;*/
 
 		gc[ImGuizmo::DIRECTION_X] = ImVec4(0.858f, 0.243f, 0.113f, 0.929f);
 		gc[ImGuizmo::DIRECTION_Y] = ImVec4(0.375f, 0.825f, 0.372f, 0.929f);

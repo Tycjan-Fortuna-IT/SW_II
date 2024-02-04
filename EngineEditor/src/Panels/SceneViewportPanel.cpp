@@ -47,6 +47,12 @@ namespace SW {
 			return OnMouseButtonPressed(code);
 		});
 
+		EventSystem::Register(EVENT_CODE_KEY_PRESSED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+			KeyCode code = (KeyCode)event.Payload.u16[0];
+
+			return OnKeyPressed(code);
+		});
+
 		const FramebufferSpecification spec = { 
 			.Width = 1280,
 			.Height = 720,
@@ -135,45 +141,53 @@ namespace SW {
 
 			RenderSceneToolbar();
 
-			// if (SelectionManager::IsSelected()) {
-			// 	ImGuizmo::SetID(1);
-			// 	ImGuizmo::SetOrthographic(false);
-			// 	ImGuizmo::SetDrawlist();
-			// 	ImGuizmo::SetRect(m_ViewportBoundsMin.x, m_ViewportBoundsMin.y, m_ViewportBoundsMax.x - m_ViewportBoundsMin.x, m_ViewportBoundsMax.y - m_ViewportBoundsMin.y);
-			// 	ImGuizmo::Enable(true);
+			glm::mat4 cameraProjection = m_SceneCamera->GetProjectionMatrix();
+			glm::mat4 cameraView = m_SceneCamera->GetViewMatrix();
+			
+			if (SelectionManager::IsSelected() && m_ActiveScene->GetCurrentState() != SceneState::Play) {
+				Entity selectedEntity = m_ActiveScene->GetEntityByID(SelectionManager::GetSelectionID());
 
-			// 	ImGuiIO& io = ImGui::GetIO();
-			// 	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+				ImGuizmo::SetOrthographic(true);
+				ImGuizmo::SetDrawlist();
 
-			// 	glm::mat4 cameraView = m_SceneCamera->GetViewMatrix();
-			// 	glm::mat4 cameraProjection = m_SceneCamera->GetProjectionMatrix();
+				ImGuizmo::SetRect(m_ViewportBoundsMin.x, m_ViewportBoundsMin.y, m_ViewportBoundsMax.x - m_ViewportBoundsMin.x, m_ViewportBoundsMax.y - m_ViewportBoundsMin.y);
 
-			// 	m_GizmoType = ImGuizmo::OPERATION::TRANSLATE; // todo remove
+				TransformComponent& tc = selectedEntity.GetComponent<TransformComponent>();
+				glm::mat4 transform = tc.GetTransform();
 
-			// 	Entity selected = m_ActiveScene->GetEntityByID(SelectionManager::GetSelectionID());
+				// Snapping
+				const bool snap = Input::IsKeyPressed(KeyCode::LeftControl);
+				f32 snapValue = 0.5f; // Snap to 0.5m for translation/scale
+				
+				// Snap to 45 degrees for rotation
+				if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
+					snapValue = 45.0f;
 
-			// 	TransformComponent& tc = selected.GetComponent<TransformComponent>();
+				f32 snapValues[3] = { snapValue, snapValue, snapValue };
 
-			// 	glm::mat4 transform = tc.GetTransform();
+				ImGuizmo::Manipulate(
+					glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+					(ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
+					nullptr, snap ? snapValues : nullptr
+				);
 
-			// 	const bool snap = ImGui::IsKeyDown(ImGuiKey_LeftCtrl);
-			// 	f32 snapValue = 0.5f;
-			// 	if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
-			// 		snapValue = 45.0f;
+				if (ImGuizmo::IsUsing()) {
+					glm::vec3 translation, rotation, scale;
+					Math::DecomposeTransform(transform, translation, rotation, scale);
 
-			// 	f32 snapValues[3] = { snapValue, snapValue, snapValue };
-			// 	f32 bounds[6] = { -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f };
+					glm::vec3 deltaRotation = rotation - tc.Rotation;
+					tc.Position = translation;
+					tc.Rotation += deltaRotation;
+					tc.Scale = scale;
+				}
 
-			// 	ImGuizmo::Manipulate(
-			// 		cameraView.ValuePtrConst(), cameraProjection.ValuePtrConst(),
-			// 		static_cast<ImGuizmo::OPERATION>(m_GizmoType), ImGuizmo::LOCAL,
-			// 		transform.ValuePtr()
-			// 	);
+				ImGuizmo::ViewManipulate(
+					glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+					ImGuizmo::OPERATION::ROTATE_SCREEN, ImGuizmo::MODE::WORLD, glm::value_ptr(m_CubeViewMatrix), 8.0f,
+					ImVec2(m_ViewportBoundsMax.x - 128, m_ViewportBoundsMin.y), ImVec2(128, 128), 0x10101010
+				);
+			}
 
-			// 	if (ImGuizmo::IsUsing()) {
-
-			// 	}
-			// }
 
 			OnEnd();
 		}
@@ -243,6 +257,15 @@ namespace SW {
 		if (!m_IsViewportFocused)
 			return false;
 
+		if (code == MouseCode::ButtonRight) {
+			SelectionManager::Deselect();
+
+			return false;
+		}
+
+		if (code != MouseCode::ButtonLeft)
+			return false;
+
 		f32 mouseX = ImGui::GetMousePos().x;
 		f32 mouseY = ImGui::GetMousePos().y;
 		
@@ -263,9 +286,39 @@ namespace SW {
 				const IDComponent& idc = m_ActiveScene->GetRegistry().GetRegistryHandle().get<IDComponent>((entt::entity)pickedID);
 				
 				SelectionManager::SelectByID(idc.ID);
+			} else if (ImGuizmo::IsUsing()) {
+				SelectionManager::Deselect();
 			}
 		}
 		
+		return false;
+	}
+
+	bool SceneViewportPanel::OnKeyPressed(KeyCode code)
+	{
+		switch (code) {
+			case KeyCode::U:
+			{
+				if (!ImGuizmo::IsUsing())
+					m_GizmoType = -1;
+				break;
+			}
+			case KeyCode::I:
+			{
+				if (!ImGuizmo::IsUsing())
+					m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+				break;
+			}
+			case KeyCode::O:
+			{
+				if (!ImGuizmo::IsUsing())
+					m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+				break;
+			}
+			default:
+				break;
+		}
+
 		return false;
 	}
 
