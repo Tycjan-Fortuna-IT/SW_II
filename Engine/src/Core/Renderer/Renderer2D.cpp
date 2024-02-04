@@ -19,6 +19,8 @@ namespace SW {
 
 		f32 TexIndex;
 		f32 TilingFactor;
+
+		int EntityID;
 	};
 
 	struct LineVertex final
@@ -75,7 +77,8 @@ namespace SW {
 			{ ShaderDataType::Float4, "a_Color" },
 			{ ShaderDataType::Float2, "a_TexCoord" },
 			{ ShaderDataType::Float, "a_TexIndex" },
-			{ ShaderDataType::Float, "a_TilingFactor" }
+			{ ShaderDataType::Float, "a_TilingFactor" },
+			{ ShaderDataType::Int, "a_EntityID" }
 		});
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
 
@@ -219,7 +222,7 @@ namespace SW {
 		StartBatch();
 	}
 
-	void Renderer2D::DrawQuad(const Matrix4<f32>& transform, const SpriteComponent& sprite)
+	void Renderer2D::DrawQuad(const Matrix4<f32>& transform, const SpriteComponent& sprite, int entityID)
 	{
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 			FlushAndReset();
@@ -251,6 +254,7 @@ namespace SW {
 			s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = sprite.TilingFactor;
+			s_Data.QuadVertexBufferPtr->EntityID = entityID;
 			s_Data.QuadVertexBufferPtr++;
 		}
 

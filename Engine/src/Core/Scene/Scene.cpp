@@ -125,7 +125,7 @@ namespace SW {
     void Scene::OnUpdateEditor(Timestep dt, const SceneCamera& camera)
     {
 		for (auto&& [handle, tc, sc] : m_Registry.GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
-			Renderer2D::DrawQuad(tc.GetTransform(), sc);
+			Renderer2D::DrawQuad(tc.GetTransform(), sc, (int)handle);
 		}
 	}
 
@@ -159,7 +159,7 @@ namespace SW {
 #pragma endregion
 
 		for (auto&& [entity, tc, sc] : m_Registry.GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
-			Renderer2D::DrawQuad(tc.GetTransform(), sc);
+			Renderer2D::DrawQuad(tc.GetTransform(), sc, (int)entity);
 		}
 	}
 

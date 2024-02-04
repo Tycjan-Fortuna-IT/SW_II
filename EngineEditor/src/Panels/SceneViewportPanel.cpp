@@ -5,6 +5,7 @@
 #include "Core/AssetManager.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Editor/EditorSettings.hpp"
+#include "Managers/SelectionManager.hpp"
 
 namespace SW {
 
@@ -37,10 +38,16 @@ namespace SW {
 			return false;
 		});
 
+		EventSystem::Register(EVENT_CODE_MOUSE_BUTTON_PRESSED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+			MouseCode code = (MouseCode)event.Payload.u16[0];
+
+			return OnMouseButtonPressed(code);
+		});
+
 		const FramebufferSpecification spec = { 
 			.Width = 1280,
 			.Height = 720,
-			.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth }
+			.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth }
 		};
 
 		m_Framebuffer = new Framebuffer(spec);
@@ -79,6 +86,8 @@ namespace SW {
 		m_Framebuffer->Bind();
 
 		m_Framebuffer->Clear();
+
+		m_Framebuffer->ClearAttachment(1, -1);
 
 		if (m_ActiveScene->BeginRendering(m_SceneCamera)) {
 			m_ActiveScene->OnUpdate(dt, *m_SceneCamera);
@@ -129,7 +138,13 @@ namespace SW {
 
 	void SceneViewportPanel::RenderSceneToolbar()
 	{
-		ImVec2 windowPosition = ImGui::GetWindowPos();
+		const ImVec2 windowPosition = ImGui::GetWindowPos();
+		const ImVec2 viewportMinRegion = ImGui::GetWindowContentRegionMin();
+		const ImVec2 viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+
+		m_ViewportBoundsMin = { viewportMinRegion.x + windowPosition.x, viewportMinRegion.y + windowPosition.y };
+		m_ViewportBoundsMax = { viewportMaxRegion.x + windowPosition.x, viewportMaxRegion.y + windowPosition.y };
+
 		ImVec2 windowSize = ImGui::GetWindowSize();
 
 		ImGui::SetNextWindowPos(
@@ -137,7 +152,7 @@ namespace SW {
 		);
 		ImGui::SetNextWindowSize({ 48.f, 48.f });
 		ImGui::SetNextWindowBgAlpha(0.0f);
-		
+
 		bool isOpen = true;
 
 		ImGui::Begin("##scene_toolbar", &isOpen, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoDecoration);
@@ -178,6 +193,37 @@ namespace SW {
 	void SceneViewportPanel::RenderGizmoToolbar()
 	{
 
+	}
+
+	bool SceneViewportPanel::OnMouseButtonPressed(MouseCode code)
+	{
+		if (!m_IsViewportFocused)
+			return false;
+
+		f32 mouseX = ImGui::GetMousePos().x;
+		f32 mouseY = ImGui::GetMousePos().y;
+		
+		mouseX -= m_ViewportBoundsMin.x;
+		mouseY -= m_ViewportBoundsMin.y;
+
+		const Vector2<f32> viewportSize = m_ViewportBoundsMax - m_ViewportBoundsMin;
+
+		mouseY = viewportSize.y - mouseY;
+
+		if (
+			mouseX >= 0 && mouseY >= 0 &&
+			mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y
+		) {
+			int pickedID = m_Framebuffer->ReadPixel(1, (int)mouseX, (int)mouseY);
+			
+			if (pickedID != -1) {
+				const IDComponent& idc = m_ActiveScene->GetRegistry().GetRegistryHandle().get<IDComponent>((entt::entity)pickedID);
+				
+				SelectionManager::SelectByID(idc.ID);
+			}
+		}
+		
+		return false;
 	}
 
 }

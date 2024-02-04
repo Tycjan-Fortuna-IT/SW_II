@@ -4,7 +4,7 @@ namespace SW {
 
 	u64 SelectionManager::s_SelectedID = NOT_SELECTED;
 
-	void SelectionManager::Select(u64 id)
+	void SelectionManager::SelectByID(u64 id)
 	{
 		if (s_SelectedID != NOT_SELECTED)
 			Deselect();

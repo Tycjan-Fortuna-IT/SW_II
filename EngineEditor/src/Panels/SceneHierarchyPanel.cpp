@@ -139,7 +139,7 @@ namespace SW {
 			if (selected) {
 				SelectionManager::Deselect();
 			} else {
-				SelectionManager::Select(idc.ID);
+				SelectionManager::SelectByID(idc.ID);
 			}
 		}
 

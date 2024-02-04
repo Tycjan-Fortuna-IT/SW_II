@@ -98,8 +98,9 @@ namespace SW {
 		 * @brief Draws a quad with the specified transformation matrix and sprite component.
 		 * @param transform The transformation matrix of the quad.
 		 * @param sprite The sprite component of the quad.
+		 * @param entityID The ID of the entity.
 		 */
-		static void DrawQuad(const Matrix4<f32>& transform, const SpriteComponent& sprite);
+		static void DrawQuad(const Matrix4<f32>& transform, const SpriteComponent& sprite, int entityID);
 
 		/**
 		 * @brief Draws a line with the specified start and end points and color.
