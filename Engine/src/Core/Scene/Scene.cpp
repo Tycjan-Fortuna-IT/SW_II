@@ -263,10 +263,11 @@ namespace SW {
 		b2FixtureDef fixtureDef;
 		fixtureDef.shape = &boxShape;
 		fixtureDef.userData.pointer = static_cast<u32>(entity);
-		fixtureDef.density = 1.f;
-		fixtureDef.friction = 0.5f;
-		fixtureDef.restitution = 0.f;
-		fixtureDef.restitutionThreshold = 0.5f;
+		fixtureDef.density = rbc.Density;
+		fixtureDef.friction = rbc.Friction;
+		fixtureDef.restitution = rbc.Restitution;
+		fixtureDef.restitutionThreshold = rbc.RestitutionThreshold;
+		fixtureDef.isSensor = rbc.IsSensor;
 
 		b2Body* body = static_cast<b2Body*>(rbc.Handle);
 		b2Fixture* fixture = body->CreateFixture(&fixtureDef);

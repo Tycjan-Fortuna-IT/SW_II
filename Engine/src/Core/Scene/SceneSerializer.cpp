@@ -175,7 +175,12 @@ namespace SW {
 				output << YAML::BeginMap;
 				output << YAML::Key << "Type" << YAML::Value << (int)rbc.Type;
 				output << YAML::Key << "GravityScale" << YAML::Value << rbc.GravityScale;
+				output << YAML::Key << "Density" << YAML::Value << rbc.Density;
+				output << YAML::Key << "Friction" << YAML::Value << rbc.Friction;
+				output << YAML::Key << "Restitution" << YAML::Value << rbc.Restitution;
+				output << YAML::Key << "RestitutionThreshold" << YAML::Value << rbc.RestitutionThreshold;
 				output << YAML::Key << "AllowSleep" << YAML::Value << rbc.AllowSleep;
+				output << YAML::Key << "IsSensor" << YAML::Value << rbc.IsSensor;
 				output << YAML::EndMap;
 			}
 
@@ -262,7 +267,12 @@ namespace SW {
 
 				rbc.Type = (PhysicBodyType)rigidBody2DComponent["Type"].as<int>();
 				rbc.GravityScale = rigidBody2DComponent["GravityScale"].as<f32>();
+				rbc.Density = rigidBody2DComponent["Density"].as<f32>();
+				rbc.Friction = rigidBody2DComponent["Friction"].as<f32>();
+				rbc.Restitution = rigidBody2DComponent["Restitution"].as<f32>();
+				rbc.RestitutionThreshold = rigidBody2DComponent["RestitutionThreshold"].as<f32>();
 				rbc.AllowSleep = rigidBody2DComponent["AllowSleep"].as<bool>();
+				rbc.IsSensor = rigidBody2DComponent["IsSensor"].as<bool>();
 			}
 
 			YAML::Node boxCollider2DComponent = entity["Entity"]["BoxCollider2DComponent"];

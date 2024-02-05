@@ -1,8 +1,8 @@
 /**
  * @file Components.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.1
- * @date 2024-02-01
+ * @version 0.1.2
+ * @date 2024-02-05
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -151,7 +151,13 @@ namespace SW {
 
 		f32 GravityScale = 1.0f;	/**< Scale the gravity applied to this body. */
 
+		f32 Density = 1.f;			/**< The density of the rigid body [kg/m^2]. */
+		f32 Friction = 0.5f;		/**< The friction coefficient [0 - 1] range. */
+		f32 Restitution = 0.f;				/**< The restitution (elasticity) [0 - 1] range. */
+		f32 RestitutionThreshold = 0.5f;	/**< Restitution velocity threshold, usually in [m/s] (above this speed will bounce). */
+
 		bool AllowSleep = true;		/**< Set this flag to false if this body should never fall asleep. */
+		bool IsSensor = false;      /**< A sensor shape collects contact information but never generates a collision */
 	};
 
 	struct BoxCollider2DComponent final
