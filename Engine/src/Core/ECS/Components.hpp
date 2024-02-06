@@ -8,9 +8,6 @@
  */
 #pragma once
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/quaternion.hpp>
-
 #include "Core/Utils/Random.hpp"
 #include "Core/Scene/SceneCamera.hpp"
 #include "Core/OpenGL/Texture2D.hpp"

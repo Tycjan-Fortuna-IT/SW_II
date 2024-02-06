@@ -8,8 +8,6 @@
  */
 #pragma once
 
-#include <glm/gtc/type_ptr.hpp>
-
 #include "Core/OpenGL/Texture2D.hpp"
 #include "Colors.hpp"
 #include "Core/Utils/Utils.hpp"

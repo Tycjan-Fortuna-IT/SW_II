@@ -38,9 +38,11 @@ namespace SW {
 		/**
 		 * @brief Gets mouse position.
 		 * 
-		 * @return std::pair<f32, f32> Mouse position.
+		 * @return Mouse position.
 		 */
-		static std::pair<f32, f32> GetMousePosition();
+		static glm::vec2 GetMousePosition();
+
+		static void SetMousePosition(const glm::vec2& position);
 	};
 
 }

@@ -8,10 +8,7 @@
  */
 #pragma once
 
-#include "Matrix4.hpp"
-
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/matrix_decompose.hpp>
+#include "Core/Math/Matrix4.hpp"
 
 #undef near
 #undef far
@@ -37,7 +34,7 @@ namespace SW {
 		 * @param degrees The vector of degrees to be converted.
 		 * @return The vector of radians.
 		 */
-		inline Vector3<f32> ToRadians(const Vector3<f32> degrees)
+		static Vector3<f32> ToRadians(const Vector3<f32> degrees)
 		{
 			return { ToRadians(degrees.x), ToRadians(degrees.y), ToRadians(degrees.z) };
 		}
@@ -59,7 +56,7 @@ namespace SW {
 		 * @param radians The vector of radians to convert.
 		 * @return The vector of degrees.
 		 */
-		inline Vector3<f32> ToDegrees(const Vector3<f32> radians)
+		static Vector3<f32> ToDegrees(const Vector3<f32> radians)
 		{
 			return { ToDegrees(radians.x), ToDegrees(radians.y), ToDegrees(radians.z) };
 		}
@@ -82,7 +79,7 @@ namespace SW {
 		 */
 		template <typename T>
     		requires std::is_arithmetic_v<T>
-		inline Matrix4<T> OrthogonalProjection(T left, T right, T bottom, T top, T near, T far)
+		static Matrix4<T> OrthogonalProjection(T left, T right, T bottom, T top, T near, T far)
 		{
 			Matrix4<T> result = { static_cast<T>(1) };
 
@@ -104,7 +101,7 @@ namespace SW {
 		 */
 		template <typename T>
 			requires std::is_arithmetic_v<T>
-		inline Matrix4<T> Inverse(const Matrix4<T>& matrix)
+		static Matrix4<T> Inverse(const Matrix4<T>& matrix)
 		{
 			Matrix4<T> result;
 
@@ -247,7 +244,7 @@ namespace SW {
 		 */
 		template <typename T>
 			requires std::is_arithmetic_v<T>
-		inline Matrix4<T> Scale(const Matrix4<T>& matrix, const Vector3<f32> vector)
+		static Matrix4<T> Scale(const Matrix4<T>& matrix, const Vector3<f32> vector)
 		{
 			Matrix4<T> result = matrix;
 
@@ -260,7 +257,7 @@ namespace SW {
 
 		template <typename T>
 			requires std::is_arithmetic_v<T>
-		inline Matrix4<T> Translate(const Matrix4<T>& matrix, const Vector3<f32> vector)
+		static Matrix4<T> Translate(const Matrix4<T>& matrix, const Vector3<f32> vector)
 		{
 			Matrix4<T> result = matrix;
 
@@ -273,7 +270,7 @@ namespace SW {
 
 		template <typename T>
 			requires std::is_arithmetic_v<T>
-		inline Matrix4<T> RotateZ(const Matrix4<T>& matrix, f32 radians)
+		static Matrix4<T> RotateZ(const Matrix4<T>& matrix, f32 radians)
 		{
 			Matrix4<T> result = matrix;
 
@@ -288,11 +285,11 @@ namespace SW {
 			return result;
 		}
 
-		inline bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale)
+		static bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale)
 		{
 			// From glm::decompose in matrix_decompose.inl
 			using namespace glm;
-			using T = float;
+			using T = f32;
 
 			mat4 LocalMatrix(transform);
 
@@ -340,6 +337,59 @@ namespace SW {
 			}
 
 			return true;
+		}
+
+		/**
+		 * Smoothly interpolates between the current value and the target value over time using the SmoothDamp algorithm.
+		 * 
+		 * @tparam T The type of the values being interpolated.
+		 * @param current The current value.
+		 * @param target The target value.
+		 * @param currentVelocity The current velocity of the interpolation.
+		 * @param smoothTime The time taken to reach the target value.
+		 * @param maxSpeed The maximum speed at which the value can change.
+		 * @param deltaTime The time elapsed since the last update.
+		 * @return The interpolated value.
+		 */
+		template<typename T>
+		static T SmoothDamp(const T& current, const T& target, T& currentVelocity, f32 smoothTime, f32 maxSpeed, f32 deltaTime)
+		{
+			// Based on Game Programming Gems 4 Chapter 1.10
+			smoothTime = glm::max(0.0001F, smoothTime);
+			const f32 omega = 2.0f / smoothTime;
+
+			const f32 x = omega * deltaTime;
+			const f32 exp = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
+
+			T change = current - target;
+			const T originalTo = target;
+
+			// Clamp maximum speed
+			const f32 maxChange = maxSpeed * smoothTime;
+
+			const f32 maxChangeSq = maxChange * maxChange;
+			const f32 sqDist = glm::length2(change);
+			if (sqDist > maxChangeSq) {
+				const f32 mag = glm::sqrt(sqDist);
+				change = change / mag * maxChange;
+			}
+
+			const T newTarget = current - change;
+			const T temp = (currentVelocity + omega * change) * deltaTime;
+
+			currentVelocity = (currentVelocity - omega * temp) * exp;
+
+			T output = newTarget + (change + temp) * exp;
+
+			// Prevent overshooting
+			const T origMinusCurrent = originalTo - current;
+			const T outMinusOrig = output - originalTo;
+
+			if (glm::compAdd(origMinusCurrent * outMinusOrig) > 0.0f) {
+				output = originalTo;
+				currentVelocity = (output - originalTo) / deltaTime;
+			}
+			return output;
 		}
     }
 

@@ -28,7 +28,7 @@ namespace SW {
             SW_ERROR("Texture2D format not yet supported!");
         }
 
-        glCreateTextures(GL_TEXTURE_2D, 1, &m_Handle);
+		glCreateTextures(GL_TEXTURE_2D, 1, &m_Handle);
 		glTextureStorage2D(m_Handle, 1, internalFormat, m_Width, m_Height);
 
 		glTextureParameteri(m_Handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);

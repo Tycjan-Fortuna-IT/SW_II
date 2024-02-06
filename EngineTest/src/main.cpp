@@ -7,6 +7,17 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include <doctest.h>
 
+#define GLM_ENABLE_EXPERIMENTAL	// TODO: remove this
+#include <glm/glm.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/norm.hpp>
+#include <glm/gtx/component_wise.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <Core/Defines.hpp>
 #include <Core/Debug/LogSystem.hpp>
 
