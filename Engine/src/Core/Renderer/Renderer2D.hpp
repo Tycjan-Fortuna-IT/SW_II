@@ -19,6 +19,7 @@ namespace SW {
 
 	class Shader;
 	class VertexArray;
+	class EditorCamera;
 
 	/**
 	 * @brief The Renderer2DStatistics struct contains statistics of the Renderer2D.
@@ -65,7 +66,7 @@ namespace SW {
 		 * @brief Begins a new rendering scene with the specified camera.
 		 * @param camera The camera to be used for rendering the scene.
 		 */
-		static void BeginScene(const SceneCamera& camera);
+		static void BeginScene(EditorCamera* camera);
 
 		/**
 		 * @brief Begins a new rendering scene with the specified camera and transformation matrix.

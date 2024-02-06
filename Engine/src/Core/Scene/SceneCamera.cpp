@@ -1,7 +1,5 @@
 #include "SceneCamera.hpp"
 
-#include <glm/gtc/matrix_transform.hpp>
-
 #include "Core/KeyCode.hpp"
 #include "Core/Utils/Input.hpp"
 

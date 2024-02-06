@@ -12,13 +12,14 @@
 #include "Core/Timestep.hpp"
 #include "Core/Math/Vector2.hpp"
 #include "Core/ECS/EntityRegistry.hpp"
-#include "../ECS/Components.hpp"
+#include "Core/ECS/Components.hpp"
 
 class b2World;
 
 namespace SW {
 
 	class Entity;
+	class EditorCamera;
 	
 	/**
 	 * @brief Represents the state of the scene.
@@ -78,7 +79,7 @@ namespace SW {
 		 * @param camera The camera to be used for rendering.
 		 * @return Whether the scene rendering process can be proceeded.
 		 */
-		bool BeginRendering(SceneCamera* camera);
+		bool BeginRendering(EditorCamera* camera);
 
 		/**
 		 * Ends the rendering process for the scene.
@@ -100,14 +101,14 @@ namespace SW {
 		 * @param dt The timestep since the last update.
 		 * @param camera The camera to use for rendering the scene.
 		 */
-		void OnUpdate(Timestep dt, const SceneCamera& camera);
+		void OnUpdate(Timestep dt);
 
 		/**
 		 * @brief Updates the scene in edit mode with the specified timestep and camera.
 		 * @param dt The timestep since the last update.
 		 * @param camera The camera to use for rendering the scene.
 		 */
-		void OnUpdateEditor(Timestep dt, const SceneCamera& camera);
+		void OnUpdateEditor(Timestep dt);
 
 		/**
 		 * @brief Updates the scene in runtime mode with the specified timestep.

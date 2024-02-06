@@ -1,6 +1,7 @@
 #include "SceneViewportPanel.hpp"
 
 #include <ImGuizmo.h>
+#include <glm/ext/matrix_transform.hpp>
 
 #include "Core/Utils/Utils.hpp"
 #include "GUI/Icons.hpp"
@@ -8,14 +9,13 @@
 #include "Core/ECS/Entity.hpp"
 #include "Core/Editor/EditorSettings.hpp"
 #include "Managers/SelectionManager.hpp"
-#include "glm/ext/matrix_transform.hpp"
 
 namespace SW {
 
 	SceneViewportPanel::SceneViewportPanel(const char* name)
 		: Panel(name, SW_ICON_TERRAIN, true)
 	{
-		EventSystem::Register(EVENT_CODE_MOUSE_WHEEL, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+		/*EventSystem::Register(EVENT_CODE_MOUSE_WHEEL, nullptr, [this](Event event, void* sender, void* listener) -> bool {
 			const f32 xOffset = event.Payload.f32[0];
 			const f32 yOffset = event.Payload.f32[1];
 
@@ -28,7 +28,7 @@ namespace SW {
 			m_SceneCamera->OnMouseScrolled(xOffset, yOffset);
 
 			return false;
-		});
+		});*/
 
 		EventSystem::Register(EVENT_CODE_WINDOW_RESIZED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
 			const i32 width = event.Payload.i32[0];
@@ -36,7 +36,7 @@ namespace SW {
 
 			if (!m_IsViewportFocused) return false;
 
-			m_SceneCamera->OnViewportResize((f32)width, (f32)height);
+			m_EditorCamera->SetViewportSize((f32)width, (f32)height);
 
 			return false;
 		});
@@ -61,14 +61,15 @@ namespace SW {
 
 		m_Framebuffer = new Framebuffer(spec);
 
-		m_SceneCamera = new SceneCamera((f32)(spec.Width / spec.Height));
+		m_EditorCamera = new EditorCamera();
+		m_EditorCamera->SetViewportSize((f32)spec.Width, (f32)spec.Height);
 
 		m_ActiveScene = new Scene();
 	}
 
 	SceneViewportPanel::~SceneViewportPanel()
 	{
-		delete m_SceneCamera;
+		delete m_EditorCamera;
 		delete m_Framebuffer;
 		delete m_ActiveScene;
 		delete m_SceneCopy;
@@ -78,17 +79,61 @@ namespace SW {
 	{
 		FramebufferSpecification spec = m_Framebuffer->GetSpecification();
 
-		if (m_IsViewportFocused)
-			m_SceneCamera->OnUpdate(dt);
-
 		if (
 			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && // if it's a valid size viewport
 			(spec.Width != (u32)m_ViewportSize.x || spec.Height != (u32)m_ViewportSize.y) // if it changed
 		) {
 			m_Framebuffer->Resize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
-			m_SceneCamera->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
+			m_EditorCamera->SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 			m_ActiveScene->OnViewportResize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
 		}
+
+		m_EditorCamera->OnUpdate(dt);
+
+		const glm::vec3& position = m_EditorCamera->GetPosition();
+		const glm::vec2 yawPitch = glm::vec2(m_EditorCamera->GetYaw(), m_EditorCamera->GetPitch());
+		
+		glm::vec3 finalPosition = position;
+		glm::vec2 finalYawPitch = yawPitch;
+
+		if (ImGui::IsMouseDown(ImGuiMouseButton_Right) && m_IsViewportFocused) {
+			ImGui::SetMouseCursor(ImGuiMouseCursor_None);
+			glm::vec2 newMousePosition = Input::GetMousePosition();
+
+			if (!m_UsingEditorCamera) {
+				m_UsingEditorCamera = true;
+				m_LockedMousePosition = newMousePosition;
+			}
+
+			Input::SetMousePosition(m_LockedMousePosition);
+
+			const glm::vec2 change = (newMousePosition - m_LockedMousePosition) * m_MouseSensitivity;
+			finalYawPitch.x += change.x;
+			finalYawPitch.y = glm::clamp(finalYawPitch.y - change.y, -89.9f, 89.9f);
+		} else {
+			m_UsingEditorCamera = false;
+		}
+
+		f32 maxMoveSpeed = m_MaxMoveSpeed * (ImGui::IsKeyDown(ImGuiKey_LeftShift) ? 3.0f : 1.0f);
+		if (ImGui::IsKeyDown(ImGuiKey_W))
+			finalPosition += m_EditorCamera->GetForward() * maxMoveSpeed;
+		else if (ImGui::IsKeyDown(ImGuiKey_S))
+			finalPosition -= m_EditorCamera->GetForward() * maxMoveSpeed;
+		if (ImGui::IsKeyDown(ImGuiKey_D))
+			finalPosition += m_EditorCamera->GetRight() * maxMoveSpeed;
+		else if (ImGui::IsKeyDown(ImGuiKey_A))
+			finalPosition -= m_EditorCamera->GetRight() * maxMoveSpeed;
+		else if (ImGui::IsKeyDown(ImGuiKey_Space))
+			finalPosition += m_EditorCamera->GetUp() * maxMoveSpeed;
+		else if (ImGui::IsKeyDown(ImGuiKey_C))
+			finalPosition -= m_EditorCamera->GetUp() * maxMoveSpeed;
+
+		glm::vec3 dampedPosition = Math::SmoothDamp(position, finalPosition, m_TranslationVelocity, m_TranslationDampening, 10000.0f, dt);
+		glm::vec2 dampedYawPitch = Math::SmoothDamp(yawPitch, finalYawPitch, m_RotationVelocity, m_RotationDampening, 1000.0f, dt);
+		
+		m_EditorCamera->SetPosition(dampedPosition);
+		m_EditorCamera->SetYaw(dampedYawPitch.x);
+		m_EditorCamera->SetPitch(dampedYawPitch.y);
 
 		Renderer2D::ResetStats();
 
@@ -98,8 +143,8 @@ namespace SW {
 
 		m_Framebuffer->ClearAttachment(1, -1);
 
-		if (m_ActiveScene->BeginRendering(m_SceneCamera)) {
-			m_ActiveScene->OnUpdate(dt, *m_SceneCamera);
+		if (m_ActiveScene->BeginRendering(m_EditorCamera)) {
+			m_ActiveScene->OnUpdate(dt);
 
 			if (EditorSettings::Get().ShowPhysicsColliders) {
 			
@@ -141,8 +186,8 @@ namespace SW {
 
 			RenderSceneToolbar();
 
-			glm::mat4 cameraProjection = m_SceneCamera->GetProjectionMatrix();
-			glm::mat4 cameraView = m_SceneCamera->GetViewMatrix();
+			glm::mat4 cameraProjection = m_EditorCamera->GetProjectionMatrix();
+			glm::mat4 cameraView = m_EditorCamera->GetViewMatrix();
 			
 			if (SelectionManager::IsSelected() && m_ActiveScene->GetCurrentState() != SceneState::Play) {
 				Entity selectedEntity = m_ActiveScene->GetEntityByID(SelectionManager::GetSelectionID());
@@ -186,6 +231,15 @@ namespace SW {
 					ImGuizmo::OPERATION::ROTATE_SCREEN, ImGuizmo::MODE::WORLD, glm::value_ptr(m_CubeViewMatrix), 8.0f,
 					ImVec2(m_ViewportBoundsMax.x - 128, m_ViewportBoundsMin.y), ImVec2(128, 128), 0x10101010
 				);
+
+				if (m_IsViewportFocused) {
+					const glm::mat4 inverted = glm::inverse(cameraView);
+					const glm::vec3 direction = -glm::vec3(inverted[2]);
+					f32 yaw = glm::atan(direction.z, direction.x);
+					f32 pitch = glm::asin(direction.y);
+					m_EditorCamera->SetPitch(pitch);
+					m_EditorCamera->SetYaw(yaw);
+				}
 			}
 
 

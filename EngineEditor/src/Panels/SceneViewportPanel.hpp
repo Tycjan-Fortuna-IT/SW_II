@@ -11,6 +11,7 @@
 #include <Engine.hpp>
 
 #include "GUI/Panel.hpp"
+#include "Core/Editor/EditorCamera.hpp"
 
 namespace SW {
 
@@ -81,13 +82,13 @@ namespace SW {
 		 * 
 		 * @return f32 Returns calculated aspect ratio of the scene viewport.
 		 */
-		f32 GetViewportAspectRatio() { return m_SceneCamera->GetAspectRatio(); }
+		f32 GetViewportAspectRatio() { return m_EditorCamera->GetAspectRatio(); }
 
 	private:
 		Scene* m_ActiveScene = nullptr;			/** @brief The active scene (the one that is visible). */
 		Scene* m_SceneCopy = nullptr;
 
-		SceneCamera* m_SceneCamera = nullptr;	/** @brief The current scene camera. */
+		EditorCamera* m_EditorCamera = nullptr; /** @brief The current editor camera. */
 		Framebuffer* m_Framebuffer = nullptr;	/** @brief The current framebuffer. */
 
 		bool m_IsViewportFocused = false;		/** @brief Is the viewport focused. */
@@ -96,9 +97,21 @@ namespace SW {
 		glm::vec2 m_ViewportBoundsMin = glm::vec2(0.f);		/** @brief The minimum bounds of the viewport. */
 		glm::vec2 m_ViewportBoundsMax = glm::vec2(0.f);		/** @brief The maximum bounds of the viewport. */
 
-		glm::mat4 m_CubeViewMatrix = glm::mat4(1.0f);
-
 		int m_GizmoType = -1;
+
+		glm::vec2 m_LockedMousePosition = glm::vec2(0.0f);
+
+		f32 m_MouseSensitivity = 0.06f;
+		f32 m_MaxMoveSpeed = 10.0f;
+		f32 m_TranslationDampening = 0.6f;
+		f32 m_RotationDampening = 0.3f;
+
+		glm::vec3 m_TranslationVelocity = glm::vec3(0.0f);
+		glm::vec2 m_RotationVelocity = glm::vec2(0.0f);
+		glm::mat4 m_CubeViewMatrix = glm::mat4(1.0f);
+		glm::vec2 m_GizmoPosition = glm::vec2(1.0f);
+
+		bool m_UsingEditorCamera = false;
 
 		bool OnMouseButtonPressed(MouseCode code);
 		bool OnKeyPressed(KeyCode code);

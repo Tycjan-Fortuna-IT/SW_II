@@ -8,6 +8,7 @@
 #include "Core/Renderer/Renderer2D.hpp"
 #include "Core/Utils/Random.hpp"
 #include "Core/ECS/Entity.hpp"
+#include "Core/Editor/EditorCamera.hpp"
 
 namespace SW {
 
@@ -59,11 +60,11 @@ namespace SW {
 		m_EntityMap.clear();
     }
 
-	bool Scene::BeginRendering(SceneCamera* camera)
+	bool Scene::BeginRendering(EditorCamera* camera)
 	{
 		switch (m_SceneState) {
 			case SW::SceneState::Edit:
-				Renderer2D::BeginScene(*camera); break;
+				Renderer2D::BeginScene(camera); break;
 			case SW::SceneState::Play: {
 				glm::mat4 cameraTransform;
 				SceneCamera* mainCamera = nullptr;
@@ -114,15 +115,15 @@ namespace SW {
 		delete m_PhysicsWorld2D;
 	}
 
-	void Scene::OnUpdate(Timestep dt, const SceneCamera& camera)
+	void Scene::OnUpdate(Timestep dt)
 	{
 		if (m_SceneState == SceneState::Play)
 			this->OnUpdateRuntime(dt);
 		else
-			this->OnUpdateEditor(dt, camera);
+			this->OnUpdateEditor(dt);
 	}
 
-    void Scene::OnUpdateEditor(Timestep dt, const SceneCamera& camera)
+    void Scene::OnUpdateEditor(Timestep dt)
     {
 		for (auto&& [handle, tc, sc] : m_Registry.GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
 			Renderer2D::DrawQuad(tc.GetTransform(), sc, (int)handle);
