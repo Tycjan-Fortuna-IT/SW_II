@@ -114,19 +114,21 @@ namespace SW {
 			m_UsingEditorCamera = false;
 		}
 
-		f32 maxMoveSpeed = m_MaxMoveSpeed * (ImGui::IsKeyDown(ImGuiKey_LeftShift) ? 3.0f : 1.0f);
-		if (ImGui::IsKeyDown(ImGuiKey_W))
-			finalPosition += m_EditorCamera->GetForward() * maxMoveSpeed;
-		else if (ImGui::IsKeyDown(ImGuiKey_S))
-			finalPosition -= m_EditorCamera->GetForward() * maxMoveSpeed;
-		if (ImGui::IsKeyDown(ImGuiKey_D))
-			finalPosition += m_EditorCamera->GetRight() * maxMoveSpeed;
-		else if (ImGui::IsKeyDown(ImGuiKey_A))
-			finalPosition -= m_EditorCamera->GetRight() * maxMoveSpeed;
-		else if (ImGui::IsKeyDown(ImGuiKey_Space))
-			finalPosition += m_EditorCamera->GetUp() * maxMoveSpeed;
-		else if (ImGui::IsKeyDown(ImGuiKey_C))
-			finalPosition -= m_EditorCamera->GetUp() * maxMoveSpeed;
+		if (m_IsViewportFocused) {
+			f32 maxMoveSpeed = m_MaxMoveSpeed * (ImGui::IsKeyDown(ImGuiKey_LeftShift) ? 3.0f : 1.0f);
+			if (ImGui::IsKeyDown(ImGuiKey_W))
+				finalPosition += m_EditorCamera->GetForward() * maxMoveSpeed;
+			else if (ImGui::IsKeyDown(ImGuiKey_S))
+				finalPosition -= m_EditorCamera->GetForward() * maxMoveSpeed;
+			if (ImGui::IsKeyDown(ImGuiKey_D))
+				finalPosition += m_EditorCamera->GetRight() * maxMoveSpeed;
+			else if (ImGui::IsKeyDown(ImGuiKey_A))
+				finalPosition -= m_EditorCamera->GetRight() * maxMoveSpeed;
+			else if (ImGui::IsKeyDown(ImGuiKey_Space))
+				finalPosition += m_EditorCamera->GetUp() * maxMoveSpeed;
+			else if (ImGui::IsKeyDown(ImGuiKey_C))
+				finalPosition -= m_EditorCamera->GetUp() * maxMoveSpeed;
+		}
 
 		glm::vec3 dampedPosition = Math::SmoothDamp(position, finalPosition, m_TranslationVelocity, m_TranslationDampening, 10000.0f, dt);
 		glm::vec2 dampedYawPitch = Math::SmoothDamp(yawPitch, finalYawPitch, m_RotationVelocity, m_RotationDampening, 1000.0f, dt);
@@ -189,13 +191,13 @@ namespace SW {
 			glm::mat4 cameraProjection = m_EditorCamera->GetProjectionMatrix();
 			glm::mat4 cameraView = m_EditorCamera->GetViewMatrix();
 			
+			ImGuizmo::SetID(1);
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+			ImGuizmo::SetRect(m_ViewportBoundsMin.x, m_ViewportBoundsMin.y, m_ViewportBoundsMax.x - m_ViewportBoundsMin.x, m_ViewportBoundsMax.y - m_ViewportBoundsMin.y);
+
 			if (SelectionManager::IsSelected() && m_ActiveScene->GetCurrentState() != SceneState::Play) {
 				Entity selectedEntity = m_ActiveScene->GetEntityByID(SelectionManager::GetSelectionID());
-
-				ImGuizmo::SetOrthographic(true);
-				ImGuizmo::SetDrawlist();
-
-				ImGuizmo::SetRect(m_ViewportBoundsMin.x, m_ViewportBoundsMin.y, m_ViewportBoundsMax.x - m_ViewportBoundsMin.x, m_ViewportBoundsMax.y - m_ViewportBoundsMin.y);
 
 				TransformComponent& tc = selectedEntity.GetComponent<TransformComponent>();
 				glm::mat4 transform = tc.GetTransform();
@@ -225,23 +227,25 @@ namespace SW {
 					tc.Rotation += deltaRotation;
 					tc.Scale = scale;
 				}
-
-				ImGuizmo::ViewManipulate(
-					glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
-					ImGuizmo::OPERATION::ROTATE_SCREEN, ImGuizmo::MODE::WORLD, glm::value_ptr(m_CubeViewMatrix), 8.0f,
-					ImVec2(m_ViewportBoundsMax.x - 128, m_ViewportBoundsMin.y), ImVec2(128, 128), 0x10101010
-				);
-
-				if (m_IsViewportFocused) {
-					const glm::mat4 inverted = glm::inverse(cameraView);
-					const glm::vec3 direction = -glm::vec3(inverted[2]);
-					f32 yaw = glm::atan(direction.z, direction.x);
-					f32 pitch = glm::asin(direction.y);
-					m_EditorCamera->SetPitch(pitch);
-					m_EditorCamera->SetYaw(yaw);
-				}
 			}
 
+			glm::mat4 finalCameraProjection = m_EditorCamera->GetProjectionMatrix();
+			glm::mat4 finalCameraView = m_EditorCamera->GetViewMatrix();
+
+			ImGuizmo::ViewManipulate(
+				glm::value_ptr(finalCameraView), glm::value_ptr(finalCameraProjection),
+				ImGuizmo::OPERATION::ROTATE_SCREEN, ImGuizmo::MODE::WORLD, glm::value_ptr(m_CubeViewMatrix), 8.0f,
+				ImVec2(m_ViewportBoundsMax.x - 128, m_ViewportBoundsMin.y), ImVec2(128, 128), 0x10101010
+			);
+
+			if (!m_UsingEditorCamera) {
+				const glm::mat4 inverted = glm::inverse(finalCameraView);
+				const glm::vec3 direction = -glm::vec3(inverted[2]);
+				f32 yaw = glm::atan(direction.z, direction.x);
+				f32 pitch = glm::asin(direction.y);
+				m_EditorCamera->SetPitch(pitch);
+				m_EditorCamera->SetYaw(yaw);
+			}
 
 			OnEnd();
 		}
@@ -340,7 +344,7 @@ namespace SW {
 				const IDComponent& idc = m_ActiveScene->GetRegistry().GetRegistryHandle().get<IDComponent>((entt::entity)pickedID);
 				
 				SelectionManager::SelectByID(idc.ID);
-			} else if (ImGuizmo::IsUsing()) {
+			} else if (!ImGuizmo::IsUsing()) {
 				SelectionManager::Deselect();
 			}
 		}
