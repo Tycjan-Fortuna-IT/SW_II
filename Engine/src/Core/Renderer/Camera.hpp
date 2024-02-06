@@ -21,6 +21,9 @@ namespace SW {
 		 */
 		Camera() = default;
 
+		Camera(const glm::mat4& projection)
+			: m_Projection(projection) {}
+
 		/**
 		 * @brief Default destructor.
 		 */
@@ -30,7 +33,7 @@ namespace SW {
 		 * @brief Get the projection matrix of the camera.
 		 * @return The projection matrix.
 		 */
-		const glm::mat4& GetProjection() const { return m_Projection; }
+		const glm::mat4& GetProjectionMatrix() const { return m_Projection; }
 
 	protected:
 		glm::mat4 m_Projection = glm::mat4(1.0f); /** @brief The projection matrix of the camera. */

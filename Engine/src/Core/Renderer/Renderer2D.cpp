@@ -8,6 +8,7 @@
 #include "Core/Math/Math.hpp"
 #include "Core/AssetManager.hpp"
 #include "RendererAPI.hpp"
+#include "Core/Editor/EditorCamera.hpp"
 
 namespace SW {
 
@@ -121,7 +122,7 @@ namespace SW {
 		
 		s_Data.TextureShader = spriteShader;
 		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->UploadUniformIntArray("u_Texture", samplers, s_Data.MaxTextureSlots);
+		s_Data.TextureShader->UploadUniformIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
 
 		s_Data.TextureSlots[0] = AssetManager::GetWhiteTexture();
 
@@ -147,9 +148,9 @@ namespace SW {
 		memset(&s_Data.Stats, 0, sizeof(Renderer2DStatistics));
 	}
 
-	void Renderer2D::BeginScene(const SceneCamera& camera)
+	void Renderer2D::BeginScene(EditorCamera* camera)
 	{
-		const glm::mat4 viewProjection = camera.GetViewProjectionMatrix();
+		const glm::mat4 viewProjection = camera->GetViewProjectionMatrix();
 
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->UploadUniformMat4("u_ViewProjection", viewProjection);
