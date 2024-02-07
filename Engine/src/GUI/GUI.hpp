@@ -338,6 +338,47 @@ namespace SW::GUI {
 	}
 
 	/**
+	 * @brief Creates a toggle button with customizable appearance and behavior.
+	 *
+	 * @param label The label text displayed on the button.
+	 * @param state The current state of the button (true for pressed, false for not pressed).
+	 * @param size The size of the button (width and height). Use {0, 0} for automatic sizing.
+	 * @param alpha The transparency of the button when not pressed (0.0f to 1.0f).
+	 * @param pressedAlpha The transparency of the button when pressed (0.0f to 1.0f).
+	 * @param buttonFlags Flags to customize the button's behavior (e.g., ImGuiButtonFlags_Repeat).
+	 *
+	 * @return true if the button was clicked, false otherwise.
+	 */
+	static bool ToggleButton(
+		const char* label, bool state, ImVec2 size = { 0, 0 }, float alpha = 1.0f,
+		float pressedAlpha = 1.0f, ImGuiButtonFlags buttonFlags = ImGuiButtonFlags_None
+	) {
+		if (state) {
+			ImVec4 color = ImGui::GetStyle().Colors[ImGuiCol_ButtonActive];
+
+			color.w = pressedAlpha;
+			ImGui::PushStyleColor(ImGuiCol_Button, color);
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, color);
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, color);
+		} else {
+			ImVec4 color = ImGui::GetStyle().Colors[ImGuiCol_Button];
+			ImVec4 hoveredColor = ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered];
+			color.w = alpha;
+			hoveredColor.w = pressedAlpha;
+			ImGui::PushStyleColor(ImGuiCol_Button, color);
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoveredColor);
+			color.w = pressedAlpha;
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, color);
+		}
+
+		bool clicked = ImGui::ButtonEx(label, size, buttonFlags);
+
+		ImGui::PopStyleColor(3);
+
+		return clicked;
+	}
+
+	/**
 	 * @brief Displays a nice modifiable 3 sliders for a Vector3.
 	 * 
 	 * @param vec The vector to display.

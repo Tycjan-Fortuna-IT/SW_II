@@ -176,7 +176,9 @@ namespace SW {
 	{
 		GUI::ScopedStyle NoWindowPadding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.f , 0.f });
 
-		if (OnBegin()) {
+		if (OnBegin(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse)) {
+			ImVec2 startCursorPos = ImGui::GetCursorPos();
+
 			m_IsViewportFocused = ImGui::IsWindowFocused();
 
 			const ImVec2 currentViewportSize = ImGui::GetContentRegionAvail();
@@ -247,6 +249,60 @@ namespace SW {
 				m_EditorCamera->SetYaw(yaw);
 			}
 
+			// Transform Gizmos Button Group
+			f32 frameHeight = 1.3f * ImGui::GetFrameHeight();
+			ImVec2 framePadding = ImGui::GetStyle().FramePadding;
+			ImVec2 buttonSize = { frameHeight, frameHeight };
+			f32 buttonCount = 6.0f;
+			ImVec2 gizmoPosition = { m_ViewportBoundsMin.x + m_GizmoPosition.x, m_ViewportBoundsMin.y + m_GizmoPosition.y };
+			ImRect bb(gizmoPosition.x, gizmoPosition.y, gizmoPosition.x + buttonSize.x + 8, gizmoPosition.y + (buttonSize.y + 2) * (buttonCount + 0.5f));
+			ImVec4 frameColor = ImGui::GetStyleColorVec4(ImGuiCol_Tab);
+			frameColor.w = 0.5f;
+			
+			ImGui::RenderFrame(bb.Min, bb.Max, ImGui::GetColorU32(frameColor), false, ImGui::GetStyle().FrameRounding);
+			m_IsGizmoBarHovered = ImGui::IsMouseHoveringRect(bb.Min, bb.Max);
+
+			glm::vec2 tempGizmoPosition = m_GizmoPosition;
+
+			ImGui::SetCursorPos({ startCursorPos.x + tempGizmoPosition.x + framePadding.x, startCursorPos.y + tempGizmoPosition.y });
+			ImGui::BeginGroup();
+			{
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 1, 1 });
+
+				ImVec2 draggerCursorPos = ImGui::GetCursorPos();
+				ImGui::SetCursorPosX(draggerCursorPos.x + framePadding.x);
+				ImGui::TextUnformatted(SW_ICON_DOTS_HORIZONTAL);
+				ImVec2 draggerSize = ImGui::CalcTextSize(SW_ICON_DOTS_HORIZONTAL);
+				draggerSize.x *= 2.0f;
+				ImGui::SetCursorPos(draggerCursorPos);
+				ImGui::InvisibleButton("GizmoDragger", draggerSize);
+				static ImVec2 lastMousePosition = ImGui::GetMousePos();
+				ImVec2 mousePos = ImGui::GetMousePos();
+				if (ImGui::IsItemActive()) {
+					m_GizmoPosition.x += mousePos.x - lastMousePosition.x;
+					m_GizmoPosition.y += mousePos.y - lastMousePosition.y;
+				}
+				lastMousePosition = mousePos;
+
+				constexpr f32 alpha = 0.6f;
+				if (GUI::ToggleButton(SW_ICON_AXIS_ARROW, m_GizmoType == ImGuizmo::TRANSLATE, buttonSize, alpha, alpha))
+					m_GizmoType = ImGuizmo::TRANSLATE;
+				if (GUI::ToggleButton(SW_ICON_ROTATE_3D, m_GizmoType == ImGuizmo::ROTATE, buttonSize, alpha, alpha))
+					m_GizmoType = ImGuizmo::ROTATE;
+				if (GUI::ToggleButton(SW_ICON_ARROW_EXPAND, m_GizmoType == ImGuizmo::SCALE, buttonSize, alpha, alpha))
+					m_GizmoType = ImGuizmo::SCALE;
+				if (GUI::ToggleButton(SW_ICON_VECTOR_SQUARE, m_GizmoType == ImGuizmo::BOUNDS, buttonSize, alpha, alpha))
+					m_GizmoType = ImGuizmo::BOUNDS;
+				if (GUI::ToggleButton(SW_ICON_ARROW_EXPAND_ALL, m_GizmoType == ImGuizmo::UNIVERSAL, buttonSize, alpha, alpha))
+					m_GizmoType = ImGuizmo::UNIVERSAL;
+				if (GUI::ToggleButton(m_GizmoMode == ImGuizmo::WORLD ? SW_ICON_EARTH : SW_ICON_EARTH_OFF, m_GizmoMode == ImGuizmo::WORLD, buttonSize, alpha, alpha))
+					m_GizmoMode = m_GizmoMode == ImGuizmo::LOCAL ? ImGuizmo::WORLD : ImGuizmo::LOCAL;
+
+				ImGui::PopStyleVar(2);
+			}
+			ImGui::EndGroup();
+
 			OnEnd();
 		}
 	}
@@ -315,12 +371,6 @@ namespace SW {
 		if (!m_IsViewportFocused)
 			return false;
 
-		if (code == MouseCode::ButtonRight) {
-			SelectionManager::Deselect();
-
-			return false;
-		}
-
 		if (code != MouseCode::ButtonLeft)
 			return false;
 
@@ -344,8 +394,9 @@ namespace SW {
 				const IDComponent& idc = m_ActiveScene->GetRegistry().GetRegistryHandle().get<IDComponent>((entt::entity)pickedID);
 				
 				SelectionManager::SelectByID(idc.ID);
-			} else if (!ImGuizmo::IsUsing()) {
-				SelectionManager::Deselect();
+			} else {
+				if (!ImGuizmo::IsOver() && !m_IsGizmoBarHovered)
+					SelectionManager::Deselect();
 			}
 		}
 		

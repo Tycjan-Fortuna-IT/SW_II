@@ -1,8 +1,8 @@
 /**
  * @file SceneViewportPanel.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.1
- * @date 2024-01-30
+ * @version 0.1.3
+ * @date 2024-02-07
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -92,12 +92,14 @@ namespace SW {
 		Framebuffer* m_Framebuffer = nullptr;	/** @brief The current framebuffer. */
 
 		bool m_IsViewportFocused = false;		/** @brief Is the viewport focused. */
+		bool m_IsGizmoBarHovered = false;
 
 		glm::vec2 m_ViewportSize = glm::vec2(50.f);			/** @brief The viewport size. */
 		glm::vec2 m_ViewportBoundsMin = glm::vec2(0.f);		/** @brief The minimum bounds of the viewport. */
 		glm::vec2 m_ViewportBoundsMax = glm::vec2(0.f);		/** @brief The maximum bounds of the viewport. */
 
 		int m_GizmoType = -1;
+		int m_GizmoMode = -1;
 
 		glm::vec2 m_LockedMousePosition = glm::vec2(0.0f);
 
