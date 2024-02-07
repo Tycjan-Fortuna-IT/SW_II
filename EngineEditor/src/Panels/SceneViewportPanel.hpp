@@ -116,7 +116,6 @@ namespace SW {
 		bool m_UsingEditorCamera = false;
 
 		bool OnMouseButtonPressed(MouseCode code);
-		bool OnKeyPressed(KeyCode code);
 	};
 
 }

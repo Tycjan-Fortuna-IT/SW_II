@@ -44,3 +44,5 @@
 #define SW_ICON_DOTS_HORIZONTAL u8"\uF1D8"
 #define SW_ICON_EARTH u8"\uF1E7"
 #define SW_ICON_EARTH_OFF u8"\uF1E8"
+#define SW_ICON_PLAY u8"\uF40A"
+#define SW_ICON_STOP u8"\uF4DB"
