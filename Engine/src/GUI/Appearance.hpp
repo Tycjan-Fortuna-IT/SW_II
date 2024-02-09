@@ -8,9 +8,6 @@
  */
 #pragma once
 
-#include "Core/Math/Vector2.hpp"
-#include "Core/Math/Vector4.hpp"
-
 struct ImFont;
 
 namespace SW {
@@ -40,9 +37,9 @@ namespace SW {
 			ElementPosition WindowMenuButtonPosition = ElementPosition::None;
 			f32 WindowRounding = 0.0f;
 			f32 WindowBorderSize = 0.0f;
-			glm::vec2 WindowPadding = { 12.0f, 12.0f };
-			glm::vec2 WindowMinSize = { 20.0f, 20.0f };
-			glm::vec2 WindowTitleAlign = { 0.5f, 0.5f };
+			ImVec2 WindowPadding = { 12.0f, 12.0f };
+			ImVec2 WindowMinSize = { 20.0f, 20.0f };
+			ImVec2 WindowTitleAlign = { 0.5f, 0.5f };
 
 			f32 ChildRounding = 0.0f;
 			f32 ChildBorderSize = 1.0f;
@@ -50,15 +47,15 @@ namespace SW {
 			f32 PopupRounding = 0.0f;
 			f32 PopupBorderSize = 1.0f;
 
-			glm::vec2 FramePadding = { 6.0f, 6.0f };
-			f32 FrameRounding = 0.0f;
-			f32 FrameBorderSize = 0.0f;
+			ImVec2 FramePadding = { 6.0f, 6.0f };
+			f32 FrameRounding = 2.5f;
+			f32 FrameBorderSize = 1.0f;
 
-			glm::vec2 ItemSpacing = { 12.0f, 6.0f };
-			glm::vec2 ItemInnerSpacing = { 6.0f, 3.0f };
-			glm::vec2 CellPadding = { 12.0f, 6.0f };
+			ImVec2 ItemSpacing = { 12.0f, 6.0f };
+			ImVec2 ItemInnerSpacing = { 6.0f, 3.0f };
+			ImVec2 CellPadding = { 12.0f, 6.0f };
 
-			f32 IndentSpacing = 20.0f;
+			f32 IndentSpacing = 11.0f;
 
 			f32 ColumnsMinSpacing = 6.0f;
 
@@ -74,8 +71,8 @@ namespace SW {
 			f32 TabMinWidthForCloseButton = 0.0f;
 
 			ElementPosition ColorButtonPosition = ElementPosition::Right;
-			glm::vec2 ButtonTextAlign = { 0.5f, 0.5f };
-			glm::vec2 SelectableTextAlign = { 0.0f, 0.0f };
+			ImVec2 ButtonTextAlign = { 0.5f, 0.5f };
+			ImVec2 SelectableTextAlign = { 0.0f, 0.0f };
 		};
 
 		/**
@@ -83,78 +80,74 @@ namespace SW {
 		 */
 		struct Colors final
 		{
-			glm::vec4 Text = { 1.0f, 1.0f, 1.0f, 1.0f };
-			glm::vec4 TextDisabled = { 0.721030056476593f, 0.7210282683372498f, 0.7210228443145752f, 1.0f };
+			ImVec4 Text = ImGui::ColorConvertU32ToFloat4(IM_COL32(192, 192, 192, 255));
+			ImVec4 TextDisabled = { 0.721030056476593f, 0.7210282683372498f, 0.7210228443145752f, 1.0f };
 
-			glm::vec4 WindowBackground = { 0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f };
-			glm::vec4 ChildBackground = { 0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f };
-			glm::vec4 PopupBackground = { 0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f };
+			ImVec4 WindowBackground = ImGui::ColorConvertU32ToFloat4(IM_COL32(21, 21, 21, 255));
+			ImVec4 ChildBackground = ImGui::ColorConvertU32ToFloat4(IM_COL32(36, 36, 36, 255));
+			ImVec4 PopupBackground = { 0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f };
 
-			glm::vec4 Border = { 0.1568627506494522f, 0.168627455830574f, 0.1921568661928177f, 1.0f };
-			glm::vec4 BorderShadow = { 0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f };
+			ImVec4 Border = ImGui::ColorConvertU32ToFloat4(IM_COL32(26, 26, 26, 255));
 
-			glm::vec4 FrameBackground = { 0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f };
-			glm::vec4 FrameBackgroundHovered = { 0.1568627506494522f, 0.168627455830574f, 0.1921568661928177f, 1.0f };
-			glm::vec4 FrameBackgroundActive = { 0.2352941185235977f, 0.2156862765550613f, 0.5960784554481506f, 1.0f };
+			ImVec4 FrameBackground = ImGui::ColorConvertU32ToFloat4(IM_COL32(15, 15, 15, 255));
+			ImVec4 FrameBackgroundHovered = ImGui::ColorConvertU32ToFloat4(IM_COL32(15, 15, 15, 255));
+			ImVec4 FrameBackgroundActive = ImGui::ColorConvertU32ToFloat4(IM_COL32(15, 15, 15, 255));
 
-			glm::vec4 TitleBackground = { 0.1124905720353127f, 0.1193441301584244f, 0.1330472230911255f, 1.0f };
-			glm::vec4 TitleBackgroundActive = { 0.2093779444694519f, 0.2019193768501282f, 0.2317596673965454f, 1.0f };
-			glm::vec4 TitleBackgroundCollapsed = { 0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f };
+			ImVec4 TitleBackground = ImGui::ColorConvertU32ToFloat4(IM_COL32(21, 21, 21, 255));
+			ImVec4 TitleBackgroundActive = ImGui::ColorConvertU32ToFloat4(IM_COL32(21, 21, 21, 255));
+			ImVec4 TitleBackgroundCollapsed = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 
-			glm::vec4 MenuBarBackground = { 0.09803921729326248f, 0.105882354080677f, 0.1215686276555061f, 1.0f };
+			ImVec4 MenuBarBackground = { 0.0f, 0.0f, 0.0f, 0.0f };
 
-			glm::vec4 ScrollbarBackground = { 0.0470588244497776f, 0.05490196123719215f, 0.07058823853731155f, 1.0f };
-			glm::vec4 ScrollbarGrab = { 0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f };
-			glm::vec4 ScrollbarGrabHovered = { 0.1568627506494522f, 0.168627455830574f, 0.1921568661928177f, 1.0f };
-			glm::vec4 ScrollbarGrabActive = { 0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f };
+			ImVec4 ScrollbarBackground = ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
+			ImVec4 ScrollbarGrab = ImVec4(0.31f, 0.31f, 0.31f, 1.0f);
+			ImVec4 ScrollbarGrabHovered = ImVec4(0.41f, 0.41f, 0.41f, 1.0f);
+			ImVec4 ScrollbarGrabActive = ImVec4(0.51f, 0.51f, 0.51f, 1.0f);
 
-			glm::vec4 CheckMark = { 0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f };
+			ImVec4 CheckMark = ImGui::ColorConvertU32ToFloat4(IM_COL32(192, 192, 192, 255));
 
-			glm::vec4 SliderGrab = { 0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f };
-			glm::vec4 SliderGrabActive = { 0.5372549295425415f, 0.5529412031173706f, 1.0f, 1.0f };
+			ImVec4 SliderGrab = { 0.51f, 0.51f, 0.51f, 0.7f };
+			ImVec4 SliderGrabActive = { 0.66f, 0.66f, 0.66f, 1.0f };
 
-			glm::vec4 Button = { 0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f };
-			glm::vec4 ButtonHovered = { 0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 1.0f };
-			glm::vec4 ButtonActive = { 0.2352941185235977f, 0.2156862765550613f, 0.5960784554481506f, 1.0f };
+			ImVec4 Button = ImColor(56, 56, 56, 200);
+			ImVec4 ButtonHovered = ImColor(70, 70, 70, 255);
+			ImVec4 ButtonActive = ImColor(128, 128, 128, 150);
 
-			glm::vec4 Header = { 0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f };
-			glm::vec4 HeaderHovered = { 0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 1.0f };
-			glm::vec4 HeaderActive = { 0.2352941185235977f, 0.2156862765550613f, 0.5960784554481506f, 1.0f };
+			ImVec4 Header = ImGui::ColorConvertU32ToFloat4(IM_COL32(47, 47, 47, 255));
+			ImVec4 HeaderHovered = ImGui::ColorConvertU32ToFloat4(IM_COL32(47, 47, 47, 255));
+			ImVec4 HeaderActive = ImGui::ColorConvertU32ToFloat4(IM_COL32(47, 47, 47, 255));
 
-			glm::vec4 Separator = { 0.1568627506494522f, 0.1843137294054031f, 0.250980406999588f, 1.0f };
-			glm::vec4 SeparatorHovered = { 0.1568627506494522f, 0.1843137294054031f, 0.250980406999588f, 1.0f };
-			glm::vec4 SeparatorActive = { 0.1568627506494522f, 0.1843137294054031f, 0.250980406999588f, 1.0f }; 
+			ImVec4 Separator = ImGui::ColorConvertU32ToFloat4(IM_COL32(26, 26, 26, 255));
+			ImVec4 SeparatorHovered = ImGui::ColorConvertU32ToFloat4(IM_COL32(39, 185, 242, 255));
+			ImVec4 SeparatorActive = ImColor(39, 185, 242, 150);
 
-			glm::vec4 ResizeGrip = { 0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f };
-			glm::vec4 ResizeGripHovered = { 0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 1.0f };
-			glm::vec4 ResizeGripActive = { 0.2352941185235977f, 0.2156862765550613f, 0.5960784554481506f, 1.0f };
+			ImVec4 ResizeGrip = ImVec4(0.91f, 0.91f, 0.91f, 0.25f);
+			ImVec4 ResizeGripHovered = ImVec4(0.81f, 0.81f, 0.81f, 0.67f);
+			ImVec4 ResizeGripActive = ImVec4(0.46f, 0.46f, 0.46f, 0.95f);
 
-			glm::vec4 Tab = { 0.0470588244497776f, 0.05490196123719215f, 0.07058823853731155f, 1.0f };
-			glm::vec4 TabHovered = { 0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f };
-			glm::vec4 TabActive = { 0.09803921729326248f, 0.105882354080677f, 0.1215686276555061f, 1.0f };
-			glm::vec4 TabUnfocused = { 0.0470588244497776f, 0.05490196123719215f, 0.07058823853731155f, 1.0f };
-			glm::vec4 TabUnfocusedActive = { 0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f };
+			ImVec4 Tab = ImGui::ColorConvertU32ToFloat4(IM_COL32(21, 21, 21, 255));
+			ImVec4 TabHovered = ImColor(255, 225, 135, 30);
+			ImVec4 TabActive = ImColor(128, 128, 128, 150);
+			ImVec4 TabUnfocused = { 0.0470588244497776f, 0.05490196123719215f, 0.07058823853731155f, 1.0f };
+			ImVec4 TabUnfocusedActive = { 0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f };
 
-			glm::vec4 PlotLines = { 0.5215686559677124f, 0.6000000238418579f, 0.7019608020782471f, 1.0f };
-			glm::vec4 PlotLinesHovered = { 0.03921568766236305f, 0.9803921580314636f, 0.9803921580314636f, 1.0f };
-			glm::vec4 PlotHistogram = { 1.0f, 0.2901960909366608f, 0.5960784554481506f, 1.0f };
-			glm::vec4 PlotHistogramHovered = { 0.9960784316062927f, 0.4745098054409027f, 0.6980392336845398f, 1.0f };
+			ImVec4 PlotLines = { 0.5215686559677124f, 0.6000000238418579f, 0.7019608020782471f, 1.0f };
+			ImVec4 PlotLinesHovered = { 0.03921568766236305f, 0.9803921580314636f, 0.9803921580314636f, 1.0f };
+			ImVec4 PlotHistogram = { 1.0f, 0.2901960909366608f, 0.5960784554481506f, 1.0f };
+			ImVec4 PlotHistogramHovered = { 0.9960784316062927f, 0.4745098054409027f, 0.6980392336845398f, 1.0f };
 
-			glm::vec4 TableHeaderBackground = { 0.2102983444929123f, 0.2102990597486496f, 0.2103004455566406f, 1.0f };
-			glm::vec4 TableBorderStrong = { 0.2918425798416138f, 0.2918437719345093f, 0.2918455004692078f, 1.0f };
-			glm::vec4 TableBorderLight = { 0.2918425798416138f, 0.2918437719345093f, 0.2918455004692078f, 1.0f };
-			glm::vec4 TableRowBackground = { 0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f };
-			glm::vec4 TableRowBackgroundAlt = { 0.09803921729326248f, 0.105882354080677f, 0.1215686276555061f, 1.0f };
+			ImVec4 TableHeaderBackground = ImGui::ColorConvertU32ToFloat4(IM_COL32(47, 47, 47, 255));
+			ImVec4 TableBorderStrong = ImGui::ColorConvertU32ToFloat4(IM_COL32(26, 26, 26, 255));
 
-			glm::vec4 TextSelectedBackground = { 0.2352941185235977f, 0.2156862765550613f, 0.5960784554481506f, 1.0f };
+			ImVec4 TextSelectedBackground = { 0.2352941185235977f, 0.2156862765550613f, 0.5960784554481506f, 1.0f };
 
-			glm::vec4 DragDropTarget = { 0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f };
+			ImVec4 DragDropTarget = { 0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f };
 
-			glm::vec4 NavHighlight = { 0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f };
-			glm::vec4 NavWindowingHighlight = { 0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f };
-			glm::vec4 NavWindowingDimBackground = { 0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 0.501960813999176f };
+			ImVec4 NavHighlight = { 0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f };
+			ImVec4 NavWindowingHighlight = { 0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f };
+			ImVec4 NavWindowingDimBackground = { 0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 0.501960813999176f };
 
-			glm::vec4 ModalWindowDimBackground = { 0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 0.501960813999176f };
+			ImVec4 ModalWindowDimBackground = { 0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 0.501960813999176f };
 
 			ImVec4 WindowBackgroundTemp = { 0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f };
 

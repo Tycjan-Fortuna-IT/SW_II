@@ -19,8 +19,8 @@ namespace SW {
 	};
 
 	static const std::unordered_map<FileType, ImVec4> s_FileTypeColors = {
-		{ FileType::Texture,  { 0.80f, 0.20f, 0.30f, 1.00f } },
-		{ FileType::Directory, { 1.0f, 1.0f, 0.80f, 1.00f } }
+		{ FileType::Texture,  { 0.8f, 0.2f, 0.3f, 1.f } },
+		{ FileType::Directory, { 1.f, 1.0f, 0.8f, 1.f } }
 	};
 
 	static const std::unordered_map<FileType, std::string> s_FileTypeString = {
@@ -44,6 +44,8 @@ namespace SW {
 
 	void AssetPanel::OnRender()
 	{
+		GUI::ScopedColor PanelBackground(ImGuiCol_WindowBg, GUI::Colors::Darken(GUI::Appearance::GetColors().ChildBackground, 0.02f));
+
 		if (OnBegin()) {
 			static f32 customThumbnailSize = 200.f;
 
@@ -104,13 +106,14 @@ namespace SW {
 
 					ImVec2 cursorPos = ImGui::GetCursorPos();
 
-					ImVec4 backgroundColor = GUI::Colors::Lighten(GUI::Appearance::GetColors().WindowBackgroundTemp, 0.05f);
+					const ImVec4 backgroundColor = GUI::Colors::Lighten(GUI::Appearance::GetColors().WindowBackground, 0.11f);
+					const ImVec4 borderColor = GUI::Colors::Lighten(GUI::Appearance::GetColors().WindowBackground, 0.20f);
 
 					// Foreground Image
 					ImGui::SetCursorPos({ cursorPos.x + padding, cursorPos.y + padding });
 					ImGui::SetItemAllowOverlap();
 					ImGui::Image(whiteTexId, { backgroundThumbnailSize.x - padding * 2.0f, backgroundThumbnailSize.y - padding * 2.0f },
-						{ 0, 0 }, { 1, 1 }, backgroundColor);
+						{ 0, 0 }, { 1, 1 }, backgroundColor, borderColor);
 
 					if (ImGui::IsItemHovered()) {
 						ImGui::BeginTooltip();

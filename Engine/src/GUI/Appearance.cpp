@@ -18,11 +18,11 @@ namespace SW::GUI {
 		s.Alpha = style.Alpha;
 		s.DisabledAlpha = style.DisabledAlpha;
 
-		s.WindowPadding = ImVec2(style.WindowPadding.x, style.WindowPadding.y);
+		s.WindowPadding = style.WindowPadding;
 		s.WindowRounding = style.WindowRounding;
 		s.WindowBorderSize = style.WindowBorderSize;
-		s.WindowMinSize = ImVec2(style.WindowMinSize.x, style.WindowMinSize.y);
-		s.WindowTitleAlign = ImVec2(style.WindowTitleAlign.x, style.WindowTitleAlign.y);
+		s.WindowMinSize = style.WindowMinSize;
+		s.WindowTitleAlign = style.WindowTitleAlign;
 		s.WindowMenuButtonPosition = style.WindowMenuButtonPosition;
 
 		s.ChildRounding = style.ChildRounding;
@@ -31,13 +31,13 @@ namespace SW::GUI {
 		s.PopupRounding = style.PopupRounding;
 		s.PopupBorderSize = style.PopupBorderSize;
 
-		s.FramePadding = ImVec2(style.FramePadding.x, style.FramePadding.y);
+		s.FramePadding = style.FramePadding;
 		s.FrameRounding = style.FrameRounding;
 		s.FrameBorderSize = style.FrameBorderSize;
 
-		s.ItemSpacing = ImVec2(style.ItemSpacing.x, style.ItemSpacing.y);
-		s.ItemInnerSpacing = ImVec2(style.ItemInnerSpacing.x, style.ItemInnerSpacing.y);
-		s.CellPadding = ImVec2(style.CellPadding.x, style.CellPadding.y);
+		s.ItemSpacing = style.ItemSpacing;
+		s.ItemInnerSpacing = style.ItemInnerSpacing;
+		s.CellPadding = style.CellPadding;
 
 		s.IndentSpacing = style.IndentSpacing;
 
@@ -55,8 +55,8 @@ namespace SW::GUI {
 		s.TabMinWidthForCloseButton = style.TabMinWidthForCloseButton;
 
 		s.ColorButtonPosition = style.ColorButtonPosition;
-		s.ButtonTextAlign = ImVec2(style.ButtonTextAlign.x, style.ButtonTextAlign.y);
-		s.SelectableTextAlign = ImVec2(style.SelectableTextAlign.x, style.SelectableTextAlign.y);
+		s.ButtonTextAlign = style.ButtonTextAlign;
+		s.SelectableTextAlign = style.SelectableTextAlign;
 	}
 
 	void Appearance::ApplyColors(const Colors& colors)
@@ -66,97 +66,93 @@ namespace SW::GUI {
 
 		s_Colors = colors;
 
-		c[ImGuiCol_Text] = ImVec4(colors.Text.x, colors.Text.y, colors.Text.z, colors.Text.w);
-		c[ImGuiCol_TextDisabled] = ImVec4(colors.TextDisabled.x, colors.TextDisabled.y, colors.TextDisabled.z, colors.TextDisabled.w);
+		c[ImGuiCol_Text] = colors.Text;
+		c[ImGuiCol_TextDisabled] = colors.TextDisabled;
 
-		c[ImGuiCol_WindowBg] = ImVec4(colors.WindowBackground.x, colors.WindowBackground.y, colors.WindowBackground.z, colors.WindowBackground.w);
-		c[ImGuiCol_ChildBg] = ImVec4(colors.ChildBackground.x, colors.ChildBackground.y, colors.ChildBackground.z, colors.ChildBackground.w);
-		c[ImGuiCol_PopupBg] = ImVec4(colors.PopupBackground.x, colors.PopupBackground.y, colors.PopupBackground.z, colors.PopupBackground.w);
+		c[ImGuiCol_WindowBg] = colors.WindowBackground;
+		c[ImGuiCol_ChildBg] = colors.ChildBackground;
+		c[ImGuiCol_PopupBg] = colors.PopupBackground;
 
-		c[ImGuiCol_Border] = ImVec4(colors.Border.x, colors.Border.y, colors.Border.z, colors.Border.w);
-		c[ImGuiCol_BorderShadow] = ImVec4(colors.BorderShadow.x, colors.BorderShadow.y, colors.BorderShadow.z, colors.BorderShadow.w);
+		c[ImGuiCol_Border] = colors.Border;
+		
+		c[ImGuiCol_FrameBg] = colors.FrameBackground;
+		c[ImGuiCol_FrameBgHovered] = colors.FrameBackgroundHovered;
+		c[ImGuiCol_FrameBgActive] = colors.FrameBackgroundActive;
 
-		c[ImGuiCol_FrameBg] = ImVec4(colors.FrameBackground.x, colors.FrameBackground.y, colors.FrameBackground.z, colors.FrameBackground.w);
-		c[ImGuiCol_FrameBgHovered] = ImVec4(colors.FrameBackgroundHovered.x, colors.FrameBackgroundHovered.y, colors.FrameBackgroundHovered.z, colors.FrameBackgroundHovered.w);
-		c[ImGuiCol_FrameBgActive] = ImVec4(colors.FrameBackgroundActive.x, colors.FrameBackgroundActive.y, colors.FrameBackgroundActive.z, colors.FrameBackgroundActive.w);
+		c[ImGuiCol_TitleBg] = colors.TitleBackground;
+		c[ImGuiCol_TitleBgActive] = colors.TitleBackgroundActive;
+		c[ImGuiCol_TitleBgCollapsed] = colors.TitleBackgroundCollapsed;
 
-		c[ImGuiCol_TitleBg] = ImVec4(colors.TitleBackground.x, colors.TitleBackground.y, colors.TitleBackground.z, colors.TitleBackground.w);
-		c[ImGuiCol_TitleBgActive] = ImVec4(colors.TitleBackgroundActive.x, colors.TitleBackgroundActive.y, colors.TitleBackgroundActive.z, colors.TitleBackgroundActive.w);
-		c[ImGuiCol_TitleBgCollapsed] = ImVec4(colors.TitleBackgroundCollapsed.x, colors.TitleBackgroundCollapsed.y, colors.TitleBackgroundCollapsed.z, colors.TitleBackgroundCollapsed.w);
+		c[ImGuiCol_MenuBarBg] = colors.MenuBarBackground;
 
-		c[ImGuiCol_MenuBarBg] = ImVec4(colors.MenuBarBackground.x, colors.MenuBarBackground.y, colors.MenuBarBackground.z, colors.MenuBarBackground.w);
+		c[ImGuiCol_ScrollbarBg] = colors.ScrollbarBackground;
+		c[ImGuiCol_ScrollbarGrab] = colors.ScrollbarGrab;
+		c[ImGuiCol_ScrollbarGrabHovered] = colors.ScrollbarGrabHovered;
+		c[ImGuiCol_ScrollbarGrabActive] = colors.ScrollbarGrabActive;
 
-		c[ImGuiCol_ScrollbarBg] = ImVec4(colors.ScrollbarBackground.x, colors.ScrollbarBackground.y, colors.ScrollbarBackground.z, colors.ScrollbarBackground.w);
-		c[ImGuiCol_ScrollbarGrab] = ImVec4(colors.ScrollbarGrab.x, colors.ScrollbarGrab.y, colors.ScrollbarGrab.z, colors.ScrollbarGrab.w);
-		c[ImGuiCol_ScrollbarGrabHovered] = ImVec4(colors.ScrollbarGrabHovered.x, colors.ScrollbarGrabHovered.y, colors.ScrollbarGrabHovered.z, colors.ScrollbarGrabHovered.w);
-		c[ImGuiCol_ScrollbarGrabActive] = ImVec4(colors.ScrollbarGrabActive.x, colors.ScrollbarGrabActive.y, colors.ScrollbarGrabActive.z, colors.ScrollbarGrabActive.w);
+		c[ImGuiCol_CheckMark] = colors.CheckMark;
 
-		c[ImGuiCol_CheckMark] = ImVec4(colors.CheckMark.x, colors.CheckMark.y, colors.CheckMark.z, colors.CheckMark.w);
+		c[ImGuiCol_SliderGrab] = colors.SliderGrab;
+		c[ImGuiCol_SliderGrabActive] = colors.SliderGrabActive;
 
-		c[ImGuiCol_SliderGrab] = ImVec4(colors.SliderGrab.x, colors.SliderGrab.y, colors.SliderGrab.z, colors.SliderGrab.w);
-		c[ImGuiCol_SliderGrabActive] = ImVec4(colors.SliderGrabActive.x, colors.SliderGrabActive.y, colors.SliderGrabActive.z, colors.SliderGrabActive.w);
+		c[ImGuiCol_Button] = colors.Button;
+		c[ImGuiCol_ButtonHovered] = colors.ButtonHovered;
+		c[ImGuiCol_ButtonActive] = colors.ButtonActive;
 
-		c[ImGuiCol_Button] = ImVec4(colors.Button.x, colors.Button.y, colors.Button.z, colors.Button.w);
-		c[ImGuiCol_ButtonHovered] = ImVec4(colors.ButtonHovered.x, colors.ButtonHovered.y, colors.ButtonHovered.z, colors.ButtonHovered.w);
-		c[ImGuiCol_ButtonActive] = ImVec4(colors.ButtonActive.x, colors.ButtonActive.y, colors.ButtonActive.z, colors.ButtonActive.w);
+		c[ImGuiCol_Header] = colors.Header;
+		c[ImGuiCol_HeaderHovered] = colors.HeaderHovered;
+		c[ImGuiCol_HeaderActive] = colors.HeaderActive;
 
-		c[ImGuiCol_Header] = ImVec4(colors.Header.x, colors.Header.y, colors.Header.z, colors.Header.w);
-		c[ImGuiCol_HeaderHovered] = ImVec4(colors.HeaderHovered.x, colors.HeaderHovered.y, colors.HeaderHovered.z, colors.HeaderHovered.w);
-		c[ImGuiCol_HeaderActive] = ImVec4(colors.HeaderActive.x, colors.HeaderActive.y, colors.HeaderActive.z, colors.HeaderActive.w);
+		c[ImGuiCol_Separator] = colors.Separator;
+		c[ImGuiCol_SeparatorHovered] = colors.SeparatorHovered;
+		c[ImGuiCol_SeparatorActive] = colors.SeparatorActive;
 
-		c[ImGuiCol_Separator] = ImVec4(colors.Separator.x, colors.Separator.y, colors.Separator.z, colors.Separator.w);
-		c[ImGuiCol_SeparatorHovered] = ImVec4(colors.SeparatorHovered.x, colors.SeparatorHovered.y, colors.SeparatorHovered.z, colors.SeparatorHovered.w);
-		c[ImGuiCol_SeparatorActive] = ImVec4(colors.SeparatorActive.x, colors.SeparatorActive.y, colors.SeparatorActive.z, colors.SeparatorActive.w);
+		c[ImGuiCol_ResizeGrip] = colors.ResizeGrip;
+		c[ImGuiCol_ResizeGripHovered] = colors.ResizeGripHovered;
+		c[ImGuiCol_ResizeGripActive] = colors.ResizeGripActive;
 
-		c[ImGuiCol_ResizeGrip] = ImVec4(colors.ResizeGrip.x, colors.ResizeGrip.y, colors.ResizeGrip.z, colors.ResizeGrip.w);
-		c[ImGuiCol_ResizeGripHovered] = ImVec4(colors.ResizeGripHovered.x, colors.ResizeGripHovered.y, colors.ResizeGripHovered.z, colors.ResizeGripHovered.w);
-		c[ImGuiCol_ResizeGripActive] = ImVec4(colors.ResizeGripActive.x, colors.ResizeGripActive.y, colors.ResizeGripActive.z, colors.ResizeGripActive.w);
+		c[ImGuiCol_Tab] = colors.Tab;
+		c[ImGuiCol_TabHovered] = colors.TabHovered;
+		c[ImGuiCol_TabActive] = colors.TabActive;
+		c[ImGuiCol_TabUnfocused] = colors.TabUnfocused;
+		c[ImGuiCol_TabUnfocusedActive] = colors.TabUnfocusedActive;
 
-		c[ImGuiCol_Tab] = ImVec4(colors.Tab.x, colors.Tab.y, colors.Tab.z, colors.Tab.w);
-		c[ImGuiCol_TabHovered] = ImVec4(colors.TabHovered.x, colors.TabHovered.y, colors.TabHovered.z, colors.TabHovered.w);
-		c[ImGuiCol_TabActive] = ImVec4(colors.TabActive.x, colors.TabActive.y, colors.TabActive.z, colors.TabActive.w);
-		c[ImGuiCol_TabUnfocused] = ImVec4(colors.TabUnfocused.x, colors.TabUnfocused.y, colors.TabUnfocused.z, colors.TabUnfocused.w);
-		c[ImGuiCol_TabUnfocusedActive] = ImVec4(colors.TabUnfocusedActive.x, colors.TabUnfocusedActive.y, colors.TabUnfocusedActive.z, colors.TabUnfocusedActive.w);
+		c[ImGuiCol_PlotLines] = colors.PlotLines;
+		c[ImGuiCol_PlotLinesHovered] = colors.PlotLinesHovered;
+		c[ImGuiCol_PlotHistogram] = colors.PlotHistogram;
+		c[ImGuiCol_PlotHistogramHovered] = colors.PlotHistogramHovered;
 
-		c[ImGuiCol_PlotLines] = ImVec4(colors.PlotLines.x, colors.PlotLines.y, colors.PlotLines.z, colors.PlotLines.w);
-		c[ImGuiCol_PlotLinesHovered] = ImVec4(colors.PlotLinesHovered.x, colors.PlotLinesHovered.y, colors.PlotLinesHovered.z, colors.PlotLinesHovered.w);
-		c[ImGuiCol_PlotHistogram] = ImVec4(colors.PlotHistogram.x, colors.PlotHistogram.y, colors.PlotHistogram.z, colors.PlotHistogram.w);
-		c[ImGuiCol_PlotHistogramHovered] = ImVec4(colors.PlotHistogramHovered.x, colors.PlotHistogramHovered.y, colors.PlotHistogramHovered.z, colors.PlotHistogramHovered.w);
+		c[ImGuiCol_TableHeaderBg] = colors.TableHeaderBackground;
+		c[ImGuiCol_TableBorderStrong] = colors.TableBorderStrong;
 
-		c[ImGuiCol_TableHeaderBg] = ImVec4(colors.TableHeaderBackground.x, colors.TableHeaderBackground.y, colors.TableHeaderBackground.z, colors.TableHeaderBackground.w);
-		c[ImGuiCol_TableBorderStrong] = ImVec4(colors.TableBorderStrong.x, colors.TableBorderStrong.y, colors.TableBorderStrong.z, colors.TableBorderStrong.w);
-		c[ImGuiCol_TableBorderLight] = ImVec4(colors.TableBorderLight.x, colors.TableBorderLight.y, colors.TableBorderLight.z, colors.TableBorderLight.w);
-		c[ImGuiCol_TableRowBg] = ImVec4(colors.TableRowBackground.x, colors.TableRowBackground.y, colors.TableRowBackground.z, colors.TableRowBackground.w);
-		c[ImGuiCol_TableRowBgAlt] = ImVec4(colors.TableRowBackgroundAlt.x, colors.TableRowBackgroundAlt.y, colors.TableRowBackgroundAlt.z, colors.TableRowBackgroundAlt.w);
+		c[ImGuiCol_TextSelectedBg] = colors.TextSelectedBackground;
 
-		c[ImGuiCol_TextSelectedBg] = ImVec4(colors.TextSelectedBackground.x, colors.TextSelectedBackground.y, colors.TextSelectedBackground.z, colors.TextSelectedBackground.w);
+		c[ImGuiCol_DragDropTarget] = colors.DragDropTarget;
 
-		c[ImGuiCol_DragDropTarget] = ImVec4(colors.DragDropTarget.x, colors.DragDropTarget.y, colors.DragDropTarget.z, colors.DragDropTarget.w);
+		c[ImGuiCol_NavHighlight] = colors.NavHighlight;
+		c[ImGuiCol_NavWindowingHighlight] = colors.NavWindowingHighlight;
+		c[ImGuiCol_NavWindowingDimBg] = colors.NavWindowingDimBackground;
 
-		c[ImGuiCol_NavHighlight] = ImVec4(colors.NavHighlight.x, colors.NavHighlight.y, colors.NavHighlight.z, colors.NavHighlight.w);
-		c[ImGuiCol_NavWindowingHighlight] = ImVec4(colors.NavWindowingHighlight.x, colors.NavWindowingHighlight.y, colors.NavWindowingHighlight.z, colors.NavWindowingHighlight.w);
-		c[ImGuiCol_NavWindowingDimBg] = ImVec4(colors.NavWindowingDimBackground.x, colors.NavWindowingDimBackground.y, colors.NavWindowingDimBackground.z, colors.NavWindowingDimBackground.w);
+		c[ImGuiCol_ModalWindowDimBg] = colors.ModalWindowDimBackground;
 
-		c[ImGuiCol_ModalWindowDimBg] = ImVec4(colors.ModalWindowDimBackground.x, colors.ModalWindowDimBackground.y, colors.ModalWindowDimBackground.z, colors.ModalWindowDimBackground.w);
-	
 		ImGuizmo::Style* imguizmoStyle = &ImGuizmo::GetStyle();
 		ImVec4* gc = imguizmoStyle->Colors;
-
-		/*imguizmoStyle->TranslationLineThickness = 3.0f;
-		imguizmoStyle->TranslationLineArrowSize = 10.0f;
-		imguizmoStyle->RotationLineThickness = 3.0f;
-		imguizmoStyle->RotationOuterLineThickness = 5.0f;
-		imguizmoStyle->ScaleLineThickness = 3.0f;
-		imguizmoStyle->ScaleLineCircleSize = 8.0f;
-		imguizmoStyle->HatchedAxisLineThickness = 0.0f;
-		imguizmoStyle->CenterCircleSize = 6.0f;*/
 
 		gc[ImGuizmo::DIRECTION_X] = ImVec4(0.858f, 0.243f, 0.113f, 0.929f);
 		gc[ImGuizmo::DIRECTION_Y] = ImVec4(0.375f, 0.825f, 0.372f, 0.929f);
 		gc[ImGuizmo::DIRECTION_Z] = ImVec4(0.227f, 0.478f, 0.972f, 0.929f);
 		gc[ImGuizmo::PLANE_X] = gc[ImGuizmo::DIRECTION_X];
 		gc[ImGuizmo::PLANE_Y] = gc[ImGuizmo::DIRECTION_Y];
-		gc[ImGuizmo::PLANE_Z] = gc[ImGuizmo::DIRECTION_Z];
+		gc[ImGuizmo::PLANE_Z] = gc[ImGuizmo::DIRECTION_Z];	
+
+		imguizmoStyle->TranslationLineThickness = 4.f;		// Thickness of lines for translation gizmo
+		imguizmoStyle->TranslationLineArrowSize = 4.f;		// Size of arrow at the end of lines for translation gizmo
+		imguizmoStyle->RotationLineThickness = 3.f;			// Thickness of lines for rotation gizmo
+		imguizmoStyle->RotationOuterLineThickness = 3.f;	// Thickness of line surrounding the rotation gizmo
+		imguizmoStyle->ScaleLineThickness = 3.f;			// Thickness of lines for scale gizmo
+		imguizmoStyle->ScaleLineCircleSize = 3.f;			// Size of circle at the end of lines for scale gizmo
+		imguizmoStyle->HatchedAxisLineThickness = 4.f;		// Thickness of hatched axis lines
+		imguizmoStyle->CenterCircleSize = 4.f;				// Size of circle at the center of the translate/scale gizmo
 	}
 
 	void Appearance::ApplyFonts(const FontSpecification& spec)
