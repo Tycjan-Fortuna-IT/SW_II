@@ -369,7 +369,7 @@ namespace SW {
 				
 				SelectionManager::SelectByID(idc.ID);
 			} else {
-				if (!ImGuizmo::IsOver() && !m_IsGizmoBarHovered)
+				if (!ImGuizmo::IsUsingAny && !m_IsGizmoBarHovered)
 					SelectionManager::Deselect();
 			}
 		}

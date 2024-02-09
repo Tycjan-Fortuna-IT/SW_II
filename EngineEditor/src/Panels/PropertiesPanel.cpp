@@ -215,13 +215,15 @@ namespace SW {
 					GUI::SelectOption<PhysicBodyType>{ "Kinematic", PhysicBodyType::Kinematic },
 					GUI::SelectOption<PhysicBodyType>{ "Dynamic", PhysicBodyType::Dynamic }
 				}, "Body Type");
-				GUI::DrawFloatingPointProperty(component.GravityScale, "Gravity Scale");
-				GUI::DrawFloatingPointProperty(component.Density, "Density", nullptr, 0.f);
-				GUI::DrawFloatingPointProperty(component.Friction, "Friction", nullptr, 0.f, 1.f);
-				GUI::DrawFloatingPointProperty(component.Restitution, "Restitution", nullptr, 0.f, 1.f);
-				GUI::DrawFloatingPointProperty(component.RestitutionThreshold, "Restitution Threshold", nullptr);
-				GUI::DrawBooleanProperty(component.IsSensor, "Is Sensor?", "Whether to react to the collistion or just sense it.");
-				GUI::DrawBooleanProperty(component.AllowSleep, "Allow Sleep");
+				if (component.Type == PhysicBodyType::Dynamic) {
+					GUI::DrawFloatingPointProperty(component.GravityScale, "Gravity Scale");
+					GUI::DrawFloatingPointProperty(component.Density, "Density", nullptr, 0.f);
+					GUI::DrawFloatingPointProperty(component.Friction, "Friction", nullptr, 0.f, 1.f);
+					GUI::DrawFloatingPointProperty(component.Restitution, "Restitution", nullptr, 0.f, 1.f);
+					GUI::DrawFloatingPointProperty(component.RestitutionThreshold, "Restitution Threshold", nullptr);
+					GUI::DrawBooleanProperty(component.IsSensor, "Is Sensor?", "Whether to react to the collision or just sense it.");
+					GUI::DrawBooleanProperty(component.AllowSleep, "Allow Sleep");
+				}
 				GUI::EndProperties();
 			}, false);
 
