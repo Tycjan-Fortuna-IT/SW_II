@@ -128,6 +128,10 @@ namespace SW {
 		for (auto&& [handle, tc, sc] : m_Registry.GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
 			Renderer2D::DrawQuad(tc.GetTransform(), sc, (int)handle);
 		}
+
+		for (auto&& [handle, tc, cc] : m_Registry.GetEntitiesWith<TransformComponent, CircleComponent>().each()) {
+			Renderer2D::DrawCircle(tc.GetTransform(), cc, (int)handle);
+		}
 	}
 
 	void Scene::OnUpdateRuntime(Timestep dt)
@@ -161,6 +165,10 @@ namespace SW {
 
 		for (auto&& [entity, tc, sc] : m_Registry.GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
 			Renderer2D::DrawQuad(tc.GetTransform(), sc, (int)entity);
+		}
+
+		for (auto&& [handle, tc, cc] : m_Registry.GetEntitiesWith<TransformComponent, CircleComponent>().each()) {
+			Renderer2D::DrawCircle(tc.GetTransform(), cc, (int)handle);
 		}
 	}
 
@@ -209,6 +217,13 @@ namespace SW {
 			registry.emplace_or_replace<SpriteComponent>(destination, componentToCopy);
 		}
 
+		for (auto&& [handle, idc, tc] : m_Registry.GetEntitiesWith<IDComponent, CircleComponent>().each()) {
+			CircleComponent& componentToCopy = GetEntityByID(idc.ID).GetComponent<CircleComponent>();
+			Entity destination = GetEntityByID(idc.ID);
+
+			registry.emplace_or_replace<CircleComponent>(destination, componentToCopy);
+		}
+
 		for (auto&& [handle, idc, tc] : m_Registry.GetEntitiesWith<IDComponent, CameraComponent>().each()) {
 			CameraComponent& componentToCopy = GetEntityByID(idc.ID).GetComponent<CameraComponent>();
 			Entity destination = GetEntityByID(idc.ID);
@@ -228,6 +243,13 @@ namespace SW {
 			Entity destination = GetEntityByID(idc.ID);
 
 			registry.emplace_or_replace<BoxCollider2DComponent>(destination, componentToCopy);
+		}
+
+		for (auto&& [handle, idc, tc] : m_Registry.GetEntitiesWith<IDComponent, CircleCollider2DComponent>().each()) {
+			CircleCollider2DComponent& componentToCopy = GetEntityByID(idc.ID).GetComponent<CircleCollider2DComponent>();
+			Entity destination = GetEntityByID(idc.ID);
+
+			registry.emplace_or_replace<CircleCollider2DComponent>(destination, componentToCopy);
 		}
 
 		return copy;
@@ -254,6 +276,10 @@ namespace SW {
 		if (entity.HasComponent<BoxCollider2DComponent>()) {
 			CreateBoxCollider2D(entity, tc, rbc, entity.GetComponent<BoxCollider2DComponent>());
 		}
+
+		if (entity.HasComponent<CircleCollider2DComponent>()) {
+			CreateCircleCollider2D(entity, tc, rbc, entity.GetComponent<CircleCollider2DComponent>());
+		}
 	}
 
 	void Scene::CreateBoxCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, BoxCollider2DComponent& bcc) const
@@ -274,6 +300,27 @@ namespace SW {
 		b2Fixture* fixture = body->CreateFixture(&fixtureDef);
 
 		bcc.Handle = fixture;
+	}
+
+	void Scene::CreateCircleCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, CircleCollider2DComponent& ccc) const
+	{
+		b2CircleShape circleShape;
+		circleShape.m_radius = ccc.Radius * glm::max(tc.Scale.x, tc.Scale.y);
+		circleShape.m_p = { ccc.Offset.x, ccc.Offset.y };
+
+		b2FixtureDef fixtureDef;
+		fixtureDef.shape = &circleShape;
+		fixtureDef.userData.pointer = static_cast<u32>(entity);
+		fixtureDef.density = rbc.Density;
+		fixtureDef.friction = rbc.Friction;
+		fixtureDef.restitution = rbc.Restitution;
+		fixtureDef.restitutionThreshold = rbc.RestitutionThreshold;
+		fixtureDef.isSensor = rbc.IsSensor;
+
+		b2Body* body = static_cast<b2Body*>(rbc.Handle);
+		b2Fixture* fixture = body->CreateFixture(&fixtureDef);
+
+		ccc.Handle = fixture;
 	}
 
 }

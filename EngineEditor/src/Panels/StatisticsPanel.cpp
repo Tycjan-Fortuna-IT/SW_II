@@ -14,6 +14,8 @@ namespace SW {
 
 	void StatisticsPanel::OnRender()
 	{
+		GUI::ScopedColor PanelBackground(ImGuiCol_WindowBg, GUI::Appearance::GetColors().ChildBackground);
+
 		if (OnBegin()) {
 			f32 avg = 0.0f;
 

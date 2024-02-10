@@ -158,6 +158,16 @@ namespace SW {
 				output << YAML::EndMap;
 			}
 
+			if (entity.HasComponent<CircleComponent>()) {
+				CircleComponent& cc = entity.GetComponent<CircleComponent>();
+				output << YAML::Key << "CircleComponent";
+				output << YAML::BeginMap;
+				output << YAML::Key << "Color" << YAML::Value << cc.Color;
+				output << YAML::Key << "Thickness" << YAML::Value << cc.Thickness;
+				output << YAML::Key << "Fade" << YAML::Value << cc.Fade;
+				output << YAML::EndMap;
+			}
+
 			if (entity.HasComponent<CameraComponent>()) {
 				CameraComponent& cc = entity.GetComponent<CameraComponent>();
 
@@ -191,6 +201,16 @@ namespace SW {
 				output << YAML::BeginMap;
 				output << YAML::Key << "Size" << YAML::Value << bcc.Size;
 				output << YAML::Key << "Offset" << YAML::Value << bcc.Offset;
+				output << YAML::EndMap;
+			}
+
+			if (entity.HasComponent<CircleCollider2DComponent>()) {
+				CircleCollider2DComponent& ccc = entity.GetComponent<CircleCollider2DComponent>();
+
+				output << YAML::Key << "CircleCollider2DComponent";
+				output << YAML::BeginMap;
+				output << YAML::Key << "Radius" << YAML::Value << ccc.Radius;
+				output << YAML::Key << "Offset" << YAML::Value << ccc.Offset;
 				output << YAML::EndMap;
 			}
 
@@ -252,6 +272,15 @@ namespace SW {
 				}
 			}
 
+			YAML::Node circleComponent = entity["Entity"]["CircleComponent"];
+			if (circleComponent) {
+				CircleComponent& cc = deserialized.AddComponent<CircleComponent>();
+
+				cc.Color = circleComponent["Color"].as<glm::vec4>();
+				cc.Thickness = circleComponent["Thickness"].as<f32>();
+				cc.Fade = circleComponent["Fade"].as<f32>();
+			}
+
 			YAML::Node cameraComponent = entity["Entity"]["CameraComponent"];
 			if (cameraComponent) {
 				SceneCamera camera(cameraComponent["AspectRatio"].as<f32>());
@@ -281,6 +310,14 @@ namespace SW {
 
 				rbc.Size = boxCollider2DComponent["Size"].as<glm::vec2>();
 				rbc.Offset = boxCollider2DComponent["Offset"].as<glm::vec2>();
+			}
+
+			YAML::Node circleCollider2DComponent = entity["Entity"]["CircleCollider2DComponent"];
+			if (circleCollider2DComponent) {
+				CircleCollider2DComponent& ccc = deserialized.AddComponent<CircleCollider2DComponent>();
+
+				ccc.Radius = circleCollider2DComponent["Radius"].as<f32>();
+				ccc.Offset = circleCollider2DComponent["Offset"].as<glm::vec2>();
 			}
 		}
 

@@ -14,6 +14,7 @@ namespace SW {
 
 		Shader* m_SpriteShader = nullptr;
 		Shader* m_LineShader = nullptr;
+		Shader* m_CircleShader = nullptr;
 
 		Texture2D* m_IconTexture = nullptr;
 		Texture2D* m_CloseIconTexture = nullptr;

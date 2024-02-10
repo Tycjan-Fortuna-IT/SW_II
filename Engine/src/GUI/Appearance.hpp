@@ -126,15 +126,15 @@ namespace SW {
 			ImVec4 ResizeGripActive = ImVec4(0.46f, 0.46f, 0.46f, 0.95f);
 
 			ImVec4 Tab = ImGui::ColorConvertU32ToFloat4(IM_COL32(21, 21, 21, 255));
-			ImVec4 TabHovered = ImColor(255, 225, 135, 30);
+			ImVec4 TabHovered = ImColor(128, 128, 128, 150);
 			ImVec4 TabActive = ImColor(128, 128, 128, 150);
 			ImVec4 TabUnfocused = { 0.0470588244497776f, 0.05490196123719215f, 0.07058823853731155f, 1.0f };
 			ImVec4 TabUnfocusedActive = { 0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f };
 
-			ImVec4 PlotLines = { 0.5215686559677124f, 0.6000000238418579f, 0.7019608020782471f, 1.0f };
-			ImVec4 PlotLinesHovered = { 0.03921568766236305f, 0.9803921580314636f, 0.9803921580314636f, 1.0f };
-			ImVec4 PlotHistogram = { 1.0f, 0.2901960909366608f, 0.5960784554481506f, 1.0f };
-			ImVec4 PlotHistogramHovered = { 0.9960784316062927f, 0.4745098054409027f, 0.6980392336845398f, 1.0f };
+			ImVec4 PlotLines = { 0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f };
+			ImVec4 PlotLinesHovered = { 0.8702952265739441f, 0.8969957232475281f, 0.06929580867290497f, 1.0f };
+			ImVec4 PlotHistogram = { 0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f };
+			ImVec4 PlotHistogramHovered = { 0.8705882430076599f, 0.8980392217636108f, 0.07058823853731155f, 1.0f };
 
 			ImVec4 TableHeaderBackground = ImGui::ColorConvertU32ToFloat4(IM_COL32(47, 47, 47, 255));
 			ImVec4 TableBorderStrong = ImGui::ColorConvertU32ToFloat4(IM_COL32(26, 26, 26, 255));

@@ -47,6 +47,13 @@ namespace SW {
 						ImGui::CloseCurrentPopup();
 					}
 
+					if (ImGui::MenuItemEx("Circle", SW_ICON_CHECKBOX_BLANK_CIRCLE)) {
+						Entity entity = currentScene->CreateEntity("Circle");
+						entity.AddComponent<CircleComponent>();
+
+						ImGui::CloseCurrentPopup();
+					}
+
 					if (ImGui::MenuItemEx("Camera", SW_ICON_CAMERA)) {
 						Entity entity = currentScene->CreateEntity("Camera");
 						

@@ -194,6 +194,8 @@ namespace SW {
 		 * @param bcc The box collider component to modify.
 		 */		
 		void CreateBoxCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, BoxCollider2DComponent& bcc) const;
+
+		void CreateCircleCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, CircleCollider2DComponent& ccc) const;
 	};
 
 }

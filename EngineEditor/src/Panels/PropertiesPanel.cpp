@@ -25,10 +25,12 @@ namespace SW {
 	{
 		AddComponentName<TransformComponent>(SW_ICON_VECTOR_LINE "  Transform");
 		AddComponentName<SpriteComponent>(SW_ICON_IMAGE_SIZE_SELECT_ACTUAL "  Sprite");
+		AddComponentName<CircleComponent>(SW_ICON_CHECKBOX_BLANK_CIRCLE "  Circle");
 		AddComponentName<CameraComponent>(SW_ICON_CAMERA "  Camera");
 
 		AddComponentName<RigidBody2DComponent>(SW_ICON_SOCCER "  Rigid Body 2D");
 		AddComponentName<BoxCollider2DComponent>(SW_ICON_CHECKBOX_BLANK_OUTLINE "  Box Collider 2D");
+		AddComponentName<CircleCollider2DComponent>(SW_ICON_CHECKBOX_BLANK_CIRCLE_OUTLINE "  Circle Collider 2D");
 	}
 
 	void PropertiesPanel::OnUpdate(Timestep dt)
@@ -147,6 +149,14 @@ namespace SW {
 						ImGui::CloseCurrentPopup();
 					}
 
+					if (ImGui::MenuItemEx("Circle Component", SW_ICON_CHECKBOX_BLANK_CIRCLE)) {
+						if (!entity.HasComponent<CircleComponent>()) {
+							entity.AddComponent<CircleComponent>();
+						}
+
+						ImGui::CloseCurrentPopup();
+					}
+
 					if (ImGui::MenuItemEx("Rigid Body 2D", SW_ICON_SOCCER)) {
 						if (!entity.HasComponent<RigidBody2DComponent>()) {
 							entity.AddComponent<RigidBody2DComponent>();
@@ -157,6 +167,14 @@ namespace SW {
 						if (!entity.HasComponent<BoxCollider2DComponent>()) {
 							entity.AddComponent<BoxCollider2DComponent>();
 						}
+					}
+
+					if (ImGui::MenuItemEx("Circle Collider 2D", SW_ICON_CHECKBOX_BLANK_CIRCLE_OUTLINE)) {
+						if (!entity.HasComponent<CircleCollider2DComponent>()) {
+							entity.AddComponent<CircleCollider2DComponent>();
+						}
+
+						ImGui::CloseCurrentPopup();
 					}
 
 					if (ImGui::MenuItemEx("Camera Component", SW_ICON_CAMERA)) {
@@ -202,6 +220,14 @@ namespace SW {
 				GUI::EndProperties();
 			}, true);
 
+			DrawComponent<CircleComponent>(entity, [](CircleComponent& component) {
+				GUI::BeginProperties("##circle_property");
+				GUI::DrawVector4ColorPickerProperty(component.Color, "Color");
+				GUI::DrawFloatingPointProperty(component.Thickness, "Thickness", nullptr, 0.f);
+				GUI::DrawFloatingPointProperty(component.Fade, "Fade", nullptr, 0.f);
+				GUI::EndProperties();
+			}, true);
+
 			DrawComponent<CameraComponent>(entity, [](CameraComponent& component) {
 				GUI::BeginProperties("##camera_property");
 				GUI::DrawBooleanProperty(component.Primary, "Primary");
@@ -225,14 +251,21 @@ namespace SW {
 					GUI::DrawBooleanProperty(component.AllowSleep, "Allow Sleep");
 				}
 				GUI::EndProperties();
-			}, false);
+			}, true);
 
 			DrawComponent<BoxCollider2DComponent>(entity, [](BoxCollider2DComponent& component) {
 				GUI::BeginProperties("##box_collider_2d_property");
 				GUI::DrawVector2ControlProperty(component.Size, "Size", nullptr, 0.5f);
-				GUI::DrawVector2ControlProperty(component.Offset, "Offset", nullptr);
+				GUI::DrawVector2ControlProperty(component.Offset, "Offset");
 				GUI::EndProperties();
-			}, false);
+			}, true);
+
+			DrawComponent<CircleCollider2DComponent>(entity, [](CircleCollider2DComponent& component) {
+				GUI::BeginProperties("##circle_collider_2d_property");
+				GUI::DrawFloatingPointProperty(component.Radius, "Radius", nullptr, 0.f);
+				GUI::DrawVector2ControlProperty(component.Offset, "Offset");
+				GUI::EndProperties();
+			}, true);
 			
 			ImGui::EndChild();
 
