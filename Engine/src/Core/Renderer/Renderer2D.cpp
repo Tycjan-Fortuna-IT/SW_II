@@ -28,13 +28,26 @@ namespace SW {
 	{
 		glm::vec3 Position;
 		glm::vec4 Color;
+
+		int EntityID;
+	};
+
+	struct CircleVertex final
+	{
+		glm::vec3 WorldPosition;
+		glm::vec3 LocalPosition;
+		glm::vec4 Color;
+		f32 Thickness;
+		f32 Fade;
+
+		int EntityID;
 	};
 
 	struct Renderer2DData final
 	{
 		Renderer2DData() = default;
 
-		static constexpr u32 MaxQuads = 10000;
+		static constexpr u32 MaxQuads = 1000;
 		static constexpr u32 MaxVertices = MaxQuads * 4;
 		static constexpr u32 MaxIndices = MaxQuads * 6;
 		static constexpr u32 MaxTextureSlots = 32;
@@ -45,8 +58,12 @@ namespace SW {
 		VertexArray* LineVertexArray = nullptr;
 		std::shared_ptr<VertexBuffer> LineVertexBuffer;
 
+		VertexArray* CircleVertexArray = nullptr;
+		std::shared_ptr<VertexBuffer> CircleVertexBuffer;
+
 		Shader* TextureShader = nullptr;
 		Shader* LineShader = nullptr;
+		Shader* CircleShader = nullptr;
 
 		u32 QuadIndexCount = 0;
 		QuadVertex* QuadVertexBufferBase = nullptr;
@@ -55,6 +72,10 @@ namespace SW {
 		u32 LineVertexCount = 0;
 		LineVertex* LineVertexBufferBase = nullptr;
 		LineVertex* LineVertexBufferPtr = nullptr;
+
+		u32 CircleIndexCount = 0;
+		CircleVertex* CircleVertexBufferBase = nullptr;
+		CircleVertex* CircleVertexBufferPtr = nullptr;
 
 		std::array<Texture2D*, MaxTextureSlots> TextureSlots;
 		u32 TextureSlotIndex = 1; // 0 = white texture
@@ -68,7 +89,7 @@ namespace SW {
 
 	static Renderer2DData s_Data;
 
-	void Renderer2D::Initialize(Shader* spriteShader, Shader* lineShader)
+	void Renderer2D::Initialize(Shader* spriteShader, Shader* lineShader, Shader* circleShader)
 	{
 		s_Data.QuadVertexArray = new VertexArray();
 		s_Data.QuadVertexBuffer = std::make_shared<VertexBuffer>(static_cast<u32>(s_Data.MaxVertices * sizeof(QuadVertex)));
@@ -106,13 +127,32 @@ namespace SW {
 		{
 			s_Data.LineShader = lineShader;
 			s_Data.LineVertexArray = new VertexArray();
-			s_Data.LineVertexBuffer = std::make_shared<VertexBuffer>(static_cast<u32>(Renderer2DData::MaxVertices * sizeof(LineVertex)));
+			s_Data.LineVertexBuffer = std::make_shared<VertexBuffer>(static_cast<u32>(s_Data.MaxVertices * sizeof(LineVertex)));
 			s_Data.LineVertexBuffer->SetLayout({
 				{ ShaderDataType::Float3, "a_Position" },
-				{ ShaderDataType::Float4, "a_Color" }
+				{ ShaderDataType::Float4, "a_Color" },
+				{ ShaderDataType::Int, "a_EntityID" }
 			});
 			s_Data.LineVertexArray->AddVertexBuffer(s_Data.LineVertexBuffer);
 			s_Data.LineVertexBufferBase = new LineVertex[Renderer2DData::MaxVertices];
+		}
+
+		// Circles
+		{
+			s_Data.CircleShader = circleShader;
+			s_Data.CircleVertexArray = new VertexArray();
+			s_Data.CircleVertexBuffer = std::make_shared<VertexBuffer>(static_cast<u32>(s_Data.MaxVertices * sizeof(CircleVertex)));
+			s_Data.CircleVertexBuffer->SetLayout({
+				{ ShaderDataType::Float3, "a_WorldPosition" },
+				{ ShaderDataType::Float3, "a_LocalPosition" },
+				{ ShaderDataType::Float4, "a_Color"         },
+				{ ShaderDataType::Float,  "a_Thickness"     },
+				{ ShaderDataType::Float,  "a_Fade"          },
+				{ ShaderDataType::Int,    "a_EntityID"      }
+			});
+			s_Data.CircleVertexArray->AddVertexBuffer(s_Data.CircleVertexBuffer);
+			s_Data.CircleVertexArray->SetIndexBuffer(quadIndexBuffer); // Use quad IB
+			s_Data.CircleVertexBufferBase = new CircleVertex[s_Data.MaxVertices];
 		}
 
 		int samplers[s_Data.MaxTextureSlots];
@@ -158,6 +198,9 @@ namespace SW {
 		s_Data.LineShader->Bind();
 		s_Data.LineShader->UploadUniformMat4("u_ViewProjection", viewProjection);
 
+		s_Data.CircleShader->Bind();
+		s_Data.CircleShader->UploadUniformMat4("u_ViewProjection", viewProjection);
+
 		StartBatch();
 	}
 
@@ -170,6 +213,9 @@ namespace SW {
 
 		s_Data.LineShader->Bind();
 		s_Data.LineShader->UploadUniformMat4("u_ViewProjection", viewProjection);
+
+		s_Data.CircleShader->Bind();
+		s_Data.CircleShader->UploadUniformMat4("u_ViewProjection", viewProjection);
 
 		StartBatch();
 	}
@@ -186,6 +232,9 @@ namespace SW {
 
 		s_Data.LineVertexCount = 0;
 		s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;
+
+		s_Data.CircleIndexCount = 0;
+		s_Data.CircleVertexBufferPtr = s_Data.CircleVertexBufferBase;
 
 		s_Data.TextureSlotIndex = 1;
 	}
@@ -207,12 +256,21 @@ namespace SW {
 		}
 
 		if (s_Data.LineVertexCount) {
-			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.LineVertexBufferPtr - (uint8_t*)s_Data.LineVertexBufferBase);
+			u32 dataSize = (u32)((u8*)s_Data.LineVertexBufferPtr - (u8*)s_Data.LineVertexBufferBase);
 			s_Data.LineVertexBuffer->SetData(s_Data.LineVertexBufferBase, dataSize);
 
 			s_Data.LineShader->Bind();
 			RendererAPI::SetLineWidth(s_Data.LineWidth);
 			RendererAPI::DrawLines(s_Data.LineVertexArray, s_Data.LineVertexCount);
+			s_Data.Stats.DrawCalls++;
+		}
+
+		if (s_Data.CircleIndexCount) {
+			u32 dataSize = (u32)((u8*)s_Data.CircleVertexBufferPtr - (u8*)s_Data.CircleVertexBufferBase);
+			s_Data.CircleVertexBuffer->SetData(s_Data.CircleVertexBufferBase, dataSize);
+
+			s_Data.CircleShader->Bind();
+			RendererAPI::DrawIndexed(s_Data.CircleVertexArray, s_Data.CircleIndexCount);
 			s_Data.Stats.DrawCalls++;
 		}
 	}
@@ -243,7 +301,7 @@ namespace SW {
 			}
 
 			if (textureIndex == 0.0f) {
-				textureIndex = (float)s_Data.TextureSlotIndex;
+				textureIndex = (f32)s_Data.TextureSlotIndex;
 				s_Data.TextureSlots[s_Data.TextureSlotIndex] = sprite.Texture;
 				s_Data.TextureSlotIndex++;
 			}
@@ -264,42 +322,66 @@ namespace SW {
 		s_Data.Stats.QuadCount++;
 	}
 
-	void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color)
+	void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int entityID)
 	{
 		s_Data.LineVertexBufferPtr->Position = p0;
 		s_Data.LineVertexBufferPtr->Color = color;
+		s_Data.LineVertexBufferPtr->EntityID = entityID;
 		s_Data.LineVertexBufferPtr++;
 
 		s_Data.LineVertexBufferPtr->Position = p1;
 		s_Data.LineVertexBufferPtr->Color = color;
+		s_Data.LineVertexBufferPtr->EntityID = entityID;
 		s_Data.LineVertexBufferPtr++;
 
 		s_Data.LineVertexCount += 2;
 	}
 
-	void Renderer2D::DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
+	void Renderer2D::DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int entityID)
 	{
 		glm::vec3 p0 = glm::vec3(position.x - size.x * 0.5f, position.y - size.y * 0.5f, position.z);
 		glm::vec3 p1 = glm::vec3(position.x + size.x * 0.5f, position.y - size.y * 0.5f, position.z);
 		glm::vec3 p2 = glm::vec3(position.x + size.x * 0.5f, position.y + size.y * 0.5f, position.z);
 		glm::vec3 p3 = glm::vec3(position.x - size.x * 0.5f, position.y + size.y * 0.5f, position.z);
 
-		DrawLine(p0, p1, color);
-		DrawLine(p1, p2, color);
-		DrawLine(p2, p3, color);
-		DrawLine(p3, p0, color);
+		DrawLine(p0, p1, color, entityID);
+		DrawLine(p1, p2, color, entityID);
+		DrawLine(p2, p3, color, entityID);
+		DrawLine(p3, p0, color, entityID);
 	}
 
 	void Renderer2D::DrawRect(const glm::mat4& transform, const glm::vec4& color)
 	{
 		glm::vec3 lineVertices[4];
-		for (size_t i = 0; i < 4; i++)
+		for (u64 i = 0; i < 4; i++)
 			lineVertices[i] = glm::vec3(transform * s_Data.QuadVertexPositions[i]);
 
 		DrawLine(lineVertices[0], lineVertices[1], color);
 		DrawLine(lineVertices[1], lineVertices[2], color);
 		DrawLine(lineVertices[2], lineVertices[3], color);
 		DrawLine(lineVertices[3], lineVertices[0], color);
+	}
+
+	void Renderer2D::DrawCircle(const glm::mat4& transform, const CircleComponent& cc, int entityID /*= -1*/)
+	{
+		DrawCircle(transform, cc.Color, cc.Thickness, cc.Fade, entityID);
+	}
+
+	void Renderer2D::DrawCircle(const glm::mat4& transform, const glm::vec4& color, f32 thickness /*= 1.0f*/, f32 fade /*= 0.005f*/, int entityID /*= -1*/)
+	{
+		for (u64 i = 0; i < 4; i++) {
+			s_Data.CircleVertexBufferPtr->WorldPosition = transform * s_Data.QuadVertexPositions[i];
+			s_Data.CircleVertexBufferPtr->LocalPosition = s_Data.QuadVertexPositions[i] * 2.0f;
+			s_Data.CircleVertexBufferPtr->Color = color;
+			s_Data.CircleVertexBufferPtr->Thickness = thickness;
+			s_Data.CircleVertexBufferPtr->Fade = fade;
+			s_Data.CircleVertexBufferPtr->EntityID = entityID;
+			s_Data.CircleVertexBufferPtr++;
+		}
+
+		s_Data.CircleIndexCount += 6;
+
+		s_Data.Stats.QuadCount++;
 	}
 
 }

@@ -143,6 +143,19 @@ namespace SW {
 						Renderer2D::DrawRect(transform, glm::vec4(1, 1, 0, 1));
 					}
 				}
+
+				// Circle Colliders
+				{
+					for (auto&& [handle, tc, ccc] : m_ActiveScene->GetRegistry().GetEntitiesWith<TransformComponent, CircleCollider2DComponent>().each()) {
+						glm::vec3 translation = tc.Position + glm::vec3(ccc.Offset, 0.001f);
+						glm::vec3 scale = tc.Scale * glm::vec3(ccc.Radius * 2.0f);
+
+						glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
+							* glm::scale(glm::mat4(1.0f), scale);
+
+						Renderer2D::DrawCircle(transform, glm::vec4(1, 1, 0, 1), 0.02f);
+					}
+				}
 			}
 
 			m_ActiveScene->EndRendering();
@@ -177,6 +190,24 @@ namespace SW {
 			ImGuizmo::SetDrawlist();
 			ImGuizmo::SetRect(m_ViewportBoundsMin.x, m_ViewportBoundsMin.y, m_ViewportBoundsMax.x - m_ViewportBoundsMin.x, m_ViewportBoundsMax.y - m_ViewportBoundsMin.y);
 
+			glm::mat4 finalCameraProjection = m_EditorCamera->GetProjectionMatrix();
+			glm::mat4 finalCameraView = m_EditorCamera->GetViewMatrix();
+
+			ImGuizmo::ViewManipulate(
+				glm::value_ptr(finalCameraView), glm::value_ptr(finalCameraProjection),
+				ImGuizmo::OPERATION::ROTATE_SCREEN, ImGuizmo::MODE::WORLD, glm::value_ptr(m_CubeViewMatrix), 8.0f,
+				ImVec2(m_ViewportBoundsMax.x - 128, m_ViewportBoundsMin.y), ImVec2(128, 128), 0x10101010
+			);
+
+			if (!m_UsingEditorCamera) {
+				const glm::mat4 inverted = glm::inverse(finalCameraView);
+				const glm::vec3 direction = -glm::vec3(inverted[2]);
+				f32 yaw = glm::atan(direction.z, direction.x);
+				f32 pitch = glm::asin(direction.y);
+				m_EditorCamera->SetPitch(pitch);
+				m_EditorCamera->SetYaw(yaw);
+			}
+
 			if (SelectionManager::IsSelected() && m_ActiveScene->GetCurrentState() != SceneState::Play) {
 				Entity selectedEntity = m_ActiveScene->GetEntityByID(SelectionManager::GetSelectionID());
 
@@ -208,24 +239,6 @@ namespace SW {
 					tc.Rotation += deltaRotation;
 					tc.Scale = scale;
 				}
-			}
-
-			glm::mat4 finalCameraProjection = m_EditorCamera->GetProjectionMatrix();
-			glm::mat4 finalCameraView = m_EditorCamera->GetViewMatrix();
-
-			ImGuizmo::ViewManipulate(
-				glm::value_ptr(finalCameraView), glm::value_ptr(finalCameraProjection),
-				ImGuizmo::OPERATION::ROTATE_SCREEN, ImGuizmo::MODE::WORLD, glm::value_ptr(m_CubeViewMatrix), 8.0f,
-				ImVec2(m_ViewportBoundsMax.x - 128, m_ViewportBoundsMin.y), ImVec2(128, 128), 0x10101010
-			);
-
-			if (!m_UsingEditorCamera) {
-				const glm::mat4 inverted = glm::inverse(finalCameraView);
-				const glm::vec3 direction = -glm::vec3(inverted[2]);
-				f32 yaw = glm::atan(direction.z, direction.x);
-				f32 pitch = glm::asin(direction.y);
-				m_EditorCamera->SetPitch(pitch);
-				m_EditorCamera->SetYaw(yaw);
 			}
 
 			// Transform Gizmos Button Group
@@ -369,7 +382,7 @@ namespace SW {
 				
 				SelectionManager::SelectByID(idc.ID);
 			} else {
-				if (!ImGuizmo::IsUsingAny && !m_IsGizmoBarHovered)
+				if (!ImGuizmo::IsOver() && !ImGuizmo::IsUsingAny() && !m_IsGizmoBarHovered)
 					SelectionManager::Deselect();
 			}
 		}

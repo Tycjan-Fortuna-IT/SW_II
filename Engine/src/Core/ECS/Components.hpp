@@ -91,7 +91,7 @@ namespace SW {
 
     /**
      * @struct SpriteComponent
-     * @brief This component is used to store the color of an entity. This component is used for rendering.
+     * @brief This component is used to store the color of an entity. This component is used for rendering of squares and rectangles.
      * @note This component is optional.
      */
     struct SpriteComponent final
@@ -113,6 +113,29 @@ namespace SW {
 
         ~SpriteComponent() = default;
     };
+
+	/**
+	 * @struct CircleComponent
+	 * @brief This component is used to store the color of an entity. This component is used for rendering of circles and rings.
+	 * @note This component is optional.
+	 */
+	struct CircleComponent final
+	{
+		glm::vec4 Color = glm::vec4(1.0f);
+		f32 Thickness = 1.0f;
+		f32 Fade = 0.005f;
+
+		CircleComponent() = default;
+		CircleComponent(const glm::vec4& color)
+			: Color(color) {}
+		
+		CircleComponent(const CircleComponent& other) = default;
+		CircleComponent(CircleComponent&& other) = default;
+		CircleComponent& operator=(const CircleComponent& other) = default;
+		CircleComponent& operator=(CircleComponent&& other) = default;
+
+		~CircleComponent() = default;
+	};
 
 	/**
 	 * @struct CameraComponent
@@ -161,8 +184,16 @@ namespace SW {
 	{
 		void* Handle = nullptr;		/**< Internal box2D physics box collider handle */
 
-		glm::vec2 Size = { 0.5f, 0.5f };		/**< Size of the collider */
+		glm::vec2 Size = { 0.5f, 0.5f };	/**< Size of the collider */
 		glm::vec2 Offset = { 0.0f, 0.0f };	/**< Center of the box in local coordinates */
+	};
+
+	struct CircleCollider2DComponent final
+	{
+		void* Handle = nullptr;		/**< Internal box2D physics circle collider handle */
+
+		f32 Radius = 0.5f;					/**< Radius of the circle collider */
+		glm::vec2 Offset = { 0.0f, 0.0f };	/**< Offset of the collider (from center) */
 	};
 
 }

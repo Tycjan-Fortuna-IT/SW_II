@@ -43,8 +43,9 @@ namespace SW {
 		 * 
 		 * @param spriteShader The shader to be used for rendering sprites.
 		 * @param lineShader The shader to be used for rendering lines.
+		 * @param circleShader The shader to be used for rendering circles and rings.
 		 */
-		static void Initialize(Shader* spriteShader, Shader* lineShader);
+		static void Initialize(Shader* spriteShader, Shader* lineShader, Shader* circleShader);
 
 		/**
 		 * @brief Shuts down the Renderer2D and releases any allocated resources.
@@ -101,7 +102,7 @@ namespace SW {
 		 * @param sprite The sprite component of the quad.
 		 * @param entityID The ID of the entity.
 		 */
-		static void DrawQuad(const glm::mat4& transform, const SpriteComponent& sprite, int entityID);
+		static void DrawQuad(const glm::mat4& transform, const SpriteComponent& sprite, int entityID = -1);
 
 		/**
 		 * @brief Draws a line with the specified start and end points and color.
@@ -109,7 +110,7 @@ namespace SW {
 		 * @param p1 The end point of the line.
 		 * @param color The color of the line.
 		 */
-		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color);
+		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int entityID = -1);
 
 		/**
 		 * @brief Draws a rectangle with the specified position, size, and color.
@@ -117,7 +118,11 @@ namespace SW {
 		 * @param size The size of the rectangle.
 		 * @param color The color of the rectangle.
 		 */
-		static void DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
+		static void DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int entityID = -1);
+
+		static void DrawCircle(const glm::mat4& transform, const CircleComponent& cc, int entityID = -1);
+
+		static void DrawCircle(const glm::mat4& transform, const glm::vec4& color, f32 thickness = 1.0f, f32 fade = 0.005f, int entityID = -1);
 
 		/**
 		 * @brief Draws a rectangle with the specified transformation matrix and color.
