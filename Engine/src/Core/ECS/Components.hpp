@@ -163,6 +163,11 @@ namespace SW {
 		Dynamic			/**< positive mass, non-zero velocity determined by forces, moved by the physics system */
 	};
 
+	/**
+	 * @struct RigidBody2DComponent
+	 * @brief This component is used to store the physics body data.
+	 * @note This component is optional.
+	 */
 	struct RigidBody2DComponent final
 	{
 		PhysicBodyType Type = PhysicBodyType::Static;	/**< By default the body is static */
@@ -171,29 +176,58 @@ namespace SW {
 
 		f32 GravityScale = 1.0f;	/**< Scale the gravity applied to this body. */
 
-		f32 Density = 1.f;			/**< The density of the rigid body [kg/m^2]. */
 		f32 Friction = 0.5f;		/**< The friction coefficient [0 - 1] range. */
 		f32 Restitution = 0.f;				/**< The restitution (elasticity) [0 - 1] range. */
 		f32 RestitutionThreshold = 0.5f;	/**< Restitution velocity threshold, usually in [m/s] (above this speed will bounce). */
 
 		bool AllowSleep = true;		/**< Set this flag to false if this body should never fall asleep. */
-		bool IsSensor = false;      /**< A sensor shape collects contact information but never generates a collision */
 	};
 
+	/**
+	 * @struct BoxCollider2DComponent
+	 * @brief This component is used to store the box collider data.
+	 * @note This component is optional.
+	 */
 	struct BoxCollider2DComponent final
 	{
 		void* Handle = nullptr;		/**< Internal box2D physics box collider handle */
 
 		glm::vec2 Size = { 0.5f, 0.5f };	/**< Size of the collider */
 		glm::vec2 Offset = { 0.0f, 0.0f };	/**< Center of the box in local coordinates */
+
+		f32 Density = 1.f;			/**< The density of the rigid body [kg/m^2]. */
+
+		bool IsSensor = false;      /**< A sensor shape collects contact information but never generates a collision */
 	};
 
+	/**
+	 * @struct CircleCollider2DComponent
+	 * @brief This component is used to store the circle collider data.
+	 * @note This component is optional.
+	 */
 	struct CircleCollider2DComponent final
 	{
 		void* Handle = nullptr;		/**< Internal box2D physics circle collider handle */
 
 		f32 Radius = 0.5f;					/**< Radius of the circle collider */
 		glm::vec2 Offset = { 0.0f, 0.0f };	/**< Offset of the collider (from center) */
+
+		f32 Density = 1.f;			/**< The density of the rigid body [kg/m^2]. */
+
+		bool IsSensor = false;      /**< A sensor shape collects contact information but never generates a collision */
+	};
+
+	/**
+	 * @struct BuoyancyEffector2DComponent
+	 * @brief This component is used to store the buoyancy effector data.
+	 * @note This component is optional.
+	 */
+	struct BuoyancyEffector2DComponent final
+	{
+		f32 Density = 2.f;			/**< The density of the fluid [kg/m^2]. */
+		f32 DragMultiplier = 1.0f;			/**< The fluid drag multiplier. */
+		f32 FlowMagnitude = 0.0f;			/**< The magnitude of the flow. */
+		f32 FlowAngle = glm::radians(0.0f);	/**< The angle of the flow. */
 	};
 
 }
