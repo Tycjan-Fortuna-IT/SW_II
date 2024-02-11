@@ -33,9 +33,9 @@ namespace SW {
 
 			avg /= static_cast<f32>(size);
 
-			ImGui::PushItemWidth(-1);
-			ImGui::PlotLines("##FPS", m_FpsValues, static_cast<int>(size));
-			ImGui::PopItemWidth();
+			const ImVec2 maxWidth = ImGui::GetContentRegionAvail();
+			ImVec2 graphSize = ImVec2(maxWidth.x, 60.0f);
+			ImGui::PlotLines("##FPS", m_FpsValues, static_cast<int>(size), 0, nullptr, 0, m_FpsValues[0] + m_FpsValues[0] / 2.f, graphSize);
 
 			static constexpr ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen
 				| ImGuiTreeNodeFlags_SpanAvailWidth

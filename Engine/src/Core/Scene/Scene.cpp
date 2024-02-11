@@ -9,6 +9,7 @@
 #include "Core/Utils/Random.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Editor/EditorCamera.hpp"
+#include "Core/Physics/Physics2DContactListener.hpp"
 
 namespace SW {
 
@@ -103,7 +104,9 @@ namespace SW {
 	{
 		m_PhysicsFrameAccumulator = 0.0f;
 
-		m_PhysicsWorld2D = new b2World({ m_Gravity.x, m_Gravity.y });
+		m_PhysicsWorld2D = new b2World({ Gravity.x, Gravity.y });
+		m_PhysicsContactListener2D = new Physics2DContactListener(this);
+		m_PhysicsWorld2D->SetContactListener(m_PhysicsContactListener2D);
 
 		for (auto&& [handle, tc, rbc] : m_Registry.GetEntitiesWith<TransformComponent, RigidBody2DComponent>().each()) {
 			CreateRigidbody2D({ handle, this }, tc, rbc);
@@ -113,6 +116,7 @@ namespace SW {
 	void Scene::OnRuntimeStop()
 	{
 		delete m_PhysicsWorld2D;
+		delete m_PhysicsContactListener2D;
 	}
 
 	void Scene::OnUpdate(Timestep dt)
@@ -143,6 +147,7 @@ namespace SW {
 		m_PhysicsFrameAccumulator += dt;
 
 		while (m_PhysicsFrameAccumulator >= physicsTs) {
+			m_PhysicsContactListener2D->Step(physicsTs);
 			m_PhysicsWorld2D->Step(physicsTs, static_cast<int32_t>(m_VelocityIterations), static_cast<int32_t>(m_PositionIterations));
 
 			m_PhysicsFrameAccumulator -= physicsTs;
@@ -252,6 +257,13 @@ namespace SW {
 			registry.emplace_or_replace<CircleCollider2DComponent>(destination, componentToCopy);
 		}
 
+		for (auto&& [handle, idc, tc] : m_Registry.GetEntitiesWith<IDComponent, BuoyancyEffector2DComponent>().each()) {
+			BuoyancyEffector2DComponent& componentToCopy = GetEntityByID(idc.ID).GetComponent<BuoyancyEffector2DComponent>();
+			Entity destination = GetEntityByID(idc.ID);
+
+			registry.emplace_or_replace<BuoyancyEffector2DComponent>(destination, componentToCopy);
+		}
+
 		return copy;
     }
 
@@ -290,11 +302,11 @@ namespace SW {
 		b2FixtureDef fixtureDef;
 		fixtureDef.shape = &boxShape;
 		fixtureDef.userData.pointer = static_cast<u32>(entity);
-		fixtureDef.density = rbc.Density;
+		fixtureDef.density = bcc.Density;
 		fixtureDef.friction = rbc.Friction;
 		fixtureDef.restitution = rbc.Restitution;
 		fixtureDef.restitutionThreshold = rbc.RestitutionThreshold;
-		fixtureDef.isSensor = rbc.IsSensor;
+		fixtureDef.isSensor = bcc.IsSensor;
 
 		b2Body* body = static_cast<b2Body*>(rbc.Handle);
 		b2Fixture* fixture = body->CreateFixture(&fixtureDef);
@@ -311,11 +323,11 @@ namespace SW {
 		b2FixtureDef fixtureDef;
 		fixtureDef.shape = &circleShape;
 		fixtureDef.userData.pointer = static_cast<u32>(entity);
-		fixtureDef.density = rbc.Density;
+		fixtureDef.density = ccc.Density;
 		fixtureDef.friction = rbc.Friction;
 		fixtureDef.restitution = rbc.Restitution;
 		fixtureDef.restitutionThreshold = rbc.RestitutionThreshold;
-		fixtureDef.isSensor = rbc.IsSensor;
+		fixtureDef.isSensor = ccc.IsSensor;
 
 		b2Body* body = static_cast<b2Body*>(rbc.Handle);
 		b2Fixture* fixture = body->CreateFixture(&fixtureDef);

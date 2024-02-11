@@ -31,6 +31,7 @@ namespace SW {
 		AddComponentName<RigidBody2DComponent>(SW_ICON_SOCCER "  Rigid Body 2D");
 		AddComponentName<BoxCollider2DComponent>(SW_ICON_CHECKBOX_BLANK_OUTLINE "  Box Collider 2D");
 		AddComponentName<CircleCollider2DComponent>(SW_ICON_CHECKBOX_BLANK_CIRCLE_OUTLINE "  Circle Collider 2D");
+		AddComponentName<BuoyancyEffector2DComponent>(SW_ICON_WATER "  Buoyancy Effector 2D");
 	}
 
 	void PropertiesPanel::OnUpdate(Timestep dt)
@@ -177,6 +178,14 @@ namespace SW {
 						ImGui::CloseCurrentPopup();
 					}
 
+					if (ImGui::MenuItemEx("Buoyancy Effector 2D", SW_ICON_WATER)) {
+						if (!entity.HasComponent<BuoyancyEffector2DComponent>()) {
+							entity.AddComponent<BuoyancyEffector2DComponent>();
+						}
+
+						ImGui::CloseCurrentPopup();
+					}
+
 					if (ImGui::MenuItemEx("Camera Component", SW_ICON_CAMERA)) {
 						if (!entity.HasComponent<CameraComponent>()) {
 							SceneCamera camera(m_SceneViewportPanel->GetViewportAspectRatio());
@@ -243,11 +252,9 @@ namespace SW {
 				}, "Body Type");
 				if (component.Type == PhysicBodyType::Dynamic) {
 					GUI::DrawFloatingPointProperty(component.GravityScale, "Gravity Scale");
-					GUI::DrawFloatingPointProperty(component.Density, "Density", nullptr, 0.f);
 					GUI::DrawFloatingPointProperty(component.Friction, "Friction", nullptr, 0.f, 1.f);
 					GUI::DrawFloatingPointProperty(component.Restitution, "Restitution", nullptr, 0.f, 1.f);
 					GUI::DrawFloatingPointProperty(component.RestitutionThreshold, "Restitution Threshold", nullptr);
-					GUI::DrawBooleanProperty(component.IsSensor, "Is Sensor?", "Whether to react to the collision or just sense it.");
 					GUI::DrawBooleanProperty(component.AllowSleep, "Allow Sleep");
 				}
 				GUI::EndProperties();
@@ -257,6 +264,8 @@ namespace SW {
 				GUI::BeginProperties("##box_collider_2d_property");
 				GUI::DrawVector2ControlProperty(component.Size, "Size", nullptr, 0.5f);
 				GUI::DrawVector2ControlProperty(component.Offset, "Offset");
+				GUI::DrawFloatingPointProperty(component.Density, "Density", nullptr, 0.f);
+				GUI::DrawBooleanProperty(component.IsSensor, "Is Sensor?", "Whether to react to the collision or just sense it.");
 				GUI::EndProperties();
 			}, true);
 
@@ -264,6 +273,19 @@ namespace SW {
 				GUI::BeginProperties("##circle_collider_2d_property");
 				GUI::DrawFloatingPointProperty(component.Radius, "Radius", nullptr, 0.f);
 				GUI::DrawVector2ControlProperty(component.Offset, "Offset");
+				GUI::DrawFloatingPointProperty(component.Density, "Density", nullptr, 0.f);
+				GUI::DrawBooleanProperty(component.IsSensor, "Is Sensor?", "Whether to react to the collision or just sense it.");
+				GUI::EndProperties();
+			}, true);
+
+			DrawComponent<BuoyancyEffector2DComponent>(entity, [](BuoyancyEffector2DComponent& component) {
+				GUI::BeginProperties("##buoancy_effector_2d_property");
+				GUI::DrawFloatingPointProperty(component.DragMultiplier, "Drag Multiplier");
+				GUI::DrawFloatingPointProperty(component.FlowMagnitude, "Flow Magnitude");
+				f32 angle = glm::degrees(component.FlowAngle);
+				GUI::DrawFloatingPointProperty(angle, "Flow Angle: ");
+				component.FlowAngle = glm::radians(angle);
+				GUI::DrawFloatingPointProperty(component.Density, "Density", nullptr, 0.f);
 				GUI::EndProperties();
 			}, true);
 			

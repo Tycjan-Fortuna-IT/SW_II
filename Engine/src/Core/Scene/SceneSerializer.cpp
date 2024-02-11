@@ -185,12 +185,10 @@ namespace SW {
 				output << YAML::BeginMap;
 				output << YAML::Key << "Type" << YAML::Value << (int)rbc.Type;
 				output << YAML::Key << "GravityScale" << YAML::Value << rbc.GravityScale;
-				output << YAML::Key << "Density" << YAML::Value << rbc.Density;
 				output << YAML::Key << "Friction" << YAML::Value << rbc.Friction;
 				output << YAML::Key << "Restitution" << YAML::Value << rbc.Restitution;
 				output << YAML::Key << "RestitutionThreshold" << YAML::Value << rbc.RestitutionThreshold;
 				output << YAML::Key << "AllowSleep" << YAML::Value << rbc.AllowSleep;
-				output << YAML::Key << "IsSensor" << YAML::Value << rbc.IsSensor;
 				output << YAML::EndMap;
 			}
 
@@ -201,6 +199,8 @@ namespace SW {
 				output << YAML::BeginMap;
 				output << YAML::Key << "Size" << YAML::Value << bcc.Size;
 				output << YAML::Key << "Offset" << YAML::Value << bcc.Offset;
+				output << YAML::Key << "Density" << YAML::Value << bcc.Density;
+				output << YAML::Key << "IsSensor" << YAML::Value << bcc.IsSensor;
 				output << YAML::EndMap;
 			}
 
@@ -211,6 +211,20 @@ namespace SW {
 				output << YAML::BeginMap;
 				output << YAML::Key << "Radius" << YAML::Value << ccc.Radius;
 				output << YAML::Key << "Offset" << YAML::Value << ccc.Offset;
+				output << YAML::Key << "Density" << YAML::Value << ccc.Density;
+				output << YAML::Key << "IsSensor" << YAML::Value << ccc.IsSensor;
+				output << YAML::EndMap;
+			}
+
+			if (entity.HasComponent<BuoyancyEffector2DComponent>()) {
+				BuoyancyEffector2DComponent& bec = entity.GetComponent<BuoyancyEffector2DComponent>();
+
+				output << YAML::Key << "BuoyancyEffector2DComponent";
+				output << YAML::BeginMap;
+				output << YAML::Key << "DragMultiplier" << YAML::Value << bec.DragMultiplier;
+				output << YAML::Key << "FlowAngle" << YAML::Value << bec.FlowAngle;
+				output << YAML::Key << "FlowMagnitude" << YAML::Value << bec.FlowMagnitude;
+				output << YAML::Key << "Density" << YAML::Value << bec.Density;
 				output << YAML::EndMap;
 			}
 
@@ -296,20 +310,20 @@ namespace SW {
 
 				rbc.Type = (PhysicBodyType)rigidBody2DComponent["Type"].as<int>();
 				rbc.GravityScale = rigidBody2DComponent["GravityScale"].as<f32>();
-				rbc.Density = rigidBody2DComponent["Density"].as<f32>();
 				rbc.Friction = rigidBody2DComponent["Friction"].as<f32>();
 				rbc.Restitution = rigidBody2DComponent["Restitution"].as<f32>();
 				rbc.RestitutionThreshold = rigidBody2DComponent["RestitutionThreshold"].as<f32>();
 				rbc.AllowSleep = rigidBody2DComponent["AllowSleep"].as<bool>();
-				rbc.IsSensor = rigidBody2DComponent["IsSensor"].as<bool>();
 			}
 
 			YAML::Node boxCollider2DComponent = entity["Entity"]["BoxCollider2DComponent"];
 			if (boxCollider2DComponent) {
-				BoxCollider2DComponent& rbc = deserialized.AddComponent<BoxCollider2DComponent>();
+				BoxCollider2DComponent& bcc = deserialized.AddComponent<BoxCollider2DComponent>();
 
-				rbc.Size = boxCollider2DComponent["Size"].as<glm::vec2>();
-				rbc.Offset = boxCollider2DComponent["Offset"].as<glm::vec2>();
+				bcc.Size = boxCollider2DComponent["Size"].as<glm::vec2>();
+				bcc.Offset = boxCollider2DComponent["Offset"].as<glm::vec2>();
+				bcc.Density = boxCollider2DComponent["Density"].as<f32>();
+				bcc.IsSensor = boxCollider2DComponent["IsSensor"].as<bool>();
 			}
 
 			YAML::Node circleCollider2DComponent = entity["Entity"]["CircleCollider2DComponent"];
@@ -318,6 +332,18 @@ namespace SW {
 
 				ccc.Radius = circleCollider2DComponent["Radius"].as<f32>();
 				ccc.Offset = circleCollider2DComponent["Offset"].as<glm::vec2>();
+				ccc.Density = circleCollider2DComponent["Density"].as<f32>();
+				ccc.IsSensor = circleCollider2DComponent["IsSensor"].as<bool>();
+			}
+
+			YAML::Node buoyancyEffector2DComponent = entity["Entity"]["BuoyancyEffector2DComponent"];
+			if (buoyancyEffector2DComponent) {
+				BuoyancyEffector2DComponent& bec = deserialized.AddComponent<BuoyancyEffector2DComponent>();
+
+				bec.DragMultiplier = buoyancyEffector2DComponent["DragMultiplier"].as<f32>();
+				bec.FlowAngle = buoyancyEffector2DComponent["FlowAngle"].as<f32>();
+				bec.FlowMagnitude = buoyancyEffector2DComponent["FlowMagnitude"].as<f32>();
+				bec.Density = buoyancyEffector2DComponent["Density"].as<f32>();
 			}
 		}
 

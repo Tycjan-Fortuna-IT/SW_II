@@ -661,7 +661,7 @@ namespace SW::GUI {
 
 		ImFont* boldFont = GUI::Appearance::GetFonts().DefaultBoldFont;
 
-		ImGui::PushMultiItemsWidths(2, ImGui::CalcItemWidth());
+		ImGui::PushMultiItemsWidths(2, ImGui::CalcItemWidth() + ImGui::GetStyle().ItemSpacing.x);
 
 		float frameHeight = ImGui::GetFrameHeight();
 		ImVec2 buttonSize = { frameHeight + 3.0f, frameHeight };
