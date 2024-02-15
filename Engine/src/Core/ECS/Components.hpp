@@ -156,6 +156,23 @@ namespace SW {
 		CameraComponent& operator=(CameraComponent&& other) = default;
 	};
 
+	/**
+	 * @struct RelationshipComponent
+	 * @brief This component is used to store the parent-child relationship between entities.
+	 */
+	struct RelationshipComponent final
+	{
+		u64 ParentID = 0u;
+		std::vector<u64> ChildrenIDs{};
+
+		RelationshipComponent() = default;
+		RelationshipComponent(u64 parentID)
+			: ParentID(parentID) {}
+	};
+
+	/**
+	 * @brief Enum class for the type of the physics body. 
+	 */
 	enum class PhysicBodyType : u8
 	{
 		Static = 0,		/**< zero mass, zero velocity, may be manually moved */

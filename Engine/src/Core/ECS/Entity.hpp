@@ -104,6 +104,13 @@ namespace SW {
 		const std::string& GetTag() { return GetComponent<TagComponent>().Tag; }
 
 		/**
+		 * @brief Returns the RelationshipComponent associated with the Entity.
+		 *
+		 * @return Reference to the RelationshipComponent.
+		 */
+		RelationshipComponent& GetRelations() { return GetComponent<RelationshipComponent>(); }
+
+		/**
 		 * @brief Conversion operator to check if the entity is valid.
 		 * @return True if the entity is valid, false otherwise.
 		 */
@@ -121,6 +128,48 @@ namespace SW {
 		 * @return The entity handle as an unsigned integer.
 		 */
         operator u32() const { return (u32)m_Handle; }
+
+		/**
+		 * @brief Retrieves the parent entity of the current entity.
+		 * @warning If the entity has no parent, an empty entity is returned.
+		 * 
+		 * @return The parent entity, or an empty entity if there is no parent.
+		 */
+		Entity GetParent()
+		{
+			RelationshipComponent& rc  = GetComponent<RelationshipComponent>();
+
+			return rc.ParentID != 0 ? m_Scene->GetEntityByID(rc.ParentID) : Entity{};
+		}
+
+		/**
+		 * Sets the parent of the entity.
+		 * @warning If the entity already has a parent, the old parent will be replaced by the new one.
+		 * 
+		 * @param parent The entity to set as the parent.
+		 */
+		void SetParent(Entity parent)
+		{
+			RelationshipComponent& rc = GetComponent<RelationshipComponent>();
+
+			if (rc.ParentID == 0) {
+				rc.ParentID = parent.GetID();
+				parent.GetRelations().ChildrenIDs.emplace_back(GetID());
+				return;
+			}
+
+			Entity oldParent = GetParent();
+			RelationshipComponent& oldParentRelations = oldParent.GetRelations();
+
+			for (auto it = oldParentRelations.ChildrenIDs.begin(); it != oldParentRelations.ChildrenIDs.end(); it++) {
+				if (*it == GetID()) {
+					oldParentRelations.ChildrenIDs.erase(it);
+					break;
+				}
+			}
+			
+			rc.ParentID = parent.GetID();
+		}
 
     private:
         entt::entity m_Handle{ entt::null };	/** @brief The internal entity handle. */

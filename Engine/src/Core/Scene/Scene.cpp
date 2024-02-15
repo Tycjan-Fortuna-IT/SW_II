@@ -23,17 +23,7 @@ namespace SW {
 
 	Entity Scene::CreateEntity(const std::string& tag /*= "Entity"*/)
 	{
-		Entity entity = { m_Registry.GetRegistryHandle().create(), this };
-
-		u64 id = CreateID();
-
-		entity.AddComponent<IDComponent>(id);
-		entity.AddComponent<TagComponent>(tag);
-		entity.AddComponent<TransformComponent>();
-
-		m_EntityMap[id] = (entt::entity)entity;
-
-		return entity;
+		return CreateEntityWithID(CreateID(), tag);
 	}
 
 	Entity Scene::CreateEntityWithID(u64 id, const std::string& tag /*= "Entity"*/)
@@ -43,6 +33,7 @@ namespace SW {
 		entity.AddComponent<IDComponent>(id);
 		entity.AddComponent<TagComponent>(tag);
 		entity.AddComponent<TransformComponent>();
+		entity.AddComponent<RelationshipComponent>();
 
 		m_EntityMap[id] = (entt::entity)entity;
 
