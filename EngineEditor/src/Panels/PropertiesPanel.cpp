@@ -23,6 +23,7 @@ namespace SW {
 	PropertiesPanel::PropertiesPanel(SceneViewportPanel* sceneViewportPanel)
 		: Panel("Properties", SW_ICON_INFORMATION, true), m_SceneViewportPanel(sceneViewportPanel)
 	{
+		AddComponentName<TagComponent>(SW_ICON_TAG "  Tag");
 		AddComponentName<TransformComponent>(SW_ICON_VECTOR_LINE "  Transform");
 		AddComponentName<SpriteComponent>(SW_ICON_IMAGE_SIZE_SELECT_ACTUAL "  Sprite");
 		AddComponentName<CircleComponent>(SW_ICON_CHECKBOX_BLANK_CIRCLE "  Circle");
@@ -117,29 +118,6 @@ namespace SW {
 				ImGui::TextDisabled(std::to_string(id.ID).c_str());
 			}
 
-			if (entity.HasComponent<TagComponent>()) {
-				TagComponent& tc = entity.GetComponent<TagComponent>();
-
-				GUI::ScopedStyle FramePadding(ImGuiStyleVar_FramePadding, ImVec2(0.f, 6.f));
-
-				char buffer[256];
-
-				memcpy(buffer, tc.Tag.c_str(), std::min(sizeof(buffer), tc.Tag.size() + 1));
-
-				const f32 oldMouseX = ImGui::GetCursorPosX();
-				const f32 oldMouseY = ImGui::GetCursorPosY();
-				const f32 textWidth = ImGui::CalcTextSize(SW_ICON_TAG "  Tag").x;
-				const f32 margin = 15.f;
-
-				ImGui::SetCursorPos(ImVec2(oldMouseX, oldMouseY + 6));
-				ImGui::Text(SW_ICON_TAG "  Tag");
-
-				ImGui::SetCursorPos(ImVec2(oldMouseX + textWidth + margin, oldMouseY));
-
-				if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
-					tc.Tag = buffer;
-			}
-
 			if (ImGui::BeginPopup("AddComponent_Popup")) {
 				if (ImGui::BeginMenu("2D")) {
 					if (ImGui::MenuItemEx("Sprite Component", SW_ICON_IMAGE_SIZE_SELECT_ACTUAL)) {
@@ -208,16 +186,22 @@ namespace SW {
 			}
 
 			ImGui::BeginChild("PropertiesBody");
-						
+					
+			DrawComponent<TagComponent>(entity, [](TagComponent& component) {
+				GUI::BeginProperties("##tag_property");
+				GUI::DrawSingleLineTextInputProperty<256>(component.Tag, "Tag ");
+				GUI::EndProperties();
+			}, false);
+
 			DrawComponent<TransformComponent>(entity, [](TransformComponent& component) {
 				GUI::BeginProperties("##transform_property");
-				GUI::DrawVector3ControlProperty(component.Position, "Position: ", "Position of the entity");
+				GUI::DrawVector3ControlProperty(component.Position, "Position ", "Position of the entity");
 				
 				glm::vec3 rotation = glm::degrees(component.Rotation);
-				GUI::DrawVector3ControlProperty(rotation, "Rotation: ", "Rotation of the entity in degrees");
+				GUI::DrawVector3ControlProperty(rotation, "Rotation ", "Rotation of the entity in degrees");
 				component.Rotation = glm::radians(rotation);
 
-				GUI::DrawVector3ControlProperty(component.Scale, "Scale: ", "Scale of the entity", 1.f);
+				GUI::DrawVector3ControlProperty(component.Scale, "Scale ", "Scale of the entity", 1.f);
 				GUI::EndProperties();
 			}, false);
 
@@ -283,7 +267,7 @@ namespace SW {
 				GUI::DrawFloatingPointProperty(component.DragMultiplier, "Drag Multiplier");
 				GUI::DrawFloatingPointProperty(component.FlowMagnitude, "Flow Magnitude");
 				f32 angle = glm::degrees(component.FlowAngle);
-				GUI::DrawFloatingPointProperty(angle, "Flow Angle: ");
+				GUI::DrawFloatingPointProperty(angle, "Flow Angle ");
 				component.FlowAngle = glm::radians(angle);
 				GUI::DrawFloatingPointProperty(component.Density, "Density", nullptr, 0.f);
 				GUI::EndProperties();

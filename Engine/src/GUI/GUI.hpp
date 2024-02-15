@@ -637,6 +637,37 @@ namespace SW::GUI {
 	}
 
 	/**
+	 * @brief Draws a single line text input property in the GUI.
+	 * 
+	 * This function is used to draw a single line text input property in the GUI.
+	 * It takes a reference to a string, a label, and an optional tooltip as parameters.
+	 * The text input field is displayed with the specified label and tooltip.
+	 * The text entered by the user is stored in the provided string reference.
+	 * 
+	 * @tparam N The size of the buffer used to store the text input.
+	 * @param text The reference to the string where the entered text will be stored.
+	 * @param label The label to display for the text input field.
+	 * @param tooltip The optional tooltip to display for the text input field.
+	 */
+	template <int N>
+	static void DrawSingleLineTextInputProperty(
+		std::string& text, const char* label, const char* tooltip = nullptr
+	) {
+		BeginPropertyGrid(label, tooltip, false);
+
+		char buffer[N];
+
+		memcpy(buffer, text.c_str(), std::min(sizeof(buffer), text.size() + 1));
+
+		ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 1.5f);
+
+		if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
+			text = buffer;
+
+		EndPropertyGrid();
+	}
+
+	/**
 	 * @brief Draws a control property for a Vector2.
 	 *
 	 * This function is used to draw a control property for a Vector2, allowing the user to modify its values.
@@ -661,7 +692,7 @@ namespace SW::GUI {
 
 		ImFont* boldFont = GUI::Appearance::GetFonts().DefaultBoldFont;
 
-		ImGui::PushMultiItemsWidths(2, ImGui::CalcItemWidth() + ImGui::GetStyle().ItemSpacing.x);
+		ImGui::PushMultiItemsWidths(2, ImGui::CalcItemWidth() + ImGui::GetStyle().ItemSpacing.x * 2.f + 1.f);
 
 		float frameHeight = ImGui::GetFrameHeight();
 		ImVec2 buttonSize = { frameHeight + 3.0f, frameHeight };
@@ -739,7 +770,7 @@ namespace SW::GUI {
 		
 		ImFont* boldFont = GUI::Appearance::GetFonts().DefaultBoldFont;
 
-		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth() + ImGui::GetStyle().ItemSpacing.x - 4.f);
 
 		float frameHeight = ImGui::GetFrameHeight();
 		ImVec2 buttonSize = { frameHeight + 3.0f, frameHeight };
