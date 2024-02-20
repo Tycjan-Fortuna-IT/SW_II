@@ -8,33 +8,39 @@
 #include "GUI/GUI.hpp"
 #include "GUI/Colors.hpp"
 #include "GUI/Appearance.hpp"
+#include "Core/Project/ProjectContext.hpp"
+#include "Core/Project/Project.hpp"
 
 namespace SW {
 
 	static std::unordered_map<std::string, FileType> s_FileTypes = {
-		{ ".png",	FileType::Texture },
-		{ ".jpg",	FileType::Texture },
-		{ ".jpeg",	FileType::Texture },
-		{ ".bmp",	FileType::Texture },
+		{ ".png",	    FileType::Texture },
+		{ ".jpg",	    FileType::Texture },
+		{ ".jpeg",	    FileType::Texture },
+		{ ".bmp",	    FileType::Texture },
+        { ".sw",	FileType::Scene   },
 	};
 
 	static const std::unordered_map<FileType, ImVec4> s_FileTypeColors = {
 		{ FileType::Texture,  { 0.8f, 0.2f, 0.3f, 1.f } },
-		{ FileType::Directory, { 1.f, 1.0f, 0.8f, 1.f } }
+		{ FileType::Directory, { 1.f, 1.0f, 0.8f, 1.f } },
+        { FileType::Scene, { 0.f, 1.0f, 0.f, 1.f } }
 	};
 
 	static const std::unordered_map<FileType, std::string> s_FileTypeString = {
 		{ FileType::Texture,  "Texture" },
-		{ FileType::Directory, "Directory" }
+		{ FileType::Directory, "Directory" },
+        { FileType::Scene, "Scene" }
 	};
 
 	AssetPanel::AssetPanel(const char* name)
 		: Panel(name, SW_ICON_FOLDER_STAR, true)
 	{
-		m_AssetsDirectory = "assets";
-		m_CurrentDirectory = m_AssetsDirectory;
+		EventSystem::Register(EVENT_CODE_PROJECT_LOADED, nullptr, [this](Event event, void* sender, void* listener) -> bool {		
+			InvalidateAssetDirectory();
 
-		LoadDirectoryEntries();
+			return false;
+		});
 	}
 
 	void AssetPanel::OnUpdate(Timestep dt)
@@ -47,132 +53,144 @@ namespace SW {
 		GUI::ScopedColor PanelBackground(ImGuiCol_WindowBg, GUI::Colors::Darken(GUI::Appearance::GetColors().ChildBackground, 0.02f));
 
 		if (OnBegin()) {
-			static f32 customThumbnailSize = 200.f;
+			if (ProjectContext::HasContext()) {
+				static f32 customThumbnailSize = 200.f;
 
-			bool atAssetsDir = m_CurrentDirectory == m_AssetsDirectory;
+				bool atAssetsDir = m_CurrentDirectory == m_AssetsDirectory;
 
-			ImGui::Columns(2, 0, false);
+				ImGui::Columns(2, 0, false);
 
-			if (GUI::Button(SW_ICON_REFRESH, { 30.f, 30.f })) {
-				LoadDirectoryEntries();
-			}
-
-			if (!atAssetsDir) {
-				ImGui::SameLine();
-				if (GUI::Button(SW_ICON_ARROW_LEFT_BOLD, { 30.f, 30.f })) {
-					m_CurrentDirectory = m_CurrentDirectory.parent_path();
+				if (GUI::Button(SW_ICON_REFRESH, { 30.f, 30.f })) {
 					LoadDirectoryEntries();
 				}
-			}
-			ImGui::NextColumn();
 
-			ImGui::DragFloat("Thumbnail size", &customThumbnailSize, 8.f, 64.f, 256.f);
-			
-			ImGui::Columns(1);
+				if (!atAssetsDir) {
+					ImGui::SameLine();
+					if (GUI::Button(SW_ICON_ARROW_LEFT_BOLD, { 30.f, 30.f })) {
+						m_CurrentDirectory = m_CurrentDirectory.parent_path();
+						LoadDirectoryEntries();
+					}
+				}
+				ImGui::NextColumn();
 
-			bool refreshDirectory = false;
+				ImGui::DragFloat("Thumbnail size", &customThumbnailSize, 8.f, 64.f, 256.f);
 
-			constexpr float padding = 4.0f;
-			const float scaledThumbnailSize = customThumbnailSize * ImGui::GetIO().FontGlobalScale;
-			const float scaledThumbnailSizeX = scaledThumbnailSize * 0.55f;
-			const float cellSize = scaledThumbnailSizeX + 2 * padding + scaledThumbnailSizeX * 0.1f;
+				ImGui::Columns(1);
 
-			constexpr float overlayPaddingY = 6.0f * padding;
-			constexpr float thumbnailPadding = overlayPaddingY * 0.5f;
-			const float thumbnailSize = scaledThumbnailSizeX - thumbnailPadding;
+				bool refreshDirectory = false;
 
-			const ImVec2 backgroundThumbnailSize = { scaledThumbnailSizeX + padding * 2, scaledThumbnailSize + padding * 2 };
+				constexpr f32 padding = 4.0f;
+				const f32 scaledThumbnailSize = customThumbnailSize * ImGui::GetIO().FontGlobalScale;
+				const f32 scaledThumbnailSizeX = scaledThumbnailSize * 0.55f;
+				const f32 cellSize = scaledThumbnailSizeX + 2 * padding + scaledThumbnailSizeX * 0.1f;
 
-			const f32 panelWidth = ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ScrollbarSize;
-			int columnCount = static_cast<int>(panelWidth / cellSize);
+				constexpr f32 overlayPaddingY = 6.0f * padding;
+				constexpr f32 thumbnailPadding = overlayPaddingY * 0.5f;
+				const f32 thumbnailSize = scaledThumbnailSizeX - thumbnailPadding;
 
-			ImGuiTableFlags flags = ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_ScrollY
-				| ImGuiTableFlags_PadOuterX | ImGuiTableFlags_SizingFixedFit;
+				const ImVec2 backgroundThumbnailSize = { scaledThumbnailSizeX + padding * 2, scaledThumbnailSize + padding * 2 };
 
-			ImTextureID whiteTexId = GUI::GetTextureID(AssetManager::GetWhiteTexture()->GetHandle());
+				const f32 panelWidth = ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ScrollbarSize;
+				int columnCount = static_cast<int>(panelWidth / cellSize);
 
-			if (ImGui::BeginTable("BodyTable", columnCount, flags)) {
-				int i = 0;
+				ImGuiTableFlags flags = ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_ScrollY
+					| ImGuiTableFlags_PadOuterX | ImGuiTableFlags_SizingFixedFit;
 
-				for (const File& entry : m_DirectoryEntries) {
-					ImGui::PushID(i);
+				ImTextureID whiteTexId = GUI::GetTextureID(AssetManager::GetWhiteTexture()->GetHandle());
 
-					bool isDirectory = entry.Type == FileType::Directory;
-					const char* filename = entry.Name.data();
-					const char* filenameEnd = filename + entry.Name.size();
-					ImTextureID textureId = GUI::GetTextureID(entry.Thumbnail);
+				if (ImGui::BeginTable("BodyTable", columnCount, flags)) {
+					int i = 0;
 
-					ImGui::TableNextColumn();
+					for (const File& entry : m_DirectoryEntries) {
+						ImGui::PushID(i);
 
-					ImVec2 cursorPos = ImGui::GetCursorPos();
+						bool isDirectory = entry.Type == FileType::Directory;
+						const char* filename = entry.Name.data();
+						const char* filenameEnd = filename + entry.Name.size();
+						ImTextureID textureId = GUI::GetTextureID(entry.Thumbnail);
 
-					const ImVec4 backgroundColor = GUI::Colors::Lighten(GUI::Appearance::GetColors().WindowBackground, 0.11f);
-					const ImVec4 borderColor = GUI::Colors::Lighten(GUI::Appearance::GetColors().WindowBackground, 0.20f);
+						ImGui::TableNextColumn();
 
-					// Foreground Image
-					ImGui::SetCursorPos({ cursorPos.x + padding, cursorPos.y + padding });
-					ImGui::SetItemAllowOverlap();
-					ImGui::Image(whiteTexId, { backgroundThumbnailSize.x - padding * 2.0f, backgroundThumbnailSize.y - padding * 2.0f },
-						{ 0, 0 }, { 1, 1 }, backgroundColor, borderColor);
+						ImVec2 cursorPos = ImGui::GetCursorPos();
 
-					if (ImGui::IsItemHovered()) {
-						ImGui::BeginTooltip();
-						ImGui::Text("Mem: %s", String::BytesToString(entry.Thumbnail->GetEstimatedSize()).c_str());
-						ImGui::EndTooltip();
+						const ImVec4 backgroundColor = GUI::Colors::Lighten(GUI::Appearance::GetColors().WindowBackground, 0.11f);
+						const ImVec4 borderColor = GUI::Colors::Lighten(GUI::Appearance::GetColors().WindowBackground, 0.20f);
 
-						if (ImGui::IsMouseDoubleClicked(0) && isDirectory) {
-							m_CurrentDirectory = m_CurrentDirectory / entry.Name;
-							refreshDirectory = true;
+						// Foreground Image
+						ImGui::SetCursorPos({ cursorPos.x + padding, cursorPos.y + padding });
+						ImGui::SetItemAllowOverlap();
+						ImGui::Image(whiteTexId, { backgroundThumbnailSize.x - padding * 2.0f, backgroundThumbnailSize.y - padding * 2.0f },
+							{ 0, 0 }, { 1, 1 }, backgroundColor, borderColor);
+
+						if (ImGui::IsItemHovered()) {
+							ImGui::BeginTooltip();
+							ImGui::Text("Mem: %s", String::BytesToString(entry.Thumbnail->GetEstimatedSize()).c_str());
+							ImGui::EndTooltip();
+
+							if (ImGui::IsMouseDoubleClicked(0) && isDirectory) {
+								m_CurrentDirectory = m_CurrentDirectory / entry.Name;
+								refreshDirectory = true;
+							}
 						}
+
+						if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+							ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", entry.FilePath.data(), entry.FilePath.size() + 1);
+							ImGui::TextUnformatted(entry.FilePath.c_str());
+							ImGui::Spacing();
+
+							const f32 tooltipSize = ImGui::GetFrameHeight() * 11.0f;
+							ImGui::Image(textureId, { tooltipSize, tooltipSize }, { 0, 1 }, { 1, 0 });
+							ImGui::EndDragDropSource();
+						}
+
+						// Thumbnail Image
+						ImGui::SetCursorPos({ cursorPos.x + thumbnailPadding * 0.75f, cursorPos.y + thumbnailPadding });
+						ImGui::SetItemAllowOverlap();
+						ImGui::Image(textureId, { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
+
+						// Type Color frame
+						const ImVec2 typeColorFrameSize = { scaledThumbnailSizeX, scaledThumbnailSizeX * 0.03f };
+						ImGui::SetCursorPosX(cursorPos.x + padding);
+						ImGui::Image(whiteTexId, typeColorFrameSize, { 0, 0 }, { 1, 1 }, entry.ColorIndicator);
+
+						const ImVec2 rectMin = ImGui::GetItemRectMin();
+						const ImVec2 rectSize = ImGui::GetItemRectSize();
+						const ImRect clipRect = ImRect({ rectMin.x + padding * 1.0f, rectMin.y + padding * 2.0f },
+							{ rectMin.x + rectSize.x, rectMin.y + scaledThumbnailSizeX - GUI::Appearance::GetFonts().SmallFont->FontSize - padding * 4.0f });
+						GUI::ClippedText(clipRect.Min, clipRect.Max, filename, filenameEnd, nullptr, { 0, 0 }, nullptr, clipRect.GetSize().x);
+
+						ImGui::SetCursorPos({ cursorPos.x + padding * 2.0f, cursorPos.y + backgroundThumbnailSize.y - GUI::Appearance::GetFonts().DefaultBoldFont->FontSize - padding * 2.0f });
+						ImGui::BeginDisabled();
+						ImGui::PushFont(GUI::Appearance::GetFonts().DefaultBoldFont);
+						ImGui::TextUnformatted(entry.TypeString.c_str());
+						ImGui::PopFont();
+						ImGui::EndDisabled();
+
+						ImGui::PopID(); ++i;
 					}
 
-					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-						ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", entry.FilePath.data(), entry.FilePath.size() + 1);
-						ImGui::TextUnformatted(entry.FilePath.c_str());
-						ImGui::Spacing();
 
-						const float tooltipSize = ImGui::GetFrameHeight() * 11.0f;
-						ImGui::Image(textureId, { tooltipSize, tooltipSize }, { 0, 1 }, { 1, 0 });
-						ImGui::EndDragDropSource();
-					}
-
-					// Thumbnail Image
-					ImGui::SetCursorPos({ cursorPos.x + thumbnailPadding * 0.75f, cursorPos.y + thumbnailPadding });
-					ImGui::SetItemAllowOverlap();
-					ImGui::Image(textureId, { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
-
-					// Type Color frame
-					const ImVec2 typeColorFrameSize = { scaledThumbnailSizeX, scaledThumbnailSizeX * 0.03f };
-					ImGui::SetCursorPosX(cursorPos.x + padding);
-					ImGui::Image(whiteTexId, typeColorFrameSize, { 0, 0 }, { 1, 1 }, entry.ColorIndicator);
-
-					const ImVec2 rectMin = ImGui::GetItemRectMin();
-					const ImVec2 rectSize = ImGui::GetItemRectSize();
-					const ImRect clipRect = ImRect({ rectMin.x + padding * 1.0f, rectMin.y + padding * 2.0f },
-						{ rectMin.x + rectSize.x, rectMin.y + scaledThumbnailSizeX - GUI::Appearance::GetFonts().SmallFont->FontSize - padding * 4.0f });
-					GUI::ClippedText(clipRect.Min, clipRect.Max, filename, filenameEnd, nullptr, { 0, 0 }, nullptr, clipRect.GetSize().x);
-
-					ImGui::SetCursorPos({ cursorPos.x + padding * 2.0f, cursorPos.y + backgroundThumbnailSize.y - GUI::Appearance::GetFonts().DefaultBoldFont->FontSize - padding * 2.0f });
-					ImGui::BeginDisabled();
-					ImGui::PushFont(GUI::Appearance::GetFonts().DefaultBoldFont);
-					ImGui::TextUnformatted(entry.TypeString.c_str());
-					ImGui::PopFont();
-					ImGui::EndDisabled();
-
-					ImGui::PopID(); ++i;
+					ImGui::EndTable();
 				}
 
-
-				ImGui::EndTable();
-			}
-
-			if (refreshDirectory) {
-				refreshDirectory = false;
-				LoadDirectoryEntries();
+				if (refreshDirectory) {
+					refreshDirectory = false;
+					LoadDirectoryEntries();
+				}
+			} else {
+				ImGui::Text("No project selected...");
 			}
 
 			OnEnd();
 		}
+	}
+
+	void AssetPanel::InvalidateAssetDirectory()
+	{
+        m_AssetsDirectory = ProjectContext::Get()->GetAssetDirectory() / "assets";
+        m_CurrentDirectory = m_AssetsDirectory;
+
+		LoadDirectoryEntries();
 	}
 
 	void AssetPanel::LoadDirectoryEntries()
@@ -194,13 +212,13 @@ namespace SW {
 					fileType = it->second;
 
 				if (fileType == FileType::Texture) {
-					thumbnail = AssetManager::GetTexture2D(entry.path().string().c_str());
+					thumbnail = AssetManager::GetEditorTexture2D(entry.path().string().c_str());
 				} else {
-					thumbnail = AssetManager::GetTexture2D("assets/icons/editor/TextFile.png");
+					thumbnail = AssetManager::GetEditorTexture2D("assets/icons/editor/TextFile.png");
 				}
 			} else {
 				fileType = FileType::Directory;
-				thumbnail = AssetManager::GetTexture2D("assets/icons/editor/DirectoryIcon.png");
+				thumbnail = AssetManager::GetEditorTexture2D("assets/icons/editor/DirectoryIcon.png");
 			}
 
 			auto colorIt = s_FileTypeColors.find(fileType);

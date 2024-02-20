@@ -1,8 +1,8 @@
 /**
  * @file AssetPanel.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.2
- * @date 2024-01-28
+ * @version 0.1.3
+ * @date 2024-02-20
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -24,6 +24,7 @@ namespace SW {
 		Unknown = 0,	///< Unknown file type.
 		Texture,		///< Texture file type.
 		Directory,		///< Directory file type.
+		Scene,			///< Scene file type
 	};
 
 	/**
@@ -77,6 +78,8 @@ namespace SW {
 		 * @brief Called every frame to render the panel.
 		 */
 		void OnRender() final override;
+
+		void InvalidateAssetDirectory();
 	
 	private:
 		std::filesystem::path m_AssetsDirectory;	/** @brief The path to the assets directory. */

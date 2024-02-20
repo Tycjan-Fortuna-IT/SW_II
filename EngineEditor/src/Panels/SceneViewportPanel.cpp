@@ -9,6 +9,7 @@
 #include "Core/ECS/Entity.hpp"
 #include "Core/Editor/EditorSettings.hpp"
 #include "Managers/SelectionManager.hpp"
+#include "Core/Scene/SceneSerializer.hpp"
 
 namespace SW {
 
@@ -179,6 +180,22 @@ namespace SW {
 
 			const ImTextureID textureID = GUI::GetTextureID(m_Framebuffer->GetColorAttachmentRendererID());
 			ImGui::Image(textureID, currentViewportSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+			if (ImGui::BeginDragDropTarget()) { // todo perform validation of the file
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+					const char* path = static_cast<char*>(payload->Data);
+
+					if (SelectionManager::IsSelected())
+						SelectionManager::Deselect();
+
+					delete GetCurrentScene();
+
+					Scene* newScene = SceneSerializer::Deserialize(path);
+
+					SetCurrentScene(newScene);
+				}
+				ImGui::EndDragDropTarget();
+			}
 
 			RenderSceneToolbar();
 

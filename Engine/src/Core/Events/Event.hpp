@@ -1,8 +1,8 @@
 /**
  * @file Event.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.1
- * @date 2024-01-04
+ * @version 0.1.2
+ * @date 2024-02-20
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -32,13 +32,13 @@ namespace SW {
 
 		/**
 		 * @brief Mouse wheel scrolled.
-		 * @warning Context usage: 
+		 * @warning Context usage: f32 xOffset = event.Payload.f32[0]; f32 yOffset = event.Payload.f32[1];
 		 */
 		EVENT_CODE_MOUSE_WHEEL = 0x05,
 
 		/**
 		 * @brief OS Window resized/resolution changed.
-		 * @warning Context usage: 
+		 * @warning Context usage: i32 width = event.Payload.i32[0]; i32 height = event.Payload.i32[1];
 		 */
 		EVENT_CODE_WINDOW_RESIZED = 0x06,
 
@@ -47,6 +47,12 @@ namespace SW {
 		 * @warning Context usage: u16 mouseCode = event.Payload.u16[0];
 		 */
 		EVENT_CODE_MOUSE_BUTTON_PRESSED = 0x07,
+
+		/**
+		 * @brief Engine project loaded.
+		 * @warning Event without payload!
+		 */
+		EVENT_CODE_PROJECT_LOADED = 0x08,
     };
 
 	/**

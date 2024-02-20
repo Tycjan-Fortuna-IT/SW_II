@@ -50,6 +50,17 @@ namespace SW {
 		 * @return Texture from given path.
 		 */
 		static Texture2D* GetTexture2D(const char* path, bool flipped = true);
+
+		/**
+		 * @brief Returns texture from given path. If texture is already loaded, returns it from cache.
+		 *  	  Otherwise, loads texture from file and caches it.
+		 * @param path Path to texture.
+		 * @param flipped Whether to flip texture vertically.
+		 * @warning Editor assets only!
+		 * 
+		 * @return Texture from given path.
+		 */
+		static Texture2D* GetEditorTexture2D(const char* path);
 	};
 
 }

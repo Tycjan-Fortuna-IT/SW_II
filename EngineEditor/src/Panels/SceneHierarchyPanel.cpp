@@ -5,6 +5,7 @@
 #include "Managers/SelectionManager.hpp"
 #include "GUI/Icons.hpp"
 #include "SceneViewportPanel.hpp"
+#include "Core/Project/ProjectContext.hpp"
 
 namespace SW {
 
@@ -21,92 +22,96 @@ namespace SW {
 		GUI::ScopedStyle CellPadding(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
 
 		if (OnBegin(ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar)) {
-			const f32 lineHeight = ImGui::GetTextLineHeight();
-			const ImVec2 padding = ImGui::GetStyle().FramePadding;
+			if (ProjectContext::HasContext()) {
+				const f32 lineHeight = ImGui::GetTextLineHeight();
+				const ImVec2 padding = ImGui::GetStyle().FramePadding;
 
-			Scene* currentScene = m_SceneViewportPanel->GetCurrentScene();
+				Scene* currentScene = m_SceneViewportPanel->GetCurrentScene();
 
-			m_SearchFilter.OnRender("###HierarchyFilter");
+				m_SearchFilter.OnRender("###HierarchyFilter");
 
-			ImGui::SameLine();
+				ImGui::SameLine();
 
-			if (GUI::Button("{} Add", { 90.f, 30.f }, SW_ICON_PLUS)) {
-				ImGui::OpenPopup("AddEntity_Popup");
-			}
-
-			if (ImGui::BeginPopup("AddEntity_Popup")) {
-				if (ImGui::MenuItemEx("Empty Entity", SW_ICON_CUBE_OUTLINE)) {
-					currentScene->CreateEntity("Entity");
+				if (GUI::Button("{} Add", { 90.f, 30.f }, SW_ICON_PLUS)) {
+					ImGui::OpenPopup("AddEntity_Popup");
 				}
 
-				if (ImGui::BeginMenu("2D")) {
-					if (ImGui::MenuItemEx("Sprite", SW_ICON_IMAGE_SIZE_SELECT_ACTUAL)) {
-						Entity entity = currentScene->CreateEntity("Sprite");
-						entity.AddComponent<SpriteComponent>();
-						
-						ImGui::CloseCurrentPopup();
+				if (ImGui::BeginPopup("AddEntity_Popup")) {
+					if (ImGui::MenuItemEx("Empty Entity", SW_ICON_CUBE_OUTLINE)) {
+						currentScene->CreateEntity("Entity");
 					}
 
-					if (ImGui::MenuItemEx("Circle", SW_ICON_CHECKBOX_BLANK_CIRCLE)) {
-						Entity entity = currentScene->CreateEntity("Circle");
-						entity.AddComponent<CircleComponent>();
+					if (ImGui::BeginMenu("2D")) {
+						if (ImGui::MenuItemEx("Sprite", SW_ICON_IMAGE_SIZE_SELECT_ACTUAL)) {
+							Entity entity = currentScene->CreateEntity("Sprite");
+							entity.AddComponent<SpriteComponent>();
 
-						ImGui::CloseCurrentPopup();
+							ImGui::CloseCurrentPopup();
+						}
+
+						if (ImGui::MenuItemEx("Circle", SW_ICON_CHECKBOX_BLANK_CIRCLE)) {
+							Entity entity = currentScene->CreateEntity("Circle");
+							entity.AddComponent<CircleComponent>();
+
+							ImGui::CloseCurrentPopup();
+						}
+
+						if (ImGui::MenuItemEx("Camera", SW_ICON_CAMERA)) {
+							Entity entity = currentScene->CreateEntity("Camera");
+
+							SceneCamera camera(m_SceneViewportPanel->GetViewportAspectRatio());
+
+							entity.AddComponent<CameraComponent>(camera);
+
+							ImGui::CloseCurrentPopup();
+						}
+
+						ImGui::EndMenu();
 					}
 
-					if (ImGui::MenuItemEx("Camera", SW_ICON_CAMERA)) {
-						Entity entity = currentScene->CreateEntity("Camera");
-						
-						SceneCamera camera(m_SceneViewportPanel->GetViewportAspectRatio());
+					if (ImGui::BeginMenu("3D")) {
 
-						entity.AddComponent<CameraComponent>(camera);
-
-						ImGui::CloseCurrentPopup();
+						ImGui::EndMenu();
 					}
 
-					ImGui::EndMenu();
+					ImGui::EndPopup();
 				}
 
-				if (ImGui::BeginMenu("3D")) {
+				constexpr ImGuiTableFlags tableFlags = ImGuiTableFlags_RowBg
+					| ImGuiTableFlags_ContextMenuInBody
+					| ImGuiTableFlags_BordersInner
+					| ImGuiTableFlags_ScrollY;
 
-					ImGui::EndMenu();
+				if (ImGui::BeginTable("HierarchyTable", 3, tableFlags)) {
+					ImGui::TableSetupColumn(" Label", ImGuiTableColumnFlags_NoHide | ImGuiTableColumnFlags_NoClip);
+					ImGui::TableSetupColumn(" Type", ImGuiTableColumnFlags_WidthFixed, lineHeight * 3.0f);
+					ImGui::TableSetupColumn("  " SW_ICON_EYE, ImGuiTableColumnFlags_WidthFixed, lineHeight * 2.0f);
+
+					ImGui::TableSetupScrollFreeze(0, 1);
+
+					ImGui::TableNextRow(ImGuiTableRowFlags_Headers, ImGui::GetFrameHeight());
+
+					for (int column = 0; column < 3; ++column) {
+						ImGui::TableSetColumnIndex(column);
+						const char* column_name = ImGui::TableGetColumnName(column);
+						ImGui::PushID(column);
+						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + padding.y);
+						ImGui::TableHeader(column_name);
+						ImGui::PopID();
+					}
+
+					const auto& view = m_SceneViewportPanel->GetCurrentScene()->GetRegistry().GetEntitiesWith<IDComponent, TagComponent>();
+
+					for (auto&& [handle, idc, tc] : view.each()) {
+						const Entity entity = { handle,  m_SceneViewportPanel->GetCurrentScene() };
+
+						RenderEntityNode(entity, idc, tc);
+					}
+
+					ImGui::EndTable();
 				}
-
-				ImGui::EndPopup();
-			}
-
-			constexpr ImGuiTableFlags tableFlags = ImGuiTableFlags_RowBg
-				| ImGuiTableFlags_ContextMenuInBody
-				| ImGuiTableFlags_BordersInner
-				| ImGuiTableFlags_ScrollY;
-
-			if (ImGui::BeginTable("HierarchyTable", 3, tableFlags)) {
-				ImGui::TableSetupColumn(" Label", ImGuiTableColumnFlags_NoHide | ImGuiTableColumnFlags_NoClip);
-				ImGui::TableSetupColumn(" Type", ImGuiTableColumnFlags_WidthFixed, lineHeight * 3.0f);
-				ImGui::TableSetupColumn("  " SW_ICON_EYE, ImGuiTableColumnFlags_WidthFixed, lineHeight * 2.0f);
-
-				ImGui::TableSetupScrollFreeze(0, 1);
-
-				ImGui::TableNextRow(ImGuiTableRowFlags_Headers, ImGui::GetFrameHeight());
-
-				for (int column = 0; column < 3; ++column) {
-					ImGui::TableSetColumnIndex(column);
-					const char* column_name = ImGui::TableGetColumnName(column);
-					ImGui::PushID(column);
-					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + padding.y);
-					ImGui::TableHeader(column_name);
-					ImGui::PopID();
-				}
-
-				const auto& view = m_SceneViewportPanel->GetCurrentScene()->GetRegistry().GetEntitiesWith<IDComponent, TagComponent>();
-
-				for (auto&& [handle, idc, tc] : view.each()) {
-					const Entity entity = { handle,  m_SceneViewportPanel->GetCurrentScene() };
-
-					RenderEntityNode(entity, idc, tc);
-				}
-
-				ImGui::EndTable();
+			} else {
+				ImGui::Text("No project selected...");
 			}
 
 			OnEnd();

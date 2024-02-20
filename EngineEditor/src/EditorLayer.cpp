@@ -10,6 +10,9 @@
 #include "Managers/SelectionManager.hpp"
 #include "Core/AssetManager.hpp"
 #include "Panels/SceneViewportPanel.hpp"
+#include "Core/Project/ProjectContext.hpp"
+#include "Core/Project/Project.hpp"
+#include "Core/Project/ProjectSerializer.hpp"
 
 namespace SW {
 
@@ -19,11 +22,11 @@ namespace SW {
 		m_LineShader = new Shader("assets/shaders/Builtin.2D.Line.vert.glsl", "assets/shaders/Builtin.2D.Line.frag.glsl");
 		m_CircleShader = new Shader("assets/shaders/Builtin.2D.Circle.vert.glsl", "assets/shaders/Builtin.2D.Circle.frag.glsl");
 
-		m_IconTexture = AssetManager::GetTexture2D("assets/icons/SW_Icon.png");
-		m_CloseIconTexture = AssetManager::GetTexture2D("assets/icons/editor/windows/Close.png");
-		m_MaximizeIconTexture = AssetManager::GetTexture2D("assets/icons/editor/windows/Maximize.png");
-		m_MinimizeIconTexture = AssetManager::GetTexture2D("assets/icons/editor/windows/Minimize.png");
-		m_RestoreIconTexture = AssetManager::GetTexture2D("assets/icons/editor/windows/Restore.png");
+		m_IconTexture = AssetManager::GetEditorTexture2D("assets/icons/SW_Icon.png");
+		m_CloseIconTexture = AssetManager::GetEditorTexture2D("assets/icons/editor/windows/Close.png");
+		m_MaximizeIconTexture = AssetManager::GetEditorTexture2D("assets/icons/editor/windows/Maximize.png");
+		m_MinimizeIconTexture = AssetManager::GetEditorTexture2D("assets/icons/editor/windows/Minimize.png");
+		m_RestoreIconTexture = AssetManager::GetEditorTexture2D("assets/icons/editor/windows/Restore.png");
 
 		const GUI::FontSpecification fontSpec("assets/fonts/Roboto/Roboto-Regular.ttf", "assets/fonts/Roboto/Roboto-Bold.ttf");
 
@@ -114,10 +117,29 @@ namespace SW {
 		}
 
 		{
-			const float logoOffset = 16.0f * 2.0f + 41.0f + windowPadding.x;
+			const f32 logoOffset = 16.0f * 2.0f + 41.0f + windowPadding.x;
 			ImGui::SetCursorPos(ImVec2(logoOffset, 4.0f));
 
 			DrawMenuBar();
+		}
+
+		{
+			if (ProjectContext::Get()) {
+				GUI::ScopedColor TextColor(ImGuiCol_Text, Color::TextDarker);
+				GUI::ScopedColor BorderColor(ImGuiCol_Border, Color::BorderDarker);
+
+				const std::string projectName = ProjectContext::Get()->GetConfig().Name;
+				const ImVec2 textSize = ImGui::CalcTextSize(projectName.c_str());
+
+				const f32 rightOffset = ImGui::GetWindowWidth() / 2.f;
+
+				ImGui::SameLine();
+				ImGui::SetCursorPosX(rightOffset - windowPadding.x);
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f + windowPadding.y);
+				ImGui::Text(projectName.c_str());
+
+				GUI::DrawBorder(GUI::RectExpanded(GUI::GetItemRect(), 24.0f, 68.0f), 1.0f, 3.0f, 0.0f, -60.0f);
+			}
 		}
 
 		{
@@ -125,10 +147,9 @@ namespace SW {
 			GUI::ScopedColor BorderColor(ImGuiCol_Border, Color::BorderDarker);
 
 			const std::string memoryText = "MEM: " + String::GetAllocatedMemoryString();
-
 			const ImVec2 textSize = ImGui::CalcTextSize(memoryText.c_str());
 
-			const float rightOffset = ImGui::GetWindowWidth() - 280.0f;
+			const f32 rightOffset = ImGui::GetWindowWidth() - 280.0f;
 			
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(rightOffset - windowPadding.x);
@@ -146,7 +167,7 @@ namespace SW {
 
 		// Minimize Button
 		{
-			const float rightOffset = ImGui::GetWindowWidth() - 120.0f;
+			const f32 rightOffset = ImGui::GetWindowWidth() - 120.0f;
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(rightOffset - windowPadding.x);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
@@ -159,7 +180,7 @@ namespace SW {
 
 		// Maximize / shrink button
 		{
-			const float rightOffset = ImGui::GetWindowWidth() - 80.0f;
+			const f32 rightOffset = ImGui::GetWindowWidth() - 80.0f;
 			
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(rightOffset - windowPadding.x);
@@ -179,7 +200,7 @@ namespace SW {
 
 		// Close button
 		{
-			const float rightOffset = ImGui::GetWindowWidth() - 40.0f;
+			const f32 rightOffset = ImGui::GetWindowWidth() - 40.0f;
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(rightOffset - windowPadding.x);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
@@ -282,7 +303,7 @@ namespace SW {
 		ImGui::SetCursorPosY(titlebarHeight + ImGui::GetCurrentWindow()->WindowPadding.y);
 
 		// Dockspace
-		float minWinSizeX = style.WindowMinSize.x;
+		f32 minWinSizeX = style.WindowMinSize.x;
 		style.WindowMinSize.x = 370.0f;
 		ImGui::DockSpace(ImGui::GetID("MyDockspace"));
 		style.WindowMinSize.x = minWinSizeX;
@@ -319,17 +340,26 @@ namespace SW {
 
 	void EditorLayer::OpenProject()
 	{
-		std::filesystem::path filepath = FileSystem::OpenFileDialog({ { "SW Engine Scene file", "sw" } });
+		std::filesystem::path filepath = FileSystem::OpenFileDialog({ { "SW Engine Scene file", "swproj" } });
 
 		if (!filepath.empty()) {
 			if (SelectionManager::IsSelected())
 				SelectionManager::Deselect();
 
-			delete m_Viewport->GetCurrentScene();
+			Project* currentProject = ProjectContext::Get();
+			delete currentProject;
 
-			Scene* newScene = SceneSerializer::Deserialize(filepath.string());
-			
-			m_Viewport->SetCurrentScene(newScene);
+			std::string path = filepath.string();
+
+			Project* newProject = ProjectSerializer::Deserialize(path);
+			ProjectContext::Set(newProject);
+
+			EventSystem::Emit({
+				.Code = EVENT_CODE_PROJECT_LOADED,
+				.Payload = {
+					.f32 = { (f32)0, (f32)0 }
+				}
+			}, nullptr);
 		}
 	}
 
