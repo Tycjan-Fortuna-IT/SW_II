@@ -242,14 +242,16 @@ namespace SW {
 
 			ImVec4 colorIndicator = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
 
+			std::filesystem::path filepath = std::filesystem::relative(entry.path(), m_AssetsDirectory.parent_path());
+
 			if (!entry.is_directory()) {
-				auto it = s_FileTypes.find(entry.path().extension().string());
+				auto it = s_FileTypes.find(filepath.extension().string());
 
 				if (it != s_FileTypes.end())
 					fileType = it->second;
 
 				if (fileType == FileType::Texture) {
-					thumbnail = AssetManager::GetEditorTexture2D(entry.path().string().c_str());
+					thumbnail = AssetManager::GetTexture2D(filepath.string().c_str());
 				} else {
 					thumbnail = AssetManager::GetEditorTexture2D("assets/icons/editor/TextFile.png");
 				}
@@ -271,8 +273,8 @@ namespace SW {
 				typeString = nameIt->second;
 
 			File file = { 
-				.Name = entry.path().filename().string(),
-				.FilePath = entry.path().string(),
+				.Name = filepath.filename().string(),
+				.FilePath = filepath.string(),
 				.Thumbnail = thumbnail, 
 				.Type = fileType,
 				.TypeString = typeString,

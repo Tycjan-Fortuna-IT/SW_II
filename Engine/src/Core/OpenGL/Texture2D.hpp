@@ -19,10 +19,18 @@ namespace SW {
 		/**
 		 * @brief Construct a new Texture 2D
 		 * 
-		 * @param filepath Path to the texture file relative to assets folder
+		 * @param filepath Path to the texture file relative to project's assets folder
 		 * @param flipped Whether the texture should be flipped vertically (must be for OpenGL related textures)
 		 */
-        Texture2D(const std::string& filepath, bool flipped = true);
+        Texture2D(const char* filepath, bool flipped = true);
+
+		/**
+		 * @brief Construct a new Texture 2D
+		 * 
+		 * @param filepath Path to the texture file relative to project's assets folder
+		 * @param flipped Whether the texture should be flipped vertically (must be for OpenGL related textures)
+		 */
+		Texture2D(const std::filesystem::path& filepath, bool flipped = true);
 
 		/**
 		 * @brief Construct a new Texture 2D
@@ -104,6 +112,14 @@ namespace SW {
 		u32 m_DataFormat;			/** @brief Texture data format */
 		u32 m_InternalFormat;		/** @brief Texture internal format */
 		std::string m_Path = "";	/** @brief Path to the texture file */
+
+		/**
+		 * Loads the texture data from the specified file.
+		 *
+		 * @param filepath The path to the texture file.
+		 * @param flipped  Indicates whether the texture should be vertically flipped during loading.
+		 */
+		void LoadTextureData(const char* filepath, bool flipped);
 	};
 
 }

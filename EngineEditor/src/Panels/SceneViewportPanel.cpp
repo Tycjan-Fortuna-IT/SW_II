@@ -10,6 +10,8 @@
 #include "Core/Editor/EditorSettings.hpp"
 #include "Managers/SelectionManager.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
+#include "Core/Project/ProjectContext.hpp"
+#include "Core/Project/Project.hpp"
 
 namespace SW {
 
@@ -183,14 +185,14 @@ namespace SW {
 
 			if (ImGui::BeginDragDropTarget()) { // todo perform validation of the file
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-					const char* path = static_cast<char*>(payload->Data);
+					std::filesystem::path path = ProjectContext::Get()->GetAssetDirectory() / static_cast<char*>(payload->Data);
 
 					if (SelectionManager::IsSelected())
 						SelectionManager::Deselect();
 
 					delete GetCurrentScene();
 
-					Scene* newScene = SceneSerializer::Deserialize(path);
+					Scene* newScene = SceneSerializer::Deserialize(path.string());
 
 					SetCurrentScene(newScene);
 				}

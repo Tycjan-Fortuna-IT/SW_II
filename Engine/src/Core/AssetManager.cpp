@@ -57,9 +57,8 @@ namespace SW {
 		if (texture != s_Textures.end())
 			return texture->second;
 
-		std::filesystem::path texturePath = ProjectContext::Get()->GetAssetDirectory() / path;
-
-		Texture2D* newTexture = new Texture2D(texturePath.string(), flipped);
+		std::filesystem::path filepath = path;
+		Texture2D* newTexture = new Texture2D(filepath, flipped);
 		
 		s_Textures[path] = newTexture;
 

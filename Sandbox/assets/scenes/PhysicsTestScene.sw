@@ -155,10 +155,11 @@ Entities:
         Tag: Oragne Falling Square
       TransformComponent:
         Transform: [-6.39310074, 4.41632891, 0.000122070312]
-        Rotation: [5.50411876e-08, -4.91652514e-08, 1.58683538]
-        Scale: [3.50002885, 0.800000012, 1]
+        Rotation: [5.50412125e-08, -4.91652514e-08, 1.58683538]
+        Scale: [3.50003123, 0.800000012, 1]
       SpriteComponent:
         Color: [1, 0.705882311, 0, 1]
+        TexturePath: assets\textures\Container.jpg
       RigidBody2DComponent:
         Type: 2
         GravityScale: 1
@@ -182,6 +183,7 @@ Entities:
         Scale: [6.40369177, 0.430000067, 1]
       SpriteComponent:
         Color: [1, 0, 0, 1]
+        TexturePath: assets\textures\Wall.jpg
       RigidBody2DComponent:
         Type: 0
         GravityScale: 1
