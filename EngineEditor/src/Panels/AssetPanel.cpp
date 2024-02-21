@@ -10,27 +10,28 @@
 #include "GUI/Appearance.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Project/Project.hpp"
+#include "Core/Utils/FileSystem.hpp"
 
 namespace SW {
 
 	static std::unordered_map<std::string, FileType> s_FileTypes = {
-		{ ".png",	    FileType::Texture },
-		{ ".jpg",	    FileType::Texture },
-		{ ".jpeg",	    FileType::Texture },
-		{ ".bmp",	    FileType::Texture },
-        { ".sw",	FileType::Scene   },
+		{ ".png",	    FileType::Texture	 },
+		{ ".jpg",	    FileType::Texture	 },
+		{ ".jpeg",	    FileType::Texture	 },
+		{ ".bmp",	    FileType::Texture	 },
+        { ".sw",		FileType::Scene		 },
 	};
 
 	static const std::unordered_map<FileType, ImVec4> s_FileTypeColors = {
-		{ FileType::Texture,  { 0.8f, 0.2f, 0.3f, 1.f } },
-		{ FileType::Directory, { 1.f, 1.0f, 0.8f, 1.f } },
-        { FileType::Scene, { 0.f, 1.0f, 0.f, 1.f } }
+		{ FileType::Texture,	{ 0.8f, 0.2f, 0.3f, 1.f }	},
+		{ FileType::Directory,	{ 1.f, 1.0f, 0.8f, 1.f }	},
+        { FileType::Scene,		{ 0.f, 1.0f, 0.f, 1.f }		}
 	};
 
 	static const std::unordered_map<FileType, std::string> s_FileTypeString = {
-		{ FileType::Texture,  "Texture" },
-		{ FileType::Directory, "Directory" },
-        { FileType::Scene, "Scene" }
+		{ FileType::Texture,	"Texture"		},
+		{ FileType::Directory,	"Directory"		},
+        { FileType::Scene,		"Scene"			}
 	};
 
 	AssetPanel::AssetPanel(const char* name)
@@ -57,6 +58,32 @@ namespace SW {
 				static f32 customThumbnailSize = 200.f;
 
 				bool atAssetsDir = m_CurrentDirectory == m_AssetsDirectory;
+
+				std::filesystem::path currentDirCopy = m_CurrentDirectory;
+				std::vector<std::filesystem::path> paths;
+
+				while (currentDirCopy != m_AssetsDirectory.parent_path()) {
+					paths.push_back(currentDirCopy);
+					currentDirCopy = currentDirCopy.parent_path();
+				}
+
+				{
+					GUI::ScopedStyle ButtonFramePadding(ImGuiStyleVar_FramePadding, ImVec2{ 10, 6 });
+
+					for (auto it = paths.rbegin(); it != paths.rend(); ++it) {
+						ImGui::SameLine();
+						
+						if (ImGui::Button(it->filename().string().c_str())) {
+							m_CurrentDirectory = *it;
+							LoadDirectoryEntries();
+						}
+
+						if (it + 1 != paths.rend()) {
+							ImGui::SameLine();
+							ImGui::TextUnformatted("/");
+						}
+					}
+				}
 
 				ImGui::Columns(2, 0, false);
 
@@ -121,6 +148,16 @@ namespace SW {
 						ImGui::SetItemAllowOverlap();
 						ImGui::Image(whiteTexId, { backgroundThumbnailSize.x - padding * 2.0f, backgroundThumbnailSize.y - padding * 2.0f },
 							{ 0, 0 }, { 1, 1 }, backgroundColor, borderColor);
+
+						if (ImGui::BeginPopupContextItem("1")) {
+							if (ImGui::MenuItemEx("Show in explorer", SW_ICON_MAGNIFY)) {
+								std::filesystem::path pathToFile = entry.FilePath;
+
+								FileSystem::RevealFolderInFileExplorer(pathToFile.parent_path());
+							}
+
+							ImGui::EndPopup();
+						}
 
 						if (ImGui::IsItemHovered()) {
 							ImGui::BeginTooltip();

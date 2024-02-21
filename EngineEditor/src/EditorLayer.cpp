@@ -365,10 +365,16 @@ namespace SW {
 
 	void EditorLayer::SaveProjectAs()
 	{
-		std::filesystem::path filepath = FileSystem::SaveFileDialog({ { "SW Engine Scene file", "sw" } });
+		if (!ProjectContext::HasContext())
+			return;
+
+		std::filesystem::path filepath = FileSystem::SaveFileDialog({ { "SW Engine Scene file", "swproj" } });
 
 		if (!filepath.empty()) {
-			SceneSerializer::Serialize(m_Viewport->GetCurrentScene(), filepath.string());
+			ProjectSerializer::Serialize(ProjectContext::Get(), filepath.string());
+
+			Scene* currentScene = m_Viewport->GetCurrentScene();
+			SceneSerializer::Serialize(currentScene, currentScene->GetFilePath());
 		}
 	}
 

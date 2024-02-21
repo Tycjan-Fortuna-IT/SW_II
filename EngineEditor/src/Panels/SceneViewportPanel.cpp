@@ -44,7 +44,7 @@ namespace SW {
 		m_EditorCamera = new EditorCamera();
 		m_EditorCamera->SetViewportSize((f32)spec.Width, (f32)spec.Height);
 
-		m_ActiveScene = new Scene();
+		m_ActiveScene = new Scene("");
 	}
 
 	SceneViewportPanel::~SceneViewportPanel()

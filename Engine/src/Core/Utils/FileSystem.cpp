@@ -2,6 +2,11 @@
 
 #include <nfd.hpp>
 
+#ifdef SW_WINDOWS
+	#include <shellapi.h>
+#endif
+
+
 namespace SW {
 
 	void FileSystem::Initialize()
@@ -45,6 +50,18 @@ namespace SW {
 		SW_ERROR("NFD-Extended threw an error: {}", NFD::GetError());
 
 		return "";
+	}
+
+    void FileSystem::RevealFolderInFileExplorer(const std::filesystem::path& path)
+    {
+		RevealFolderInFileExplorer(path.string().c_str());
+    }
+
+	void FileSystem::RevealFolderInFileExplorer(const char* path)
+	{
+#ifdef SW_WINDOWS
+		ShellExecuteA(nullptr, "explore", path, nullptr, nullptr, SW_SHOWDEFAULT);
+#endif
 	}
 
 }
