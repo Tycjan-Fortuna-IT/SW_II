@@ -112,10 +112,13 @@ namespace SW {
 		output << YAML::BeginMap;
 		output << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 
-		for (auto&& [handle, idc] : scene->GetRegistry().GetEntitiesWith<IDComponent>().each()) {
-			Entity entity = { handle, scene };
+		std::map<u64, Entity> sortedEntities;
 
-			SW_DEBUG("Serialized scene entity with id: {}", idc.ID);
+		for (auto&& [handle, idc] : scene->GetRegistry().GetEntitiesWith<IDComponent>().each())
+			sortedEntities[idc.ID] = Entity{ handle, scene };
+
+		for (auto [id, entity] : sortedEntities) {
+			SW_DEBUG("Serialized scene entity with id: {}", id);
 
 			if (!entity) {
 				SW_WARN("SceneSerializer - NULL entity, skipped.");
@@ -241,7 +244,7 @@ namespace SW {
 
 	Scene* SceneSerializer::Deserialize(const std::string& path)
 	{
-		Scene* scene = new Scene();
+		Scene* scene = new Scene(path);
 
 		YAML::Node data = YAML::LoadFile(path);
 

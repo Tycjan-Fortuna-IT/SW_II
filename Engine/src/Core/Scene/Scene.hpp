@@ -41,7 +41,7 @@ namespace SW {
 		/**
 		 * @brief Default constructor.
 		 */
-		Scene();
+		Scene(const std::string& filepath);
 
 		/**
 		 * @brief Destructor.
@@ -138,6 +138,12 @@ namespace SW {
 		Entity GetEntityByID(u64 id);
 
 		/**
+		 * @brief Retrieves the filepath to the serialized scene.
+		 * @return The filepath to the serialized scene.
+		 */
+		const std::string& GetFilePath() const { return m_FilePath; }
+
+		/**
 		 * @brief Retrieves current state of the scene.
 		 * 
 		 * @return SceneState The current state of the scene.
@@ -163,6 +169,8 @@ namespace SW {
 
 	private:
 		EntityRegistry m_Registry; /**< The entity registry of the scene. */
+
+		std::string m_FilePath; /**< The filepath to the serialized scene file. */
 
 		std::unordered_map<u64, entt::entity> m_EntityMap = {}; /**< Map of entity IDs to entt::entity handles. (cache) */
 

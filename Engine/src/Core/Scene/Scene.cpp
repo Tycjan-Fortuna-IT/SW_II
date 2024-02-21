@@ -13,8 +13,8 @@
 
 namespace SW {
 
-	Scene::Scene()
-		: m_Registry(this) {}
+	Scene::Scene(const std::string& filepath)
+		: m_Registry(this), m_FilePath(filepath) {}
 	
 	Scene::~Scene()
 	{
@@ -190,7 +190,7 @@ namespace SW {
 
     Scene* Scene::DeepCopy()
     {
-		Scene* copy = new Scene();
+		Scene* copy = new Scene(m_FilePath);
 
 		for (auto&& [handle, idc, tc] : m_Registry.GetEntitiesWith<IDComponent, TagComponent>().each()) {
 			copy->CreateEntityWithID(idc.ID, tc.Tag);
