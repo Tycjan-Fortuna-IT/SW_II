@@ -108,7 +108,9 @@ namespace SW {
 		 *
 		 * @return Reference to the RelationshipComponent.
 		 */
-		RelationshipComponent& GetRelations() { return GetComponent<RelationshipComponent>(); }
+		[[nodiscard]] RelationshipComponent& GetRelations() { return GetComponent<RelationshipComponent>(); }
+
+		[[nodiscard]] TransformComponent& GetTransform() { return GetComponent<TransformComponent>(); }
 
 		/**
 		 * @brief Retrieves all components of the specified types associated with the entity.
@@ -233,6 +235,26 @@ namespace SW {
 			}
 
 			rc.ParentID = 0;
+		}
+
+		[[nodiscard]] inline glm::mat4 GetWorldSpaceTransformMatrix()
+		{
+			glm::mat4 transform(1.0f);
+
+			if (Entity parent = GetParent())
+				transform = parent.GetWorldSpaceTransformMatrix();
+
+			return std::move(transform * GetTransform().GetTransform());
+		}
+
+		[[nodiscard]] inline TransformComponent GetWorldSpaceTransform()
+		{
+			glm::mat4 transform = GetWorldSpaceTransformMatrix();
+
+			TransformComponent transformComponent;
+			transformComponent.SetTransform(transform);
+
+			return std::move(transformComponent);
 		}
 
     private:

@@ -135,28 +135,26 @@ namespace SW {
 				// Box Colliders
 				{
 					for (auto&& [handle, tc, bcc] : m_ActiveScene->GetRegistry().GetEntitiesWith<TransformComponent, BoxCollider2DComponent>().each()) {
-						glm::vec3 translation = tc.Position + glm::vec3(bcc.Offset.x, bcc.Offset.y, 0.001f);
-						glm::vec3 scale = tc.Scale * glm::vec3(bcc.Size.x * 2.0f, bcc.Size.y * 2.0f, 1.0f);
+						Entity entity = { handle, m_ActiveScene };
 
-						glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.Position)
-							* glm::rotate(glm::mat4(1.0f), tc.Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f))
-							* glm::translate(glm::mat4(1.0f), glm::vec3(bcc.Offset, 0.001f))
-							* glm::scale(glm::mat4(1.0f), scale);
+						TransformComponent transform = entity.GetTransform();
+						transform.Position += glm::vec3(bcc.Offset.x, bcc.Offset.y, 0.001f);
+						transform.Scale *= glm::vec3(bcc.Size.x * 2.0f, bcc.Size.y * 2.0f, 1.0f);
 
-						Renderer2D::DrawRect(transform, glm::vec4(1, 1, 0, 1));
+						Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(1, 1, 0, 1));
 					}
 				}
 
 				// Circle Colliders
 				{
 					for (auto&& [handle, tc, ccc] : m_ActiveScene->GetRegistry().GetEntitiesWith<TransformComponent, CircleCollider2DComponent>().each()) {
-						glm::vec3 translation = tc.Position + glm::vec3(ccc.Offset, 0.001f);
-						glm::vec3 scale = tc.Scale * glm::vec3(ccc.Radius * 2.0f);
+						Entity entity = { handle, m_ActiveScene };
 
-						glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
-							* glm::scale(glm::mat4(1.0f), scale);
+						TransformComponent transform = entity.GetTransform();
+						transform.Position += glm::vec3(ccc.Offset.x, ccc.Offset.y, 0.001f);
+						transform.Scale *= glm::vec3(ccc.Radius * 2.0f);
 
-						Renderer2D::DrawCircle(transform, glm::vec4(1, 1, 0, 1), 0.02f);
+						Renderer2D::DrawCircle(transform.GetTransform(), glm::vec4(1, 1, 0, 1), 0.02f);
 					}
 				}
 			}

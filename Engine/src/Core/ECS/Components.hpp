@@ -11,6 +11,7 @@
 #include "Core/Utils/Random.hpp"
 #include "Core/Scene/SceneCamera.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
+#include "../Math/Math.hpp"
 
 namespace SW {
 
@@ -86,6 +87,11 @@ namespace SW {
 			return glm::translate(glm::mat4(1.0f), Position)
 				* glm::toMat4(glm::quat(Rotation))
 				* glm::scale(glm::mat4(1.0f), Scale);
+		}
+
+		void SetTransform(const glm::mat4& transform)
+		{
+			Math::DecomposeTransform(transform, Position, Rotation, Scale);
 		}
     };
 

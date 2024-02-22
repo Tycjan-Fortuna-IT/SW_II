@@ -62,9 +62,11 @@ namespace SW {
 				SceneCamera* mainCamera = nullptr;
 
 				for (auto&& [handle, tc, cc] : m_Registry.GetEntitiesWith<TransformComponent, CameraComponent>().each()) {
+					Entity entity = { handle, this };
+
 					if (cc.Primary) {
 						mainCamera = &cc.Camera;
-						cameraTransform = tc.GetTransform();
+						cameraTransform = entity.GetWorldSpaceTransformMatrix();
 
 						break;
 					}
@@ -100,7 +102,9 @@ namespace SW {
 		m_PhysicsWorld2D->SetContactListener(m_PhysicsContactListener2D);
 
 		for (auto&& [handle, tc, rbc] : m_Registry.GetEntitiesWith<TransformComponent, RigidBody2DComponent>().each()) {
-			CreateRigidbody2D({ handle, this }, tc, rbc);
+			Entity entity = { handle, this };
+
+			CreateRigidbody2D(entity, entity.GetWorldSpaceTransform(), rbc);
 		}
 	}
 
@@ -121,11 +125,15 @@ namespace SW {
     void Scene::OnUpdateEditor(Timestep dt)
     {
 		for (auto&& [handle, tc, sc] : m_Registry.GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
-			Renderer2D::DrawQuad(tc.GetTransform(), sc, (int)handle);
+			Entity entity = { handle, this };
+
+			Renderer2D::DrawQuad(entity.GetWorldSpaceTransformMatrix(), sc, (int)handle);
 		}
 
 		for (auto&& [handle, tc, cc] : m_Registry.GetEntitiesWith<TransformComponent, CircleComponent>().each()) {
-			Renderer2D::DrawCircle(tc.GetTransform(), cc, (int)handle);
+			Entity entity = { handle, this };
+
+			Renderer2D::DrawCircle(entity.GetWorldSpaceTransformMatrix(), cc, (int)handle);
 		}
 	}
 
@@ -159,12 +167,16 @@ namespace SW {
 
 #pragma endregion
 
-		for (auto&& [entity, tc, sc] : m_Registry.GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
-			Renderer2D::DrawQuad(tc.GetTransform(), sc, (int)entity);
+		for (auto&& [handle, tc, sc] : m_Registry.GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
+			Entity entity = { handle, this };
+
+			Renderer2D::DrawQuad(entity.GetTransform().GetTransform(), sc, (int)handle);
 		}
 
 		for (auto&& [handle, tc, cc] : m_Registry.GetEntitiesWith<TransformComponent, CircleComponent>().each()) {
-			Renderer2D::DrawCircle(tc.GetTransform(), cc, (int)handle);
+			Entity entity = { handle, this };
+
+			Renderer2D::DrawCircle(entity.GetTransform().GetTransform(), cc, (int)handle);
 		}
 	}
 
