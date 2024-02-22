@@ -152,8 +152,9 @@ namespace SW {
 						if (ImGui::BeginPopupContextItem("1")) {
 							if (ImGui::MenuItemEx("Show in explorer", SW_ICON_MAGNIFY)) {
 								std::filesystem::path pathToFile = entry.FilePath;
+								std::filesystem::path toOpen = ProjectContext::Get()->GetAssetDirectory() / pathToFile.parent_path();
 
-								FileSystem::RevealFolderInFileExplorer(pathToFile.parent_path());
+								FileSystem::RevealFolderInFileExplorer(toOpen);
 							}
 
 							ImGui::EndPopup();

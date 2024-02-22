@@ -140,7 +140,7 @@ namespace SW {
 			output << YAML::Key << "Tag" << YAML::Value << entity.GetTag();
 			output << YAML::EndMap;
 
-			TransformComponent& tc = entity.GetComponent<TransformComponent>();
+			const TransformComponent& tc = entity.GetComponent<TransformComponent>();
 			output << YAML::Key << "TransformComponent";
 			output << YAML::BeginMap;
 			output << YAML::Key << "Transform" << YAML::Value << tc.Position;
@@ -149,7 +149,7 @@ namespace SW {
 			output << YAML::EndMap;
 
 			if (entity.HasComponent<SpriteComponent>()) {
-				SpriteComponent& sc = entity.GetComponent<SpriteComponent>();
+				const SpriteComponent& sc = entity.GetComponent<SpriteComponent>();
 				output << YAML::Key << "SpriteComponent";
 				output << YAML::BeginMap;
 				output << YAML::Key << "Color" << YAML::Value << sc.Color;
@@ -162,7 +162,7 @@ namespace SW {
 			}
 
 			if (entity.HasComponent<CircleComponent>()) {
-				CircleComponent& cc = entity.GetComponent<CircleComponent>();
+				const CircleComponent& cc = entity.GetComponent<CircleComponent>();
 				output << YAML::Key << "CircleComponent";
 				output << YAML::BeginMap;
 				output << YAML::Key << "Color" << YAML::Value << cc.Color;
@@ -171,8 +171,27 @@ namespace SW {
 				output << YAML::EndMap;
 			}
 
+			if (entity.HasComponent<RelationshipComponent>()) {
+				const RelationshipComponent& rsc = entity.GetComponent<RelationshipComponent>();
+				output << YAML::Key << "RelationshipComponent";
+				output << YAML::BeginMap;
+
+				output << YAML::Key << "ParentID" << YAML::Value << rsc.ParentID;
+				output << YAML::Key << "ChildrenCount" << YAML::Value << rsc.ChildrenIDs.size();
+
+				if (!rsc.ChildrenIDs.empty()) {
+					output << YAML::Key << "ChildrenIDs";
+					output << YAML::BeginMap;
+					for (size_t i = 0; i < rsc.ChildrenIDs.size(); i++)
+						output << YAML::Key << i << YAML::Value << rsc.ChildrenIDs[i];
+					output << YAML::EndMap;
+				}
+
+				output << YAML::EndMap;
+			}
+
 			if (entity.HasComponent<CameraComponent>()) {
-				CameraComponent& cc = entity.GetComponent<CameraComponent>();
+				const CameraComponent& cc = entity.GetComponent<CameraComponent>();
 
 				output << YAML::Key << "CameraComponent";
 				output << YAML::BeginMap;
@@ -182,7 +201,7 @@ namespace SW {
 			}
 
 			if (entity.HasComponent<RigidBody2DComponent>()) {
-				RigidBody2DComponent& rbc = entity.GetComponent<RigidBody2DComponent>();
+				const RigidBody2DComponent& rbc = entity.GetComponent<RigidBody2DComponent>();
 				
 				output << YAML::Key << "RigidBody2DComponent";
 				output << YAML::BeginMap;
@@ -196,7 +215,7 @@ namespace SW {
 			}
 
 			if (entity.HasComponent<BoxCollider2DComponent>()) {
-				BoxCollider2DComponent& bcc = entity.GetComponent<BoxCollider2DComponent>();
+				const BoxCollider2DComponent& bcc = entity.GetComponent<BoxCollider2DComponent>();
 
 				output << YAML::Key << "BoxCollider2DComponent";
 				output << YAML::BeginMap;
@@ -208,7 +227,7 @@ namespace SW {
 			}
 
 			if (entity.HasComponent<CircleCollider2DComponent>()) {
-				CircleCollider2DComponent& ccc = entity.GetComponent<CircleCollider2DComponent>();
+				const CircleCollider2DComponent& ccc = entity.GetComponent<CircleCollider2DComponent>();
 
 				output << YAML::Key << "CircleCollider2DComponent";
 				output << YAML::BeginMap;
@@ -220,7 +239,7 @@ namespace SW {
 			}
 
 			if (entity.HasComponent<BuoyancyEffector2DComponent>()) {
-				BuoyancyEffector2DComponent& bec = entity.GetComponent<BuoyancyEffector2DComponent>();
+				const BuoyancyEffector2DComponent& bec = entity.GetComponent<BuoyancyEffector2DComponent>();
 
 				output << YAML::Key << "BuoyancyEffector2DComponent";
 				output << YAML::BeginMap;
@@ -296,6 +315,29 @@ namespace SW {
 				cc.Color = circleComponent["Color"].as<glm::vec4>();
 				cc.Thickness = circleComponent["Thickness"].as<f32>();
 				cc.Fade = circleComponent["Fade"].as<f32>();
+			}
+
+			YAML::Node relationshipComponent = entity["Entity"]["RelationshipComponent"];
+
+			if (relationshipComponent) {
+				RelationshipComponent& rsc = deserialized.GetComponent<RelationshipComponent>();
+				rsc.ParentID = relationshipComponent["ParentID"].as<u64>();
+
+				const u64 childCount = relationshipComponent["ChildrenCount"].as<u64>();
+
+				rsc.ChildrenIDs.clear();
+				rsc.ChildrenIDs.reserve(childCount);
+				
+				const YAML::Node children = relationshipComponent["ChildrenIDs"];
+				
+				if (children && childCount > 0) {
+					for (size_t i = 0; i < childCount; i++) {
+						u64 child = children[i].as<u64>();
+
+						if (child)
+							rsc.ChildrenIDs.push_back(child);
+					}
+				}
 			}
 
 			YAML::Node cameraComponent = entity["Entity"]["CameraComponent"];

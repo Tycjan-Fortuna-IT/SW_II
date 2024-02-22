@@ -12,6 +12,9 @@ Entities:
         Color: [0.423917323, 0.914438486, 0.102690935, 1]
         Thickness: 1
         Fade: 0.00499999989
+      RelationshipComponent:
+        ParentID: 16815035606354717993
+        ChildrenCount: 0
       RigidBody2DComponent:
         Type: 2
         GravityScale: 1
@@ -35,6 +38,9 @@ Entities:
         Scale: [7.44999933, 1, 1]
       SpriteComponent:
         Color: [0.983957231, 0.63141638, 0, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
       RigidBody2DComponent:
         Type: 0
         GravityScale: 1
@@ -60,6 +66,9 @@ Entities:
         Color: [0.935828865, 0.873206496, 0.0350310206, 1]
         Thickness: 1
         Fade: 0.00499999989
+      RelationshipComponent:
+        ParentID: 16815035606354717993
+        ChildrenCount: 0
       RigidBody2DComponent:
         Type: 2
         GravityScale: 1
@@ -85,6 +94,9 @@ Entities:
         Color: [0.323858291, 0.42730853, 0.807486653, 1]
         Thickness: 1
         Fade: 0.00499999989
+      RelationshipComponent:
+        ParentID: 16815035606354717993
+        ChildrenCount: 0
       RigidBody2DComponent:
         Type: 2
         GravityScale: 1
@@ -108,6 +120,9 @@ Entities:
         Scale: [3.99999833, 2.5, 1]
       SpriteComponent:
         Color: [0.0855614692, 0.515656769, 0.941176474, 0.57219255]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
       RigidBody2DComponent:
         Type: 1
         GravityScale: 1
@@ -136,6 +151,9 @@ Entities:
         Scale: [7.78558779, 1, 1]
       SpriteComponent:
         Color: [1, 0, 0.866310596, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
       RigidBody2DComponent:
         Type: 0
         GravityScale: 1
@@ -160,6 +178,9 @@ Entities:
       SpriteComponent:
         Color: [1, 0.705882311, 0, 1]
         TexturePath: assets\textures\Container.jpg
+      RelationshipComponent:
+        ParentID: 16815035606354717993
+        ChildrenCount: 0
       RigidBody2DComponent:
         Type: 2
         GravityScale: 1
@@ -184,6 +205,9 @@ Entities:
       SpriteComponent:
         Color: [1, 0, 0, 1]
         TexturePath: assets\textures\Wall.jpg
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
       RigidBody2DComponent:
         Type: 0
         GravityScale: 1
@@ -205,6 +229,9 @@ Entities:
         Transform: [0, -1.95000005, 0]
         Rotation: [0, 0, 0]
         Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
       CameraComponent:
         Primary: true
         AspectRatio: 1.90584421
@@ -226,6 +253,9 @@ Entities:
         Scale: [1, 0.600000024, 1]
       SpriteComponent:
         Color: [0, 0.213903904, 1, 1]
+      RelationshipComponent:
+        ParentID: 16815035606354717993
+        ChildrenCount: 0
       RigidBody2DComponent:
         Type: 2
         GravityScale: 1
@@ -238,3 +268,21 @@ Entities:
         Offset: [0, 0]
         Density: 1
         IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 16815035606354717993
+      TagComponent:
+        Tag: Falling stuff
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 5
+        ChildrenIDs:
+          0: 15445732272069198518
+          1: 12126617193307071571
+          2: 5003693789910574394
+          3: 2877500041855676254
+          4: 911660348029353138

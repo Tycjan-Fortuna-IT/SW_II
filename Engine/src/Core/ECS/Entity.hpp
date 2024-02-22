@@ -1,8 +1,8 @@
 /**
  * @file Entity.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.1
- * @date 2024-01-18
+ * @version 0.1.2
+ * @date 2024-02-22
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -111,6 +111,18 @@ namespace SW {
 		RelationshipComponent& GetRelations() { return GetComponent<RelationshipComponent>(); }
 
 		/**
+		 * @brief Retrieves all components of the specified types associated with the entity.
+		 * 
+		 * @tparam Components The types of components to retrieve.
+		 * @return A tuple containing references to the components.
+		 */
+		template<typename... Components>
+		[[nodiscard]] inline auto GetAllComponents() const
+		{
+			return m_Scene->GetRegistry().GetRegistryHandle().get<Components...>(m_Handle);
+		}
+
+		/**
 		 * @brief Conversion operator to check if the entity is valid.
 		 * @return True if the entity is valid, false otherwise.
 		 */
@@ -130,6 +142,27 @@ namespace SW {
         operator u32() const { return (u32)m_Handle; }
 
 		/**
+		 * Checks if the current entity is the parent of the given entity.
+		 * @param entity The entity to check.
+		 * @return True if the current entity is the parent of the given entity, false otherwise.
+		 */
+		bool IsParentOf(Entity entity)
+		{
+			return GetID() == entity.GetRelations().ParentID;
+		}
+
+		/**
+		 * Checks if the entity is a child of the specified entity.
+		 *
+		 * @param entity The entity to check if it is the parent.
+		 * @return True if the entity is a child of the specified entity, false otherwise.
+		 */
+		bool IsChildOf(Entity entity)
+		{
+			return GetRelations().ParentID == entity.GetID();
+		}
+
+		/**
 		 * @brief Retrieves the parent entity of the current entity.
 		 * @warning If the entity has no parent, an empty entity is returned.
 		 * 
@@ -145,7 +178,7 @@ namespace SW {
 		/**
 		 * Sets the parent of the entity.
 		 * @warning If the entity already has a parent, the old parent will be replaced by the new one.
-		 * 
+		 * @warning DO NOT pass invalid entities to this function. like {}.
 		 * @param parent The entity to set as the parent.
 		 */
 		void SetParent(Entity parent)
@@ -169,6 +202,37 @@ namespace SW {
 			}
 			
 			rc.ParentID = parent.GetID();
+			parent.GetRelations().ChildrenIDs.emplace_back(GetID());
+		}
+
+		/**
+		 * @brief Removes the parent relationship of the entity.
+		 * 
+		 * This function removes the parent relationship of the entity by updating the RelationshipComponent
+		 * of both the entity and its parent. It removes the entity's ID from the parent's list of children IDs.
+		 * 
+		 * @note If the entity does not have a parent, this function does nothing.
+		 */
+		void RemoveParent()
+		{
+			RelationshipComponent& rc = GetComponent<RelationshipComponent>();
+
+			Entity oldParent = GetParent();
+
+			if (!oldParent) {
+				return;
+			}
+
+			RelationshipComponent& oldParentRelations = oldParent.GetRelations();
+
+			for (auto it = oldParentRelations.ChildrenIDs.begin(); it != oldParentRelations.ChildrenIDs.end(); it++) {
+				if (*it == GetID()) {
+					oldParentRelations.ChildrenIDs.erase(it);
+					break;
+				}
+			}
+
+			rc.ParentID = 0;
 		}
 
     private:

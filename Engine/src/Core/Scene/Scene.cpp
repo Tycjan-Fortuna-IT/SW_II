@@ -188,6 +188,17 @@ namespace SW {
 		return {};
 	}
 
+	template <typename C>
+	inline static void CopyComponent(Scene* scene, EntityRegistry& sourceRegistry, entt::registry& destinationRegistryHandle)
+	{
+		for (auto&& [handle, idc, component] : sourceRegistry.GetEntitiesWith<IDComponent, C>().each()) {
+			C& componentToCopy = scene->GetEntityByID(idc.ID).GetComponent<C>();
+			Entity destination = scene->GetEntityByID(idc.ID);
+
+			destinationRegistryHandle.emplace_or_replace<C>(destination, componentToCopy);
+		}
+	}
+
     Scene* Scene::DeepCopy()
     {
 		Scene* copy = new Scene(m_FilePath);
@@ -198,62 +209,15 @@ namespace SW {
 
 		entt::registry& registry = copy->GetRegistry().GetRegistryHandle();
 
-		// TODO use some more generic way
-		for (auto&& [handle, idc, tc] : m_Registry.GetEntitiesWith<IDComponent, TransformComponent>().each()) {
-			TransformComponent& componentToCopy = GetEntityByID(idc.ID).GetComponent<TransformComponent>();
-			Entity destination = GetEntityByID(idc.ID);
-
-			registry.emplace_or_replace<TransformComponent>(destination, componentToCopy);
-		}
-
-		for (auto&& [handle, idc, tc] : m_Registry.GetEntitiesWith<IDComponent, SpriteComponent>().each()) {
-			SpriteComponent& componentToCopy = GetEntityByID(idc.ID).GetComponent<SpriteComponent>();
-			Entity destination = GetEntityByID(idc.ID);
-
-			registry.emplace_or_replace<SpriteComponent>(destination, componentToCopy);
-		}
-
-		for (auto&& [handle, idc, tc] : m_Registry.GetEntitiesWith<IDComponent, CircleComponent>().each()) {
-			CircleComponent& componentToCopy = GetEntityByID(idc.ID).GetComponent<CircleComponent>();
-			Entity destination = GetEntityByID(idc.ID);
-
-			registry.emplace_or_replace<CircleComponent>(destination, componentToCopy);
-		}
-
-		for (auto&& [handle, idc, tc] : m_Registry.GetEntitiesWith<IDComponent, CameraComponent>().each()) {
-			CameraComponent& componentToCopy = GetEntityByID(idc.ID).GetComponent<CameraComponent>();
-			Entity destination = GetEntityByID(idc.ID);
-
-			registry.emplace_or_replace<CameraComponent>(destination, componentToCopy);
-		}
-
-		for (auto&& [handle, idc, tc] : m_Registry.GetEntitiesWith<IDComponent, RigidBody2DComponent>().each()) {
-			RigidBody2DComponent& componentToCopy = GetEntityByID(idc.ID).GetComponent<RigidBody2DComponent>();
-			Entity destination = GetEntityByID(idc.ID);
-
-			registry.emplace_or_replace<RigidBody2DComponent>(destination, componentToCopy);
-		}
-
-		for (auto&& [handle, idc, tc] : m_Registry.GetEntitiesWith<IDComponent, BoxCollider2DComponent>().each()) {
-			BoxCollider2DComponent& componentToCopy = GetEntityByID(idc.ID).GetComponent<BoxCollider2DComponent>();
-			Entity destination = GetEntityByID(idc.ID);
-
-			registry.emplace_or_replace<BoxCollider2DComponent>(destination, componentToCopy);
-		}
-
-		for (auto&& [handle, idc, tc] : m_Registry.GetEntitiesWith<IDComponent, CircleCollider2DComponent>().each()) {
-			CircleCollider2DComponent& componentToCopy = GetEntityByID(idc.ID).GetComponent<CircleCollider2DComponent>();
-			Entity destination = GetEntityByID(idc.ID);
-
-			registry.emplace_or_replace<CircleCollider2DComponent>(destination, componentToCopy);
-		}
-
-		for (auto&& [handle, idc, tc] : m_Registry.GetEntitiesWith<IDComponent, BuoyancyEffector2DComponent>().each()) {
-			BuoyancyEffector2DComponent& componentToCopy = GetEntityByID(idc.ID).GetComponent<BuoyancyEffector2DComponent>();
-			Entity destination = GetEntityByID(idc.ID);
-
-			registry.emplace_or_replace<BuoyancyEffector2DComponent>(destination, componentToCopy);
-		}
+		CopyComponent<TransformComponent>(this, m_Registry, registry);
+		CopyComponent<SpriteComponent>(this, m_Registry, registry);
+		CopyComponent<CircleComponent>(this, m_Registry, registry);
+		CopyComponent<CameraComponent>(this, m_Registry, registry);
+		CopyComponent<RigidBody2DComponent>(this, m_Registry, registry);
+		CopyComponent<BoxCollider2DComponent>(this, m_Registry, registry);
+		CopyComponent<CircleCollider2DComponent>(this, m_Registry, registry);
+		CopyComponent<BuoyancyEffector2DComponent>(this, m_Registry, registry);
+		CopyComponent<RelationshipComponent>(this, m_Registry, registry);
 
 		return copy;
     }

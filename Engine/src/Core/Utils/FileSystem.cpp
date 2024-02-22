@@ -60,7 +60,7 @@ namespace SW {
 	void FileSystem::RevealFolderInFileExplorer(const char* path)
 	{
 #ifdef SW_WINDOWS
-		ShellExecuteA(nullptr, "explore", path, nullptr, nullptr, SW_SHOWDEFAULT);
+		ShellExecuteA(nullptr, "open", path, nullptr, nullptr, SW_SHOWDEFAULT);
 #endif
 	}
 

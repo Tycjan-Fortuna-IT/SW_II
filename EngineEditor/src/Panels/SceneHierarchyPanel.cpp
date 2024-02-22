@@ -28,7 +28,7 @@ namespace SW {
 
 				Scene* currentScene = m_SceneViewportPanel->GetCurrentScene();
 
-				m_SearchFilter.OnRender("###HierarchyFilter");
+				m_SearchFilter.OnRender("  " SW_ICON_MAGNIFY "  Search ... ");
 
 				ImGui::SameLine();
 
@@ -100,15 +100,29 @@ namespace SW {
 						ImGui::PopID();
 					}
 
-					const auto& view = m_SceneViewportPanel->GetCurrentScene()->GetRegistry().GetEntitiesWith<IDComponent, TagComponent>();
+					const auto& view = m_SceneViewportPanel->GetCurrentScene()->GetRegistry()
+						.GetEntitiesWith<IDComponent, TagComponent, RelationshipComponent>();
 
-					for (auto&& [handle, idc, tc] : view.each()) {
-						const Entity entity = { handle,  m_SceneViewportPanel->GetCurrentScene() };
+					for (auto&& [handle, idc, tc, rsc] : view.each()) {
+						if (!rsc.ParentID) {
+							const Entity entity = { handle,  m_SceneViewportPanel->GetCurrentScene() };
+							RenderEntityNode(entity, idc.ID, tc.Tag, rsc);
+						}
+					}
+					
+					ImGui::EndTable();
 
-						RenderEntityNode(entity, idc, tc);
+					if (m_DraggedEntity && m_DraggedEntityTarget) {
+						if (m_DraggedEntity.IsChildOf(m_DraggedEntityTarget)) {
+							m_DraggedEntity.RemoveParent();
+						} else {
+							m_DraggedEntity.SetParent(m_DraggedEntityTarget);
+						}
+
+						m_DraggedEntity = {};
+						m_DraggedEntityTarget = {};
 					}
 
-					ImGui::EndTable();
 				}
 			} else {
 				ImGui::Text("No project selected...");
@@ -118,23 +132,19 @@ namespace SW {
 		}
 	}
 
-	void SceneHierarchyPanel::RenderEntityNode(Entity entity, const IDComponent& idc, const TagComponent& tc)
+	ImRect SceneHierarchyPanel::RenderEntityNode(Entity entity, u64 id, const std::string& tag, const RelationshipComponent& rsc, u32 depth)
 	{
+		if (!entity || !m_SearchFilter.FilterPass(tag))
+			return { 0,0,0,0 };
+
 		ImGui::TableNextRow();
 		ImGui::TableNextColumn();
 
-		const std::string tag = tc.Tag;
-
-		if (!m_SearchFilter.FilterPass(tag)) {
-			return;
-		}
-
-		const bool selected = SelectionManager::GetSelectionID() == idc.ID;
+		const bool selected = SelectionManager::GetSelectionID() == id;
 
 		ImGuiTreeNodeFlags flags = (selected ? ImGuiTreeNodeFlags_Selected : 0)
 			| ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanFullWidth
-			| ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAllColumns
-			| ImGuiTreeNodeFlags_AllowOverlap | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+			| ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAllColumns | ImGuiTreeNodeFlags_AllowOverlap;
 
 		if (selected) {
 			ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(Color::DarkGray));
@@ -142,7 +152,12 @@ namespace SW {
 			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, Color::DarkGray);
 		}
 
-		const bool opened = ImGui::TreeNodeEx(reinterpret_cast<void*>(idc.ID), flags, "%s %s", SW_ICON_CUBE_OUTLINE, tag.c_str());
+		const u64 childrenSize = rsc.ChildrenIDs.size();
+		if (childrenSize == 0) {
+			flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+		}
+
+		const bool opened = ImGui::TreeNodeEx(reinterpret_cast<void*>(id), flags, "%s %s", SW_ICON_CUBE_OUTLINE, tag.c_str());
 
 		if (selected)
 			ImGui::PopStyleColor(2);
@@ -151,13 +166,13 @@ namespace SW {
 			if (selected) {
 				SelectionManager::Deselect();
 			} else {
-				SelectionManager::SelectByID(idc.ID);
+				SelectionManager::SelectByID(id);
 			}
 		}
 
 		if (ImGui::BeginPopupContextItem()) {
 			if (ImGui::MenuItemEx("Delete", SW_ICON_DELETE, "Del")) {
-				if (SelectionManager::GetSelectionID() == idc.ID) {
+				if (SelectionManager::GetSelectionID() == id) {
 					SelectionManager::Deselect();
 
 					m_SceneViewportPanel->GetCurrentScene()->DestroyEntity(entity);
@@ -167,10 +182,60 @@ namespace SW {
 			ImGui::EndPopup();
 		}
 
-		ImGui::TableNextColumn();
-		ImGui::TextUnformatted("  Entity");
-		ImGui::TableNextColumn();
-		ImGui::Text("  %s ", true ? SW_ICON_EYE : SW_ICON_EYE_OFF);
+		ImVec2 verticalLineStart = ImGui::GetCursorScreenPos();
+		verticalLineStart.x -= 0.5f;
+		verticalLineStart.y -= ImGui::GetFrameHeight() * 0.5f;
+
+		{
+			if (ImGui::BeginDragDropTarget()) {
+				if (const ImGuiPayload* entityPayload = ImGui::AcceptDragDropPayload("Entity")) {
+					m_DraggedEntity = *static_cast<Entity*>(entityPayload->Data);
+					m_DraggedEntityTarget = entity;
+				}
+
+				ImGui::EndDragDropTarget();
+			}
+
+			if (ImGui::BeginDragDropSource()) {
+				ImGui::SetDragDropPayload("Entity", &entity, sizeof(entity));
+				ImGui::TextUnformatted(tag.c_str());
+				ImGui::EndDragDropSource();
+			}
+		}
+
+		const ImRect nodeRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+
+		if (opened) {
+			static ImColor treeLineColor[2] = { ImColor(101, 173, 229), ImColor(239, 184, 57) };
+			depth %= sizeof(treeLineColor) / sizeof(ImColor);
+			ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+			ImVec2 verticalLineEnd = verticalLineStart;
+			constexpr f32 lineThickness = 1.5f;
+
+			for (u64 childId : rsc.ChildrenIDs) {
+				Scene* currentScene = m_SceneViewportPanel->GetCurrentScene();
+
+				if (const Entity child = currentScene->GetEntityByID(childId)) {
+					auto&& [tc, rsc] = child.GetAllComponents<TagComponent, RelationshipComponent>();
+
+					const f32 HorizontalTreeLineSize = rsc.ChildrenIDs.empty() ? 18.0f : 9.0f;
+					const ImRect childRect = RenderEntityNode(child, childId, tc.Tag, rsc, depth + 1);
+					const f32 midpoint = (childRect.Min.y + childRect.Max.y) / 2.0f;
+
+					drawList->AddLine(ImVec2(verticalLineStart.x, midpoint), ImVec2(verticalLineStart.x + HorizontalTreeLineSize, midpoint), treeLineColor[depth], lineThickness);
+					
+					verticalLineEnd.y = midpoint;
+				}
+			}
+
+			drawList->AddLine(verticalLineStart, verticalLineEnd, treeLineColor[depth], lineThickness);
+		}
+
+		if (opened && childrenSize > 0)
+			ImGui::TreePop();
+
+		return nodeRect;
 	}
 
 }

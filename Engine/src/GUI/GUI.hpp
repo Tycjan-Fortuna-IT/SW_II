@@ -119,7 +119,7 @@ namespace SW::GUI {
 			GUI::ScopedStyle FramePadding(ImGuiStyleVar_FramePadding, padding);
 			GUI::ScopedColor TextColor(ImGuiCol_Text, Color::White);
 
-			ImGui::InputTextWithHint("##search", "  " SW_ICON_MAGNIFY "  Search ... ", m_Buffer, sizeof(m_Buffer));
+			ImGui::InputTextWithHint("##search", label, m_Buffer, sizeof(m_Buffer));
 		}
 
 		/**

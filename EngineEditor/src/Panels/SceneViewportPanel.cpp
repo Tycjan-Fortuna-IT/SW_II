@@ -183,7 +183,12 @@ namespace SW {
 			const ImTextureID textureID = GUI::GetTextureID(m_Framebuffer->GetColorAttachmentRendererID());
 			ImGui::Image(textureID, currentViewportSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
-			if (ImGui::BeginDragDropTarget()) { // todo perform validation of the file
+			// TODO perform validation of the file
+			// TODO automatically stop scene if user wants to switch it when original is playing
+			if (
+				m_ActiveScene->GetCurrentState() == SceneState::Edit &&
+				ImGui::BeginDragDropTarget()
+			) {
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
 					std::filesystem::path path = ProjectContext::Get()->GetAssetDirectory() / static_cast<char*>(payload->Data);
 
