@@ -74,6 +74,7 @@ namespace SW {
 
 		Entity m_DraggedEntity;			/**< The entity that is currently being dragged. */
 		Entity m_DraggedEntityTarget;	/**< The entity that the dragged entity is being dragged onto. */
+		Entity m_EntityToDelete;
 
 		SceneViewportPanel* m_SceneViewportPanel = nullptr;	/**< The current scene viewport context. */
 	};

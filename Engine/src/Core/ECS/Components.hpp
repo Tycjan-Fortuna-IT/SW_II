@@ -169,11 +169,16 @@ namespace SW {
 	struct RelationshipComponent final
 	{
 		u64 ParentID = 0u;
-		std::vector<u64> ChildrenIDs{};
+		std::vector<u64> ChildrenIDs;
 
 		RelationshipComponent() = default;
 		RelationshipComponent(u64 parentID)
 			: ParentID(parentID) {}
+
+		RelationshipComponent(const RelationshipComponent& other) = default;
+		RelationshipComponent(RelationshipComponent&& other) = default;
+		RelationshipComponent& operator=(const RelationshipComponent& other) = default;
+		RelationshipComponent& operator=(RelationshipComponent&& other) = default;
 	};
 
 	/**

@@ -134,7 +134,7 @@ namespace SW {
 			
 				// Box Colliders
 				{
-					for (auto&& [handle, tc, bcc] : m_ActiveScene->GetRegistry().GetEntitiesWith<TransformComponent, BoxCollider2DComponent>().each()) {
+					for (auto&& [handle, bcc] : m_ActiveScene->GetRegistry().GetEntitiesWith<BoxCollider2DComponent>().each()) {
 						Entity entity = { handle, m_ActiveScene };
 
 						TransformComponent transform = entity.GetTransform();
@@ -147,7 +147,7 @@ namespace SW {
 
 				// Circle Colliders
 				{
-					for (auto&& [handle, tc, ccc] : m_ActiveScene->GetRegistry().GetEntitiesWith<TransformComponent, CircleCollider2DComponent>().each()) {
+					for (auto&& [handle, ccc] : m_ActiveScene->GetRegistry().GetEntitiesWith<CircleCollider2DComponent>().each()) {
 						Entity entity = { handle, m_ActiveScene };
 
 						TransformComponent transform = entity.GetTransform();
@@ -234,7 +234,7 @@ namespace SW {
 				Entity selectedEntity = m_ActiveScene->GetEntityByID(SelectionManager::GetSelectionID());
 
 				TransformComponent& tc = selectedEntity.GetComponent<TransformComponent>();
-				glm::mat4 transform = tc.GetTransform();
+				glm::mat4 transform = selectedEntity.GetWorldSpaceTransformMatrix();
 
 				// Snapping
 				const bool snap = Input::IsKeyPressed(KeyCode::LeftControl);
@@ -253,8 +253,11 @@ namespace SW {
 				);
 
 				if (ImGuizmo::IsUsing()) {
+					Entity parent = selectedEntity.GetParent();
+					const glm::mat4& parentWorldTransform = parent ? parent.GetWorldSpaceTransformMatrix() : glm::mat4(1.0f);
+
 					glm::vec3 translation, rotation, scale;
-					Math::DecomposeTransform(transform, translation, rotation, scale);
+					Math::DecomposeTransform(glm::inverse(parentWorldTransform) * transform, translation, rotation, scale);
 
 					glm::vec3 deltaRotation = rotation - tc.Rotation;
 					tc.Position = translation;

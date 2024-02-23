@@ -123,6 +123,11 @@ namespace SW {
 						m_DraggedEntityTarget = {};
 					}
 
+					if (m_EntityToDelete) {
+						m_SceneViewportPanel->GetCurrentScene()->DestroyEntity(m_EntityToDelete);
+						m_EntityToDelete = {};
+					}
+
 				}
 			} else {
 				ImGui::Text("No project selected...");
@@ -172,11 +177,10 @@ namespace SW {
 
 		if (ImGui::BeginPopupContextItem()) {
 			if (ImGui::MenuItemEx("Delete", SW_ICON_DELETE, "Del")) {
-				if (SelectionManager::GetSelectionID() == id) {
+				if (SelectionManager::GetSelectionID() == id)
 					SelectionManager::Deselect();
 
-					m_SceneViewportPanel->GetCurrentScene()->DestroyEntity(entity);
-				}
+				m_EntityToDelete = entity;
 			}
 
 			ImGui::EndPopup();

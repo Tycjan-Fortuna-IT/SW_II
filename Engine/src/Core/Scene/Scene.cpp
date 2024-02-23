@@ -42,6 +42,15 @@ namespace SW {
 
 	void Scene::DestroyEntity(Entity entity)
 	{
+		entity.RemoveParent();
+
+		for (u64 childId : entity.GetRelations().ChildrenIDs) {
+			Entity childToDelete = GetEntityByID(childId);
+
+			DestroyEntity(childToDelete);
+		}
+
+		m_EntityMap.erase(entity.GetID());
 		m_Registry.DestroyEntity(entity);
 	}
 
@@ -101,7 +110,7 @@ namespace SW {
 		m_PhysicsContactListener2D = new Physics2DContactListener(this);
 		m_PhysicsWorld2D->SetContactListener(m_PhysicsContactListener2D);
 
-		for (auto&& [handle, tc, rbc] : m_Registry.GetEntitiesWith<TransformComponent, RigidBody2DComponent>().each()) {
+		for (auto&& [handle, rbc] : m_Registry.GetEntitiesWith<RigidBody2DComponent>().each()) {
 			Entity entity = { handle, this };
 
 			CreateRigidbody2D(entity, entity.GetWorldSpaceTransform(), rbc);
@@ -124,13 +133,13 @@ namespace SW {
 
     void Scene::OnUpdateEditor(Timestep dt)
     {
-		for (auto&& [handle, tc, sc] : m_Registry.GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
+		for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<SpriteComponent>().each()) {
 			Entity entity = { handle, this };
 
 			Renderer2D::DrawQuad(entity.GetWorldSpaceTransformMatrix(), sc, (int)handle);
 		}
 
-		for (auto&& [handle, tc, cc] : m_Registry.GetEntitiesWith<TransformComponent, CircleComponent>().each()) {
+		for (auto&& [handle, cc] : m_Registry.GetEntitiesWith<CircleComponent>().each()) {
 			Entity entity = { handle, this };
 
 			Renderer2D::DrawCircle(entity.GetWorldSpaceTransformMatrix(), cc, (int)handle);
@@ -167,13 +176,13 @@ namespace SW {
 
 #pragma endregion
 
-		for (auto&& [handle, tc, sc] : m_Registry.GetEntitiesWith<TransformComponent, SpriteComponent>().each()) {
+		for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<SpriteComponent>().each()) {
 			Entity entity = { handle, this };
 
 			Renderer2D::DrawQuad(entity.GetTransform().GetTransform(), sc, (int)handle);
 		}
 
-		for (auto&& [handle, tc, cc] : m_Registry.GetEntitiesWith<TransformComponent, CircleComponent>().each()) {
+		for (auto&& [handle, cc] : m_Registry.GetEntitiesWith<CircleComponent>().each()) {
 			Entity entity = { handle, this };
 
 			Renderer2D::DrawCircle(entity.GetTransform().GetTransform(), cc, (int)handle);
@@ -215,21 +224,32 @@ namespace SW {
     {
 		Scene* copy = new Scene(m_FilePath);
 
+		entt::registry& copyRegistry = copy->GetRegistry().GetRegistryHandle();
+
 		for (auto&& [handle, idc, tc] : m_Registry.GetEntitiesWith<IDComponent, TagComponent>().each()) {
-			copy->CreateEntityWithID(idc.ID, tc.Tag);
+			Entity current = { handle, this };
+			RelationshipComponent& currentRelations = current.GetRelations();
+
+			Entity copied = copy->CreateEntityWithID(idc.ID, tc.Tag);
+			RelationshipComponent& copiedRelations = copied.GetRelations();
+
+			copiedRelations.ParentID = currentRelations.ParentID;
+
+			for (u64 childId : currentRelations.ChildrenIDs) {
+				copiedRelations.ChildrenIDs.emplace_back(childId);
+			}
+
+			copyRegistry.emplace_or_replace<RelationshipComponent>(copied, copiedRelations);
 		}
 
-		entt::registry& registry = copy->GetRegistry().GetRegistryHandle();
-
-		CopyComponent<TransformComponent>(this, m_Registry, registry);
-		CopyComponent<SpriteComponent>(this, m_Registry, registry);
-		CopyComponent<CircleComponent>(this, m_Registry, registry);
-		CopyComponent<CameraComponent>(this, m_Registry, registry);
-		CopyComponent<RigidBody2DComponent>(this, m_Registry, registry);
-		CopyComponent<BoxCollider2DComponent>(this, m_Registry, registry);
-		CopyComponent<CircleCollider2DComponent>(this, m_Registry, registry);
-		CopyComponent<BuoyancyEffector2DComponent>(this, m_Registry, registry);
-		CopyComponent<RelationshipComponent>(this, m_Registry, registry);
+		CopyComponent<TransformComponent>(this, m_Registry, copyRegistry);
+		CopyComponent<SpriteComponent>(this, m_Registry, copyRegistry);
+		CopyComponent<CircleComponent>(this, m_Registry, copyRegistry);
+		CopyComponent<CameraComponent>(this, m_Registry, copyRegistry);
+		CopyComponent<RigidBody2DComponent>(this, m_Registry, copyRegistry);
+		CopyComponent<BoxCollider2DComponent>(this, m_Registry, copyRegistry);
+		CopyComponent<CircleCollider2DComponent>(this, m_Registry, copyRegistry);
+		CopyComponent<BuoyancyEffector2DComponent>(this, m_Registry, copyRegistry);
 
 		return copy;
     }
