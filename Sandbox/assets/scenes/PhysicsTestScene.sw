@@ -39,7 +39,7 @@ Entities:
       SpriteComponent:
         Color: [0.983957231, 0.63141638, 0, 1]
       RelationshipComponent:
-        ParentID: 0
+        ParentID: 17636249096898027447
         ChildrenCount: 0
       RigidBody2DComponent:
         Type: 0
@@ -152,7 +152,7 @@ Entities:
       SpriteComponent:
         Color: [1, 0, 0.866310596, 1]
       RelationshipComponent:
-        ParentID: 0
+        ParentID: 17636249096898027447
         ChildrenCount: 0
       RigidBody2DComponent:
         Type: 0
@@ -206,7 +206,7 @@ Entities:
         Color: [1, 0, 0, 1]
         TexturePath: assets\textures\Wall.jpg
       RelationshipComponent:
-        ParentID: 0
+        ParentID: 17636249096898027447
         ChildrenCount: 0
       RigidBody2DComponent:
         Type: 0
@@ -276,7 +276,7 @@ Entities:
       TransformComponent:
         Transform: [0, 0, 0]
         Rotation: [0, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [0.999999762, 0.999999762, 1]
       RelationshipComponent:
         ParentID: 0
         ChildrenCount: 5
@@ -286,3 +286,19 @@ Entities:
           2: 5003693789910574394
           3: 2877500041855676254
           4: 911660348029353138
+  - Entity:
+      IDComponent:
+        ID: 17636249096898027447
+      TagComponent:
+        Tag: Floors
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [-2.17799254e-08, -5.81257265e-09, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 3
+        ChildrenIDs:
+          0: 12875635337865426963
+          1: 11867549217676532569
+          2: 2508854877901606236

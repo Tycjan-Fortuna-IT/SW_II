@@ -37,42 +37,7 @@ namespace SW {
 				}
 
 				if (ImGui::BeginPopup("AddEntity_Popup")) {
-					if (ImGui::MenuItemEx("Empty Entity", SW_ICON_CUBE_OUTLINE)) {
-						currentScene->CreateEntity("Entity");
-					}
-
-					if (ImGui::BeginMenu("2D")) {
-						if (ImGui::MenuItemEx("Sprite", SW_ICON_IMAGE_SIZE_SELECT_ACTUAL)) {
-							Entity entity = currentScene->CreateEntity("Sprite");
-							entity.AddComponent<SpriteComponent>();
-
-							ImGui::CloseCurrentPopup();
-						}
-
-						if (ImGui::MenuItemEx("Circle", SW_ICON_CHECKBOX_BLANK_CIRCLE)) {
-							Entity entity = currentScene->CreateEntity("Circle");
-							entity.AddComponent<CircleComponent>();
-
-							ImGui::CloseCurrentPopup();
-						}
-
-						if (ImGui::MenuItemEx("Camera", SW_ICON_CAMERA)) {
-							Entity entity = currentScene->CreateEntity("Camera");
-
-							SceneCamera camera(m_SceneViewportPanel->GetViewportAspectRatio());
-
-							entity.AddComponent<CameraComponent>(camera);
-
-							ImGui::CloseCurrentPopup();
-						}
-
-						ImGui::EndMenu();
-					}
-
-					if (ImGui::BeginMenu("3D")) {
-
-						ImGui::EndMenu();
-					}
+					DrawEntityCreateMenu(currentScene);
 
 					ImGui::EndPopup();
 				}
@@ -103,12 +68,25 @@ namespace SW {
 					const auto& view = m_SceneViewportPanel->GetCurrentScene()->GetRegistry()
 						.GetEntitiesWith<IDComponent, TagComponent, RelationshipComponent>();
 
+					//auto sortFn = [](const IDComponent& lhs, const IDComponent& rhs) -> bool {
+					//	return lhs.ID < rhs.ID; // sorting from the lowest ID to highest ID
+					//};
+
+					//m_SceneViewportPanel->GetCurrentScene()->GetRegistry().GetRegistryHandle().sort<IDComponent>(sortFn);
+
 					for (auto&& [handle, idc, tc, rsc] : view.each()) {
 						if (!rsc.ParentID) {
 							const Entity entity = { handle,  m_SceneViewportPanel->GetCurrentScene() };
 							RenderEntityNode(entity, idc.ID, tc.Tag, rsc);
 						}
 					}
+
+					if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
+						DrawEntityCreateMenu(currentScene);
+
+						ImGui::EndPopup();
+					}
+
 					
 					ImGui::EndTable();
 
@@ -127,8 +105,19 @@ namespace SW {
 						m_SceneViewportPanel->GetCurrentScene()->DestroyEntity(m_EntityToDelete);
 						m_EntityToDelete = {};
 					}
-
 				}
+
+				const ImRect windowRect = { ImGui::GetItemRectMin(), ImGui::GetItemRectMax() };
+
+				if (ImGui::BeginDragDropTargetCustom(windowRect, ImGui::GetCurrentWindow()->ID)) {
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity")) {
+						Entity toUnparent = *static_cast<Entity*>(payload->Data);
+						toUnparent.RemoveParent();
+					}
+
+					ImGui::EndDragDropTarget();
+				}
+
 			} else {
 				ImGui::Text("No project selected...");
 			}
@@ -152,9 +141,10 @@ namespace SW {
 			| ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAllColumns | ImGuiTreeNodeFlags_AllowOverlap;
 
 		if (selected) {
-			ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(Color::DarkGray));
-			ImGui::PushStyleColor(ImGuiCol_Header, Color::DarkGray);
-			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, Color::DarkGray);
+			ImVec4 selectedColor = GUI::Colors::Darken(ImVec4(0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f), 0.2f);
+
+			ImGui::PushStyleColor(ImGuiCol_Header, selectedColor);
+			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, selectedColor);
 		}
 
 		const u64 childrenSize = rsc.ChildrenIDs.size();
@@ -192,8 +182,8 @@ namespace SW {
 
 		{
 			if (ImGui::BeginDragDropTarget()) {
-				if (const ImGuiPayload* entityPayload = ImGui::AcceptDragDropPayload("Entity")) {
-					m_DraggedEntity = *static_cast<Entity*>(entityPayload->Data);
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity")) {
+					m_DraggedEntity = *static_cast<Entity*>(payload->Data);
 					m_DraggedEntityTarget = entity;
 				}
 
@@ -240,6 +230,52 @@ namespace SW {
 			ImGui::TreePop();
 
 		return nodeRect;
+	}
+
+	void SceneHierarchyPanel::DrawEntityCreateMenu(Scene* scene)
+	{		
+		if (ImGui::BeginMenu("Create new entity")) {
+
+			if (ImGui::MenuItemEx("Empty Entity", SW_ICON_CUBE_OUTLINE)) {
+				scene->CreateEntity("Entity");
+			}
+
+			if (ImGui::BeginMenuEx("2D", SW_ICON_ARRANGE_BRING_FORWARD)) {
+
+				if (ImGui::MenuItemEx("Sprite", SW_ICON_IMAGE_SIZE_SELECT_ACTUAL)) {
+					Entity entity = scene->CreateEntity("Sprite");
+					entity.AddComponent<SpriteComponent>();
+
+					ImGui::CloseCurrentPopup();
+				}
+
+				if (ImGui::MenuItemEx("Circle", SW_ICON_CHECKBOX_BLANK_CIRCLE)) {
+					Entity entity = scene->CreateEntity("Circle");
+					entity.AddComponent<CircleComponent>();
+
+					ImGui::CloseCurrentPopup();
+				}
+
+				if (ImGui::MenuItemEx("Camera", SW_ICON_CAMERA)) {
+					Entity entity = scene->CreateEntity("Camera");
+
+					SceneCamera camera(m_SceneViewportPanel->GetViewportAspectRatio());
+
+					entity.AddComponent<CameraComponent>(camera);
+
+					ImGui::CloseCurrentPopup();
+				}
+
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenuEx("3D", SW_ICON_PACKAGE_VARIANT_CLOSED)) {
+
+				ImGui::EndMenu();
+			}
+
+			ImGui::EndMenu();
+		}
 	}
 
 }

@@ -77,6 +77,8 @@ namespace SW {
 		Entity m_EntityToDelete;
 
 		SceneViewportPanel* m_SceneViewportPanel = nullptr;	/**< The current scene viewport context. */
+
+		void DrawEntityCreateMenu(Scene* scene);
 	};
 
 }

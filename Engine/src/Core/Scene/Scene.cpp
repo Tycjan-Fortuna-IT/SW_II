@@ -179,13 +179,13 @@ namespace SW {
 		for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<SpriteComponent>().each()) {
 			Entity entity = { handle, this };
 
-			Renderer2D::DrawQuad(entity.GetTransform().GetTransform(), sc, (int)handle);
+			Renderer2D::DrawQuad(entity.GetWorldSpaceTransformMatrix(), sc, (int)handle);
 		}
 
 		for (auto&& [handle, cc] : m_Registry.GetEntitiesWith<CircleComponent>().each()) {
 			Entity entity = { handle, this };
 
-			Renderer2D::DrawCircle(entity.GetTransform().GetTransform(), cc, (int)handle);
+			Renderer2D::DrawCircle(entity.GetWorldSpaceTransformMatrix(), cc, (int)handle);
 		}
 	}
 

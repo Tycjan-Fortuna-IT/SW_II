@@ -137,7 +137,7 @@ namespace SW {
 					for (auto&& [handle, bcc] : m_ActiveScene->GetRegistry().GetEntitiesWith<BoxCollider2DComponent>().each()) {
 						Entity entity = { handle, m_ActiveScene };
 
-						TransformComponent transform = entity.GetTransform();
+						TransformComponent transform = entity.GetWorldSpaceTransform();
 						transform.Position += glm::vec3(bcc.Offset.x, bcc.Offset.y, 0.001f);
 						transform.Scale *= glm::vec3(bcc.Size.x * 2.0f, bcc.Size.y * 2.0f, 1.0f);
 
@@ -150,7 +150,7 @@ namespace SW {
 					for (auto&& [handle, ccc] : m_ActiveScene->GetRegistry().GetEntitiesWith<CircleCollider2DComponent>().each()) {
 						Entity entity = { handle, m_ActiveScene };
 
-						TransformComponent transform = entity.GetTransform();
+						TransformComponent transform = entity.GetWorldSpaceTransform();
 						transform.Position += glm::vec3(ccc.Offset.x, ccc.Offset.y, 0.001f);
 						transform.Scale *= glm::vec3(ccc.Radius * 2.0f);
 
