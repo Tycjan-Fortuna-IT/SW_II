@@ -132,7 +132,7 @@ namespace SW {
 
 			if (EditorSettings::Get().ShowPhysicsColliders) {
 			
-				// Box Colliders
+				// Box Colliders Visualization
 				{
 					for (auto&& [handle, bcc] : m_ActiveScene->GetRegistry().GetEntitiesWith<BoxCollider2DComponent>().each()) {
 						Entity entity = { handle, m_ActiveScene };
@@ -145,7 +145,7 @@ namespace SW {
 					}
 				}
 
-				// Circle Colliders
+				// Circle Colliders Visualization
 				{
 					for (auto&& [handle, ccc] : m_ActiveScene->GetRegistry().GetEntitiesWith<CircleCollider2DComponent>().each()) {
 						Entity entity = { handle, m_ActiveScene };
@@ -155,6 +155,37 @@ namespace SW {
 						transform.Scale *= glm::vec3(ccc.Radius * 2.0f);
 
 						Renderer2D::DrawCircle(transform.GetTransform(), glm::vec4(1, 1, 0, 1), 0.02f);
+					}
+				}
+
+				// Distance Hinge Visualization
+				{
+					for (auto&& [handle, djc] : m_ActiveScene->GetRegistry().GetEntitiesWith<DistanceJoint2DComponent>().each()) {
+						Entity originEntity = { handle, m_ActiveScene };
+
+						if (!djc.ConnectedEntityID)
+							continue;
+
+						Entity connectedEntity = m_ActiveScene->GetEntityByID(djc.ConnectedEntityID);
+
+						if (!connectedEntity)
+							continue;
+
+						TransformComponent originTransform = originEntity.GetWorldSpaceTransform();
+						TransformComponent connectedTransform = connectedEntity.GetWorldSpaceTransform();
+
+						glm::vec3 origin = originTransform.Position + glm::vec3(djc.OriginAnchor.x, djc.OriginAnchor.y, 0.001f);
+						glm::vec3 connected = connectedTransform.Position + glm::vec3(djc.ConnectedAnchor.x, djc.ConnectedAnchor.y, 0.001f);
+
+						Renderer2D::DrawLine(origin, connected, glm::vec4(1.f, 0.5f, 0.f, 1.f));
+
+						glm::mat4 originTransformMatrix = glm::translate(glm::mat4(1.0f), origin) 
+							* glm::scale(glm::mat4(1.0f), glm::vec3(0.15f, 0.15f, 1.0f));
+						glm::mat4 connectedTransformMatrix = glm::translate(glm::mat4(1.0f), connected)
+							* glm::scale(glm::mat4(1.0f), glm::vec3(0.15f, 0.15f, 1.0f));
+
+						Renderer2D::DrawCircle(originTransformMatrix, glm::vec4(1.f, 0.5f, 0.f, 1.f));
+						Renderer2D::DrawCircle(connectedTransformMatrix, glm::vec4(1.f, 0.5f, 0.f, 1.f));
 					}
 				}
 			}

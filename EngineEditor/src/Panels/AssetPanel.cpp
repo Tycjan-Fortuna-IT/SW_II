@@ -253,6 +253,8 @@ namespace SW {
 
 				if (fileType == FileType::Texture) {
 					thumbnail = AssetManager::GetTexture2D(filepath.string().c_str());
+				} else if (fileType == FileType::Scene) {
+					thumbnail = AssetManager::GetEditorTexture2D("assets/icons/editor/FileIcons/Scene_FileIcon.png");
 				} else {
 					thumbnail = AssetManager::GetEditorTexture2D("assets/icons/editor/TextFile.png");
 				}
