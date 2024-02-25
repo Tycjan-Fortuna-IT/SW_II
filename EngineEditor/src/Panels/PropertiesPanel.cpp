@@ -121,76 +121,7 @@ namespace SW {
 			}
 
 			if (ImGui::BeginPopup("AddComponent_Popup")) {
-				if (ImGui::BeginMenu("2D")) {
-					if (ImGui::MenuItemEx("Sprite Component", SW_ICON_IMAGE_SIZE_SELECT_ACTUAL)) {
-						if (!entity.HasComponent<SpriteComponent>()) {
-							entity.AddComponent<SpriteComponent>();
-						}
-
-						ImGui::CloseCurrentPopup();
-					}
-
-					if (ImGui::MenuItemEx("Circle Component", SW_ICON_CHECKBOX_BLANK_CIRCLE)) {
-						if (!entity.HasComponent<CircleComponent>()) {
-							entity.AddComponent<CircleComponent>();
-						}
-
-						ImGui::CloseCurrentPopup();
-					}
-
-					if (ImGui::MenuItemEx("Rigid Body 2D", SW_ICON_SOCCER)) {
-						if (!entity.HasComponent<RigidBody2DComponent>()) {
-							entity.AddComponent<RigidBody2DComponent>();
-						}
-					}
-
-					if (ImGui::MenuItemEx("Box Collider 2D", SW_ICON_CHECKBOX_BLANK_OUTLINE)) {
-						if (!entity.HasComponent<BoxCollider2DComponent>()) {
-							entity.AddComponent<BoxCollider2DComponent>();
-						}
-					}
-
-					if (ImGui::MenuItemEx("Circle Collider 2D", SW_ICON_CHECKBOX_BLANK_CIRCLE_OUTLINE)) {
-						if (!entity.HasComponent<CircleCollider2DComponent>()) {
-							entity.AddComponent<CircleCollider2DComponent>();
-						}
-
-						ImGui::CloseCurrentPopup();
-					}
-
-					if (ImGui::MenuItemEx("Buoyancy Effector 2D", SW_ICON_WATER)) {
-						if (!entity.HasComponent<BuoyancyEffector2DComponent>()) {
-							entity.AddComponent<BuoyancyEffector2DComponent>();
-						}
-
-						ImGui::CloseCurrentPopup();
-					}
-
-					if (ImGui::MenuItemEx("Distance Joint 2D", SW_ICON_VECTOR_LINE)) {
-						if (!entity.HasComponent<DistanceJoint2DComponent>()) {
-							entity.AddComponent<DistanceJoint2DComponent>();
-						}
-
-						ImGui::CloseCurrentPopup();
-					}
-
-					if (ImGui::MenuItemEx("Camera Component", SW_ICON_CAMERA)) {
-						if (!entity.HasComponent<CameraComponent>()) {
-							SceneCamera camera(m_SceneViewportPanel->GetViewportAspectRatio());
-
-							entity.AddComponent<CameraComponent>(camera);
-						}
-
-						ImGui::CloseCurrentPopup();
-					}
-
-					ImGui::EndMenu();
-				}
-				
-				if (ImGui::BeginMenu("3D")) {
-
-					ImGui::EndMenu();
-				}
+				DrawAddComponentMenu(entity);
 
 				ImGui::EndPopup();
 			}
@@ -304,6 +235,85 @@ namespace SW {
 			ImGui::EndChild();
 
 			OnEnd();
+		}
+	}
+
+	void PropertiesPanel::DrawAddComponentMenu(Entity entity)
+	{
+		if (ImGui::BeginMenuEx("2D", SW_ICON_ARRANGE_BRING_FORWARD)) {
+
+			if (!entity.HasComponent<SpriteComponent>()) {
+				if (ImGui::MenuItemEx("Sprite Component", SW_ICON_IMAGE_SIZE_SELECT_ACTUAL)) {
+					entity.AddComponent<SpriteComponent>();
+
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			if (!entity.HasComponent<CircleComponent>()) {
+				if (ImGui::MenuItemEx("Circle Component", SW_ICON_CHECKBOX_BLANK_CIRCLE)) {
+					entity.AddComponent<CircleComponent>();
+
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			if (!entity.HasComponent<RigidBody2DComponent>()) {
+				if (ImGui::MenuItemEx("Rigid Body 2D", SW_ICON_SOCCER)) {
+					entity.AddComponent<RigidBody2DComponent>();
+
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			if (!entity.HasComponent<BoxCollider2DComponent>()) {
+				if (ImGui::MenuItemEx("Box Collider 2D", SW_ICON_CHECKBOX_BLANK_OUTLINE)) {
+					entity.AddComponent<BoxCollider2DComponent>();
+
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			if (!entity.HasComponent<CircleCollider2DComponent>()) {
+				if (ImGui::MenuItemEx("Circle Collider 2D", SW_ICON_CHECKBOX_BLANK_CIRCLE_OUTLINE)) {
+					entity.AddComponent<CircleCollider2DComponent>();
+
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			if (!entity.HasComponent<BuoyancyEffector2DComponent>()) {
+				if (ImGui::MenuItemEx("Buoyancy Effector 2D", SW_ICON_WATER)) {
+					entity.AddComponent<BuoyancyEffector2DComponent>();
+
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			if (!entity.HasComponent<DistanceJoint2DComponent>()) {
+				if (ImGui::MenuItemEx("Distance Joint 2D", SW_ICON_VECTOR_LINE)) {
+					entity.AddComponent<DistanceJoint2DComponent>();
+
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			if (!entity.HasComponent<CameraComponent>()) {
+				if (ImGui::MenuItemEx("Camera Component", SW_ICON_CAMERA)) {
+					SceneCamera camera(m_SceneViewportPanel->GetViewportAspectRatio());
+
+					entity.AddComponent<CameraComponent>(camera);
+
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenuEx("3D", SW_ICON_PACKAGE_VARIANT_CLOSED)) {
+
+			ImGui::EndMenu();
 		}
 	}
 

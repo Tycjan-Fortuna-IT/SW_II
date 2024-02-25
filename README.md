@@ -22,10 +22,10 @@ Right now, the engine is very bare-bones. Its most remarkable features are:
 | Feature               | Description                                                                           | Status   |
 | -------               | -----------                                                                           | ------   |
 | **ECS support**       | Entity Component System approach through *entt*.                                      | Done ✔️ |
-| **Scene system**      | Scene-based entity management. Scene serialization with YAML.                         | WIP 💻 |
-| **Project system**    | Project-based management of scenes and assets.                                        | TODO 📋 |
+| **Scene system**      | Scene-based entity management. Scene serialization with YAML.                         | Done ✔️ |
+| **Project system**    | Project-based management of scenes and assets.                                        | Done ✔️ |
 | **2D Renderer**       | 2D batch renderer supporting OpenGL.                                                  | WIP 💻 |
-| **ImGui support**     | Basic game editor and in-game debug UI using *dear imgui*.                            | WIP 💻 |
+| **ImGui support**     | Basic game editor and in-game debug UI using *dear imgui*.                            | Done ✔️ |
 | **Asset manager**      | Basic asset handling API.                                 | TODO 📋 |
 | **Font**               | Extend the Renderer capabilities so it can draw text.     | TODO 📋  |
 | **2D Physics**        | 2D Physics using *Box2D* with Rigidbody, Box and Circle Colliders and joints.         | TODO 📋 |

@@ -256,6 +256,24 @@ namespace SW {
 					ImGui::CloseCurrentPopup();
 				}
 
+				if (ImGui::MenuItemEx("Box Collider", SW_ICON_CHECKBOX_BLANK_OUTLINE)) {
+					Entity entity = scene->CreateEntity("Box Collider");
+					entity.AddComponent<SpriteComponent>();
+					entity.AddComponent<RigidBody2DComponent>();
+					entity.AddComponent<BoxCollider2DComponent>();
+
+					ImGui::CloseCurrentPopup();
+				}
+
+				if (ImGui::MenuItemEx("Circle Collider", SW_ICON_CHECKBOX_BLANK_CIRCLE_OUTLINE)) {
+					Entity entity = scene->CreateEntity("Circle Collider");
+					entity.AddComponent<CircleComponent>();
+					entity.AddComponent<RigidBody2DComponent>();
+					entity.AddComponent<CircleCollider2DComponent>();
+
+					ImGui::CloseCurrentPopup();
+				}
+
 				if (ImGui::MenuItemEx("Camera", SW_ICON_CAMERA)) {
 					Entity entity = scene->CreateEntity("Camera");
 

@@ -17,12 +17,11 @@ namespace SW {
 	 * @brief The PropertiesPanel class represents a panel that displays for the selected object its properties and components.
 	 * 		  Allows to edit the properties and add/remove components.
 	 */
-	class PropertiesPanel final : public Panel
-	{
+	class PropertiesPanel final : public Panel {
 	public:
 		/**
 		 * @brief Constructs a PropertiesPanel object with an optional name.
-		 * 
+		 *
 		 * @param context Current scene context.
 		 */
 		explicit PropertiesPanel(SceneViewportPanel* sceneViewportPanel);
@@ -54,6 +53,8 @@ namespace SW {
 
 	private:
 		SceneViewportPanel* m_SceneViewportPanel = nullptr;	/**< The current scene viewport context. */
+
+		void DrawAddComponentMenu(Entity entity);
 	};
 
 }
