@@ -250,6 +250,25 @@ namespace SW {
 				output << YAML::EndMap;
 			}
 
+			if (entity.HasComponent<DistanceJoint2DComponent>()) {
+				const DistanceJoint2DComponent& bec = entity.GetComponent<DistanceJoint2DComponent>();
+
+				output << YAML::Key << "DistanceJoint2DComponent";
+				output << YAML::BeginMap;
+				output << YAML::Key << "ConnectedEntityID" << YAML::Value << bec.ConnectedEntityID;
+				output << YAML::Key << "EnableCollision" << YAML::Value << bec.EnableCollision;
+				output << YAML::Key << "AutoLength" << YAML::Value << bec.AutoLength;
+				output << YAML::Key << "OriginAnchor" << YAML::Value << bec.OriginAnchor;
+				output << YAML::Key << "ConnectedAnchor" << YAML::Value << bec.ConnectedAnchor;
+				output << YAML::Key << "Stiffness" << YAML::Value << bec.Stiffness;
+				output << YAML::Key << "Damping" << YAML::Value << bec.Damping;
+				output << YAML::Key << "Length" << YAML::Value << bec.Length;
+				output << YAML::Key << "MinLength" << YAML::Value << bec.MinLength;
+				output << YAML::Key << "MaxLength" << YAML::Value << bec.MaxLength;
+				output << YAML::Key << "BreakingForce" << YAML::Value << bec.BreakingForce;
+				output << YAML::EndMap;
+			}
+
 			output << YAML::EndMap; // End Entity components content
 
 			output << YAML::EndMap; // End Entity content
@@ -389,6 +408,23 @@ namespace SW {
 				bec.FlowAngle = buoyancyEffector2DComponent["FlowAngle"].as<f32>();
 				bec.FlowMagnitude = buoyancyEffector2DComponent["FlowMagnitude"].as<f32>();
 				bec.Density = buoyancyEffector2DComponent["Density"].as<f32>();
+			}
+
+			YAML::Node distanceJoint2DComponent = entity["Entity"]["DistanceJoint2DComponent"];
+			if (distanceJoint2DComponent) {
+				DistanceJoint2DComponent& djc = deserialized.AddComponent<DistanceJoint2DComponent>();
+
+				djc.ConnectedEntityID = distanceJoint2DComponent["ConnectedEntityID"].as<u64>();
+				djc.EnableCollision = distanceJoint2DComponent["EnableCollision"].as<bool>();
+				djc.AutoLength = distanceJoint2DComponent["AutoLength"].as<bool>();
+				djc.OriginAnchor = distanceJoint2DComponent["OriginAnchor"].as<glm::vec2>();
+				djc.ConnectedAnchor = distanceJoint2DComponent["ConnectedAnchor"].as<glm::vec2>();
+				djc.Stiffness = distanceJoint2DComponent["Stiffness"].as<f32>();
+				djc.Damping = distanceJoint2DComponent["Damping"].as<f32>();
+				djc.Length = distanceJoint2DComponent["Length"].as<f32>();
+				djc.MinLength = distanceJoint2DComponent["MinLength"].as<f32>();
+				djc.MaxLength = distanceJoint2DComponent["MaxLength"].as<f32>();
+				djc.BreakingForce = distanceJoint2DComponent["BreakingForce"].as<f32>();
 			}
 		}
 

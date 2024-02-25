@@ -1,8 +1,8 @@
 ﻿/**
  * @file GUI.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.1
- * @date 2024-01-28
+ * @version 0.2.1
+ * @date 2024-02-25
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -14,6 +14,7 @@
 #include "GUI/Icons.hpp"
 #include "Appearance.hpp"
 #include "Core/AssetManager.hpp"
+#include "Core/ECS/Entity.hpp"
 
 namespace SW::GUI {
 
@@ -183,10 +184,10 @@ namespace SW::GUI {
 
 	static glm::vec2 GetIconButtonSize(const char* icon, const char* label)
 	{
-		float lineHeight = ImGui::GetTextLineHeight();
+		f32 lineHeight = ImGui::GetTextLineHeight();
 		ImVec2 padding = ImGui::GetStyle().FramePadding;
 
-		float width = ImGui::CalcTextSize(icon).x;
+		f32 width = ImGui::CalcTextSize(icon).x;
 		width += ImGui::CalcTextSize(label).x;
 		width += padding.x * 2.0f;
 
@@ -270,7 +271,7 @@ namespace SW::GUI {
 	 * @param offsetX The offset of the border on the x-axis.
 	 * @param offsetY The offset of the border on the y-axis.
 	 */
-	static void DrawBorder(ImRect rect, float thickness = 1.0f, float rounding = 0.0f, float offsetX = 0.0f, float offsetY = 0.0f)
+	static void DrawBorder(ImRect rect, f32 thickness = 1.0f, f32 rounding = 0.0f, f32 offsetX = 0.0f, f32 offsetY = 0.0f)
 	{
 		ImVec2 min = rect.Min;
 		min.x -= thickness;
@@ -350,8 +351,8 @@ namespace SW::GUI {
 	 * @return true if the button was clicked, false otherwise.
 	 */
 	static bool ToggleButton(
-		const char* label, bool state, ImVec2 size = { 0, 0 }, float alpha = 1.0f,
-		float pressedAlpha = 1.0f, ImGuiButtonFlags buttonFlags = ImGuiButtonFlags_None
+		const char* label, bool state, ImVec2 size = { 0, 0 }, f32 alpha = 1.0f,
+		f32 pressedAlpha = 1.0f, ImGuiButtonFlags buttonFlags = ImGuiButtonFlags_None
 	) {
 		if (state) {
 			ImVec4 color = ImGui::GetStyle().Colors[ImGuiCol_ButtonActive];
@@ -447,7 +448,7 @@ namespace SW::GUI {
 	{
 		ImGui::Columns(1);
 
-		float widgetWidth = ImGui::GetContentRegionAvail().x - 40.f;
+		f32 widgetWidth = ImGui::GetContentRegionAvail().x - 40.f;
 
 		ImGui::PushID("Color: ");
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 4.0f));
@@ -694,7 +695,7 @@ namespace SW::GUI {
 
 		ImGui::PushMultiItemsWidths(2, ImGui::CalcItemWidth() + ImGui::GetStyle().ItemSpacing.x * 2.f + 1.f);
 
-		float frameHeight = ImGui::GetFrameHeight();
+		f32 frameHeight = ImGui::GetFrameHeight();
 		ImVec2 buttonSize = { frameHeight + 3.0f, frameHeight };
 
 		ImVec2 innerItemSpacing = ImGui::GetStyle().ItemInnerSpacing;
@@ -772,7 +773,7 @@ namespace SW::GUI {
 
 		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth() + ImGui::GetStyle().ItemSpacing.x - 4.f);
 
-		float frameHeight = ImGui::GetFrameHeight();
+		f32 frameHeight = ImGui::GetFrameHeight();
 		ImVec2 buttonSize = { frameHeight + 3.0f, frameHeight };
 
 		ImVec2 innerItemSpacing = ImGui::GetStyle().ItemInnerSpacing;
@@ -862,6 +863,80 @@ namespace SW::GUI {
 	}
 
 	/**
+	 * @brief Draws a dropdown property for an entity.
+	 *
+	 * This function draws a dropdown property for an entity in the GUI.
+	 *
+	 * @param ID The ID of the entity.
+	 * @param scene The scene containing the entity.
+	 * @param label The label for the dropdown property.
+	 * @param tooltip (optional) The tooltip for the dropdown property.
+	 */
+	static void DrawEntityDropdownProperty(
+		u64& ID, Scene* scene, const char* label, const char* tooltip = nullptr
+	) {
+		Entity entity;
+		std::string tag = "none";
+
+		if (ID)
+			entity = scene->GetEntityByID(ID);
+
+		if (entity)
+			tag = entity.GetTag();
+
+		BeginPropertyGrid(label, tooltip, true);
+
+		ImVec2 region = ImGui::GetContentRegionAvail();
+		region.x -= 20.0f;
+		region.y = ImGui::GetFrameHeight();
+
+		ImVec2 pos = ImGui::GetCursorPos();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyle().Colors[ImGuiCol_Button]);
+
+		ImGui::Button("##entity_dropdown_property", region);
+		
+		ImGui::PopStyleColor();
+		
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity")) {
+				Entity* payloadEntity = static_cast<Entity*>(payload->Data);
+				
+				ID = payloadEntity->GetID();
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		ImGui::SameLine();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.3f, 0.3f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+
+		if (ImGui::Button("x", { 20.0f, region.y })) {
+			ID = 0;
+		}
+
+		ImGui::PopStyleColor(3);
+		ImGui::PopStyleVar();
+
+		if (!ID) {
+			ImVec4 selectedColor = GUI::Colors::Darken(ImVec4(0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f), 0.05f);
+			ImGui::PushStyleColor(ImGuiCol_Text, selectedColor);
+		}
+
+		ImVec2 padding = ImGui::GetStyle().FramePadding;
+		ImGui::SetCursorPos({ pos.x + padding.x, pos.y + padding.y });
+		ImGui::Text("%s", tag.c_str());
+
+		if (!ID)
+			ImGui::PopStyleColor();
+
+		EndPropertyGrid();
+	}
+
+	/**
 	 * @brief Draws a texture property in the GUI.
 	 * 
 	 * This function displays a texture property in the GUI, allowing the user to select a texture from the content browser.
@@ -877,10 +952,10 @@ namespace SW::GUI {
 
 		bool changed = false;
 
-		float frameHeight = ImGui::GetFrameHeight();
-		const float buttonSize = frameHeight * 3.0f;
+		f32 frameHeight = ImGui::GetFrameHeight();
+		const f32 buttonSize = frameHeight * 3.0f;
 		const ImVec2 xButtonSize = { buttonSize / 4.0f, buttonSize };
-		const float tooltipSize = frameHeight * 11.0f;
+		const f32 tooltipSize = frameHeight * 11.0f;
 
 		ImGui::SetCursorPos({ ImGui::GetContentRegionMax().x - buttonSize - xButtonSize.x, ImGui::GetCursorPosY() + ImGui::GetStyle().FramePadding.y });
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
@@ -1016,12 +1091,12 @@ namespace SW::GUI {
 	}
 
 	/**
-	 * @brief Draws a floating-point property in the GUI.
+	 * @brief Draws a f32ing-point property in the GUI.
 	 *
-	 * This function is used to draw a floating-point property in the GUI. It provides options for setting the value, label, tooltip, minimum and maximum values, delta, and format.
+	 * This function is used to draw a f32ing-point property in the GUI. It provides options for setting the value, label, tooltip, minimum and maximum values, delta, and format.
 	 *
-	 * @tparam T The type of the floating-point value.
-	 * @param value The reference to the floating-point value to be displayed and modified.
+	 * @tparam T The type of the f32ing-point value.
+	 * @param value The reference to the f32ing-point value to be displayed and modified.
 	 * @param label The label for the property.
 	 * @param tooltip The tooltip for the property (optional).
 	 * @param min The minimum value for the property (optional).
@@ -1031,7 +1106,7 @@ namespace SW::GUI {
 	 */
 	template<std::floating_point T>
 	static void DrawFloatingPointProperty(
-		T& value, const char* label, const char* tooltip = nullptr, T min = 0, T max = 0, float delta = 0.1f, const char* format = "%.3f"
+		T& value, const char* label, const char* tooltip = nullptr, T min = 0, T max = 0, f32 delta = 0.1f, const char* format = "%.3f"
 	) {
 		BeginPropertyGrid(label, tooltip);
 		
@@ -1041,9 +1116,9 @@ namespace SW::GUI {
 			dataType = ImGuiDataType_Double;			
 
 		if (max > min)
-			ImGui::SliderScalar("##property_floating_point", dataType, &value, &min, &max, format);
+			ImGui::SliderScalar("##property_f32ing_point", dataType, &value, &min, &max, format);
 		else
-			ImGui::DragScalar("##property_floating_point", dataType, &value, delta, nullptr, nullptr, format);
+			ImGui::DragScalar("##property_f32ing_point", dataType, &value, delta, nullptr, nullptr, format);
 
 		EndPropertyGrid();
 	}
@@ -1124,7 +1199,7 @@ namespace SW::GUI {
 	 * @param clip_rect Optional pointer to the clipping rectangle.
 	 * @param wrap_width The width at which the text should wrap.
 	 */
-	static void ClippedText(ImDrawList* draw_list, const ImVec2& pos_min, const ImVec2& pos_max, const char* text, const char* text_display_end, const ImVec2* text_size_if_known, const ImVec2& align, const ImRect* clip_rect, float wrap_width)
+	static void ClippedText(ImDrawList* draw_list, const ImVec2& pos_min, const ImVec2& pos_max, const char* text, const char* text_display_end, const ImVec2* text_size_if_known, const ImVec2& align, const ImRect* clip_rect, f32 wrap_width)
 	{
 		// Perform CPU side clipping for single clipped element to avoid using scissor state
 		ImVec2 pos = pos_min;
@@ -1161,7 +1236,7 @@ namespace SW::GUI {
 	 * @param clip_rect Optional pointer to the clipping rectangle.
 	 * @param wrap_width The width at which the text should wrap.
 	 */
-	static void ClippedText(const ImVec2& pos_min, const ImVec2& pos_max, const char* text, const char* text_end, const ImVec2* text_size_if_known, const ImVec2& align, const ImRect* clip_rect, float wrap_width)
+	static void ClippedText(const ImVec2& pos_min, const ImVec2& pos_max, const char* text, const char* text_end, const ImVec2* text_size_if_known, const ImVec2& align, const ImRect* clip_rect, f32 wrap_width)
 	{
 		// Hide anything after a '##' string
 		const char* text_display_end = ImGui::FindRenderedTextEnd(text, text_end);
@@ -1174,5 +1249,17 @@ namespace SW::GUI {
 		ClippedText(window->DrawList, pos_min, pos_max, text, text_display_end, text_size_if_known, align, clip_rect, wrap_width);
 		if (g.LogEnabled)
 			ImGui::LogRenderedText(&pos_min, text, text_display_end);
+	}
+
+	static f32 GetWindowContentRegionHeight()
+	{
+		ImGuiWindow* window = GImGui->CurrentWindow;
+		return window->ContentRegionRect.GetHeight();
+	}
+
+	static f32 GetWindowContentRegionWidth()
+	{
+		ImGuiWindow* window = GImGui->CurrentWindow;
+		return window->ContentRegionRect.GetWidth();
 	}
 }

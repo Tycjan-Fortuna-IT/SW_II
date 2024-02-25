@@ -33,6 +33,8 @@ namespace SW {
 		AddComponentName<BoxCollider2DComponent>(SW_ICON_CHECKBOX_BLANK_OUTLINE "  Box Collider 2D");
 		AddComponentName<CircleCollider2DComponent>(SW_ICON_CHECKBOX_BLANK_CIRCLE_OUTLINE "  Circle Collider 2D");
 		AddComponentName<BuoyancyEffector2DComponent>(SW_ICON_WATER "  Buoyancy Effector 2D");
+
+		AddComponentName<DistanceJoint2DComponent>(SW_ICON_VECTOR_LINE "  Distance Joint 2D");
 	}
 
 	void PropertiesPanel::OnUpdate(Timestep dt)
@@ -164,6 +166,14 @@ namespace SW {
 						ImGui::CloseCurrentPopup();
 					}
 
+					if (ImGui::MenuItemEx("Distance Joint 2D", SW_ICON_VECTOR_LINE)) {
+						if (!entity.HasComponent<DistanceJoint2DComponent>()) {
+							entity.AddComponent<DistanceJoint2DComponent>();
+						}
+
+						ImGui::CloseCurrentPopup();
+					}
+
 					if (ImGui::MenuItemEx("Camera Component", SW_ICON_CAMERA)) {
 						if (!entity.HasComponent<CameraComponent>()) {
 							SceneCamera camera(m_SceneViewportPanel->GetViewportAspectRatio());
@@ -270,6 +280,24 @@ namespace SW {
 				GUI::DrawFloatingPointProperty(angle, "Flow Angle ");
 				component.FlowAngle = glm::radians(angle);
 				GUI::DrawFloatingPointProperty(component.Density, "Density", nullptr, 0.f);
+				GUI::EndProperties();
+			}, true);
+
+			DrawComponent<DistanceJoint2DComponent>(entity, [this](DistanceJoint2DComponent& component) {
+				GUI::BeginProperties("##distance_joint_2d_property");
+				GUI::DrawEntityDropdownProperty(component.ConnectedEntityID, m_SceneViewportPanel->GetCurrentScene(), "Connected entity", "The joint will connect to this entity's rigid body");
+				GUI::DrawVector2ControlProperty(component.OriginAnchor, "Origin Anchor", "The anchor point of this body");
+				GUI::DrawVector2ControlProperty(component.ConnectedAnchor, "Connected Anchor", "The anchor point of the connected body");
+				GUI::DrawFloatingPointProperty(component.Stiffness, "Stiffness", "The stiffness of the joint (how rigid it is) in Newtons per meter", 0.f);
+				GUI::DrawFloatingPointProperty(component.Damping, "Damping", "The damping of the joint (how much it should resist the movement) in Newtons per meter per second", 0.f);
+				GUI::DrawFloatingPointProperty(component.BreakingForce, "Breaking Force", "The force acting on the joint to break it in Newtons (0 means it won't break)", 0.f);
+				GUI::DrawBooleanProperty(component.EnableCollision, "Enable collision", "Whether connected by joint bodies should collide with each other");
+				GUI::DrawBooleanProperty(component.AutoLength, "Auto length", "Whether the distance should be automatically calculated");
+				if (!component.AutoLength) {
+					GUI::DrawFloatingPointProperty(component.Length, "Length", "The distance between the two bodies", 0.f);
+				}
+				GUI::DrawFloatingPointProperty(component.MinLength, "Min Length", "The minimum distance between the two bodies", 0.f);
+				GUI::DrawFloatingPointProperty(component.MaxLength, "Max Length", "The maximum distance between the two bodies", component.MinLength);
 				GUI::EndProperties();
 			}, true);
 			

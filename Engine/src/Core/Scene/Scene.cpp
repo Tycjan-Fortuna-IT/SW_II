@@ -115,6 +115,12 @@ namespace SW {
 
 			CreateRigidbody2D(entity, entity.GetWorldSpaceTransform(), rbc);
 		}
+
+		for (auto&& [handle, rbc, djc] : m_Registry.GetEntitiesWith<RigidBody2DComponent, DistanceJoint2DComponent>().each()) {
+			Entity entity = { handle, this };
+
+			CreateDistanceJoint2D(entity, rbc, entity.GetComponent<DistanceJoint2DComponent>());
+		}
 	}
 
 	void Scene::OnRuntimeStop()
@@ -172,6 +178,21 @@ namespace SW {
 			tc.Position.x = position.x;
 			tc.Position.y = position.y;
 			tc.Rotation.z = body->GetAngle();
+		}
+
+		for (auto&& [handle, djc] : m_Registry.GetEntitiesWith<DistanceJoint2DComponent>().each()) {
+			if (djc.RuntimeJoint) {
+				b2Joint* joint = (b2Joint*)(djc.RuntimeJoint);
+
+				if (
+					djc.BreakingForce != 0.f &&
+					joint->GetReactionForce(physicsStepRate).LengthSquared() > djc.BreakingForce * djc.BreakingForce
+				) {
+					m_PhysicsWorld2D->DestroyJoint(joint);
+
+					djc.RuntimeJoint = nullptr;
+				}
+			}
 		}
 
 #pragma endregion
@@ -250,11 +271,12 @@ namespace SW {
 		CopyComponent<BoxCollider2DComponent>(this, m_Registry, copyRegistry);
 		CopyComponent<CircleCollider2DComponent>(this, m_Registry, copyRegistry);
 		CopyComponent<BuoyancyEffector2DComponent>(this, m_Registry, copyRegistry);
+		CopyComponent<DistanceJoint2DComponent>(this, m_Registry, copyRegistry);
 
 		return copy;
     }
 
-    void Scene::CreateRigidbody2D(Entity entity, const TransformComponent& tc, RigidBody2DComponent& rbc) const
+    void Scene::CreateRigidbody2D(Entity entity, const TransformComponent& tc, RigidBody2DComponent& rbc)
 	{
 		b2BodyDef definition;
 		definition.type = static_cast<b2BodyType>(rbc.Type);
@@ -281,7 +303,7 @@ namespace SW {
 		}
 	}
 
-	void Scene::CreateBoxCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, BoxCollider2DComponent& bcc) const
+	void Scene::CreateBoxCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, BoxCollider2DComponent& bcc)
 	{
 		b2PolygonShape boxShape;
 		boxShape.SetAsBox(bcc.Size.x * tc.Scale.x, bcc.Size.y * tc.Scale.y, { bcc.Offset.x, bcc.Offset.y }, 0.0f);
@@ -301,7 +323,7 @@ namespace SW {
 		bcc.Handle = fixture;
 	}
 
-	void Scene::CreateCircleCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, CircleCollider2DComponent& ccc) const
+	void Scene::CreateCircleCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, CircleCollider2DComponent& ccc)
 	{
 		b2CircleShape circleShape;
 		circleShape.m_radius = ccc.Radius * glm::max(tc.Scale.x, tc.Scale.y);
@@ -320,6 +342,35 @@ namespace SW {
 		b2Fixture* fixture = body->CreateFixture(&fixtureDef);
 
 		ccc.Handle = fixture;
+	}
+
+	void Scene::CreateDistanceJoint2D(Entity entity, const RigidBody2DComponent& rbc, DistanceJoint2DComponent& djc)
+	{
+		if (!djc.ConnectedEntityID)
+			return;
+
+		Entity connectedEntity = GetEntityByID(djc.ConnectedEntityID);
+
+		if (!connectedEntity.HasComponent<RigidBody2DComponent>())
+			return;
+
+		b2Body* originBody = (b2Body*)rbc.Handle;
+		b2Body* connectedBody = (b2Body*)connectedEntity.GetComponent<RigidBody2DComponent>().Handle;
+
+		b2Vec2 originAnchor = originBody->GetWorldPoint({ djc.OriginAnchor.x, djc.OriginAnchor.y });
+		b2Vec2 connectedAnchor = connectedBody->GetWorldPoint({ djc.ConnectedAnchor.x, djc.ConnectedAnchor.y });
+
+		b2DistanceJointDef jointDef;
+		jointDef.Initialize(originBody, connectedBody, originAnchor, connectedAnchor);
+		jointDef.collideConnected = djc.EnableCollision;
+		if (!djc.AutoLength)
+			jointDef.length = djc.Length;
+		jointDef.minLength = glm::min(jointDef.length, djc.MinLength);
+		jointDef.maxLength = jointDef.length + glm::max(djc.MaxLength, 0.0f);
+		jointDef.stiffness = djc.Stiffness;
+		jointDef.damping = djc.Damping;
+
+		djc.RuntimeJoint = m_PhysicsWorld2D->CreateJoint(&jointDef);
 	}
 
 }

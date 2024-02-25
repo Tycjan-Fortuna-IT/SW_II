@@ -1,8 +1,8 @@
 /**
  * @file Components.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.2
- * @date 2024-02-05
+ * @version 0.1.3
+ * @date 2024-02-25
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -258,4 +258,49 @@ namespace SW {
 		f32 FlowAngle = glm::radians(0.0f);	/**< The angle of the flow. */
 	};
 
+	/**
+	 * @struct Joint2DComponent
+	 * @brief This component is used to store the joint data.
+	 * @note This component is optional.
+	 */
+	struct DistanceJoint2DComponent final 
+	{
+		void* RuntimeJoint = nullptr;
+
+		u64 ConnectedEntityID = 0;	/** The entity to which the joint is connected. */
+
+		bool EnableCollision = false; 	/**< Enable collision between connected bodies. */
+		bool AutoLength = true;			/**< Automatically calculate the length of the joint. */
+
+		glm::vec2 OriginAnchor = glm::vec2(0.f);		/**< The anchor point on the first body. */
+		glm::vec2 ConnectedAnchor = glm::vec2(0.f);		/**< The anchor point on the second body. */
+
+		f32 Stiffness = 0.f;	/**< The spring stiffness. */
+		f32 Damping = 0.f;		/**< The spring damping. */
+
+		f32 Length = 0.f;			/**< The length of the joint. */
+		f32 MinLength = 0.f;		/**< The minimum length of the joint. */
+		f32 MaxLength = 1.f;		/**< The maximum length of the joint. */
+		f32 BreakingForce = 0.f;	/**< The breaking force of the joint. */
+	};
+
+	struct SpringJoint2DComponent final
+	{
+
+	};
+
+	struct HingeJoint2DComponent final
+	{
+
+	};
+
+	struct SliderJoint2DComponent final
+	{
+
+	};
+
+	struct WheelJoint2DComponent final
+	{
+
+	};
 }

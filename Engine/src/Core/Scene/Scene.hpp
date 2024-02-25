@@ -193,7 +193,7 @@ namespace SW {
 		 * @param tc The transform component of the entity.
 		 * @param rbc The rigidbody component to modify.
 		 */
-		void CreateRigidbody2D(Entity entity, const TransformComponent& tc, RigidBody2DComponent& rbc) const;
+		void CreateRigidbody2D(Entity entity, const TransformComponent& tc, RigidBody2DComponent& rbc);
 
 		/**
 		 * @brief Register entity's box collider component in the physics world.
@@ -204,9 +204,32 @@ namespace SW {
 		 * @param rbc The rigidbody component of the entity.
 		 * @param bcc The box collider component to modify.
 		 */		
-		void CreateBoxCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, BoxCollider2DComponent& bcc) const;
+		void CreateBoxCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, BoxCollider2DComponent& bcc);
 
-		void CreateCircleCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, CircleCollider2DComponent& ccc) const;
+		/**
+		 * @brief Creates a circle collider for a given entity.
+		 *
+		 * This function creates a circle collider component for the specified entity using the provided
+		 * transform, rigid body, and circle collider components.
+		 *
+		 * @param entity The entity for which to create the circle collider.
+		 * @param tc The transform component of the entity.
+		 * @param rbc The rigid body component of the entity.
+		 * @param ccc The circle collider component to be created.
+		 */
+		void CreateCircleCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, CircleCollider2DComponent& ccc);
+	
+		/**
+		 * @brief Creates a distance joint between an entity and a rigid body component.
+		 * 
+		 * This function creates a distance joint between the specified entity and the provided rigid body component.
+		 * The distance joint allows the entities to maintain a fixed distance from each other.
+		 * 
+		 * @param entity The entity to create the distance joint with.
+		 * @param rbc The rigid body component of the entity.
+		 * @param djc The distance joint component to be created.
+		 */
+		void CreateDistanceJoint2D(Entity entity, const RigidBody2DComponent& rbc, DistanceJoint2DComponent& djc);
 	};
 
 }

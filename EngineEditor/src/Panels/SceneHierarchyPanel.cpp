@@ -157,7 +157,7 @@ namespace SW {
 		if (selected)
 			ImGui::PopStyleColor(2);
 
-		if (!ImGui::IsItemToggledOpen() && ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
+		if (!ImGui::IsItemToggledOpen() && ImGui::IsItemClicked(ImGuiMouseButton_Left) && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
 			if (selected) {
 				SelectionManager::Deselect();
 			} else {

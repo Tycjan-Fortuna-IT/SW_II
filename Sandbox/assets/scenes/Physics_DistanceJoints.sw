@@ -1,0 +1,164 @@
+Entities:
+  - Entity:
+      IDComponent:
+        ID: 1946361277871489626
+      TagComponent:
+        Tag: Hook
+      TransformComponent:
+        Transform: [-2.16458368, 2.47185755, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      SpriteComponent:
+        Color: [0.598930478, 0.160141855, 0.160141855, 1]
+      RelationshipComponent:
+        ParentID: 10282076752085962240
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 0
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        AllowSleep: true
+  - Entity:
+      IDComponent:
+        ID: 5385659303079078612
+      TagComponent:
+        Tag: Hook
+      TransformComponent:
+        Transform: [3.20669842, 2.20468235, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      SpriteComponent:
+        Color: [0.775401056, 0.315136284, 0.315136284, 1]
+      RelationshipComponent:
+        ParentID: 16312124345262141903
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 0
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        AllowSleep: true
+  - Entity:
+      IDComponent:
+        ID: 10282076752085962240
+      TagComponent:
+        Tag: 1
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 2
+        ChildrenIDs:
+          0: 1946361277871489626
+          1: 11206087940202031076
+  - Entity:
+      IDComponent:
+        ID: 11206087940202031076
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [-2.99290323, -0.748230934, 0.000122070312]
+        Rotation: [0, 0, -0.430223614]
+        Scale: [3.5999999, 1, 1]
+      SpriteComponent:
+        Color: [0.0810432062, 0.44602102, 0.582887709, 1]
+      RelationshipComponent:
+        ParentID: 10282076752085962240
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 2
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        AllowSleep: true
+      BoxCollider2DComponent:
+        Size: [0.5, 0.5]
+        Offset: [0, 0]
+        Density: 1
+        IsSensor: false
+      DistanceJoint2DComponent:
+        ConnectedEntityID: 1946361277871489626
+        EnableCollision: false
+        AutoLength: true
+        OriginAnchor: [0, 0]
+        ConnectedAnchor: [0, 0]
+        Stiffness: 0
+        Damping: 0
+        Length: 0
+        MinLength: 0
+        MaxLength: 1
+        BreakingForce: 0
+  - Entity:
+      IDComponent:
+        ID: 16018225679043376819
+      TagComponent:
+        Tag: Camera
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      CameraComponent:
+        Primary: true
+        AspectRatio: 1.85000002
+  - Entity:
+      IDComponent:
+        ID: 16312124345262141903
+      TagComponent:
+        Tag: 2
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 2
+        ChildrenIDs:
+          0: 16405227655624162092
+          1: 5385659303079078612
+  - Entity:
+      IDComponent:
+        ID: 16405227655624162092
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [5.37126064, -1.14536178, 0.000244137656]
+        Rotation: [0, 0, 0]
+        Scale: [3.69999981, 1, 1]
+      SpriteComponent:
+        Color: [0.357658833, 0.877005339, 0.295461625, 1]
+      RelationshipComponent:
+        ParentID: 16312124345262141903
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 2
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        AllowSleep: true
+      BoxCollider2DComponent:
+        Size: [0.5, 0.5]
+        Offset: [0, 0]
+        Density: 1
+        IsSensor: false
+      DistanceJoint2DComponent:
+        ConnectedEntityID: 5385659303079078612
+        EnableCollision: false
+        AutoLength: true
+        OriginAnchor: [0, 0]
+        ConnectedAnchor: [0, 0]
+        Stiffness: 0
+        Damping: 0
+        Length: 0
+        MinLength: 0
+        MaxLength: 1
+        BreakingForce: 0
