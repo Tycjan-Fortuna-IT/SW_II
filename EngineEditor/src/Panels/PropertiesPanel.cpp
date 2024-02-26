@@ -33,8 +33,9 @@ namespace SW {
 		AddComponentName<BoxCollider2DComponent>(SW_ICON_CHECKBOX_BLANK_OUTLINE "  Box Collider 2D");
 		AddComponentName<CircleCollider2DComponent>(SW_ICON_CHECKBOX_BLANK_CIRCLE_OUTLINE "  Circle Collider 2D");
 		AddComponentName<BuoyancyEffector2DComponent>(SW_ICON_WATER "  Buoyancy Effector 2D");
-
+		
 		AddComponentName<DistanceJoint2DComponent>(SW_ICON_VECTOR_LINE "  Distance Joint 2D");
+		AddComponentName<RevolutionJoint2DComponent>(SW_ICON_ANGLE_ACUTE "  Revolution Joint 2D");
 	}
 
 	void PropertiesPanel::OnUpdate(Timestep dt)
@@ -221,7 +222,7 @@ namespace SW {
 				GUI::DrawVector2ControlProperty(component.ConnectedAnchor, "Connected Anchor", "The anchor point of the connected body");
 				GUI::DrawFloatingPointProperty(component.Stiffness, "Stiffness", "The stiffness of the joint (how rigid it is) in Newtons per meter", 0.f);
 				GUI::DrawFloatingPointProperty(component.Damping, "Damping", "The damping of the joint (how much it should resist the movement) in Newtons per meter per second", 0.f);
-				GUI::DrawFloatingPointProperty(component.BreakingForce, "Breaking Force", "The force acting on the joint to break it in Newtons (0 means it won't break)", 0.f);
+				GUI::DrawFloatingPointProperty(component.BreakingForce, "Breaking Force", "The force acting on the joint to break it in Newtons", 0.f);
 				GUI::DrawBooleanProperty(component.EnableCollision, "Enable collision", "Whether connected by joint bodies should collide with each other");
 				GUI::DrawBooleanProperty(component.AutoLength, "Auto length", "Whether the distance should be automatically calculated");
 				if (!component.AutoLength) {
@@ -231,7 +232,33 @@ namespace SW {
 				GUI::DrawFloatingPointProperty(component.MaxLength, "Max Length", "The maximum distance between the two bodies", component.MinLength);
 				GUI::EndProperties();
 			}, true);
-			
+
+			DrawComponent<RevolutionJoint2DComponent>(entity, [this](RevolutionJoint2DComponent& component) {
+				GUI::BeginProperties("##revolution_joint_2d_property");
+				GUI::DrawEntityDropdownProperty(component.ConnectedEntityID, m_SceneViewportPanel->GetCurrentScene(), "Connected entity", "The joint will connect to this entity's rigid body");
+				GUI::DrawVector2ControlProperty(component.OriginAnchor, "Origin Anchor", "The anchor point of this body");
+
+				f32 lowerAngle = glm::degrees(component.LowerAngle);
+				GUI::DrawFloatingPointProperty(lowerAngle, "Lower Angle", "The lower angle for the joint limit (in degrees)");
+				component.LowerAngle = glm::radians(lowerAngle);
+
+				f32 upperAngle = glm::degrees(component.UpperAngle);
+				GUI::DrawFloatingPointProperty(upperAngle, "Upper Angle", "The upper angle for the joint limit (in degrees)");
+				component.UpperAngle = glm::radians(upperAngle);
+
+				GUI::DrawBooleanProperty(component.EnableMotor, "Enable Motor", "Whether the joint should have a motor");
+				if (component.EnableMotor) {
+					GUI::DrawFloatingPointProperty(component.MotorSpeed, "Motor Speed", "The speed of the motor in radians per second", 0.f);
+					GUI::DrawFloatingPointProperty(component.MaxMotorTorque, "Max Motor Torque", "The maximum torque of the motor in Newtons", 0.f);
+					GUI::DrawFloatingPointProperty(component.BreakingTorque, "Breaking Torque", "The torque acting on the joint to break it in Newtons", 0.f);
+				}
+				GUI::DrawFloatingPointProperty(component.BreakingForce, "Breaking Force", "The force acting on the joint to break it in Newtons", 0.f);
+				GUI::DrawBooleanProperty(component.EnableLimit, "Limit Enabled", "Whether the joint should have a limit");
+				GUI::DrawBooleanProperty(component.EnableCollision, "Enable collision", "Whether connected by joint bodies should collide with each other");
+
+				GUI::EndProperties();
+			}, true);
+
 			ImGui::EndChild();
 
 			OnEnd();
@@ -293,6 +320,14 @@ namespace SW {
 			if (!entity.HasComponent<DistanceJoint2DComponent>()) {
 				if (ImGui::MenuItemEx("Distance Joint 2D", SW_ICON_VECTOR_LINE)) {
 					entity.AddComponent<DistanceJoint2DComponent>();
+
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			if (!entity.HasComponent<RevolutionJoint2DComponent>()) {
+				if (ImGui::MenuItemEx("Revolution Joint 2D", SW_ICON_ANGLE_ACUTE)) {
+					entity.AddComponent<RevolutionJoint2DComponent>();
 
 					ImGui::CloseCurrentPopup();
 				}

@@ -251,21 +251,41 @@ namespace SW {
 			}
 
 			if (entity.HasComponent<DistanceJoint2DComponent>()) {
-				const DistanceJoint2DComponent& bec = entity.GetComponent<DistanceJoint2DComponent>();
+				const DistanceJoint2DComponent& djc = entity.GetComponent<DistanceJoint2DComponent>();
 
 				output << YAML::Key << "DistanceJoint2DComponent";
 				output << YAML::BeginMap;
-				output << YAML::Key << "ConnectedEntityID" << YAML::Value << bec.ConnectedEntityID;
-				output << YAML::Key << "EnableCollision" << YAML::Value << bec.EnableCollision;
-				output << YAML::Key << "AutoLength" << YAML::Value << bec.AutoLength;
-				output << YAML::Key << "OriginAnchor" << YAML::Value << bec.OriginAnchor;
-				output << YAML::Key << "ConnectedAnchor" << YAML::Value << bec.ConnectedAnchor;
-				output << YAML::Key << "Stiffness" << YAML::Value << bec.Stiffness;
-				output << YAML::Key << "Damping" << YAML::Value << bec.Damping;
-				output << YAML::Key << "Length" << YAML::Value << bec.Length;
-				output << YAML::Key << "MinLength" << YAML::Value << bec.MinLength;
-				output << YAML::Key << "MaxLength" << YAML::Value << bec.MaxLength;
-				output << YAML::Key << "BreakingForce" << YAML::Value << bec.BreakingForce;
+				output << YAML::Key << "ConnectedEntityID" << YAML::Value << djc.ConnectedEntityID;
+				output << YAML::Key << "EnableCollision" << YAML::Value << djc.EnableCollision;
+				output << YAML::Key << "AutoLength" << YAML::Value << djc.AutoLength;
+				output << YAML::Key << "OriginAnchor" << YAML::Value << djc.OriginAnchor;
+				output << YAML::Key << "ConnectedAnchor" << YAML::Value << djc.ConnectedAnchor;
+				output << YAML::Key << "Stiffness" << YAML::Value << djc.Stiffness;
+				output << YAML::Key << "Damping" << YAML::Value << djc.Damping;
+				output << YAML::Key << "Length" << YAML::Value << djc.Length;
+				output << YAML::Key << "MinLength" << YAML::Value << djc.MinLength;
+				output << YAML::Key << "MaxLength" << YAML::Value << djc.MaxLength;
+				output << YAML::Key << "BreakingForce" << YAML::Value << djc.BreakingForce;
+				output << YAML::EndMap;
+			}
+
+			if (entity.HasComponent<RevolutionJoint2DComponent>()) {
+				const RevolutionJoint2DComponent& rjc = entity.GetComponent<RevolutionJoint2DComponent>();
+
+				output << YAML::Key << "RevolutionJoint2DComponent";
+				output << YAML::BeginMap;
+				output << YAML::Key << "ConnectedEntityID" << YAML::Value << rjc.ConnectedEntityID;
+				output << YAML::Key << "OriginAnchor" << YAML::Value << rjc.OriginAnchor;
+				output << YAML::Key << "LowerAngle" << YAML::Value << rjc.LowerAngle;
+				output << YAML::Key << "UpperAngle" << YAML::Value << rjc.UpperAngle;
+				output << YAML::Key << "MotorSpeed" << YAML::Value << rjc.MotorSpeed;
+				output << YAML::Key << "MaxMotorTorque" << YAML::Value << rjc.MaxMotorTorque;
+				output << YAML::Key << "BreakingForce" << YAML::Value << rjc.BreakingForce;
+				output << YAML::Key << "BreakingTorque" << YAML::Value << rjc.BreakingTorque;
+				output << YAML::Key << "EnableLimit" << YAML::Value << rjc.EnableLimit;
+				output << YAML::Key << "EnableMotor" << YAML::Value << rjc.EnableMotor;
+				output << YAML::Key << "EnableCollision" << YAML::Value << rjc.EnableCollision;
+
 				output << YAML::EndMap;
 			}
 
@@ -425,6 +445,23 @@ namespace SW {
 				djc.MinLength = distanceJoint2DComponent["MinLength"].as<f32>();
 				djc.MaxLength = distanceJoint2DComponent["MaxLength"].as<f32>();
 				djc.BreakingForce = distanceJoint2DComponent["BreakingForce"].as<f32>();
+			}
+
+			YAML::Node revolutionJoint2DComponent = entity["Entity"]["RevolutionJoint2DComponent"];
+			if (revolutionJoint2DComponent) {
+				RevolutionJoint2DComponent& rjc = deserialized.AddComponent<RevolutionJoint2DComponent>();
+
+				rjc.ConnectedEntityID = revolutionJoint2DComponent["ConnectedEntityID"].as<u64>();
+				rjc.OriginAnchor = revolutionJoint2DComponent["OriginAnchor"].as<glm::vec2>();
+				rjc.LowerAngle = revolutionJoint2DComponent["LowerAngle"].as<f32>();
+				rjc.UpperAngle = revolutionJoint2DComponent["UpperAngle"].as<f32>();
+				rjc.MotorSpeed = revolutionJoint2DComponent["MotorSpeed"].as<f32>();
+				rjc.MaxMotorTorque = revolutionJoint2DComponent["MaxMotorTorque"].as<f32>();
+				rjc.BreakingForce = revolutionJoint2DComponent["BreakingForce"].as<f32>();
+				rjc.BreakingTorque = revolutionJoint2DComponent["BreakingTorque"].as<f32>();
+				rjc.EnableLimit = revolutionJoint2DComponent["EnableLimit"].as<bool>();
+				rjc.EnableMotor = revolutionJoint2DComponent["EnableMotor"].as<bool>();
+				rjc.EnableCollision = revolutionJoint2DComponent["EnableCollision"].as<bool>();
 			}
 		}
 

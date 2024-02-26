@@ -93,7 +93,7 @@ Entities:
         Length: 0
         MinLength: 0
         MaxLength: 1
-        BreakingForce: 0
+        BreakingForce: 3.40282347e+38
   - Entity:
       IDComponent:
         ID: 16018225679043376819
@@ -161,4 +161,4 @@ Entities:
         Length: 0
         MinLength: 0
         MaxLength: 1
-        BreakingForce: 0
+        BreakingForce: 3.40282347e+38

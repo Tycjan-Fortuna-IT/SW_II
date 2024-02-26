@@ -158,7 +158,7 @@ namespace SW {
 					}
 				}
 
-				// Distance Hinge Visualization
+				// Distance Joint Visualization
 				{
 					for (auto&& [handle, djc] : m_ActiveScene->GetRegistry().GetEntitiesWith<DistanceJoint2DComponent>().each()) {
 						Entity originEntity = { handle, m_ActiveScene };
@@ -186,6 +186,28 @@ namespace SW {
 
 						Renderer2D::DrawCircle(originTransformMatrix, glm::vec4(1.f, 0.5f, 0.f, 1.f));
 						Renderer2D::DrawCircle(connectedTransformMatrix, glm::vec4(1.f, 0.5f, 0.f, 1.f));
+					}
+				}
+
+				// Revolution Joint Visualization
+				{
+					for (auto&& [handle, rjc] : m_ActiveScene->GetRegistry().GetEntitiesWith<RevolutionJoint2DComponent>().each()) {
+						if (!rjc.ConnectedEntityID)
+							continue;
+
+						Entity originEntity = { handle, m_ActiveScene };
+
+						TransformComponent originTransform = originEntity.GetWorldSpaceTransform();
+
+						glm::vec3 origin = originTransform.Position + glm::vec3(rjc.OriginAnchor.x, rjc.OriginAnchor.y, 0.001f);
+
+						glm::mat4 smallPointMatrix = glm::translate(glm::mat4(1.0f), origin)
+							* glm::scale(glm::mat4(1.0f), glm::vec3(0.15f, 0.15f, 1.0f));
+						glm::mat4 circleOutlineMatrix = glm::translate(glm::mat4(1.0f), origin)
+							* glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 1.0f));
+
+						Renderer2D::DrawCircle(smallPointMatrix, glm::vec4(1.f, 0.5f, 0.f, 1.f));
+						Renderer2D::DrawCircle(circleOutlineMatrix, glm::vec4(1.f, 0.5f, 0.f, 1.f), 0.1f);
 					}
 				}
 			}

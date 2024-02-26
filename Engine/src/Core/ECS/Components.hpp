@@ -278,10 +278,35 @@ namespace SW {
 		f32 Stiffness = 0.f;	/**< The spring stiffness. */
 		f32 Damping = 0.f;		/**< The spring damping. */
 
-		f32 Length = 0.f;			/**< The length of the joint. */
-		f32 MinLength = 0.f;		/**< The minimum length of the joint. */
-		f32 MaxLength = 1.f;		/**< The maximum length of the joint. */
-		f32 BreakingForce = 0.f;	/**< The breaking force of the joint. */
+		f32 Length = 0.f;				/**< The length of the joint. */
+		f32 MinLength = 0.f;			/**< The minimum length of the joint. */
+		f32 MaxLength = 1.f;			/**< The maximum length of the joint. */
+		f32 BreakingForce = FLT_MAX;	/**< The breaking force of the joint. */
+	};
+
+	/**
+	 * @struct Joint2DComponent
+	 * @brief This component is used to store the joint data.
+	 * @note This component is optional.
+	 */
+	struct RevolutionJoint2DComponent final
+	{
+		void* RuntimeJoint = nullptr;
+
+		u64 ConnectedEntityID = 0;		/** The entity to which the joint is connected. */
+		
+		glm::vec2 OriginAnchor = glm::vec2(0.0f);	/**< The anchor point on the first body. */
+
+		f32 LowerAngle = glm::radians(0.0f);		/**< The lower angle limit. */
+		f32 UpperAngle = glm::radians(359.0f);		/**< The upper angle limit. */
+		f32 MotorSpeed = 5.0f;			/**< The motor speed. (in radians per second) */
+		f32 MaxMotorTorque = 10000.0f;	/**< The maximum motor torque. */
+		f32 BreakingForce = FLT_MAX;	/**< The breaking force of the joint. */
+		f32 BreakingTorque = FLT_MAX;	/**< The breaking torque of the joint. */
+
+		bool EnableLimit = false;		/**< Enable the joint limit. */
+		bool EnableMotor = false;		/**< Enable the joint motor. */
+		bool EnableCollision = false;	/**< Enable collision between connected bodies. */
 	};
 
 	struct SpringJoint2DComponent final
