@@ -88,8 +88,6 @@ Entities:
         AutoLength: true
         OriginAnchor: [0, 0]
         ConnectedAnchor: [0, 0]
-        Stiffness: 0
-        Damping: 0
         Length: 0
         MinLength: 0
         MaxLength: 1
@@ -156,8 +154,6 @@ Entities:
         AutoLength: true
         OriginAnchor: [0, 0]
         ConnectedAnchor: [0, 0]
-        Stiffness: 0
-        Damping: 0
         Length: 0
         MinLength: 0
         MaxLength: 1

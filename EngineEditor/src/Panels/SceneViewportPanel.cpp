@@ -210,6 +210,34 @@ namespace SW {
 						Renderer2D::DrawCircle(circleOutlineMatrix, glm::vec4(1.f, 0.5f, 0.f, 1.f), 0.1f);
 					}
 				}
+
+				// Prismatic Joint Visualization
+				{
+					for (auto&& [handle, pjc] : m_ActiveScene->GetRegistry().GetEntitiesWith<PrismaticJoint2DComponent>().each()) {
+						if (!pjc.ConnectedEntityID)
+							continue;
+
+						Entity originEntity = { handle, m_ActiveScene };
+
+						TransformComponent originTransform = originEntity.GetWorldSpaceTransform();
+
+						glm::vec3 moving = originTransform.Position + glm::vec3(pjc.OriginAnchor.x, pjc.OriginAnchor.y, 0.001f);
+
+						glm::mat4 movingPointMatrix = glm::translate(glm::mat4(1.0f), moving)
+							* glm::scale(glm::mat4(1.0f), glm::vec3(0.15f, 0.15f, 1.0f));
+
+						Renderer2D::DrawCircle(movingPointMatrix, glm::vec4(1.f, 0.5f, 0.f, 1.f));
+
+						f32 lower = -1.f;
+						f32 upper = 1.f;
+						f32 angle = -pjc.Angle;
+
+						glm::vec3 lowerPoint = moving + glm::vec3(lower * glm::cos(angle), lower * glm::sin(angle), 0.001f);
+						glm::vec3 upperPoint = moving + glm::vec3(upper * glm::cos(angle), upper * glm::sin(angle), 0.001f);
+
+						Renderer2D::DrawLine(lowerPoint, upperPoint, glm::vec4(1.f, 0.5f, 0.f, 1.f));
+					}
+				}
 			}
 
 			m_ActiveScene->EndRendering();

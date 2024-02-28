@@ -119,13 +119,19 @@ namespace SW {
 		for (auto&& [handle, rbc, djc] : m_Registry.GetEntitiesWith<RigidBody2DComponent, DistanceJoint2DComponent>().each()) {
 			Entity entity = { handle, this };
 
-			CreateDistanceJoint2D(entity, rbc, entity.GetComponent<DistanceJoint2DComponent>());
+			CreateDistanceJoint2D(entity, rbc, djc);
 		}
 
 		for (auto&& [handle, rbc, rjc] : m_Registry.GetEntitiesWith<RigidBody2DComponent, RevolutionJoint2DComponent>().each()) {
 			Entity entity = { handle, this };
 
-			CreateRevolutionJoint2D(entity, rbc, entity.GetComponent<RevolutionJoint2DComponent>());
+			CreateRevolutionJoint2D(entity, rbc, rjc);
+		}
+
+		for (auto&& [handle, rbc, pjc] : m_Registry.GetEntitiesWith<RigidBody2DComponent, PrismaticJoint2DComponent>().each()) {
+			Entity entity = { handle, this };
+
+			CreatePrismaticJoint2D(entity, rbc, pjc);
 		}
 	}
 
@@ -291,6 +297,7 @@ namespace SW {
 		CopyComponent<BuoyancyEffector2DComponent>(this, m_Registry, copyRegistry);
 		CopyComponent<DistanceJoint2DComponent>(this, m_Registry, copyRegistry);
 		CopyComponent<RevolutionJoint2DComponent>(this, m_Registry, copyRegistry);
+		CopyComponent<PrismaticJoint2DComponent>(this, m_Registry, copyRegistry);
 
 		return copy;
     }
@@ -304,6 +311,8 @@ namespace SW {
 		definition.gravityScale = rbc.GravityScale;
 		definition.position.Set(tc.Position.x, tc.Position.y);
 		definition.angle = tc.Rotation.z;
+		//definition.linearDamping = 1.f;
+		//definition.angularDamping = 10.f;
 
 		b2Body* rb = m_PhysicsWorld2D->CreateBody(&definition);
 
@@ -386,8 +395,6 @@ namespace SW {
 			jointDef.length = djc.Length;
 		jointDef.minLength = glm::min(jointDef.length, djc.MinLength);
 		jointDef.maxLength = jointDef.length + glm::max(djc.MaxLength, 0.0f);
-		jointDef.stiffness = djc.Stiffness;
-		jointDef.damping = djc.Damping;
 
 		djc.RuntimeJoint = m_PhysicsWorld2D->CreateJoint(&jointDef);
 	}
@@ -418,6 +425,35 @@ namespace SW {
 		jointDef.maxMotorTorque = rjc.MaxMotorTorque;
 
 		rjc.RuntimeJoint = m_PhysicsWorld2D->CreateJoint(&jointDef);
+	}
+
+	void Scene::CreatePrismaticJoint2D(Entity entity, const RigidBody2DComponent& rbc, PrismaticJoint2DComponent& pjc)
+	{
+		if (!pjc.ConnectedEntityID)
+			return;
+
+		Entity connectedEntity = GetEntityByID(pjc.ConnectedEntityID);
+
+		if (!connectedEntity.HasComponent<RigidBody2DComponent>())
+			return;
+
+		b2Body* originBody = (b2Body*)rbc.Handle;
+		b2Body* connectedBody = (b2Body*)connectedEntity.GetComponent<RigidBody2DComponent>().Handle;
+
+		b2Vec2 worldAxis(1.0f, 0.0f);
+
+		b2PrismaticJointDef jointDef;
+		jointDef.Initialize(originBody, connectedBody, originBody->GetWorldPoint({pjc.OriginAnchor.x, pjc.OriginAnchor.y}), worldAxis);
+		jointDef.collideConnected = pjc.EnableCollision;
+		jointDef.referenceAngle = pjc.Angle;
+		jointDef.enableLimit = pjc.EnableLimit;
+		jointDef.lowerTranslation = pjc.LowerTranslation;
+		jointDef.upperTranslation = pjc.UpperTranslation;
+		jointDef.enableMotor = pjc.EnableMotor;
+		jointDef.motorSpeed = pjc.MotorSpeed;
+		jointDef.maxMotorForce = pjc.MaxMotorForce;
+
+		pjc.RuntimeJoint = m_PhysicsWorld2D->CreateJoint(&jointDef);
 	}
 
 }

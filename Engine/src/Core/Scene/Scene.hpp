@@ -233,6 +233,15 @@ namespace SW {
 		 * @param rjc The revolution joint component to be created and attached to the entity.
 		 */
 		void CreateRevolutionJoint2D(Entity entity, const RigidBody2DComponent& rbc, RevolutionJoint2DComponent& rjc);
+
+		/**
+		 * @brief Creates a prismatic joint between an entity and a rigid body component.
+		 * 
+		 * @param entity The entity to create the prismatic joint for.
+		 * @param rbc The rigid body component of the entity.
+		 * @param pjc The prismatic joint component to be created.
+		 */
+		void CreatePrismaticJoint2D(Entity entity, const RigidBody2DComponent& rbc, PrismaticJoint2DComponent& pjc);
 	};
 
 }

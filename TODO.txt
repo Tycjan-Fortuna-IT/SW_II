@@ -8,10 +8,10 @@
         [X] - circle collider 
         [ ] - polygon collider, polygon rendering support and creation
         [X] - fluid simulation, buoyancy
-        [ ] - distance joint 
+        [X] - distance joint 
+        [X] - revolution joint 
+        [X] - prismatic joint 
         [ ] - spring joint 
-        [ ] - hinge joint 
-        [ ] - slider joint 
         [ ] - wheel joint 
     [ ] - Spritesheet support
     [ ] - Rendering

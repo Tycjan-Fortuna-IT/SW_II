@@ -260,8 +260,6 @@ namespace SW {
 				output << YAML::Key << "AutoLength" << YAML::Value << djc.AutoLength;
 				output << YAML::Key << "OriginAnchor" << YAML::Value << djc.OriginAnchor;
 				output << YAML::Key << "ConnectedAnchor" << YAML::Value << djc.ConnectedAnchor;
-				output << YAML::Key << "Stiffness" << YAML::Value << djc.Stiffness;
-				output << YAML::Key << "Damping" << YAML::Value << djc.Damping;
 				output << YAML::Key << "Length" << YAML::Value << djc.Length;
 				output << YAML::Key << "MinLength" << YAML::Value << djc.MinLength;
 				output << YAML::Key << "MaxLength" << YAML::Value << djc.MaxLength;
@@ -285,6 +283,27 @@ namespace SW {
 				output << YAML::Key << "EnableLimit" << YAML::Value << rjc.EnableLimit;
 				output << YAML::Key << "EnableMotor" << YAML::Value << rjc.EnableMotor;
 				output << YAML::Key << "EnableCollision" << YAML::Value << rjc.EnableCollision;
+
+				output << YAML::EndMap;
+			}
+
+			if (entity.HasComponent<PrismaticJoint2DComponent>()) {
+				const PrismaticJoint2DComponent& pjc = entity.GetComponent<PrismaticJoint2DComponent>();
+
+				output << YAML::Key << "PrismaticJoint2DComponent";
+				output << YAML::BeginMap;
+				output << YAML::Key << "ConnectedEntityID" << YAML::Value << pjc.ConnectedEntityID;
+				output << YAML::Key << "OriginAnchor" << YAML::Value << pjc.OriginAnchor;
+				output << YAML::Key << "Angle" << YAML::Value << pjc.Angle;
+				output << YAML::Key << "LowerTranslation" << YAML::Value << pjc.LowerTranslation;
+				output << YAML::Key << "UpperTranslation" << YAML::Value << pjc.UpperTranslation;
+				output << YAML::Key << "MotorSpeed" << YAML::Value << pjc.MotorSpeed;
+				output << YAML::Key << "MaxMotorForce" << YAML::Value << pjc.MaxMotorForce;
+				output << YAML::Key << "BreakingForce" << YAML::Value << pjc.BreakingForce;
+				output << YAML::Key << "BreakingTorque" << YAML::Value << pjc.BreakingTorque;
+				output << YAML::Key << "EnableLimit" << YAML::Value << pjc.EnableLimit;
+				output << YAML::Key << "EnableMotor" << YAML::Value << pjc.EnableMotor;
+				output << YAML::Key << "EnableCollision" << YAML::Value << pjc.EnableCollision;
 
 				output << YAML::EndMap;
 			}
@@ -325,8 +344,7 @@ namespace SW {
 
 			Entity deserialized = scene->CreateEntityWithID(id, tag);
 
-			YAML::Node transformComponent = entity["Entity"]["TransformComponent"];
-			if (transformComponent) {
+			if (YAML::Node transformComponent = entity["Entity"]["TransformComponent"]) {
 				TransformComponent& tc = deserialized.GetComponent<TransformComponent>();
 
 				tc.Position = transformComponent["Transform"].as<glm::vec3>();
@@ -334,8 +352,7 @@ namespace SW {
 				tc.Scale = transformComponent["Scale"].as<glm::vec3>();
 			}
 
-			YAML::Node spriteComponent = entity["Entity"]["SpriteComponent"];
-			if (spriteComponent) {
+			if (YAML::Node spriteComponent = entity["Entity"]["SpriteComponent"]) {
 				SpriteComponent& sc = deserialized.AddComponent<SpriteComponent>();
 
 				sc.Color = spriteComponent["Color"].as<glm::vec4>();
@@ -347,8 +364,7 @@ namespace SW {
 				}
 			}
 
-			YAML::Node circleComponent = entity["Entity"]["CircleComponent"];
-			if (circleComponent) {
+			if (YAML::Node circleComponent = entity["Entity"]["CircleComponent"]) {
 				CircleComponent& cc = deserialized.AddComponent<CircleComponent>();
 
 				cc.Color = circleComponent["Color"].as<glm::vec4>();
@@ -356,9 +372,7 @@ namespace SW {
 				cc.Fade = circleComponent["Fade"].as<f32>();
 			}
 
-			YAML::Node relationshipComponent = entity["Entity"]["RelationshipComponent"];
-
-			if (relationshipComponent) {
+			if (YAML::Node relationshipComponent = entity["Entity"]["RelationshipComponent"]) {
 				RelationshipComponent& rsc = deserialized.GetComponent<RelationshipComponent>();
 				rsc.ParentID = relationshipComponent["ParentID"].as<u64>();
 
@@ -379,8 +393,7 @@ namespace SW {
 				}
 			}
 
-			YAML::Node cameraComponent = entity["Entity"]["CameraComponent"];
-			if (cameraComponent) {
+			if (YAML::Node cameraComponent = entity["Entity"]["CameraComponent"]) {
 				SceneCamera camera(cameraComponent["AspectRatio"].as<f32>());
 
 				CameraComponent& cc = deserialized.AddComponent<CameraComponent>(camera);
@@ -388,8 +401,7 @@ namespace SW {
 				cc.Primary = cameraComponent["Primary"].as<bool>();
 			}
 
-			YAML::Node rigidBody2DComponent = entity["Entity"]["RigidBody2DComponent"];
-			if (rigidBody2DComponent) {
+			if (YAML::Node rigidBody2DComponent = entity["Entity"]["RigidBody2DComponent"]) {
 				RigidBody2DComponent& rbc = deserialized.AddComponent<RigidBody2DComponent>();
 
 				rbc.Type = (PhysicBodyType)rigidBody2DComponent["Type"].as<int>();
@@ -400,8 +412,7 @@ namespace SW {
 				rbc.AllowSleep = rigidBody2DComponent["AllowSleep"].as<bool>();
 			}
 
-			YAML::Node boxCollider2DComponent = entity["Entity"]["BoxCollider2DComponent"];
-			if (boxCollider2DComponent) {
+			if (YAML::Node boxCollider2DComponent = entity["Entity"]["BoxCollider2DComponent"]) {
 				BoxCollider2DComponent& bcc = deserialized.AddComponent<BoxCollider2DComponent>();
 
 				bcc.Size = boxCollider2DComponent["Size"].as<glm::vec2>();
@@ -410,8 +421,7 @@ namespace SW {
 				bcc.IsSensor = boxCollider2DComponent["IsSensor"].as<bool>();
 			}
 
-			YAML::Node circleCollider2DComponent = entity["Entity"]["CircleCollider2DComponent"];
-			if (circleCollider2DComponent) {
+			if (YAML::Node circleCollider2DComponent = entity["Entity"]["CircleCollider2DComponent"]) {
 				CircleCollider2DComponent& ccc = deserialized.AddComponent<CircleCollider2DComponent>();
 
 				ccc.Radius = circleCollider2DComponent["Radius"].as<f32>();
@@ -420,8 +430,7 @@ namespace SW {
 				ccc.IsSensor = circleCollider2DComponent["IsSensor"].as<bool>();
 			}
 
-			YAML::Node buoyancyEffector2DComponent = entity["Entity"]["BuoyancyEffector2DComponent"];
-			if (buoyancyEffector2DComponent) {
+			if (YAML::Node buoyancyEffector2DComponent = entity["Entity"]["BuoyancyEffector2DComponent"]) {
 				BuoyancyEffector2DComponent& bec = deserialized.AddComponent<BuoyancyEffector2DComponent>();
 
 				bec.DragMultiplier = buoyancyEffector2DComponent["DragMultiplier"].as<f32>();
@@ -430,8 +439,7 @@ namespace SW {
 				bec.Density = buoyancyEffector2DComponent["Density"].as<f32>();
 			}
 
-			YAML::Node distanceJoint2DComponent = entity["Entity"]["DistanceJoint2DComponent"];
-			if (distanceJoint2DComponent) {
+			if (YAML::Node distanceJoint2DComponent = entity["Entity"]["DistanceJoint2DComponent"]) {
 				DistanceJoint2DComponent& djc = deserialized.AddComponent<DistanceJoint2DComponent>();
 
 				djc.ConnectedEntityID = distanceJoint2DComponent["ConnectedEntityID"].as<u64>();
@@ -439,16 +447,13 @@ namespace SW {
 				djc.AutoLength = distanceJoint2DComponent["AutoLength"].as<bool>();
 				djc.OriginAnchor = distanceJoint2DComponent["OriginAnchor"].as<glm::vec2>();
 				djc.ConnectedAnchor = distanceJoint2DComponent["ConnectedAnchor"].as<glm::vec2>();
-				djc.Stiffness = distanceJoint2DComponent["Stiffness"].as<f32>();
-				djc.Damping = distanceJoint2DComponent["Damping"].as<f32>();
 				djc.Length = distanceJoint2DComponent["Length"].as<f32>();
 				djc.MinLength = distanceJoint2DComponent["MinLength"].as<f32>();
 				djc.MaxLength = distanceJoint2DComponent["MaxLength"].as<f32>();
 				djc.BreakingForce = distanceJoint2DComponent["BreakingForce"].as<f32>();
 			}
 
-			YAML::Node revolutionJoint2DComponent = entity["Entity"]["RevolutionJoint2DComponent"];
-			if (revolutionJoint2DComponent) {
+			if (YAML::Node revolutionJoint2DComponent = entity["Entity"]["RevolutionJoint2DComponent"]) {
 				RevolutionJoint2DComponent& rjc = deserialized.AddComponent<RevolutionJoint2DComponent>();
 
 				rjc.ConnectedEntityID = revolutionJoint2DComponent["ConnectedEntityID"].as<u64>();
@@ -462,6 +467,23 @@ namespace SW {
 				rjc.EnableLimit = revolutionJoint2DComponent["EnableLimit"].as<bool>();
 				rjc.EnableMotor = revolutionJoint2DComponent["EnableMotor"].as<bool>();
 				rjc.EnableCollision = revolutionJoint2DComponent["EnableCollision"].as<bool>();
+			}
+
+			if (YAML::Node prismaticJoint2DComponent = entity["Entity"]["PrismaticJoint2DComponent"]) {
+				PrismaticJoint2DComponent& pjc = deserialized.AddComponent<PrismaticJoint2DComponent>();
+
+				pjc.ConnectedEntityID = prismaticJoint2DComponent["ConnectedEntityID"].as<u64>();
+				pjc.OriginAnchor = prismaticJoint2DComponent["OriginAnchor"].as<glm::vec2>();
+				pjc.Angle = prismaticJoint2DComponent["Angle"].as<f32>();
+				pjc.LowerTranslation = prismaticJoint2DComponent["LowerTranslation"].as<f32>();
+				pjc.UpperTranslation = prismaticJoint2DComponent["UpperTranslation"].as<f32>();
+				pjc.MotorSpeed = prismaticJoint2DComponent["MotorSpeed"].as<f32>();
+				pjc.MaxMotorForce = prismaticJoint2DComponent["MaxMotorForce"].as<f32>();
+				pjc.BreakingForce = prismaticJoint2DComponent["BreakingForce"].as<f32>();
+				pjc.BreakingTorque = prismaticJoint2DComponent["BreakingTorque"].as<f32>();
+				pjc.EnableLimit = prismaticJoint2DComponent["EnableLimit"].as<bool>();
+				pjc.EnableMotor = prismaticJoint2DComponent["EnableMotor"].as<bool>();
+				pjc.EnableCollision = prismaticJoint2DComponent["EnableCollision"].as<bool>();
 			}
 		}
 

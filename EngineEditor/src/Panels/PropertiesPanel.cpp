@@ -36,6 +36,7 @@ namespace SW {
 		
 		AddComponentName<DistanceJoint2DComponent>(SW_ICON_VECTOR_LINE "  Distance Joint 2D");
 		AddComponentName<RevolutionJoint2DComponent>(SW_ICON_ANGLE_ACUTE "  Revolution Joint 2D");
+		AddComponentName<PrismaticJoint2DComponent>(SW_ICON_VIEW_AGENDA "  Prismatic Joint 2D");
 	}
 
 	void PropertiesPanel::OnUpdate(Timestep dt)
@@ -220,8 +221,6 @@ namespace SW {
 				GUI::DrawEntityDropdownProperty(component.ConnectedEntityID, m_SceneViewportPanel->GetCurrentScene(), "Connected entity", "The joint will connect to this entity's rigid body");
 				GUI::DrawVector2ControlProperty(component.OriginAnchor, "Origin Anchor", "The anchor point of this body");
 				GUI::DrawVector2ControlProperty(component.ConnectedAnchor, "Connected Anchor", "The anchor point of the connected body");
-				GUI::DrawFloatingPointProperty(component.Stiffness, "Stiffness", "The stiffness of the joint (how rigid it is) in Newtons per meter", 0.f);
-				GUI::DrawFloatingPointProperty(component.Damping, "Damping", "The damping of the joint (how much it should resist the movement) in Newtons per meter per second", 0.f);
 				GUI::DrawFloatingPointProperty(component.BreakingForce, "Breaking Force", "The force acting on the joint to break it in Newtons", 0.f);
 				GUI::DrawBooleanProperty(component.EnableCollision, "Enable collision", "Whether connected by joint bodies should collide with each other");
 				GUI::DrawBooleanProperty(component.AutoLength, "Auto length", "Whether the distance should be automatically calculated");
@@ -237,24 +236,46 @@ namespace SW {
 				GUI::BeginProperties("##revolution_joint_2d_property");
 				GUI::DrawEntityDropdownProperty(component.ConnectedEntityID, m_SceneViewportPanel->GetCurrentScene(), "Connected entity", "The joint will connect to this entity's rigid body");
 				GUI::DrawVector2ControlProperty(component.OriginAnchor, "Origin Anchor", "The anchor point of this body");
+				GUI::DrawBooleanProperty(component.EnableCollision, "Enable collision", "Whether connected by joint bodies should collide with each other");
+				GUI::DrawBooleanProperty(component.EnableLimit, "Limit Enabled", "Whether the joint should have a limit");
+				if (component.EnableLimit) {
+					f32 lowerAngle = glm::degrees(component.LowerAngle);
+					GUI::DrawFloatingPointProperty(lowerAngle, "Lower Angle", "The lower angle for the joint limit (in degrees)");
+					component.LowerAngle = glm::radians(lowerAngle);
 
-				f32 lowerAngle = glm::degrees(component.LowerAngle);
-				GUI::DrawFloatingPointProperty(lowerAngle, "Lower Angle", "The lower angle for the joint limit (in degrees)");
-				component.LowerAngle = glm::radians(lowerAngle);
-
-				f32 upperAngle = glm::degrees(component.UpperAngle);
-				GUI::DrawFloatingPointProperty(upperAngle, "Upper Angle", "The upper angle for the joint limit (in degrees)");
-				component.UpperAngle = glm::radians(upperAngle);
-
+					f32 upperAngle = glm::degrees(component.UpperAngle);
+					GUI::DrawFloatingPointProperty(upperAngle, "Upper Angle", "The upper angle for the joint limit (in degrees)");
+					component.UpperAngle = glm::radians(upperAngle);
+				}
 				GUI::DrawBooleanProperty(component.EnableMotor, "Enable Motor", "Whether the joint should have a motor");
 				if (component.EnableMotor) {
 					GUI::DrawFloatingPointProperty(component.MotorSpeed, "Motor Speed", "The speed of the motor in radians per second", 0.f);
 					GUI::DrawFloatingPointProperty(component.MaxMotorTorque, "Max Motor Torque", "The maximum torque of the motor in Newtons", 0.f);
-					GUI::DrawFloatingPointProperty(component.BreakingTorque, "Breaking Torque", "The torque acting on the joint to break it in Newtons", 0.f);
 				}
+				GUI::DrawFloatingPointProperty(component.BreakingTorque, "Breaking Torque", "The torque acting on the joint to break it in Newtons", 0.f);
 				GUI::DrawFloatingPointProperty(component.BreakingForce, "Breaking Force", "The force acting on the joint to break it in Newtons", 0.f);
-				GUI::DrawBooleanProperty(component.EnableLimit, "Limit Enabled", "Whether the joint should have a limit");
+
+				GUI::EndProperties();
+			}, true);
+
+			DrawComponent<PrismaticJoint2DComponent>(entity, [this](PrismaticJoint2DComponent& component) {
+				GUI::BeginProperties("##prismatic_joint_2d_property");
+				GUI::DrawEntityDropdownProperty(component.ConnectedEntityID, m_SceneViewportPanel->GetCurrentScene(), "Connected entity", "The joint will connect to this entity's rigid body");
+				GUI::DrawVector2ControlProperty(component.OriginAnchor, "Origin Anchor", "The anchor point of this body");
 				GUI::DrawBooleanProperty(component.EnableCollision, "Enable collision", "Whether connected by joint bodies should collide with each other");
+				GUI::DrawBooleanProperty(component.EnableLimit, "Limit Enabled", "Whether the joint should have a limit");
+				if (component.EnableLimit) {
+					f32 angle = glm::degrees(component.Angle);
+					GUI::DrawFloatingPointProperty(angle, "Angle", "The constrained angle between the bodies (in degrees)");
+					component.Angle = glm::radians(angle);
+				}
+				GUI::DrawFloatingPointProperty(component.LowerTranslation, "Lower Translation");
+				GUI::DrawFloatingPointProperty(component.UpperTranslation, "Upper Translation");
+				GUI::DrawBooleanProperty(component.EnableMotor, "Enable Motor", "Whether the joint should have a motor");
+				if (component.EnableMotor) {
+					GUI::DrawFloatingPointProperty(component.MotorSpeed, "Motor Speed", "The speed of the motor in radians per second", 0.f);
+					GUI::DrawFloatingPointProperty(component.MaxMotorForce, "Max Motor Force", "The maximum force of the motor in Newtons", 0.f);
+				}
 
 				GUI::EndProperties();
 			}, true);
@@ -328,6 +349,14 @@ namespace SW {
 			if (!entity.HasComponent<RevolutionJoint2DComponent>()) {
 				if (ImGui::MenuItemEx("Revolution Joint 2D", SW_ICON_ANGLE_ACUTE)) {
 					entity.AddComponent<RevolutionJoint2DComponent>();
+
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			if (!entity.HasComponent<PrismaticJoint2DComponent>()) {
+				if (ImGui::MenuItemEx("Prismatic Joint 2D", SW_ICON_VIEW_AGENDA)) {
+					entity.AddComponent<PrismaticJoint2DComponent>();
 
 					ImGui::CloseCurrentPopup();
 				}
