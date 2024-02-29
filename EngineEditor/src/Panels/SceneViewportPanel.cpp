@@ -238,6 +238,59 @@ namespace SW {
 						Renderer2D::DrawLine(lowerPoint, upperPoint, glm::vec4(1.f, 0.5f, 0.f, 1.f));
 					}
 				}
+
+				// Spring Joint Visualization
+				{
+					for (auto&& [handle, sjc] : m_ActiveScene->GetRegistry().GetEntitiesWith<SpringJoint2DComponent>().each()) {
+						Entity originEntity = { handle, m_ActiveScene };
+
+						if (!sjc.ConnectedEntityID)
+							continue;
+
+						Entity connectedEntity = m_ActiveScene->GetEntityByID(sjc.ConnectedEntityID);
+
+						if (!connectedEntity)
+							continue;
+
+						TransformComponent originTransform = originEntity.GetWorldSpaceTransform();
+						TransformComponent connectedTransform = connectedEntity.GetWorldSpaceTransform();
+
+						glm::vec3 origin = originTransform.Position + glm::vec3(sjc.OriginAnchor.x, sjc.OriginAnchor.y, 0.001f);
+						glm::vec3 connected = connectedTransform.Position + glm::vec3(sjc.ConnectedAnchor.x, sjc.ConnectedAnchor.y, 0.001f);
+
+						Renderer2D::DrawLine(origin, connected, glm::vec4(1.f, 0.5f, 0.f, 1.f));
+
+						glm::mat4 originTransformMatrix = glm::translate(glm::mat4(1.0f), origin)
+							* glm::scale(glm::mat4(1.0f), glm::vec3(0.15f, 0.15f, 1.0f));
+						glm::mat4 connectedTransformMatrix = glm::translate(glm::mat4(1.0f), connected)
+							* glm::scale(glm::mat4(1.0f), glm::vec3(0.15f, 0.15f, 1.0f));
+
+						Renderer2D::DrawCircle(originTransformMatrix, glm::vec4(1.f, 0.5f, 0.f, 1.f));
+						Renderer2D::DrawCircle(connectedTransformMatrix, glm::vec4(1.f, 0.5f, 0.f, 1.f));
+					}
+				}
+
+				// Wheel Joint Visualization
+				{
+					for (auto&& [handle, wjc] : m_ActiveScene->GetRegistry().GetEntitiesWith<WheelJoint2DComponent>().each()) {
+						if (!wjc.ConnectedEntityID)
+							continue;
+
+						Entity originEntity = { handle, m_ActiveScene };
+
+						TransformComponent originTransform = originEntity.GetWorldSpaceTransform();
+
+						glm::vec3 origin = originTransform.Position + glm::vec3(wjc.OriginAnchor.x, wjc.OriginAnchor.y, 0.001f);
+
+						glm::mat4 smallPointMatrix = glm::translate(glm::mat4(1.0f), origin)
+							* glm::scale(glm::mat4(1.0f), glm::vec3(0.15f, 0.15f, 1.0f));
+						glm::mat4 circleOutlineMatrix = glm::translate(glm::mat4(1.0f), origin)
+							* glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 1.0f));
+
+						Renderer2D::DrawCircle(smallPointMatrix, glm::vec4(1.f, 0.5f, 0.f, 1.f));
+						Renderer2D::DrawCircle(circleOutlineMatrix, glm::vec4(1.f, 0.5f, 0.f, 1.f), 0.1f);
+					}
+				}
 			}
 
 			m_ActiveScene->EndRendering();

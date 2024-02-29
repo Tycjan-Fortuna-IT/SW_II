@@ -6,18 +6,18 @@
     [ ] - Physics
         [X] - box collider 
         [X] - circle collider 
-        [ ] - polygon collider, polygon rendering support and creation
+        [ ] - polygon collider
         [X] - fluid simulation, buoyancy
         [X] - distance joint 
         [X] - revolution joint 
         [X] - prismatic joint 
-        [ ] - spring joint 
-        [ ] - wheel joint 
+        [X] - spring joint 
+        [X] - wheel joint 
     [ ] - Spritesheet support
     [ ] - Rendering
-        [X] - quad / Rectangle rendering
+        [X] - quad rendering
         [X] - circle rendering
-        [ ] - polygon rendering
+        [X] - line rendering
         [ ] - text rendering
     [ ] - C# Scripting
     [ ] - Audio

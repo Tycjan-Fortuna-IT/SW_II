@@ -308,6 +308,46 @@ namespace SW {
 				output << YAML::EndMap;
 			}
 
+			if (entity.HasComponent<SpringJoint2DComponent>()) {
+				const SpringJoint2DComponent& sjc = entity.GetComponent<SpringJoint2DComponent>();
+
+				output << YAML::Key << "SpringJoint2DComponent";
+				output << YAML::BeginMap;
+				output << YAML::Key << "ConnectedEntityID" << YAML::Value << sjc.ConnectedEntityID;
+				output << YAML::Key << "EnableCollision" << YAML::Value << sjc.EnableCollision;
+				output << YAML::Key << "AutoLength" << YAML::Value << sjc.AutoLength;
+				output << YAML::Key << "OriginAnchor" << YAML::Value << sjc.OriginAnchor;
+				output << YAML::Key << "ConnectedAnchor" << YAML::Value << sjc.ConnectedAnchor;
+				output << YAML::Key << "Length" << YAML::Value << sjc.Length;
+				output << YAML::Key << "MinLength" << YAML::Value << sjc.MinLength;
+				output << YAML::Key << "MaxLength" << YAML::Value << sjc.MaxLength;
+				output << YAML::Key << "BreakingForce" << YAML::Value << sjc.BreakingForce;
+				output << YAML::Key << "Frequency" << YAML::Value << sjc.Frequency;
+				output << YAML::Key << "DampingRatio" << YAML::Value << sjc.DampingRatio;
+				output << YAML::EndMap;
+			}
+
+			if (entity.HasComponent<WheelJoint2DComponent>()) {
+				const WheelJoint2DComponent& wjc = entity.GetComponent<WheelJoint2DComponent>();
+
+				output << YAML::Key << "WheelJoint2DComponent";
+				output << YAML::BeginMap;
+				output << YAML::Key << "ConnectedEntityID" << YAML::Value << wjc.ConnectedEntityID;
+				output << YAML::Key << "OriginAnchor" << YAML::Value << wjc.OriginAnchor;
+				output << YAML::Key << "LowerTranslation" << YAML::Value << wjc.LowerTranslation;
+				output << YAML::Key << "UpperTranslation" << YAML::Value << wjc.UpperTranslation;
+				output << YAML::Key << "MotorSpeed" << YAML::Value << wjc.MotorSpeed;
+				output << YAML::Key << "MaxMotorTorque" << YAML::Value << wjc.MaxMotorTorque;
+				output << YAML::Key << "BreakingForce" << YAML::Value << wjc.BreakingForce;
+				output << YAML::Key << "BreakingTorque" << YAML::Value << wjc.BreakingTorque;
+				output << YAML::Key << "Frequency" << YAML::Value << wjc.Frequency;
+				output << YAML::Key << "DampingRatio" << YAML::Value << wjc.DampingRatio;
+				output << YAML::Key << "EnableLimit" << YAML::Value << wjc.EnableLimit;
+				output << YAML::Key << "EnableMotor" << YAML::Value << wjc.EnableMotor;
+				output << YAML::Key << "EnableCollision" << YAML::Value << wjc.EnableCollision;
+				output << YAML::EndMap;
+			}
+
 			output << YAML::EndMap; // End Entity components content
 
 			output << YAML::EndMap; // End Entity content
@@ -484,6 +524,40 @@ namespace SW {
 				pjc.EnableLimit = prismaticJoint2DComponent["EnableLimit"].as<bool>();
 				pjc.EnableMotor = prismaticJoint2DComponent["EnableMotor"].as<bool>();
 				pjc.EnableCollision = prismaticJoint2DComponent["EnableCollision"].as<bool>();
+			}
+
+			if (YAML::Node springJoint2DComponent = entity["Entity"]["SpringJoint2DComponent"]) {
+				SpringJoint2DComponent& sjc = deserialized.AddComponent<SpringJoint2DComponent>();
+
+				sjc.ConnectedEntityID = springJoint2DComponent["ConnectedEntityID"].as<u64>();
+				sjc.EnableCollision = springJoint2DComponent["EnableCollision"].as<bool>();
+				sjc.AutoLength = springJoint2DComponent["AutoLength"].as<bool>();
+				sjc.OriginAnchor = springJoint2DComponent["OriginAnchor"].as<glm::vec2>();
+				sjc.ConnectedAnchor = springJoint2DComponent["ConnectedAnchor"].as<glm::vec2>();
+				sjc.Length = springJoint2DComponent["Length"].as<f32>();
+				sjc.MinLength = springJoint2DComponent["MinLength"].as<f32>();
+				sjc.MaxLength = springJoint2DComponent["MaxLength"].as<f32>();
+				sjc.BreakingForce = springJoint2DComponent["BreakingForce"].as<f32>();
+				sjc.Frequency = springJoint2DComponent["Frequency"].as<f32>();
+				sjc.DampingRatio = springJoint2DComponent["DampingRatio"].as<f32>();
+			}
+			
+			if (YAML::Node wheelJoint2DComponent = entity["Entity"]["WheelJoint2DComponent"]) {
+				WheelJoint2DComponent& wjc = deserialized.AddComponent<WheelJoint2DComponent>();
+
+				wjc.ConnectedEntityID = wheelJoint2DComponent["ConnectedEntityID"].as<u64>();
+				wjc.OriginAnchor = wheelJoint2DComponent["OriginAnchor"].as<glm::vec2>();
+				wjc.LowerTranslation = wheelJoint2DComponent["LowerTranslation"].as<f32>();
+				wjc.UpperTranslation = wheelJoint2DComponent["UpperTranslation"].as<f32>();
+				wjc.MotorSpeed = wheelJoint2DComponent["MotorSpeed"].as<f32>();
+				wjc.MaxMotorTorque = wheelJoint2DComponent["MaxMotorTorque"].as<f32>();
+				wjc.BreakingForce = wheelJoint2DComponent["BreakingForce"].as<f32>();
+				wjc.BreakingTorque = wheelJoint2DComponent["BreakingTorque"].as<f32>();
+				wjc.Frequency = wheelJoint2DComponent["Frequency"].as<f32>();
+				wjc.DampingRatio = wheelJoint2DComponent["DampingRatio"].as<f32>();
+				wjc.EnableLimit = wheelJoint2DComponent["EnableLimit"].as<bool>();
+				wjc.EnableMotor = wheelJoint2DComponent["EnableMotor"].as<bool>();
+				wjc.EnableCollision = wheelJoint2DComponent["EnableCollision"].as<bool>();
 			}
 		}
 

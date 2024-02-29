@@ -54,3 +54,5 @@
 #define SW_ICON_VECTOR_LINE u8"\uF55E"
 #define SW_ICON_ANGLE_ACUTE u8"\uF936"
 #define SW_ICON_VIEW_AGENDA u8"\uF56A"
+#define SW_ICON_ARROW_EXPAND u8"\uF616"
+#define SW_ICON_CAR u8"\uF10B"

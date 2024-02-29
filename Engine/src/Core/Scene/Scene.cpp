@@ -133,6 +133,18 @@ namespace SW {
 
 			CreatePrismaticJoint2D(entity, rbc, pjc);
 		}
+
+		for (auto&& [handle, rbc, sjc] : m_Registry.GetEntitiesWith<RigidBody2DComponent, SpringJoint2DComponent>().each()) {
+			Entity entity = { handle, this };
+
+			CreateSpringJoint2D(entity, rbc, sjc);
+		}
+
+		for (auto&& [handle, rbc, wjc] : m_Registry.GetEntitiesWith<RigidBody2DComponent, WheelJoint2DComponent>().each()) {
+			Entity entity = { handle, this };
+
+			CreateWheelJoint2D(entity, rbc, wjc);
+		}
 	}
 
 	void Scene::OnRuntimeStop()
@@ -219,6 +231,48 @@ namespace SW {
 			}
 		}
 
+		for (auto&& [handle, pjc] : m_Registry.GetEntitiesWith<PrismaticJoint2DComponent>().each()) {
+			if (pjc.RuntimeJoint) {
+				b2Joint* joint = (b2Joint*)(pjc.RuntimeJoint);
+
+				if (
+					joint->GetReactionForce(physicsStepRate).LengthSquared() > pjc.BreakingForce * pjc.BreakingForce ||
+					joint->GetReactionTorque(physicsStepRate) > pjc.BreakingTorque
+				) {
+					m_PhysicsWorld2D->DestroyJoint(joint);
+
+					pjc.RuntimeJoint = nullptr;
+				}
+			}
+		}
+
+		for (auto&& [handle, sjc] : m_Registry.GetEntitiesWith<SpringJoint2DComponent>().each()) {
+			if (sjc.RuntimeJoint) {
+				b2Joint* joint = (b2Joint*)(sjc.RuntimeJoint);
+
+				if (joint->GetReactionForce(physicsStepRate).LengthSquared() > sjc.BreakingForce * sjc.BreakingForce) {
+					m_PhysicsWorld2D->DestroyJoint(joint);
+
+					sjc.RuntimeJoint = nullptr;
+				}
+			}
+		}
+
+		for (auto&& [handle, wjc] : m_Registry.GetEntitiesWith<WheelJoint2DComponent>().each()) {
+			if (wjc.RuntimeJoint) {
+				b2Joint* joint = (b2Joint*)(wjc.RuntimeJoint);
+
+				if (
+					joint->GetReactionForce(physicsStepRate).LengthSquared() > wjc.BreakingForce * wjc.BreakingForce ||
+					joint->GetReactionTorque(physicsStepRate) > wjc.BreakingTorque
+				) {
+					m_PhysicsWorld2D->DestroyJoint(joint);
+
+					wjc.RuntimeJoint = nullptr;
+				}
+			}
+		}
+
 #pragma endregion
 
 		for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<SpriteComponent>().each()) {
@@ -298,6 +352,8 @@ namespace SW {
 		CopyComponent<DistanceJoint2DComponent>(this, m_Registry, copyRegistry);
 		CopyComponent<RevolutionJoint2DComponent>(this, m_Registry, copyRegistry);
 		CopyComponent<PrismaticJoint2DComponent>(this, m_Registry, copyRegistry);
+		CopyComponent<SpringJoint2DComponent>(this, m_Registry, copyRegistry);
+		CopyComponent<WheelJoint2DComponent>(this, m_Registry, copyRegistry);
 
 		return copy;
     }
@@ -454,6 +510,68 @@ namespace SW {
 		jointDef.maxMotorForce = pjc.MaxMotorForce;
 
 		pjc.RuntimeJoint = m_PhysicsWorld2D->CreateJoint(&jointDef);
+	}
+
+	void Scene::CreateSpringJoint2D(Entity entity, const RigidBody2DComponent& rbc, SpringJoint2DComponent& sjc)
+	{
+		if (!sjc.ConnectedEntityID)
+			return;
+
+		Entity connectedEntity = GetEntityByID(sjc.ConnectedEntityID);
+
+		if (!connectedEntity.HasComponent<RigidBody2DComponent>())
+			return;
+
+		b2Body* originBody = (b2Body*)rbc.Handle;
+		b2Body* connectedBody = (b2Body*)connectedEntity.GetComponent<RigidBody2DComponent>().Handle;
+
+		b2Vec2 originAnchor = originBody->GetWorldPoint({ sjc.OriginAnchor.x, sjc.OriginAnchor.y });
+		b2Vec2 connectedAnchor = connectedBody->GetWorldPoint({ sjc.ConnectedAnchor.x, sjc.ConnectedAnchor.y });
+
+		b2DistanceJointDef jointDef;
+		jointDef.Initialize(originBody, connectedBody, originAnchor, connectedAnchor);
+		jointDef.collideConnected = sjc.EnableCollision;
+		if (!sjc.AutoLength)
+			jointDef.length = sjc.Length;
+		jointDef.minLength = glm::min(jointDef.length, sjc.MinLength);
+		jointDef.maxLength = jointDef.length + glm::max(sjc.MaxLength, 0.0f);
+
+		b2LinearStiffness(jointDef.stiffness, jointDef.damping, sjc.Frequency, sjc.DampingRatio, originBody, connectedBody);
+
+		sjc.RuntimeJoint = m_PhysicsWorld2D->CreateJoint(&jointDef);
+	}
+
+	void Scene::CreateWheelJoint2D(Entity entity, const RigidBody2DComponent& rbc, WheelJoint2DComponent& wjc)
+	{
+		if (!wjc.ConnectedEntityID)
+			return;
+
+		Entity connectedEntity = GetEntityByID(wjc.ConnectedEntityID);
+
+		if (!connectedEntity.HasComponent<RigidBody2DComponent>())
+			return;
+
+		b2Body* originBody = (b2Body*)rbc.Handle;
+		b2Body* connectedBody = (b2Body*)connectedEntity.GetComponent<RigidBody2DComponent>().Handle;
+
+		b2Vec2 axis(0.0f, 1.0f);
+
+		f32 mass = originBody->GetMass();
+		f32 omega = 2.0f * b2_pi * wjc.Frequency;
+
+		b2WheelJointDef jointDef;
+		jointDef.Initialize(originBody, connectedBody, originBody->GetWorldPoint({ wjc.OriginAnchor.x, wjc.OriginAnchor.y }), axis);
+		jointDef.collideConnected = wjc.EnableCollision;
+		jointDef.stiffness = mass * omega * omega;
+		jointDef.damping = 2.0f * mass * wjc.DampingRatio * omega;
+		jointDef.enableMotor = wjc.EnableMotor;
+		jointDef.motorSpeed = wjc.MotorSpeed;
+		jointDef.maxMotorTorque = wjc.MaxMotorTorque;
+		jointDef.enableLimit = wjc.EnableLimit;
+		jointDef.lowerTranslation = wjc.LowerTranslation;
+		jointDef.upperTranslation = wjc.UpperTranslation;
+
+		wjc.RuntimeJoint = m_PhysicsWorld2D->CreateJoint(&jointDef);
 	}
 
 }

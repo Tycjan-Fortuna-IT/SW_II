@@ -1,8 +1,8 @@
 /**
  * @file Components.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.4
- * @date 2024-02-28
+ * @version 0.1.5
+ * @date 2024-02-29
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -319,26 +319,68 @@ namespace SW {
 
 		glm::vec2 OriginAnchor = glm::vec2(0.0f);	/**< The anchor point on the first body. */
 
-		f32 Angle = 0.0f;
-		f32 LowerTranslation = 0.0f;
-		f32 UpperTranslation = 0.0f;
-		f32 MotorSpeed = 5.0f;
-		f32 MaxMotorForce = 20.0f;
-		f32 BreakingForce = FLT_MAX;
-		f32 BreakingTorque = FLT_MAX;
+		f32 Angle = 0.0f;				/**< The angle of the joint. */
+		f32 LowerTranslation = 0.0f;	/**< The lower translation limit. */
+		f32 UpperTranslation = 0.0f;	/**< The upper translation limit. */
+		f32 MotorSpeed = 5.0f;			/**< The motor speed. */
+		f32 MaxMotorForce = 20.0f;		/**< The maximum motor force. */
+		f32 BreakingForce = FLT_MAX;	/**< The breaking force of the joint. */
+		f32 BreakingTorque = FLT_MAX;	/**< The breaking torque of the joint. */
 
-		bool EnableLimit = false;
-		bool EnableMotor = false;
-		bool EnableCollision = false;
+		bool EnableLimit = false;		/**< Enable the joint limit. */
+		bool EnableMotor = false;		/**< Enable the joint motor. */
+		bool EnableCollision = false;	/**< Enable collision between connected bodies. */
 	};
 
+	/**
+	 * @struct SpringJoint2DComponent
+	 * @brief This component is used to store the joint data.
+	 * @note This component is optional.
+	 */
 	struct SpringJoint2DComponent final
 	{
+		void* RuntimeJoint = nullptr;
 
+		u64 ConnectedEntityID = 0;	/** The entity to which the joint is connected. */
+
+		bool EnableCollision = false; 	/**< Enable collision between connected bodies. */
+		bool AutoLength = true;			/**< Automatically calculate the length of the joint. */
+
+		glm::vec2 OriginAnchor = glm::vec2(0.f);		/**< The anchor point on the first body. */
+		glm::vec2 ConnectedAnchor = glm::vec2(0.f);		/**< The anchor point on the second body. */
+
+		f32 Length = 0.f;				/**< The length of the joint. */
+		f32 MinLength = 0.f;			/**< The minimum length of the joint. */
+		f32 MaxLength = 1.f;			/**< The maximum length of the joint. */
+		f32 BreakingForce = FLT_MAX;	/**< The breaking force of the joint. */
+		f32 Frequency = 4.f;			/**< The frequency of the spring. */
+		f32 DampingRatio = 0.5f;		/**< The damping ratio of the spring. */
 	};
 
+	/**
+	 * @struct WheelJoint2DComponent
+	 * @brief This component is used to store the joint data.
+	 * @note This component is optional.
+	 */
 	struct WheelJoint2DComponent final
 	{
+		void* RuntimeJoint = nullptr;
 
+		u64 ConnectedEntityID = 0;		/** The entity to which the joint is connected. */
+
+		glm::vec2 OriginAnchor = glm::vec2(0.0f);	/**< The anchor point on the first body. */
+
+		f32 Frequency = 4.0f;				/**< The frequency of the spring. */
+		f32 DampingRatio = 0.7f;			/**< The damping ratio of the spring. */
+		f32 LowerTranslation = -0.25f;		/**< The lower translation limit. */	
+		f32 UpperTranslation = 0.25f;		/**< The upper translation limit. */
+		f32 MotorSpeed = 10.0f;				/**< The motor speed. */
+		f32 MaxMotorTorque = 20.0f;			/**< The maximum motor torque. */
+		f32 BreakingForce = FLT_MAX;		/**< The breaking force of the joint. */
+		f32 BreakingTorque = FLT_MAX;		/**< The breaking torque of the joint. */
+
+		bool EnableLimit = true;		/**< Enable the joint limit. */
+		bool EnableMotor = true;		/**< Enable the joint motor. */
+		bool EnableCollision = false;	/**< Enable collision between connected bodies. */
 	};
 }

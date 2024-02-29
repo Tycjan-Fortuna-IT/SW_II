@@ -1,8 +1,8 @@
 /**
  * @file Scene.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.2
- * @date 2024-02-26
+ * @version 0.1.3
+ * @date 2024-02-29
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -242,6 +242,24 @@ namespace SW {
 		 * @param pjc The prismatic joint component to be created.
 		 */
 		void CreatePrismaticJoint2D(Entity entity, const RigidBody2DComponent& rbc, PrismaticJoint2DComponent& pjc);
+		
+		/**
+		 * @brief Creates a spring joint between an entity and a rigid body component.
+		 *
+		 * @param entity The entity to create the spring joint for.
+		 * @param rbc The rigid body component of the entity.
+		 * @param sjc The spring joint component to be created.
+		 */
+		void CreateSpringJoint2D(Entity entity, const RigidBody2DComponent& rbc, SpringJoint2DComponent& sjc);
+
+		/**
+		 * @brief Creates a wheel joint between an entity and a rigid body component.
+		 *
+		 * @param entity The entity to create the wheel joint for.
+		 * @param rbc The rigid body component of the entity.
+		 * @param wjc The wheel joint component to be created.
+		 */
+		void CreateWheelJoint2D(Entity entity, const RigidBody2DComponent& rbc, WheelJoint2DComponent& wjc);
 	};
 
 }
