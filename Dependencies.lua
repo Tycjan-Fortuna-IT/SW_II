@@ -47,6 +47,18 @@ Dependencies = {
     GLM = {
         IncludeDir = "%{wks.location}/Engine/vendor/glm",
     },
+    MSDF_ATLAS_GEN = {
+        IncludeDir = "%{wks.location}/Engine/vendor/msdf-atlas-gen",
+        LinkAs = "msdf-atlas-gen",
+    },
+    MSDFGEN = {
+        IncludeDir = "%{wks.location}/Engine/vendor/msdf-atlas-gen/msdfgen",
+        LinkAs = "msdfgen",
+    },
+    FREETYPE = {
+        IncludeDir = "%{wks.location}/Engine/vendor/msdf-atlas-gen/msdfgen/freetype/include",
+        LinkAs = "freetype",
+    },
 }
 
 function IncludeEngineDependencies(additional)

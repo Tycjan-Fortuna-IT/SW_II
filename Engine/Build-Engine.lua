@@ -22,7 +22,6 @@ project "Engine"
 
     defines {
         "GLFW_INCLUDE_NONE",
-        "IMGUI_DEFINE_MATH_OPERATORS",
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
         "YAML_CPP_STATIC_DEFINE",
     }
@@ -69,6 +68,7 @@ project "Engine"
         include "Engine/vendor/YamlCpp"
         include "Engine/vendor/NFD-Extended"
         include "Engine/vendor/Box2D"
+        include "Engine/vendor/msdf-atlas-gen"
     group ""
     
     group "Engine"
