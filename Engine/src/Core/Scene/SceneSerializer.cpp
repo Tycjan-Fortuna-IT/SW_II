@@ -238,6 +238,22 @@ namespace SW {
 				output << YAML::EndMap;
 			}
 
+			if (entity.HasComponent<PolygonCollider2DComponent>()) {
+				const PolygonCollider2DComponent& pcc = entity.GetComponent<PolygonCollider2DComponent>();
+
+				output << YAML::Key << "PolygonCollider2DComponent";
+				output << YAML::BeginMap;
+				output << YAML::Key << "Vertices" << YAML::BeginMap;
+				for (u64 i = 0; i < pcc.Vertices.size(); ++i)
+					output << YAML::Key << i << YAML::Key << pcc.Vertices[i];
+				output << YAML::EndMap;
+				output << YAML::Key << "VerticesCount" << YAML::Value << pcc.Vertices.size();
+				output << YAML::Key << "Offset" << YAML::Value << pcc.Offset;
+				output << YAML::Key << "Density" << YAML::Value << pcc.Density;
+				output << YAML::Key << "IsSensor" << YAML::Value << pcc.IsSensor;
+				output << YAML::EndMap;
+			}
+
 			if (entity.HasComponent<BuoyancyEffector2DComponent>()) {
 				const BuoyancyEffector2DComponent& bec = entity.GetComponent<BuoyancyEffector2DComponent>();
 
@@ -468,6 +484,23 @@ namespace SW {
 				ccc.Offset = circleCollider2DComponent["Offset"].as<glm::vec2>();
 				ccc.Density = circleCollider2DComponent["Density"].as<f32>();
 				ccc.IsSensor = circleCollider2DComponent["IsSensor"].as<bool>();
+			}
+
+			if (YAML::Node polygonCollider2DComponent = entity["Entity"]["PolygonCollider2DComponent"]) {
+				PolygonCollider2DComponent& pcc = deserialized.AddComponent<PolygonCollider2DComponent>();
+
+				YAML::Node vertices = polygonCollider2DComponent["Vertices"];
+				u64 count = polygonCollider2DComponent["VerticesCount"].as<u64>();
+
+				pcc.Vertices.clear();
+
+				for (u64 i = 0; i < count; ++i) {
+					pcc.Vertices.push_back(vertices[i].as<glm::vec2>());
+				}
+
+				pcc.Offset = polygonCollider2DComponent["Offset"].as<glm::vec2>();
+				pcc.Density = polygonCollider2DComponent["Density"].as<f32>();
+				pcc.IsSensor = polygonCollider2DComponent["IsSensor"].as<bool>();
 			}
 
 			if (YAML::Node buoyancyEffector2DComponent = entity["Entity"]["BuoyancyEffector2DComponent"]) {

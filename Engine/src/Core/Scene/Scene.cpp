@@ -348,6 +348,7 @@ namespace SW {
 		CopyComponent<RigidBody2DComponent>(this, m_Registry, copyRegistry);
 		CopyComponent<BoxCollider2DComponent>(this, m_Registry, copyRegistry);
 		CopyComponent<CircleCollider2DComponent>(this, m_Registry, copyRegistry);
+		CopyComponent<PolygonCollider2DComponent>(this, m_Registry, copyRegistry);
 		CopyComponent<BuoyancyEffector2DComponent>(this, m_Registry, copyRegistry);
 		CopyComponent<DistanceJoint2DComponent>(this, m_Registry, copyRegistry);
 		CopyComponent<RevolutionJoint2DComponent>(this, m_Registry, copyRegistry);
@@ -384,6 +385,10 @@ namespace SW {
 
 		if (entity.HasComponent<CircleCollider2DComponent>()) {
 			CreateCircleCollider2D(entity, tc, rbc, entity.GetComponent<CircleCollider2DComponent>());
+		}
+
+		if (entity.HasComponent<PolygonCollider2DComponent>()) {
+			CreatePolygonCollider2D(entity, tc, rbc, entity.GetComponent<PolygonCollider2DComponent>());
 		}
 	}
 
@@ -426,6 +431,35 @@ namespace SW {
 		b2Fixture* fixture = body->CreateFixture(&fixtureDef);
 
 		ccc.Handle = fixture;
+	}
+
+	void Scene::CreatePolygonCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, PolygonCollider2DComponent& pcc)
+	{
+		if (pcc.Vertices.size() < 3) {
+			SW_ERROR("Cannot create polygon collider with less than 3 vertices! Currently: {}", pcc.Vertices.size());
+			return;
+		}
+
+		for (u64 i = 0; i < pcc.Vertices.size(); ++i) {
+			pcc.Vertices[i] += pcc.Offset;
+		}
+
+		b2PolygonShape polygonShape;
+		polygonShape.Set((const b2Vec2*)pcc.Vertices.data(), (i32)pcc.Vertices.size());
+
+		b2FixtureDef fixtureDef;
+		fixtureDef.shape = &polygonShape;
+		fixtureDef.userData.pointer = static_cast<u32>(entity);
+		fixtureDef.density = pcc.Density;
+		fixtureDef.friction = rbc.Friction;
+		fixtureDef.restitution = rbc.Restitution;
+		fixtureDef.restitutionThreshold = rbc.RestitutionThreshold;
+		fixtureDef.isSensor = pcc.IsSensor;
+
+		b2Body* body = static_cast<b2Body*>(rbc.Handle);
+		b2Fixture* fixture = body->CreateFixture(&fixtureDef);
+
+		pcc.Handle = fixture;
 	}
 
 	void Scene::CreateDistanceJoint2D(Entity entity, const RigidBody2DComponent& rbc, DistanceJoint2DComponent& djc)

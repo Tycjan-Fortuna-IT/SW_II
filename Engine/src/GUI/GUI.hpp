@@ -1,8 +1,8 @@
 ﻿/**
  * @file GUI.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.2.1
- * @date 2024-02-25
+ * @version 0.2.2
+ * @date 2024-03-01
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -669,26 +669,20 @@ namespace SW::GUI {
 	}
 
 	/**
-	 * @brief Draws a control property for a Vector2.
+	 * @brief Draws a control for editing a glm::vec2 value in ImGui.
 	 *
-	 * This function is used to draw a control property for a Vector2, allowing the user to modify its values.
-	 * The control property consists of three input fields for the X and Y components of the vector.
-	 * Additionally, buttons are provided to reset each component to a specified value.
+	 * This function creates a control in ImGui for editing a glm::vec2 value. The control consists of two input fields, one for the X component and one for the Y component of the vector. It also includes buttons for resetting the values to a specified reset value.
 	 *
-	 * @param vector The Vector2 to be modified by the control property.
-	 * @param label The label to be displayed for the control property.
-	 * @param tooltip An optional tooltip to be displayed when hovering over the control property.
-	 * @param resetValue The value to which each component of the vector will be reset when the corresponding reset button is pressed.
-	 * @param min The minimum value allowed for each component of the vector.
-	 * @param max The maximum value allowed for each component of the vector.
-	 * @param format The format string used to display the values of the vector components.
+	 * @param vector The glm::vec2 value to be edited.
+	 * @param resetValue The value to which the vector components will be reset when the reset button is pressed. Default is 0.0f.
+	 * @param min The minimum value allowed for the vector components. Default is -FLT_MAX.
+	 * @param max The maximum value allowed for the vector components. Default is FLT_MAX.
+	 * @param format The format string used to display the vector components. Default is "%.2f".
 	 */
-	static void DrawVector2ControlProperty(
-		glm::vec2& vector, const char* label, const char* tooltip = nullptr, f32 resetValue = 0.f,
+	static void DrawVector2Control(
+		glm::vec2& vector, f32 resetValue = 0.f,
 		f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
 	) {
-		BeginPropertyGrid(label, tooltip, false);
-
 		ImGuiIO& io = ImGui::GetIO();
 
 		ImFont* boldFont = GUI::Appearance::GetFonts().DefaultBoldFont;
@@ -742,6 +736,30 @@ namespace SW::GUI {
 		}
 
 		ImGui::PopStyleVar();
+	}
+
+	/**
+	 * @brief Draws a control property for a Vector2.
+	 *
+	 * This function is used to draw a control property for a Vector2, allowing the user to modify its values.
+	 * The control property consists of three input fields for the X and Y components of the vector.
+	 * Additionally, buttons are provided to reset each component to a specified value.
+	 *
+	 * @param vector The Vector2 to be modified by the control property.
+	 * @param label The label to be displayed for the control property.
+	 * @param tooltip An optional tooltip to be displayed when hovering over the control property.
+	 * @param resetValue The value to which each component of the vector will be reset when the corresponding reset button is pressed.
+	 * @param min The minimum value allowed for each component of the vector.
+	 * @param max The maximum value allowed for each component of the vector.
+	 * @param format The format string used to display the values of the vector components.
+	 */
+	static void DrawVector2ControlProperty(
+		glm::vec2& vector, const char* label, const char* tooltip = nullptr, f32 resetValue = 0.f,
+		f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
+	) {
+		BeginPropertyGrid(label, tooltip, false);
+
+		DrawVector2Control(vector, resetValue, min, max, format);
 
 		EndPropertyGrid();
 	}
@@ -858,6 +876,62 @@ namespace SW::GUI {
 		BeginPropertyGrid(label, tooltip, true);
 
 		ImGui::ColorEdit4("##Color", glm::value_ptr(vector), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreviewHalf);
+
+		EndPropertyGrid();
+	}
+
+	static void DrawVector2TableList(
+		std::vector<glm::vec2>& vector, const char* label, const char* tooltip = nullptr, const glm::vec2& defaultValue = { 0.f, 0.f }
+	) {
+		u64 pointsCount = vector.size();
+		u16 step = 1u;
+
+		BeginPropertyGrid("Count", "Amount of max elements in a list", true);
+		ImGui::InputScalar("##Count", ImGuiDataType_U64, &pointsCount, &step);
+		EndPropertyGrid();
+
+		if (pointsCount > vector.size()) {
+			vector.push_back({ 0.f, 0.f });
+		} else if (pointsCount < vector.size()) {
+			vector.pop_back();
+		}
+
+		BeginPropertyGrid(label, tooltip, true);
+
+		static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
+
+		int removeAt = -1;
+
+		if (ImGui::BeginTable("##list", 2, flags)) {
+			int row = 0;
+			for (glm::vec2& vec : vector) {
+				ImGui::TableNextRow();
+				ImGui::TableNextColumn();
+
+				std::string id = "##list_element" + row;
+
+				ImGui::PushID(id.c_str());
+				DrawVector2Control(vec);
+				ImGui::PopID();
+
+				ImGui::TableNextColumn();
+
+				std::string bid = "##list_button_element" + row;
+
+				ImGui::PushID(bid.c_str());
+				if (ImGui::Button("X", { 25.f, 25.f })) {
+					removeAt = row;
+				}
+				ImGui::PopID();
+
+				row++;
+			}
+
+			ImGui::EndTable();
+		}
+
+		if (removeAt > -1)
+			vector.erase(vector.begin() + removeAt);
 
 		EndPropertyGrid();
 	}

@@ -158,6 +158,36 @@ namespace SW {
 					}
 				}
 
+				// Polygon Colliders Visualization
+				{
+					for (auto&& [handle, pcc] : m_ActiveScene->GetRegistry().GetEntitiesWith<PolygonCollider2DComponent>().each()) {
+						Entity entity = { handle, m_ActiveScene };
+
+						glm::mat4 transform = entity.GetWorldSpaceTransformMatrix();
+
+						glm::vec3 translation = glm::vec3(0.0f);
+						glm::vec3 rotation = glm::vec3(0.0f);
+						glm::vec3 scale = glm::vec3(0.0f);
+
+						Math::DecomposeTransform(transform, translation, rotation, scale);
+
+						transform = glm::translate(glm::mat4(1.0f), translation) * glm::toMat4(glm::quat(rotation));
+
+						if (m_ActiveScene->GetCurrentState() == SceneState::Play) { // TODO: Investigate this visualization offset difference between play/edit state
+							transform *= glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, 0.001f));
+						} else {
+							transform *= glm::translate(glm::mat4(1.0f), glm::vec3(pcc.Offset.x, pcc.Offset.y, 0.001f));
+						}
+
+						for (u64 i = 0; i < pcc.Vertices.size(); ++i) {
+							const glm::vec4 p0 = transform * glm::vec4(pcc.Vertices[i], 0.0f, 1.0f);
+							const glm::vec4 p1 = transform * glm::vec4(pcc.Vertices[(i + 1) % pcc.Vertices.size()], 0.0f, 1.0f);
+
+							Renderer2D::DrawLine(p0, p1, glm::vec4(1, 1, 0, 1));
+						}
+					}
+				}
+
 				// Distance Joint Visualization
 				{
 					for (auto&& [handle, djc] : m_ActiveScene->GetRegistry().GetEntitiesWith<DistanceJoint2DComponent>().each()) {

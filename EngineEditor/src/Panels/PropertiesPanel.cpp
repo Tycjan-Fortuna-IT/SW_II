@@ -32,6 +32,7 @@ namespace SW {
 		AddComponentName<RigidBody2DComponent>(SW_ICON_SOCCER "  Rigid Body 2D");
 		AddComponentName<BoxCollider2DComponent>(SW_ICON_CHECKBOX_BLANK_OUTLINE "  Box Collider 2D");
 		AddComponentName<CircleCollider2DComponent>(SW_ICON_CHECKBOX_BLANK_CIRCLE_OUTLINE "  Circle Collider 2D");
+		AddComponentName<PolygonCollider2DComponent>(SW_ICON_VECTOR_POLYGON " Polygon Collider 2D");
 		AddComponentName<BuoyancyEffector2DComponent>(SW_ICON_WATER "  Buoyancy Effector 2D");
 		
 		AddComponentName<DistanceJoint2DComponent>(SW_ICON_VECTOR_LINE "  Distance Joint 2D");
@@ -207,6 +208,15 @@ namespace SW {
 				GUI::EndProperties();
 			}, true);
 
+			DrawComponent<PolygonCollider2DComponent>(entity, [](PolygonCollider2DComponent& component) {
+				GUI::BeginProperties("##polygon_collider_2d_property");
+				GUI::DrawVector2TableList(component.Vertices, "Edges", "List of all of the edges of the polygon collider (minimum 3 edges!)");
+				GUI::DrawVector2ControlProperty(component.Offset, "Offset");
+				GUI::DrawFloatingPointProperty(component.Density, "Density", nullptr, 0.f);
+				GUI::DrawBooleanProperty(component.IsSensor, "Is Sensor?", "Whether to react to the collision or just sense it.");
+				GUI::EndProperties();
+			}, true);
+
 			DrawComponent<BuoyancyEffector2DComponent>(entity, [](BuoyancyEffector2DComponent& component) {
 				GUI::BeginProperties("##buoancy_effector_2d_property");
 				GUI::DrawFloatingPointProperty(component.DragMultiplier, "Drag Multiplier");
@@ -364,6 +374,14 @@ namespace SW {
 			if (!entity.HasComponent<CircleCollider2DComponent>()) {
 				if (ImGui::MenuItemEx("Circle Collider 2D", SW_ICON_CHECKBOX_BLANK_CIRCLE_OUTLINE)) {
 					entity.AddComponent<CircleCollider2DComponent>();
+
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			if (!entity.HasComponent<PolygonCollider2DComponent>()) {
+				if (ImGui::MenuItemEx("Polygon Collider 2D", SW_ICON_VECTOR_POLYGON)) {
+					entity.AddComponent<PolygonCollider2DComponent>();
 
 					ImGui::CloseCurrentPopup();
 				}

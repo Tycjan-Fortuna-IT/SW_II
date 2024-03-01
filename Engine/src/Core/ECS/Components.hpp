@@ -246,6 +246,24 @@ namespace SW {
 	};
 
 	/**
+	 * @struct PolygonCollider2DComponent
+	 * @brief This component is used to store the polygon collider data.
+	 * @note This component is optional.
+	 */
+	struct PolygonCollider2DComponent final
+	{
+		void* Handle = nullptr;		/**< Internal box2D physics polygon collider handle */
+
+		std::vector<glm::vec2> Vertices = { { 0.0f, 0.0f }, { 1.0, 0.0f }, { 0.0f, 1.0f } };	/**< Vertices of the polygon collider */
+
+		glm::vec2 Offset = { 0.0f, 0.0f };	/**< Offset of the collider (from center) */
+
+		f32 Density = 1.f;			/**< The density of the rigid body [kg/m^2]. */
+
+		bool IsSensor = false;      /**< A sensor shape collects contact information but never generates a collision */
+	};
+
+	/**
 	 * @struct BuoyancyEffector2DComponent
 	 * @brief This component is used to store the buoyancy effector data.
 	 * @note This component is optional.

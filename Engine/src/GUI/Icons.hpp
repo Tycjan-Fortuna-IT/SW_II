@@ -56,3 +56,4 @@
 #define SW_ICON_VIEW_AGENDA u8"\uF56A"
 #define SW_ICON_ARROW_EXPAND u8"\uF616"
 #define SW_ICON_CAR u8"\uF10B"
+#define SW_ICON_VECTOR_POLYGON u8"\uF560"

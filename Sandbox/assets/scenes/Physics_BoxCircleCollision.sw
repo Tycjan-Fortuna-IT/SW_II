@@ -83,6 +83,37 @@ Entities:
         IsSensor: false
   - Entity:
       IDComponent:
+        ID: 4499220385569592757
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [0.851515889, 1.27003479, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2.9000001, 2.54999995, 1]
+      SpriteComponent:
+        Color: [1, 1, 1, 1]
+        TexturePath: assets\textures\Triangle.png
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 2
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        AllowSleep: true
+      PolygonCollider2DComponent:
+        Vertices:
+          0: [-0.600000024, -0.699999988]
+          1: [0.600000024, -0.699999988]
+          2: [0, 1]
+        VerticesCount: 3
+        Offset: [0, 0]
+        Density: 1
+        IsSensor: false
+  - Entity:
+      IDComponent:
         ID: 5003693789910574394
       TagComponent:
         Tag: Light Blue Falling Circle

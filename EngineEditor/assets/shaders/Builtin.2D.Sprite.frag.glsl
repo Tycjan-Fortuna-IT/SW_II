@@ -15,7 +15,12 @@ void main()
 {
     int textureIndex = int(v_TexIndex);
 
-    o_Color = texture(u_Textures[textureIndex], v_TexCoord * v_TilingFactor) * v_Color;
+    vec4 texCol = texture(u_Textures[textureIndex], v_TexCoord * v_TilingFactor) * v_Color;
+
+    if (texCol.a == 0.0)
+		discard;
+
+    o_Color = texCol;
 
     o_EntityID = v_EntityID;
 }

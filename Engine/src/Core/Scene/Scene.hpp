@@ -215,6 +215,16 @@ namespace SW {
 		 * @param ccc The circle collider component to be created.
 		 */
 		void CreateCircleCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, CircleCollider2DComponent& ccc);
+
+		/**
+		 * @brief Creates a polygon collider for a given entity.
+		 *
+		 * @param entity The entity for which to create the polygon collider.
+		 * @param tc The transform component of the entity.
+		 * @param rbc The rigid body component of the entity.
+		 * @param ccc The polygon collider component to be created.
+		 */
+		void CreatePolygonCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, PolygonCollider2DComponent& pcc);
 	
 		/**
 		 * @brief Creates a distance joint between an entity and a rigid body component.
