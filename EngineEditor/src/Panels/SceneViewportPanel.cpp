@@ -12,6 +12,7 @@
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Project/Project.hpp"
+#include "Core/OpenGL/Font.hpp"
 
 namespace SW {
 
@@ -322,6 +323,14 @@ namespace SW {
 					}
 				}
 			}
+
+			Font* atlasFont1 = AssetManager::GetFont("C:\\Users\\tycja\\Desktop\\SW_II\\Sandbox\\assets\\fonts\\OpenSans-Regular.ttf");
+			Font* atlasFont2 = AssetManager::GetFont("C:\\Users\\tycja\\Desktop\\SW_II\\Sandbox\\assets\\fonts\\CascadiaMono.ttf");
+			glm::mat4 test1 = glm::translate(glm::mat4(1.0f), glm::vec3(0.f));
+			glm::mat4 test2 = glm::translate(glm::mat4(1.0f), glm::vec3(1.f));
+
+			Renderer2D::DrawString("Just test \n text!?!@#", atlasFont1, test1, glm::vec4(1.f, 0.5f, 0.f, 1.f));
+			Renderer2D::DrawString("Just test \n text!?!@#", atlasFont2, test2, glm::vec4(1.f, 0.5f, 0.f, 1.f));
 
 			m_ActiveScene->EndRendering();
 		}

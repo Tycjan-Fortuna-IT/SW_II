@@ -13,6 +13,8 @@
 
 namespace SW {
 
+	class Texture2D;
+
 	/**
 	 * @brief Struct representing the data required for Multi-channel Signed Distance Field (MSDF) rendering.
 	 */
