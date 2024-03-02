@@ -43,6 +43,31 @@ namespace SW {
 		LoadTextureData(texturePath.string().c_str(), flipped);
 	}
 
+	Texture2D::Texture2D(const TextureSpecification& spec)
+	{
+		switch (spec.Format) {
+			case ImageFormat::RGB8: {
+				m_DataFormat = GL_RGB; m_InternalFormat = GL_RGB8; break;
+			}
+			case ImageFormat::RGBA8: {
+				m_DataFormat = GL_RGBA; m_InternalFormat = GL_RGBA8; break;
+			}
+		}
+
+		m_Width = spec.Width;
+		m_Height = spec.Height;
+		m_Channels = 0;
+
+		glCreateTextures(GL_TEXTURE_2D, 1, &m_Handle);
+		glTextureStorage2D(m_Handle, 1, m_InternalFormat, m_Width, m_Height);
+
+		glTextureParameteri(m_Handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(m_Handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glTextureParameteri(m_Handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(m_Handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	}
+
 	Texture2D::~Texture2D()
 	{
 		glDeleteTextures(1, &m_Handle);

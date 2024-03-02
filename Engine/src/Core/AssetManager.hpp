@@ -1,8 +1,8 @@
 /**
  * @file AssetManager.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.1
- * @date 2024-01-24
+ * @version 0.1.1
+ * @date 2024-02-03
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -63,6 +63,12 @@ namespace SW {
 		 */
 		static Texture2D* GetEditorTexture2D(const char* path);
 
+		/**
+		 * Retrieves a font from the specified path.
+		 *
+		 * @param path The path to the font file.
+		 * @return A pointer to the Font object if the font is found, nullptr otherwise.
+		 */
 		static Font* GetFont(const char* path);
 	};
 

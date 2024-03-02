@@ -1,14 +1,34 @@
 /**
  * @file Texture2D.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.3
- * @date 2024-01-25
+ * @version 0.1.4
+ * @date 2024-02-03
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
 #pragma once
 
 namespace SW {
+
+	/**
+	 * @brief Represents the format of an image.
+	 */
+	enum class ImageFormat
+	{
+		None = 0, /**< No format specified */
+		RGB8, /**< RGB format with 8 bits per channel */
+		RGBA8 /**< RGBA format with 8 bits per channel */
+	};
+
+	/**
+	 * @brief Represents the specification of a 2D texture.
+	 */
+	struct TextureSpecification final
+	{
+		u32 Width = 1; /**< The width of the texture */
+		u32 Height = 1; /**< The height of the texture */
+		ImageFormat Format = ImageFormat::RGBA8; /**< The format of the texture */
+	};
 
 	/**
 	 * @brief 2D texture class
@@ -39,6 +59,8 @@ namespace SW {
 		 * @param height Height of the texture
 		 */
 		Texture2D(u32 width, u32 height);
+
+		Texture2D(const TextureSpecification& spec);
 
 		/**
 		 * @brief Destroy the Texture 2D

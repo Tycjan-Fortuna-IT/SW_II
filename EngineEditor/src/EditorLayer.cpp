@@ -18,10 +18,6 @@ namespace SW {
 
 	void EditorLayer::OnAttach()
 	{
-		m_SpriteShader = new Shader("assets/shaders/Builtin.2D.Sprite.vert.glsl", "assets/shaders/Builtin.2D.Sprite.frag.glsl");
-		m_LineShader = new Shader("assets/shaders/Builtin.2D.Line.vert.glsl", "assets/shaders/Builtin.2D.Line.frag.glsl");
-		m_CircleShader = new Shader("assets/shaders/Builtin.2D.Circle.vert.glsl", "assets/shaders/Builtin.2D.Circle.frag.glsl");
-
 		m_IconTexture = AssetManager::GetEditorTexture2D("assets/icons/SW_Icon.png");
 		m_CloseIconTexture = AssetManager::GetEditorTexture2D("assets/icons/editor/windows/Close.png");
 		m_MaximizeIconTexture = AssetManager::GetEditorTexture2D("assets/icons/editor/windows/Maximize.png");
@@ -52,7 +48,7 @@ namespace SW {
 
 		Application::Get()->GetWindow()->SetVSync(true);
 
-		Renderer2D::Initialize(m_SpriteShader, m_LineShader, m_CircleShader);
+		Renderer2D::Initialize();
 	}
 
 	void EditorLayer::OnDetach()
@@ -62,10 +58,6 @@ namespace SW {
 		}
 
 		Renderer2D::Shutdown();
-
-		delete m_SpriteShader;
-		delete m_LineShader;
-		delete m_CircleShader;
 	}
 
 	void EditorLayer::OnUpdate(Timestep dt)
