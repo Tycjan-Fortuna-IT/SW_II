@@ -567,7 +567,7 @@ namespace SW {
 			mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y
 		) {
 			int pickedID = m_Framebuffer->ReadPixel(1, (int)mouseX, (int)mouseY);
-			
+
 			if (pickedID != -1) {
 				const IDComponent& idc = m_ActiveScene->GetRegistry().GetRegistryHandle().get<IDComponent>((entt::entity)pickedID);
 				
