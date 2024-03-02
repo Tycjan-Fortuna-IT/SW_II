@@ -138,11 +138,12 @@ namespace SW {
 					for (auto&& [handle, bcc] : m_ActiveScene->GetRegistry().GetEntitiesWith<BoxCollider2DComponent>().each()) {
 						Entity entity = { handle, m_ActiveScene };
 
-						TransformComponent transform = entity.GetWorldSpaceTransform();
-						transform.Position += glm::vec3(bcc.Offset.x, bcc.Offset.y, 0.001f);
-						transform.Scale *= glm::vec3(bcc.Size.x * 2.0f, bcc.Size.y * 2.0f, 1.0f);
+						glm::mat4 transform = entity.GetWorldSpaceTransformMatrix();
 
-						Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(1, 1, 0, 1));
+						transform *= glm::translate(glm::mat4(1.0f), glm::vec3(bcc.Offset, 0.0f)) 
+							* glm::scale(glm::mat4(1.0f), glm::vec3(2.0f * bcc.Size, 1.0f));
+
+						Renderer2D::DrawRect(transform, glm::vec4(1, 1, 0, 1));
 					}
 				}
 
@@ -323,14 +324,6 @@ namespace SW {
 					}
 				}
 			}
-
-			Font* atlasFont1 = AssetManager::GetFont("C:\\Users\\tycja\\Desktop\\SW_II\\Sandbox\\assets\\fonts\\OpenSans-Regular.ttf");
-			Font* atlasFont2 = AssetManager::GetFont("C:\\Users\\tycja\\Desktop\\SW_II\\Sandbox\\assets\\fonts\\CascadiaMono.ttf");
-			glm::mat4 test1 = glm::translate(glm::mat4(1.0f), glm::vec3(0.f));
-			glm::mat4 test2 = glm::translate(glm::mat4(1.0f), glm::vec3(1.f));
-
-			Renderer2D::DrawString("Just test \n text!?!@#", atlasFont1, test1, glm::vec4(1.f, 0.5f, 0.f, 1.f));
-			Renderer2D::DrawString("Just test \n text!?!@#", atlasFont2, test2, glm::vec4(1.f, 0.5f, 0.f, 1.f));
 
 			m_ActiveScene->EndRendering();
 		}

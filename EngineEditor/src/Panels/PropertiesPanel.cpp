@@ -24,9 +24,12 @@ namespace SW {
 		: Panel("Properties", SW_ICON_INFORMATION, true), m_SceneViewportPanel(sceneViewportPanel)
 	{
 		AddComponentName<TagComponent>(SW_ICON_TAG "  Tag");
+		
 		AddComponentName<TransformComponent>(SW_ICON_VECTOR_LINE "  Transform");
 		AddComponentName<SpriteComponent>(SW_ICON_IMAGE_SIZE_SELECT_ACTUAL "  Sprite");
 		AddComponentName<CircleComponent>(SW_ICON_CHECKBOX_BLANK_CIRCLE "  Circle");
+		AddComponentName<TextComponent>(SW_ICON_FORMAT_TEXT "  Text");
+		
 		AddComponentName<CameraComponent>(SW_ICON_CAMERA "  Camera");
 
 		AddComponentName<RigidBody2DComponent>(SW_ICON_SOCCER "  Rigid Body 2D");
@@ -164,6 +167,18 @@ namespace SW {
 				GUI::DrawVector4ColorPickerProperty(component.Color, "Color");
 				GUI::DrawFloatingPointProperty(component.Thickness, "Thickness", nullptr, 0.f);
 				GUI::DrawFloatingPointProperty(component.Fade, "Fade", nullptr, 0.f);
+				GUI::EndProperties();
+			}, true);
+
+			DrawComponent<TextComponent>(entity, [](TextComponent& component) {
+				GUI::BeginProperties("##text_property");
+				GUI::DrawFontDropdownProperty(&component.Font, "Font", "Font to be used");
+				if (component.Font) {
+					GUI::DrawMultilineTextInputProperty(component.TextString, "Text", "Text to display (max 500 characters)");
+					GUI::DrawVector4ColorPickerProperty(component.Color, "Color");
+					GUI::DrawFloatingPointProperty(component.Kerning, "Kerning", "The space between the characters", 0.f, 10.f);
+					GUI::DrawFloatingPointProperty(component.LineSpacing, "Line Spacing", "The space between the lines", 0.f, 10.f);
+				}
 				GUI::EndProperties();
 			}, true);
 
@@ -350,6 +365,14 @@ namespace SW {
 			if (!entity.HasComponent<CircleComponent>()) {
 				if (ImGui::MenuItemEx("Circle Component", SW_ICON_CHECKBOX_BLANK_CIRCLE)) {
 					entity.AddComponent<CircleComponent>();
+
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			if (!entity.HasComponent<TextComponent>()) {
+				if (ImGui::MenuItemEx("Text Component", SW_ICON_FORMAT_TEXT)) {
+					entity.AddComponent<TextComponent>();
 
 					ImGui::CloseCurrentPopup();
 				}

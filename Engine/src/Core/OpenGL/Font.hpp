@@ -33,9 +33,9 @@ namespace SW {
 	public:
 		/**
 		 * @brief Constructs a Font object from the specified font file path.
-		 * @param path The path to the font file.
+		 * @param filepath The path to the font file.
 		 */
-		Font(const char* path);
+		Font(const std::filesystem::path& filepath);
 
 		/**
 		 * @brief Destructor for the Font object.
@@ -54,9 +54,24 @@ namespace SW {
 		 */
 		Texture2D* GetAtlasTexture() const { return m_AtlasTexture; }
 
+		/**
+		 * @brief Gets the filename of the font file.
+		 * @return The filename of the font file.
+		 */
+		const std::string& GetFilename() const { return m_Filename; }
+
+		/**
+		 * @brief Gets the filepath of the font file.
+		 * @return The filepath of the font file.
+		 */
+		const std::string& GetPath() const { return m_Filepath; }
+
 	private:
-		MSDFData* m_Data; /**< Pointer to the MSDFData structure. */
-		Texture2D* m_AtlasTexture; /**< Pointer to the atlas texture. */
+		MSDFData* m_Data;			/**< Pointer to the MSDFData structure. */
+		Texture2D* m_AtlasTexture;  /**< Pointer to the atlas texture. */
+
+		std::string m_Filename;		/**< File name from which the texture was loaded. */
+		std::string m_Filepath;		/**< Filepath from which the texture was loaded. */
 	};
 
 }

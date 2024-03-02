@@ -1,17 +1,25 @@
 #include "Font.hpp"
 
 #include "Core/OpenGL/Texture2D.hpp"
+#include "Core/Project/ProjectContext.hpp"
+#include "Core/Project/Project.hpp"
 
 namespace SW {
 
-	Font::Font(const char* path)
+	Font::Font(const std::filesystem::path& filepath)
 		: m_Data(new MSDFData())
 	{
+		std::filesystem::path texturePath = ProjectContext::Get()->GetAssetDirectory() / filepath;
+
+		m_Filepath = filepath.string();
+		m_Filename = filepath.filename().string();
+
+		std::string path = texturePath.string();
 		msdfgen::FreetypeHandle* ft = msdfgen::initializeFreetype();
 
 		ASSERT(ft, "MSDFGEN failed to initialize");
 
-		msdfgen::FontHandle* font = msdfgen::loadFont(ft, path);
+		msdfgen::FontHandle* font = msdfgen::loadFont(ft, path.c_str());
 
 		std::string filePath = path;
 		std::string error = "Failed to load the font: ";

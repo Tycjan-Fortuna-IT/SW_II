@@ -256,6 +256,13 @@ namespace SW {
 					ImGui::CloseCurrentPopup();
 				}
 
+				if (ImGui::MenuItemEx("Text", SW_ICON_FORMAT_TEXT)) {
+					Entity entity = scene->CreateEntity("Text");
+					entity.AddComponent<TextComponent>();
+
+					ImGui::CloseCurrentPopup();
+				}
+
 				if (ImGui::MenuItemEx("Box Collider", SW_ICON_CHECKBOX_BLANK_OUTLINE)) {
 					Entity entity = scene->CreateEntity("Box Collider");
 					entity.AddComponent<SpriteComponent>();

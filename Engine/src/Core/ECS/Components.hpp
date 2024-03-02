@@ -2,7 +2,7 @@
  * @file Components.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
  * @version 0.1.5
- * @date 2024-02-29
+ * @date 2024-03-02
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -151,14 +151,14 @@ namespace SW {
 	 */
 	struct TextComponent final
 	{
-		std::string TextString;
+		std::string TextString = "Empty";	/**< Text to be rendered. */
 
-		Font* Font = nullptr;
+		Font* Font = nullptr;				/**< Font of the text, can be nullptr! */
 
-		glm::vec4 Color = glm::vec4(1.0f);
+		glm::vec4 Color = glm::vec4(1.0f);	/**< Color of the text. */
 
-		f32 Kerning = 0.0f;
-		f32 LineSpacing = 0.0f;
+		f32 Kerning = 0.0f;			/**< Kerning of the text. */
+		f32 LineSpacing = 0.0f;		/**< Line spacing of the text. */
 	};
 
 	/**

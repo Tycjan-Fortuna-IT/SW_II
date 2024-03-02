@@ -1,8 +1,8 @@
 ﻿/**
  * @file GUI.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.2.2
- * @date 2024-03-01
+ * @version 0.2.3
+ * @date 2024-03-02
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -15,6 +15,7 @@
 #include "Appearance.hpp"
 #include "Core/AssetManager.hpp"
 #include "Core/ECS/Entity.hpp"
+#include "Core/OpenGL/Font.hpp"
 
 namespace SW::GUI {
 
@@ -23,8 +24,7 @@ namespace SW::GUI {
 	 *		  so that we easily can avoid many calls to Push/Pop StyleVar.
 	 *		  This way more advanced UI code doesn't get so clustered.
 	 */
-	class ScopedStyle final
-	{
+	class ScopedStyle final {
 	public:
 		ScopedStyle(const ScopedStyle&) = delete;
 		ScopedStyle(const ScopedStyle&&) = delete;
@@ -42,8 +42,7 @@ namespace SW::GUI {
 	 *		  so that we easily can avoid many calls to Push/Pop StyleColor.
 	 *		  This way more advanced UI code doesn't get so clustered.
 	 */
-	class ScopedColor final
-	{
+	class ScopedColor final {
 	public:
 		ScopedColor(const ScopedColor&) = delete;
 		ScopedColor(const ScopedColor&&) = delete;
@@ -61,8 +60,7 @@ namespace SW::GUI {
 	 *		  so that we easily can avoid many calls to Push/Pop Font.
 	 *		  This way more advanced UI code doesn't get so clustered.
 	 */
-	class ScopedFont final
-	{
+	class ScopedFont final {
 	public:
 		ScopedFont(const ScopedFont&) = delete;
 		ScopedFont(const ScopedFont&&) = delete;
@@ -79,8 +77,7 @@ namespace SW::GUI {
 	 *		  so that we easily can avoid many calls to Push/Pop ID.
 	 *		  This way more advanced UI code doesn't get so clustered.
 	 */
-	class ScopedID final
-	{
+	class ScopedID final {
 	public:
 		ScopedID(const ScopedID&) = delete;
 		ScopedID(const ScopedID&&) = delete;
@@ -96,22 +93,21 @@ namespace SW::GUI {
 	/**
 	 * @brief Utility helper class to create a fast search input field.
 	 */
-	class TextFilter final
-	{
+	class TextFilter final {
 	public:
 		TextFilter() = default;
 		~TextFilter() = default;
 
 		/**
 		 * @brief Whether the user has typed anything into the search field.
-		 * 
+		 *
 		 * @return true If the user has typed anything into the search field.
 		 */
 		bool IsDirty() const { return m_Buffer[0] != '\0'; }
 
 		/**
 		 * @brief Draws the search field.
-		 * 
+		 *
 		 * @param label The label to display next to the search field.
 		 * @param padding The padding to apply to the search field.
 		 */
@@ -127,7 +123,7 @@ namespace SW::GUI {
 		 * @brief Checks if the given string passes the filter.
 		 * @note Only a partial match is required for the string to pass the filter.
 		 * 		 We don't require a full match from the beginning of the string.
-		 * 
+		 *
 		 * @param check The string to check.
 		 * @return true If the string passes the filter.
 		 */
@@ -149,9 +145,9 @@ namespace SW::GUI {
 	/**
 	 * @brief Casts Texture2D to ImTextureID so that it can be used in ImGui
 	 * @note This is a workaround for the warning C4312: 'reinterpret_cast': conversion from 'u32' to 'ImTextureID' of greater size
-	 * 
+	 *
 	 * @param texture Texture2D
-	 * @return ImTextureID 
+	 * @return ImTextureID
 	 */
 	static ImTextureID GetTextureID(const Texture2D& texture)
 	{
@@ -161,9 +157,9 @@ namespace SW::GUI {
 	/**
 	 * @brief Casts Texture2D to ImTextureID so that it can be used in ImGui
 	 * @note This is a workaround for the warning C4312: 'reinterpret_cast': conversion from 'u32' to 'ImTextureID' of greater size
-	 * 
+	 *
 	 * @param texture Texture2D
-	 * @return ImTextureID 
+	 * @return ImTextureID
 	 */
 	static ImTextureID GetTextureID(const Texture2D* texture)
 	{
@@ -173,9 +169,9 @@ namespace SW::GUI {
 	/**
 	 * @brief Casts u32 to ImTextureID so that it can be used in ImGui
 	 * @note This is a workaround for the warning C4312: 'reinterpret_cast': conversion from 'u32' to 'ImTextureID' of greater size
-	 * 
+	 *
 	 * @param rendererID u32
-	 * @return ImTextureID 
+	 * @return ImTextureID
 	 */
 	static ImTextureID GetTextureID(u32 rendererID)
 	{
@@ -196,8 +192,8 @@ namespace SW::GUI {
 
 	/**
 	 * @brief Get the rectangle that the current item occupies.
-	 * 
-	 * @return ImRect 
+	 *
+	 * @return ImRect
 	 */
 	static ImRect GetItemRect()
 	{
@@ -206,7 +202,7 @@ namespace SW::GUI {
 
 	/**
 	 * @brief Expands the rectangle by the given amount.
-	 * 
+	 *
 	 * @param rect The rectangle to expand.
 	 * @param x X-axis amount to expand by.
 	 * @param y Y-axis amount to expand by.
@@ -225,7 +221,7 @@ namespace SW::GUI {
 
 	/**
 	 * @brief Creates a new rectangle by offsetting an existing rectangle by a certain amount.
-	 * 
+	 *
 	 * @param rect The original rectangle to offset.
 	 * @param x The amount to offset the rectangle in the x direction.
 	 * @param y The amount to offset the rectangle in the y direction.
@@ -244,7 +240,7 @@ namespace SW::GUI {
 
 	/**
 	 * @brief Moves the mouse cursor to the specified position on the x-axis.
-	 * 
+	 *
 	 * @param x The x position to move the mouse cursor to.
 	 */
 	static void MoveMousePosX(f32 x)
@@ -254,7 +250,7 @@ namespace SW::GUI {
 
 	/**
 	 * @brief Moves the mouse cursor to the specified position on the y-axis.
-	 * 
+	 *
 	 * @param y The y position to move the mouse cursor to.
 	 */
 	static void MoveMousePosY(f32 y)
@@ -264,7 +260,7 @@ namespace SW::GUI {
 
 	/**
 	 * @brief Draws a border around the specified rectangle.
-	 * 
+	 *
 	 * @param rect The rectangle to draw a border around.
 	 * @param thickness The thickness of the border.
 	 * @param rounding The rounding of the border.
@@ -361,7 +357,8 @@ namespace SW::GUI {
 			ImGui::PushStyleColor(ImGuiCol_Button, color);
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, color);
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, color);
-		} else {
+		}
+		else {
 			ImVec4 color = ImGui::GetStyle().Colors[ImGuiCol_Button];
 			ImVec4 hoveredColor = ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered];
 			color.w = alpha;
@@ -381,7 +378,7 @@ namespace SW::GUI {
 
 	/**
 	 * @brief Displays a nice modifiable 3 sliders for a Vector3.
-	 * 
+	 *
 	 * @param vec The vector to display.
 	 * @param label The label to display next to the vector.
 	 * @param resetValue The value to reset the vector to when the reset button is pressed.
@@ -391,7 +388,7 @@ namespace SW::GUI {
 	 * @param format The format to use when displaying the vector values.
 	 */
 	static void DisplayVector3Slider(
-		glm::vec3& vec, const std::string& label, f32 resetValue, 
+		glm::vec3& vec, const std::string& label, f32 resetValue,
 		f32 labelWidth = 80.0f, f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.3f"
 	) {
 		ImGui::PushID(label.c_str());
@@ -440,7 +437,7 @@ namespace SW::GUI {
 
 	/**
 	 * @brief Displays a nice color picker for a Vector4.
-	 * 
+	 *
 	 * @param color The color to display.
 	 * @param label The label to display next to the color.
 	 */
@@ -469,9 +466,9 @@ namespace SW::GUI {
 	 *		  menu bar until EndMenuBar() is called. The menu bar is defined by the provided rectangle, which specifies its position
 	 *		  and size. The top-left corner of the rectangle is the top-left corner of the menu bar, and the width and height of the
 	 *		  rectangle define the size of the menu bar. This function returns a boolean value indicating whether the menu bar is
-	 *		  currently open. 
+	 *		  currently open.
 	 * @warning This function must always be paired with a call to EndMenuBar(). Failure to do so will result in undefined behavior.
-	 * 
+	 *
 	 * @param barRectangle The rectangle defining the position and size of the menu bar.
 	 * @return bool True if the menu bar is open and ready for items to be added, false otherwise.
 	 */
@@ -493,11 +490,11 @@ namespace SW::GUI {
 			IM_ROUND(
 				ImMax(window->Pos.x, bar.Min.x + window->WindowBorderSize + window->Pos.x - 10.0f)),
 				IM_ROUND(bar.Min.y + window->WindowBorderSize + window->Pos.y
-			),
+				),
 			IM_ROUND(ImMax(
 				bar.Min.x + window->Pos.x, bar.Max.x - ImMax(window->WindowRounding, window->WindowBorderSize))),
 				IM_ROUND(bar.Max.y + window->Pos.y
-			)
+				)
 		);
 
 		clip.ClipWith(window->OuterRectClipped);
@@ -575,7 +572,7 @@ namespace SW::GUI {
 	/**
 	 * Begins a table for displaying properties in the GUI.
 	 * @warning This function must always be paired with a call to EndProperties(). Failure to do so will result in undefined behavior.
-	 * 
+	 *
 	 * @param name The name of the table.
 	 * @param flags The flags to customize the table's behavior (optional).
 	 */
@@ -639,12 +636,12 @@ namespace SW::GUI {
 
 	/**
 	 * @brief Draws a single line text input property in the GUI.
-	 * 
+	 *
 	 * This function is used to draw a single line text input property in the GUI.
 	 * It takes a reference to a string, a label, and an optional tooltip as parameters.
 	 * The text input field is displayed with the specified label and tooltip.
 	 * The text entered by the user is stored in the provided string reference.
-	 * 
+	 *
 	 * @tparam N The size of the buffer used to store the text input.
 	 * @param text The reference to the string where the entered text will be stored.
 	 * @param label The label to display for the text input field.
@@ -786,7 +783,7 @@ namespace SW::GUI {
 		BeginPropertyGrid(label, tooltip, false);
 
 		ImGuiIO& io = ImGui::GetIO();
-		
+
 		ImFont* boldFont = GUI::Appearance::GetFonts().DefaultBoldFont;
 
 		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth() + ImGui::GetStyle().ItemSpacing.x - 4.f);
@@ -892,7 +889,8 @@ namespace SW::GUI {
 
 		if (pointsCount > vector.size()) {
 			vector.push_back({ 0.f, 0.f });
-		} else if (pointsCount < vector.size()) {
+		}
+		else if (pointsCount < vector.size()) {
 			vector.pop_back();
 		}
 
@@ -970,13 +968,13 @@ namespace SW::GUI {
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyle().Colors[ImGuiCol_Button]);
 
 		ImGui::Button("##entity_dropdown_property", region);
-		
+
 		ImGui::PopStyleColor();
-		
+
 		if (ImGui::BeginDragDropTarget()) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity")) {
 				Entity* payloadEntity = static_cast<Entity*>(payload->Data);
-				
+
 				ID = payloadEntity->GetID();
 			}
 			ImGui::EndDragDropTarget();
@@ -1011,11 +1009,104 @@ namespace SW::GUI {
 	}
 
 	/**
-	 * @brief Draws a texture property in the GUI.
+	 * @brief Draws a font dropdown property in the GUI.
 	 * 
+	 * @param font A pointer to a Font object representing the selected font. This pointer will be updated with the user's selection.
+	 * @param label The label to display for the font dropdown property.
+	 * @param tooltip An optional tooltip to display for the font dropdown property.
+	 */
+	static void DrawFontDropdownProperty(
+		Font** font, const char* label, const char* tooltip = nullptr
+	) {
+		std::string tag = "none";
+
+		if (*font)
+			tag = (*font)->GetFilename();
+
+		BeginPropertyGrid(label, tooltip, true);
+
+		ImVec2 region = ImGui::GetContentRegionAvail();
+		region.x -= 20.0f;
+		region.y = ImGui::GetFrameHeight();
+
+		ImVec2 pos = ImGui::GetCursorPos();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyle().Colors[ImGuiCol_Button]);
+
+		ImGui::Button("##font_dropdown_property", region);
+
+		ImGui::PopStyleColor();
+
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Font")) {
+				*font = AssetManager::GetFont(static_cast<char*>(payload->Data));
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		ImGui::SameLine();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.3f, 0.3f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+
+		if (ImGui::Button("x", { 20.0f, region.y })) {
+			*font = nullptr;
+		}
+
+		ImGui::PopStyleColor(3);
+		ImGui::PopStyleVar();
+
+		if (*font) {
+			ImVec4 selectedColor = GUI::Colors::Darken(ImVec4(0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f), 0.05f);
+			ImGui::PushStyleColor(ImGuiCol_Text, selectedColor);
+		}
+
+		ImVec2 padding = ImGui::GetStyle().FramePadding;
+		ImGui::SetCursorPos({ pos.x + padding.x, pos.y + padding.y });
+		ImGui::Text("%s", tag.c_str());
+
+		if (*font)
+			ImGui::PopStyleColor();
+
+		EndPropertyGrid();
+	}
+
+	/**
+	 * Draws a multiline text input property in the GUI.
+	 *
+	 * This function allows the user to input and edit multiline text in the GUI.
+	 * The text input is displayed as a property grid with a label and an optional tooltip.
+	 *
+	 * @param text The reference to the string variable that will store the input text.
+	 * @param label The label to display for the text input property.
+	 * @param tooltip An optional tooltip to display for the text input property.
+	 * @tparam N The maximum size of the input buffer. Defaults to 500.
+	 */
+	template <int N = 500>
+	static void DrawMultilineTextInputProperty(
+		std::string& text, const char* label, const char* tooltip = nullptr
+	) {
+		BeginPropertyGrid(label, tooltip, false);
+
+		char buffer[N];
+
+		memcpy(buffer, text.c_str(), std::min(sizeof(buffer), text.size() + 1));
+
+		if (ImGui::InputTextMultiline("##multiline_text_input", buffer, sizeof(buffer))) {
+			text = buffer;
+		}
+
+		EndPropertyGrid();
+	}
+
+	/**
+	 * @brief Draws a texture property in the GUI.
+	 *
 	 * This function displays a texture property in the GUI, allowing the user to select a texture from the content browser.
 	 * The selected texture is assigned to the provided texture pointer.
-	 * 
+	 *
 	 * @param texture A pointer to a pointer to a Texture2D object. This is the texture property to be displayed and modified.
 	 * @param label The label to be displayed for the texture property.
 	 * @param tooltip (optional) The tooltip to be displayed when hovering over the texture property.
@@ -1092,7 +1183,7 @@ namespace SW::GUI {
 		BeginPropertyGrid(label, tooltip);
 
 		GUI::MoveMousePosX(ImGui::GetColumnWidth() / 2.0f - ImGui::GetStyle().FramePadding.x - 15.f);
-		
+
 		changed = ImGui::Checkbox("##property_checkbox", &value);
 
 		EndPropertyGrid();
@@ -1102,7 +1193,7 @@ namespace SW::GUI {
 
 	/**
 	 * @brief Draws a readonly text property in the property grid.
-	 * 
+	 *
 	 * @param value The value to display as text.
 	 * @param label The label for the property.
 	 * @param tooltip (optional) The tooltip for the property.
@@ -1118,9 +1209,9 @@ namespace SW::GUI {
 
 	/**
 	 * @brief Draws an integral property in the GUI.
-	 * 
+	 *
 	 * This function is used to draw an integral property in the GUI using ImGui. It provides a slider or a drag input depending on the range of values specified.
-	 * 
+	 *
 	 * @tparam T The integral type of the property.
 	 * @param value The reference to the integral property value.
 	 * @param label The label for the property.
@@ -1145,7 +1236,8 @@ namespace SW::GUI {
 				dataType = ImGuiDataType_S32;
 			else if constexpr (sizeof(T) == 8)
 				dataType = ImGuiDataType_S64;
-		} else {
+		}
+		else {
 			if constexpr (sizeof(T) == 1)
 				dataType = ImGuiDataType_U8;
 			else if constexpr (sizeof(T) == 2)
@@ -1183,11 +1275,11 @@ namespace SW::GUI {
 		T& value, const char* label, const char* tooltip = nullptr, T min = 0, T max = 0, f32 delta = 0.1f, const char* format = "%.3f"
 	) {
 		BeginPropertyGrid(label, tooltip);
-		
+
 		int dataType = ImGuiDataType_Float;
 
 		if constexpr (sizeof(T) == 8)
-			dataType = ImGuiDataType_Double;			
+			dataType = ImGuiDataType_Double;
 
 		if (max > min)
 			ImGui::SliderScalar("##property_f32ing_point", dataType, &value, &min, &max, format);
@@ -1199,25 +1291,24 @@ namespace SW::GUI {
 
 	/**
 	 * @brief A struct representing a selectable option.
-	 * 
+	 *
 	 * This struct is used to define an option that can be selected in a GUI.
 	 * It contains a label and a value of type T.
-	 * 
+	 *
 	 * @tparam T The type of the value associated with the option.
 	 */
 	template <typename T>
-	struct SelectOption final
-	{
+	struct SelectOption final {
 		std::string Label = "No label";
 		T value = 0;
 	};
 
 	/**
 	 * @brief Draws a selectable property in the GUI.
-	 * 
+	 *
 	 * This function displays a selectable property in the GUI, allowing the user to choose from a list of options.
 	 * The selected value is stored in the provided reference variable.
-	 * 
+	 *
 	 * @tparam T The type of the property value.
 	 * @param value The reference to the property value.
 	 * @param options The list of selectable options.

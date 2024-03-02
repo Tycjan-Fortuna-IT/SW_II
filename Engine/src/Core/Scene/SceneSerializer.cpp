@@ -141,6 +141,7 @@ namespace SW {
 			output << YAML::EndMap;
 
 			const TransformComponent& tc = entity.GetComponent<TransformComponent>();
+
 			output << YAML::Key << "TransformComponent";
 			output << YAML::BeginMap;
 			output << YAML::Key << "Transform" << YAML::Value << tc.Position;
@@ -150,6 +151,7 @@ namespace SW {
 
 			if (entity.HasComponent<SpriteComponent>()) {
 				const SpriteComponent& sc = entity.GetComponent<SpriteComponent>();
+
 				output << YAML::Key << "SpriteComponent";
 				output << YAML::BeginMap;
 				output << YAML::Key << "Color" << YAML::Value << sc.Color;
@@ -163,6 +165,7 @@ namespace SW {
 
 			if (entity.HasComponent<CircleComponent>()) {
 				const CircleComponent& cc = entity.GetComponent<CircleComponent>();
+
 				output << YAML::Key << "CircleComponent";
 				output << YAML::BeginMap;
 				output << YAML::Key << "Color" << YAML::Value << cc.Color;
@@ -171,8 +174,26 @@ namespace SW {
 				output << YAML::EndMap;
 			}
 
+			if (entity.HasComponent<TextComponent>()) {
+				const TextComponent& tc = entity.GetComponent<TextComponent>();
+
+				output << YAML::Key << "TextComponent";
+				output << YAML::BeginMap;
+				output << YAML::Key << "TextString" << YAML::Value << tc.TextString;
+				output << YAML::Key << "Color" << YAML::Value << tc.Color;
+				output << YAML::Key << "Kerning" << YAML::Value << tc.Kerning;
+				output << YAML::Key << "LineSpacing" << YAML::Value << tc.LineSpacing;
+
+				if (tc.Font) {
+					output << YAML::Key << "FontPath" << YAML::Value << tc.Font->GetPath();
+				}
+
+				output << YAML::EndMap;
+			}
+
 			if (entity.HasComponent<RelationshipComponent>()) {
 				const RelationshipComponent& rsc = entity.GetComponent<RelationshipComponent>();
+
 				output << YAML::Key << "RelationshipComponent";
 				output << YAML::BeginMap;
 
@@ -426,6 +447,21 @@ namespace SW {
 				cc.Color = circleComponent["Color"].as<glm::vec4>();
 				cc.Thickness = circleComponent["Thickness"].as<f32>();
 				cc.Fade = circleComponent["Fade"].as<f32>();
+			}
+
+			if (YAML::Node textComponent = entity["Entity"]["TextComponent"]) {
+				TextComponent& cc = deserialized.AddComponent<TextComponent>();
+
+				cc.TextString = textComponent["TextString"].as<std::string>();
+				cc.Color = textComponent["Color"].as<glm::vec4>();
+				cc.Kerning = textComponent["Kerning"].as<f32>();
+				cc.LineSpacing = textComponent["LineSpacing"].as<f32>();
+
+				if (textComponent["FontPath"]) {
+					std::string path = textComponent["FontPath"].as<std::string>();
+
+					cc.Font = AssetManager::GetFont(path.c_str());
+				}
 			}
 
 			if (YAML::Node relationshipComponent = entity["Entity"]["RelationshipComponent"]) {

@@ -175,7 +175,12 @@ namespace SW {
 						}
 
 						if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-							ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", entry.FilePath.data(), entry.FilePath.size() + 1);
+							const char* type = "CONTENT_BROWSER_ITEM";
+
+							if (entry.Type == FileType::Font)
+								type = "Font";
+
+							ImGui::SetDragDropPayload(type, entry.FilePath.data(), entry.FilePath.size() + 1);
 							ImGui::TextUnformatted(entry.FilePath.c_str());
 							ImGui::Spacing();
 

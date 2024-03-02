@@ -455,6 +455,11 @@ namespace SW {
 		s_Data.Stats.QuadCount++;
 	}
 
+	void Renderer2D::DrawString(const glm::mat4& transform, const TextComponent& text, int entityID)
+	{
+		DrawString(text.TextString, text.Font, transform, text.Color, text.Kerning, text.LineSpacing, entityID);
+	}
+
 	void Renderer2D::DrawString(const std::string& string, Font* font, const glm::mat4& transform, const glm::vec4& color, f32 kerning /*= 0.0f*/, f32 lineSpacing /*= 0.0f*/, int entityID /*= -1*/)
 	{
 		f32 textureIndex = 0.f;

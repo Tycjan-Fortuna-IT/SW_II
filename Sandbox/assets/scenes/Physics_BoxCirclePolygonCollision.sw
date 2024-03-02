@@ -142,6 +142,36 @@ Entities:
         IsSensor: false
   - Entity:
       IDComponent:
+        ID: 7094265795795230589
+      TagComponent:
+        Tag: Text
+      TransformComponent:
+        Transform: [-4.8493948, 2.68448949, -0.000244140625]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      TextComponent:
+        TextString: Isn't this scene nice?
+        Color: [1, 0.99465239, 0, 1]
+        Kerning: 0
+        LineSpacing: 0
+        FontPath: assets\fonts\CascadiaCode.ttf
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 2
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        AllowSleep: true
+      BoxCollider2DComponent:
+        Size: [5.5, 0.400000006]
+        Offset: [5.55000019, 0.300000012]
+        Density: 1
+        IsSensor: false
+  - Entity:
+      IDComponent:
         ID: 9170673713309193885
       TagComponent:
         Tag: Water

@@ -174,6 +174,15 @@ namespace SW {
 
 			Renderer2D::DrawCircle(entity.GetWorldSpaceTransformMatrix(), cc, (int)handle);
 		}
+
+		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TextComponent>().each()) {
+			Entity entity = { handle, this };
+
+			if (!tc.Font)
+				continue;
+
+			Renderer2D::DrawString(entity.GetWorldSpaceTransformMatrix(), tc, (int)handle);
+		}
 	}
 
 	void Scene::OnUpdateRuntime(Timestep dt)
@@ -286,6 +295,15 @@ namespace SW {
 
 			Renderer2D::DrawCircle(entity.GetWorldSpaceTransformMatrix(), cc, (int)handle);
 		}
+
+		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TextComponent>().each()) {
+			Entity entity = { handle, this };
+
+			if (!tc.Font)
+				continue;
+
+			Renderer2D::DrawString(entity.GetWorldSpaceTransformMatrix(), tc, (int)handle);
+		}
 	}
 
 	void Scene::OnViewportResize(u32 width, u32 height)
@@ -344,6 +362,7 @@ namespace SW {
 		CopyComponent<TransformComponent>(this, m_Registry, copyRegistry);
 		CopyComponent<SpriteComponent>(this, m_Registry, copyRegistry);
 		CopyComponent<CircleComponent>(this, m_Registry, copyRegistry);
+		CopyComponent<TextComponent>(this, m_Registry, copyRegistry);
 		CopyComponent<CameraComponent>(this, m_Registry, copyRegistry);
 		CopyComponent<RigidBody2DComponent>(this, m_Registry, copyRegistry);
 		CopyComponent<BoxCollider2DComponent>(this, m_Registry, copyRegistry);

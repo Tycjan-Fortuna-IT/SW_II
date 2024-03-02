@@ -116,8 +116,24 @@ namespace SW {
 		 */
 		static void DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int entityID = -1);
 
+		/**
+		 * Draws a circle using the specified transformation matrix and circle component.
+		 *
+		 * @param transform The transformation matrix to apply to the circle.
+		 * @param cc The CircleComponent object that contains the circle's properties.
+		 * @param entityID (optional) The ID of the entity associated with the circle. Default value is -1.
+		 */
 		static void DrawCircle(const glm::mat4& transform, const CircleComponent& cc, int entityID = -1);
 
+		/**
+		 * @brief Draws a circle shape on the screen.
+		 * 
+		 * @param transform The transformation matrix to apply to the circle.
+		 * @param color The color of the circle.
+		 * @param thickness The thickness of the circle's outline (default is 1.0f).
+		 * @param fade The rate at which the circle's color fades towards transparency (default is 0.005f).
+		 * @param entityID The ID of the entity associated with the circle (default is -1).
+		 */
 		static void DrawCircle(const glm::mat4& transform, const glm::vec4& color, f32 thickness = 1.0f, f32 fade = 0.005f, int entityID = -1);
 
 		/**
@@ -126,6 +142,15 @@ namespace SW {
 		 * @param color The color of the rectangle.
 		 */
 		static void DrawRect(const glm::mat4& transform, const glm::vec4& color);
+
+		/**
+		 * Draws a string using the specified transformation matrix and text component.
+		 *
+		 * @param transform The transformation matrix to apply to the string.
+		 * @param text The text component containing the string to draw.
+		 * @param entityID The ID of the entity associated with the string (optional, default is -1).
+		 */
+		static void DrawString(const glm::mat4& transform, const TextComponent& text, int entityID = -1);
 
 		static void DrawString(const std::string& string, Font* font, const glm::mat4& transform, const glm::vec4& color, 
 			f32 kerning = 0.0f, f32 lineSpacing = 0.0f, int entityID = -1);
