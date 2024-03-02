@@ -3,6 +3,7 @@
 #include "OpenGL/Texture2D.hpp"
 #include "Project/ProjectContext.hpp"
 #include "Project/Project.hpp"
+#include "OpenGL/Font.hpp"
 
 namespace SW {
 
@@ -11,6 +12,8 @@ namespace SW {
 
 	static std::unordered_map<std::string, Texture2D*> s_Textures;
 	static std::unordered_map<std::string, Texture2D*> s_EditorTextures;
+
+	static std::unordered_map<std::string, Font*> s_Fonts;
 
 	void AssetManager::Initialize()
 	{
@@ -33,8 +36,13 @@ namespace SW {
 			delete ptr;
 		}
 
+		for (auto&& [path, ptr] : s_Fonts) {
+			delete ptr;
+		}
+
 		s_Textures.clear();
 		s_EditorTextures.clear();
+		s_Fonts.clear();
 
 		delete s_WhiteTexture;
 		delete s_BlackTexture;
@@ -78,5 +86,19 @@ namespace SW {
 
 		return newTexture;
 	}
+
+    Font* AssetManager::GetFont(const char* path)
+    {
+		auto font = s_Fonts.find(path);
+
+		if (font != s_Fonts.end())
+			return font->second;
+
+		Font* newFont = new Font(path);
+
+		s_Fonts[path] = newFont;
+
+		return newFont;
+    }
 
 }

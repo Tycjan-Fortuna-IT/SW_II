@@ -11,6 +11,7 @@
 namespace SW {
 
 	class Texture2D;
+	class Font;
 
 	/**
 	 * @brief Asset manager system.
@@ -61,6 +62,8 @@ namespace SW {
 		 * @return Texture from given path.
 		 */
 		static Texture2D* GetEditorTexture2D(const char* path);
+
+		static Font* GetFont(const char* path);
 	};
 
 }

@@ -25,6 +25,7 @@ namespace SW {
 		Texture,		///< Texture file type.
 		Directory,		///< Directory file type.
 		Scene,			///< Scene file type
+		Font,			///< Font file type.
 	};
 
 	/**

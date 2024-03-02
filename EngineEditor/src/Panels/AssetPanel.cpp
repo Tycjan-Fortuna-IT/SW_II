@@ -20,18 +20,21 @@ namespace SW {
 		{ ".jpeg",	    FileType::Texture	 },
 		{ ".bmp",	    FileType::Texture	 },
         { ".sw",		FileType::Scene		 },
+		{ ".ttf",		FileType::Font		 }
 	};
 
 	static const std::unordered_map<FileType, ImVec4> s_FileTypeColors = {
 		{ FileType::Texture,	{ 0.8f, 0.2f, 0.3f, 1.f }	},
 		{ FileType::Directory,	{ 1.f, 1.0f, 0.8f, 1.f }	},
-        { FileType::Scene,		{ 0.f, 1.0f, 0.f, 1.f }		}
+        { FileType::Scene,		{ 0.f, 1.0f, 0.f, 1.f }		},
+		{ FileType::Font,		{ 0.7f, 1.0f, 0.f, 1.f } }
 	};
 
 	static const std::unordered_map<FileType, std::string> s_FileTypeString = {
 		{ FileType::Texture,	"Texture"		},
 		{ FileType::Directory,	"Directory"		},
-        { FileType::Scene,		"Scene"			}
+        { FileType::Scene,		"Scene"			},
+		{ FileType::Font,		"Font"			}
 	};
 
 	AssetPanel::AssetPanel(const char* name)
@@ -255,6 +258,8 @@ namespace SW {
 					thumbnail = AssetManager::GetTexture2D(filepath.string().c_str());
 				} else if (fileType == FileType::Scene) {
 					thumbnail = AssetManager::GetEditorTexture2D("assets/icons/editor/FileIcons/Scene_FileIcon.png");
+				} else if (fileType == FileType::Font) {
+					thumbnail = AssetManager::GetEditorTexture2D("assets/icons/editor/FileIcons/Scene_FontIcon.png");
 				} else {
 					thumbnail = AssetManager::GetEditorTexture2D("assets/icons/editor/TextFile.png");
 				}
