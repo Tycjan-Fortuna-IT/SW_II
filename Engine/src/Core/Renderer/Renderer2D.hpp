@@ -40,12 +40,8 @@ namespace SW {
 	public:
 		/**
 		 * @brief Initializes the Renderer2D with the specified shader.
-		 * 
-		 * @param spriteShader The shader to be used for rendering sprites.
-		 * @param lineShader The shader to be used for rendering lines.
-		 * @param circleShader The shader to be used for rendering circles and rings.
 		 */
-		static void Initialize(Shader* spriteShader, Shader* lineShader, Shader* circleShader);
+		static void Initialize();
 
 		/**
 		 * @brief Shuts down the Renderer2D and releases any allocated resources.
@@ -130,6 +126,9 @@ namespace SW {
 		 * @param color The color of the rectangle.
 		 */
 		static void DrawRect(const glm::mat4& transform, const glm::vec4& color);
+
+		static void DrawString(const std::string& string, Font* font, const glm::mat4& transform, const glm::vec4& color, 
+			f32 Kerning = 0.0f, f32 LineSpacing = 0.0f, int entityID = -1);
 	};
 
 }

@@ -11,7 +11,8 @@
 #include "Core/Utils/Random.hpp"
 #include "Core/Scene/SceneCamera.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
-#include "../Math/Math.hpp"
+#include "Core/Math/Math.hpp"
+#include "Core/OpenGL/Font.hpp"
 
 namespace SW {
 
@@ -141,6 +142,23 @@ namespace SW {
 		CircleComponent& operator=(CircleComponent&& other) = default;
 
 		~CircleComponent() = default;
+	};
+
+	/**
+	 * @struct TextComponent
+	 * @brief This component is used to store the text of an entity. This component is used for rendering of text.
+	 * @note This component is optional.
+	 */
+	struct TextComponent final
+	{
+		std::string TextString;
+
+		Font* Font = nullptr;
+
+		glm::vec4 Color = glm::vec4(1.0f);
+
+		f32 Kerning = 0.0f;
+		f32 LineSpacing = 0.0f;
 	};
 
 	/**

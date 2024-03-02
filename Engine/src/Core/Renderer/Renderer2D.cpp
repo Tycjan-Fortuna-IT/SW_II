@@ -1,6 +1,7 @@
 #include "Renderer2D.hpp"
 
 #include "Core/OpenGL/Texture2D.hpp"
+#include "Core/OpenGL/Font.hpp"
 #include "Core/OpenGL/VertexArray.hpp"
 #include "Core/OpenGL/VertexBuffer.hpp"
 #include "Core/OpenGL/IndexBuffer.hpp"
@@ -43,6 +44,15 @@ namespace SW {
 		int EntityID;
 	};
 
+	struct TextVertex final
+	{
+		glm::vec3 Position;
+		glm::vec4 Color;
+		glm::vec2 TexCoord;
+
+		int EntityID;
+	};
+
 	struct Renderer2DData final
 	{
 		Renderer2DData() = default;
@@ -61,9 +71,8 @@ namespace SW {
 		VertexArray* CircleVertexArray = nullptr;
 		std::shared_ptr<VertexBuffer> CircleVertexBuffer;
 
-		Shader* TextureShader = nullptr;
-		Shader* LineShader = nullptr;
-		Shader* CircleShader = nullptr;
+		VertexArray* TextVertexArray = nullptr;
+		std::shared_ptr<VertexBuffer> TextVertexBuffer;
 
 		u32 QuadIndexCount = 0;
 		QuadVertex* QuadVertexBufferBase = nullptr;
@@ -77,20 +86,37 @@ namespace SW {
 		CircleVertex* CircleVertexBufferBase = nullptr;
 		CircleVertex* CircleVertexBufferPtr = nullptr;
 
+		u32 TextIndexCount = 0;
+		TextVertex* TextVertexBufferBase = nullptr;
+		TextVertex* TextVertexBufferPtr = nullptr;
+
 		std::array<Texture2D*, MaxTextureSlots> TextureSlots;
+		std::array<Texture2D*, MaxTextureSlots> FontTextureSlots;
+
 		u32 TextureSlotIndex = 1; // 0 = white texture
+		u32 FontTextureSlotIndex = 0;
 
 		f32 LineWidth = 2.0f;
 
 		glm::vec4 QuadVertexPositions[4] = {};
+
+		Shader* SpriteShader = nullptr;
+		Shader* LineShader = nullptr;
+		Shader* CircleShader = nullptr;
+		Shader* TextShader = nullptr;
 
 		Renderer2DStatistics Stats;
 	};
 
 	static Renderer2DData s_Data;
 
-	void Renderer2D::Initialize(Shader* spriteShader, Shader* lineShader, Shader* circleShader)
+	void Renderer2D::Initialize()
 	{
+		s_Data.SpriteShader = new Shader("assets/shaders/Builtin.2D.Sprite.vert.glsl", "assets/shaders/Builtin.2D.Sprite.frag.glsl");
+		s_Data.LineShader = new Shader("assets/shaders/Builtin.2D.Line.vert.glsl", "assets/shaders/Builtin.2D.Line.frag.glsl");
+		s_Data.CircleShader = new Shader("assets/shaders/Builtin.2D.Circle.vert.glsl", "assets/shaders/Builtin.2D.Circle.frag.glsl");
+		s_Data.TextShader = new Shader("assets/shaders/Builtin.2D.Text.vert.glsl", "assets/shaders/Builtin.2D.Text.frag.glsl");
+
 		s_Data.QuadVertexArray = new VertexArray();
 		s_Data.QuadVertexBuffer = std::make_shared<VertexBuffer>(static_cast<u32>(s_Data.MaxVertices * sizeof(QuadVertex)));
 
@@ -125,7 +151,6 @@ namespace SW {
 
 		// Lines
 		{
-			s_Data.LineShader = lineShader;
 			s_Data.LineVertexArray = new VertexArray();
 			s_Data.LineVertexBuffer = std::make_shared<VertexBuffer>(static_cast<u32>(s_Data.MaxVertices * sizeof(LineVertex)));
 			s_Data.LineVertexBuffer->SetLayout({
@@ -139,7 +164,6 @@ namespace SW {
 
 		// Circles
 		{
-			s_Data.CircleShader = circleShader;
 			s_Data.CircleVertexArray = new VertexArray();
 			s_Data.CircleVertexBuffer = std::make_shared<VertexBuffer>(static_cast<u32>(s_Data.MaxVertices * sizeof(CircleVertex)));
 			s_Data.CircleVertexBuffer->SetLayout({
@@ -155,14 +179,28 @@ namespace SW {
 			s_Data.CircleVertexBufferBase = new CircleVertex[s_Data.MaxVertices];
 		}
 
+		// Text
+		{
+			s_Data.TextVertexArray = new VertexArray();
+			s_Data.TextVertexBuffer = std::make_shared<VertexBuffer>(static_cast<u32>(s_Data.MaxVertices * sizeof(TextVertex)));
+			s_Data.TextVertexBuffer->SetLayout({
+				{ ShaderDataType::Float3, "a_Position"     },
+				{ ShaderDataType::Float4, "a_Color"        },
+				{ ShaderDataType::Float2, "a_TexCoord"     },
+				{ ShaderDataType::Int,    "a_EntityID"     }
+			});
+			s_Data.TextVertexArray->AddVertexBuffer(s_Data.TextVertexBuffer);
+			s_Data.TextVertexArray->SetIndexBuffer(quadIndexBuffer);
+			s_Data.TextVertexBufferBase = new TextVertex[s_Data.MaxVertices];
+		}
+
 		int samplers[s_Data.MaxTextureSlots];
 		for (int i = 0; i < s_Data.MaxTextureSlots; i++) {
 			samplers[i] = i;
 		}
 		
-		s_Data.TextureShader = spriteShader;
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->UploadUniformIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
+		s_Data.SpriteShader->Bind();
+		s_Data.SpriteShader->UploadUniformIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
 
 		s_Data.TextureSlots[0] = AssetManager::GetWhiteTexture();
 
@@ -176,6 +214,11 @@ namespace SW {
 	{
 		delete[] s_Data.QuadVertexBufferBase;
 		delete s_Data.QuadVertexArray;
+
+		delete s_Data.SpriteShader;
+		delete s_Data.LineShader;
+		delete s_Data.CircleShader;
+		delete s_Data.TextShader;
 	}
 
 	const Renderer2DStatistics& Renderer2D::GetStats()
@@ -192,14 +235,17 @@ namespace SW {
 	{
 		const glm::mat4 viewProjection = camera->GetViewProjectionMatrix();
 
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->UploadUniformMat4("u_ViewProjection", viewProjection);
+		s_Data.SpriteShader->Bind();
+		s_Data.SpriteShader->UploadUniformMat4("u_ViewProjection", viewProjection);
 
 		s_Data.LineShader->Bind();
 		s_Data.LineShader->UploadUniformMat4("u_ViewProjection", viewProjection);
 
 		s_Data.CircleShader->Bind();
 		s_Data.CircleShader->UploadUniformMat4("u_ViewProjection", viewProjection);
+
+		s_Data.TextShader->Bind();
+		s_Data.TextShader->UploadUniformMat4("u_ViewProjection", viewProjection);
 
 		StartBatch();
 	}
@@ -208,14 +254,17 @@ namespace SW {
 	{
 		glm::mat4 viewProjection = camera.GetProjectionMatrix() * glm::inverse(transform);
 
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->UploadUniformMat4("u_ViewProjection", viewProjection);
+		s_Data.SpriteShader->Bind();
+		s_Data.SpriteShader->UploadUniformMat4("u_ViewProjection", viewProjection);
 
 		s_Data.LineShader->Bind();
 		s_Data.LineShader->UploadUniformMat4("u_ViewProjection", viewProjection);
 
 		s_Data.CircleShader->Bind();
 		s_Data.CircleShader->UploadUniformMat4("u_ViewProjection", viewProjection);
+
+		s_Data.TextShader->Bind();
+		s_Data.TextShader->UploadUniformMat4("u_ViewProjection", viewProjection);
 
 		StartBatch();
 	}
@@ -236,7 +285,11 @@ namespace SW {
 		s_Data.CircleIndexCount = 0;
 		s_Data.CircleVertexBufferPtr = s_Data.CircleVertexBufferBase;
 
+		s_Data.TextIndexCount = 0;
+		s_Data.TextVertexBufferPtr = s_Data.TextVertexBufferBase;
+
 		s_Data.TextureSlotIndex = 1;
+		s_Data.FontTextureSlotIndex = 0;
 	}
 
 	void Renderer2D::Flush()
@@ -249,7 +302,7 @@ namespace SW {
 			for (u32 i = 0; i < s_Data.TextureSlotIndex; i++)
 				s_Data.TextureSlots[i]->Bind(i);
 			
-			s_Data.TextureShader->Bind();
+			s_Data.SpriteShader->Bind();
 			RendererAPI::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
 			
 			s_Data.Stats.DrawCalls++;
@@ -271,6 +324,15 @@ namespace SW {
 
 			s_Data.CircleShader->Bind();
 			RendererAPI::DrawIndexed(s_Data.CircleVertexArray, s_Data.CircleIndexCount);
+			s_Data.Stats.DrawCalls++;
+		}
+
+		if (s_Data.TextIndexCount) {
+			u32 dataSize = (u32)((u8*)s_Data.TextVertexBufferPtr - (u8*)s_Data.TextVertexBufferBase);
+			s_Data.TextVertexBuffer->SetData(s_Data.TextVertexBufferBase, dataSize);
+
+			s_Data.TextShader->Bind();
+			RendererAPI::DrawIndexed(s_Data.TextVertexArray, s_Data.TextIndexCount);
 			s_Data.Stats.DrawCalls++;
 		}
 	}
@@ -382,6 +444,11 @@ namespace SW {
 		s_Data.CircleIndexCount += 6;
 
 		s_Data.Stats.QuadCount++;
+	}
+
+	void Renderer2D::DrawString(const std::string& string, Font* font, const glm::mat4& transform, const glm::vec4& color, f32 Kerning /*= 0.0f*/, f32 LineSpacing /*= 0.0f*/, int entityID /*= -1*/)
+	{
+
 	}
 
 }
