@@ -147,7 +147,7 @@ namespace SW {
 			ImVec4 NavWindowingHighlight = { 0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f };
 			ImVec4 NavWindowingDimBackground = { 0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 0.501960813999176f };
 
-			ImVec4 ModalWindowDimBackground = { 0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 0.501960813999176f };
+			ImVec4 ModalWindowDimBackground = ImGui::ColorConvertU32ToFloat4(IM_COL32(21, 21, 21, 130));
 
 			ImVec4 WindowBackgroundTemp = { 0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f };
 

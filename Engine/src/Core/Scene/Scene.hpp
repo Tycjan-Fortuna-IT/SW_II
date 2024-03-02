@@ -144,6 +144,12 @@ namespace SW {
 		const std::string& GetFilePath() const { return m_FilePath; }
 
 		/**
+		 * @brief Retrieves the name of the serialized scene.
+		 * @return The name of the serialized scene.
+		 */
+		const std::string& GetName() const { return m_Name; }
+
+		/**
 		 * @brief Retrieves current state of the scene.
 		 * 
 		 * @return SceneState The current state of the scene.
@@ -170,7 +176,8 @@ namespace SW {
 	private:
 		EntityRegistry m_Registry; /**< The entity registry of the scene. */
 
-		std::string m_FilePath; /**< The filepath to the serialized scene file. */
+		std::string m_FilePath;		/**< The filepath to the serialized scene file. */
+		std::string m_Name;			/**< The filename of the serialized scene file. */
 
 		std::unordered_map<u64, entt::entity> m_EntityMap = {}; /**< Map of entity IDs to entt::entity handles. (cache) */
 

@@ -123,12 +123,19 @@ namespace SW {
 				const std::string projectName = ProjectContext::Get()->GetConfig().Name;
 				const ImVec2 textSize = ImGui::CalcTextSize(projectName.c_str());
 
-				const f32 rightOffset = ImGui::GetWindowWidth() / 2.f;
+				const f32 rightOffset = ImGui::GetWindowWidth() / 2.f - 70.f;
 
 				ImGui::SameLine();
 				ImGui::SetCursorPosX(rightOffset - windowPadding.x);
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f + windowPadding.y);
-				ImGui::Text(projectName.c_str());
+
+				std::string label = projectName;
+
+				if (m_Viewport->GetCurrentScene()->GetFilePath() != "") {
+					label = projectName + "  |  " + m_Viewport->GetCurrentScene()->GetName();
+				}
+
+				ImGui::Text(label.c_str());
 
 				GUI::DrawBorder(GUI::RectExpanded(GUI::GetItemRect(), 24.0f, 68.0f), 1.0f, 3.0f, 0.0f, -60.0f);
 			}
@@ -220,21 +227,29 @@ namespace SW {
 			GUI::ScopedColor HeaderColor(ImGuiCol_Header, Color::DarkGray);
 			GUI::ScopedColor HeaderHoveredColor(ImGuiCol_HeaderHovered, Color::DarkGray);
 
+			bool isSceneLoaded = m_Viewport->GetCurrentScene()->GetFilePath() != "";
+
 			if (ImGui::BeginMenu("File")) {
-				if (ImGui::MenuItem("Create Project...", "Ctrl+N")) {
-					
+				if (ProjectContext::HasContext()) { // project must be opened to create new scene
+					if (ImGui::MenuItem("Create New Scene", "Ctrl+N")) {
+						CreateNewScene();
+					}
 				}
 
-				if (ImGui::MenuItem("Open Project...", "Ctrl+O")) {
+				if (ImGui::MenuItem("Open Project", "Ctrl+O")) {
 					OpenProject();
 				}
 
-				if (ImGui::MenuItem("Save Project", "Ctrl+S")) {
+				if (isSceneLoaded) {
+					if (ImGui::MenuItem("Save Current Scene", "Ctrl+S")) {
 
+					}
 				}
 
-				if (ImGui::MenuItem("Save Project As...", "Ctrl+Shift+S")) {
-					SaveProjectAs();
+				if (ProjectContext::HasContext()) {
+					if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S")) {
+						SaveProjectAs();
+					}
 				}
 
 				if (ImGui::MenuItem("Close Editor", "Esc")) {
@@ -258,7 +273,7 @@ namespace SW {
 		ImGui::EndGroup();
 	}
 
-    void EditorLayer::OnRender()
+	void EditorLayer::OnRender()
 	{
 		Application::Get()->GetWindow()->RegisterOverTitlebar(false);
 
@@ -307,6 +322,53 @@ namespace SW {
 				panel->OnRender();
 		}
 
+		if (m_OpenNewSceneModal) {
+			m_OpenNewSceneModal = false;
+			m_IsNewSceneModalOpen = true;
+
+			ImGui::OpenPopup("NewSceneModal");
+		}
+
+		if (ImGui::BeginPopupModal("NewSceneModal", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+			ImGui::Text("Input the desired scene name with .sw extension!");
+
+			ImGui::Separator();
+
+			static std::string newProjectName = "";
+
+			GUI::BeginProperties("##new_scene_name");
+			GUI::DrawSingleLineTextInputProperty<256>(newProjectName, "Name");
+			GUI::EndProperties();
+
+			if (newProjectName != "") {
+				if (ImGui::Button("Create", ImVec2(100.f, 0))) {
+					if (SelectionManager::IsSelected())
+						SelectionManager::Deselect();
+
+					std::filesystem::path newScenePath = ProjectContext::Get()->GetAssetDirectory() / "assets" / "scenes" / newProjectName;
+
+					Scene* newScene = new Scene(newScenePath.string());
+
+					SceneSerializer::Serialize(newScene, newScenePath.string());
+
+					delete m_Viewport->GetCurrentScene();
+					m_Viewport->SetCurrentScene(newScene);
+
+					ImGui::CloseCurrentPopup();
+				}
+
+				ImGui::SameLine();
+			}
+
+			if (ImGui::Button("Cancel", ImVec2(100.f, 0))) {
+				m_IsNewSceneModalOpen = false;
+
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndPopup();
+		}
+
 		//ImGui::ShowDemoWindow();
 	}
 
@@ -318,16 +380,34 @@ namespace SW {
 
 		switch (code) {
 			case KeyCode::Escape:
-				Application::Get()->Close(); break;
+				if (!m_IsNewSceneModalOpen)
+					Application::Get()->Close(); break;
 			case KeyCode::S:
-				if (ctrl && shift) SaveProjectAs(); break;
+				if (ctrl && shift && ProjectContext::HasContext()) {
+					SaveProjectAs(); break;
+				} else if (ctrl && m_Viewport->GetCurrentScene()->GetFilePath() != "") {
+					SaveCurrentScene(); break;
+				}
 			case KeyCode::O:
 				if (ctrl) OpenProject(); break;
+			case KeyCode::N:
+				if (ctrl && ProjectContext::HasContext()) CreateNewScene(); break;
 			default:
 				break;
 		}
 
 		return false;
+	}
+
+	void EditorLayer::CreateNewScene()
+	{
+		m_OpenNewSceneModal = true;
+	}
+
+	void EditorLayer::SaveCurrentScene()
+	{
+		Scene* currentScene = m_Viewport->GetCurrentScene();
+		SceneSerializer::Serialize(currentScene, currentScene->GetFilePath());
 	}
 
 	void EditorLayer::OpenProject()

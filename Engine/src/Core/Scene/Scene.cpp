@@ -14,7 +14,10 @@
 namespace SW {
 
 	Scene::Scene(const std::string& filepath)
-		: m_Registry(this), m_FilePath(filepath) {}
+		: m_Registry(this), m_FilePath(filepath)
+	{
+		m_Name = std::filesystem::path(filepath).filename().string();
+	}
 	
 	Scene::~Scene()
 	{

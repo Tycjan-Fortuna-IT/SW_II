@@ -22,6 +22,9 @@ namespace SW {
 
 		bool m_WindowMaximized = true;
 
+		bool m_OpenNewSceneModal = false;
+		bool m_IsNewSceneModalOpen = false;
+
 		void OnAttach() override;
 		void OnDetach() override;
 
@@ -32,6 +35,9 @@ namespace SW {
 
 		f32 DrawTitleBar();
 		void DrawMenuBar();
+
+		void CreateNewScene();
+		void SaveCurrentScene();
 
 		void OpenProject();
 		void SaveProjectAs();

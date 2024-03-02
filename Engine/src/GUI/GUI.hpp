@@ -1094,9 +1094,13 @@ namespace SW::GUI {
 
 		memcpy(buffer, text.c_str(), std::min(sizeof(buffer), text.size() + 1));
 
+		ImGui::PushItemWidth(-FLT_MIN);
+
 		if (ImGui::InputTextMultiline("##multiline_text_input", buffer, sizeof(buffer))) {
 			text = buffer;
 		}
+
+		ImGui::PopItemWidth();
 
 		EndPropertyGrid();
 	}
