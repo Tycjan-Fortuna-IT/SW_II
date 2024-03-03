@@ -21,6 +21,9 @@ project "EngineEditor"
         "IMGUI_DEFINE_MATH_OPERATORS",
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
         "YAML_CPP_STATIC_DEFINE",
+        "TRACY_ENABLE",
+		"TRACY_ON_DEMAND",
+        "TRACY_CALLSTACK=10",
     }
 
     links { "Engine" }

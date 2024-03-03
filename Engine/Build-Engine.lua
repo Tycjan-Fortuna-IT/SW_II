@@ -24,6 +24,9 @@ project "Engine"
         "GLFW_INCLUDE_NONE",
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
         "YAML_CPP_STATIC_DEFINE",
+        "TRACY_ENABLE",
+		"TRACY_ON_DEMAND",
+        "TRACY_CALLSTACK=10",
     }
 
     includedirs {
@@ -69,6 +72,7 @@ project "Engine"
         include "Engine/vendor/NFD-Extended"
         include "Engine/vendor/Box2D"
         include "Engine/vendor/msdf-atlas-gen"
+        include "Engine/vendor/tracy"
     group ""
     
     group "Engine"

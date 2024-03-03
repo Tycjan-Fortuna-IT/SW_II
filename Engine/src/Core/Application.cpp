@@ -7,6 +7,7 @@
 #include "Utils/FileSystem.hpp"
 #include "AssetManager.hpp"
 #include "Renderer/RendererAPI.hpp"
+#include "Debug/Profiler.hpp"
 
 namespace SW {
 
@@ -85,15 +86,23 @@ namespace SW {
 
 			m_Window->OnUpdate();
 
-			for (Layer* layer : m_Layers) {
-				layer->OnUpdate(dt);
+			{
+				PROFILE_SCOPE("Application::Update()");
+			
+				for (Layer* layer : m_Layers) {
+					layer->OnUpdate(dt);
+				}
 			}
 
-			m_GuiLayer->Begin();
-			for (Layer* layer : m_Layers) {
-				layer->OnRender();
+			{
+				PROFILE_SCOPE("Application::Render()");
+
+				m_GuiLayer->Begin();
+				for (Layer* layer : m_Layers) {
+					layer->OnRender();
+				}
+				m_GuiLayer->End();
 			}
-			m_GuiLayer->End();
 		}
 
 		if (!this->OnShutdown())

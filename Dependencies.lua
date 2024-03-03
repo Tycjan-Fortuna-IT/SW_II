@@ -59,6 +59,16 @@ Dependencies = {
         IncludeDir = "%{wks.location}/Engine/vendor/msdf-atlas-gen/msdfgen/freetype/include",
         LinkAs = "freetype",
     },
+    TRACY = {
+        IncludeDir = "%{wks.location}/Engine/vendor/tracy/tracy/public",
+        LinkAs = "Tracy",
+    },
+    WS2_32 = {
+        LinkAs = "ws2_32",
+    },
+    DBGHELP = {
+        LinkAs = "Dbghelp",
+    },
 }
 
 function IncludeEngineDependencies(additional)

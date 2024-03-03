@@ -28,3 +28,6 @@
 [submodule "Engine/vendor/msdf-atlas-gen"]
 	path = Engine/vendor/msdf-atlas-gen
 	url = https://github.com/Tycjan-Fortuna-IT/msdf-atlas-gen.git
+[submodule "Engine/vendor/tracy/tracy"]
+	path = Engine/vendor/tracy/tracy
+	url = https://github.com/wolfpld/tracy.git
