@@ -68,11 +68,22 @@ namespace SW {
 					const auto& view = m_SceneViewportPanel->GetCurrentScene()->GetRegistry()
 						.GetEntitiesWith<IDComponent, TagComponent, RelationshipComponent>();
 
-					//auto sortFn = [](const IDComponent& lhs, const IDComponent& rhs) -> bool {
-					//	return lhs.ID < rhs.ID; // sorting from the lowest ID to highest ID
-					//};
+					/*std::map<u64, std::tuple<Entity, u64, std::string, RelationshipComponent>> sortedEntities;
 
-					//m_SceneViewportPanel->GetCurrentScene()->GetRegistry().GetRegistryHandle().sort<IDComponent>(sortFn);
+					for (auto&& [handle, idc, tc, rsc] : view.each())
+						sortedEntities[idc.ID] = std::make_tuple(Entity{ handle, m_SceneViewportPanel->GetCurrentScene() }, idc.ID, tc.Tag, rsc);
+
+					for (auto& element : sortedEntities) {
+						auto& tuple = std::get<1>(element);
+						Entity entity = std::get<0>(tuple);
+						u64 ID = std::get<1>(tuple);
+						std::string tag = std::get<2>(tuple);
+						RelationshipComponent rsc = std::get<3>(tuple);
+
+						if (!rsc.ParentID) {
+							RenderEntityNode(entity, ID, tag, rsc);
+						}
+					} TODO: Investigate performance impact of this sorting */ 
 
 					for (auto&& [handle, idc, tc, rsc] : view.each()) {
 						if (!rsc.ParentID) {
@@ -94,7 +105,10 @@ namespace SW {
 						if (m_DraggedEntity.IsChildOf(m_DraggedEntityTarget)) {
 							m_DraggedEntity.RemoveParent();
 						} else {
-							m_DraggedEntity.SetParent(m_DraggedEntityTarget);
+							if (!m_DraggedEntityTarget.IsChildOf(m_DraggedEntity)) {
+								m_DraggedEntity.SetParent(m_DraggedEntityTarget);
+							}
+
 						}
 
 						m_DraggedEntity = {};
@@ -157,7 +171,9 @@ namespace SW {
 		if (selected)
 			ImGui::PopStyleColor(2);
 
-		if (!ImGui::IsItemToggledOpen() && ImGui::IsItemClicked(ImGuiMouseButton_Left) && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+		const bool additionalReq = SelectionManager::IsSelected() ? ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) : true;
+
+		if (!ImGui::IsItemToggledOpen() && ImGui::IsItemClicked(ImGuiMouseButton_Left) && additionalReq) {
 			if (selected) {
 				SelectionManager::Deselect();
 			} else {
