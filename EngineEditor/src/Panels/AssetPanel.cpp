@@ -179,6 +179,10 @@ namespace SW {
 
 							if (entry.Type == FileType::Font)
 								type = "Font";
+							else if (entry.Type == FileType::Scene)
+								type = "Scene";
+							else if (entry.Type == FileType::Texture)
+								type = "Texture";
 
 							ImGui::SetDragDropPayload(type, entry.FilePath.data(), entry.FilePath.size() + 1);
 							ImGui::TextUnformatted(entry.FilePath.c_str());

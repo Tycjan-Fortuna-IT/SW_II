@@ -1,4 +1,3 @@
-[ ] - Fix play/stop button positioning
 [ ] - Fix crash when trying to make a parent a child's parent
 [ ] - Standardize a pallete of colors, equivalents in different types, ImVec4, ImU32 ...
 
@@ -6,7 +5,7 @@
     [ ] - Physics
         [X] - box collider 
         [X] - circle collider 
-        [ ] - polygon collider
+        [X] - polygon collider
         [X] - fluid simulation, buoyancy
         [X] - distance joint 
         [X] - revolution joint 
@@ -14,10 +13,11 @@
         [X] - spring joint 
         [X] - wheel joint 
     [ ] - Spritesheet support
+        [ ] - Probably prefab format
     [ ] - Rendering
         [X] - quad rendering
         [X] - circle rendering
         [X] - line rendering
-        [ ] - text rendering
+        [X] - text rendering
     [ ] - C# Scripting
     [ ] - Audio

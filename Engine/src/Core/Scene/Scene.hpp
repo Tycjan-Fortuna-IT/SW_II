@@ -1,8 +1,8 @@
 /**
  * @file Scene.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.3
- * @date 2024-02-29
+ * @version 0.1.4
+ * @date 2024-03-03
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -170,6 +170,20 @@ namespace SW {
 		 * @return Scene* The copy of the scene.
 		 */
 		Scene* DeepCopy();
+
+		/**
+		 * @brief Get the width of the viewport.
+		 * 
+		 * @return u32 The width of the viewport.
+		 */
+		u32 GetViewportWidth() const { return m_ViewportWidth; }
+
+		/**
+		 * @brief Get the height of the viewport.
+		 * 
+		 * @return u32 The height of the viewport.
+		 */
+		u32 GetViewportHeight() const { return m_ViewportHeight; }
 
 		glm::vec2 Gravity = { 0.0f, -9.80665f };	/**< The gravity of the scene. */
 

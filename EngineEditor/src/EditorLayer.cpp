@@ -84,8 +84,9 @@ namespace SW {
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 
 		drawList->AddRectFilled(titlebarMin, titlebarMax, Color::TitleBar);
-		ImU32 gradientColor = m_Viewport->GetCurrentScene()->GetCurrentState() == SceneState::Edit ?
-			Color::LightBlack : IM_COL32(55, 91, 71, 255);
+		ImU32 gradientColor = m_Viewport->IsSceneLoaded() ? (
+			m_Viewport->GetCurrentScene()->GetCurrentState() == SceneState::Edit ?
+				Color::LightBlack : IM_COL32(55, 91, 71, 255)) : Color::LightBlack;
 		drawList->AddRectFilledMultiColor(titlebarMin, ImVec2(titlebarMin.x + 600.0f, titlebarMax.y), gradientColor, Color::TitleBar, Color::TitleBar, gradientColor);
 
 		{
@@ -131,7 +132,7 @@ namespace SW {
 
 				std::string label = projectName;
 
-				if (m_Viewport->GetCurrentScene()->GetFilePath() != "") {
+				if (m_Viewport->IsSceneLoaded()) {
 					label = projectName + "  |  " + m_Viewport->GetCurrentScene()->GetName();
 				}
 
@@ -227,8 +228,6 @@ namespace SW {
 			GUI::ScopedColor HeaderColor(ImGuiCol_Header, Color::DarkGray);
 			GUI::ScopedColor HeaderHoveredColor(ImGuiCol_HeaderHovered, Color::DarkGray);
 
-			bool isSceneLoaded = m_Viewport->GetCurrentScene()->GetFilePath() != "";
-
 			if (ImGui::BeginMenu("File")) {
 				if (ProjectContext::HasContext()) { // project must be opened to create new scene
 					if (ImGui::MenuItem("Create New Scene", "Ctrl+N")) {
@@ -240,7 +239,7 @@ namespace SW {
 					OpenProject();
 				}
 
-				if (isSceneLoaded) {
+				if (m_Viewport->IsSceneLoaded()) {
 					if (ImGui::MenuItem("Save Current Scene", "Ctrl+S")) {
 
 					}
@@ -385,7 +384,7 @@ namespace SW {
 			case KeyCode::S:
 				if (ctrl && shift && ProjectContext::HasContext()) {
 					SaveProjectAs(); break;
-				} else if (ctrl && m_Viewport->GetCurrentScene()->GetFilePath() != "") {
+				} else if (ctrl && m_Viewport->IsSceneLoaded()) {
 					SaveCurrentScene(); break;
 				}
 			case KeyCode::O:

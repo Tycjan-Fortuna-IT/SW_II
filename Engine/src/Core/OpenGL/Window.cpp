@@ -115,7 +115,10 @@ namespace SW {
 		});
 
 		glfwSetWindowSizeCallback(m_Handle, [](GLFWwindow* window, i32 width, i32 height) {
-			// todo update as well the glfwGetWindowUserPointer!
+			WindowSpecification* spec = (WindowSpecification*)glfwGetWindowUserPointer(window);
+			
+			spec->Width = width;
+			spec->Height = height;
 
 			EventSystem::Emit({
 				.Code = EVENT_CODE_WINDOW_RESIZED,

@@ -22,7 +22,7 @@ namespace SW {
 		GUI::ScopedStyle CellPadding(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
 
 		if (OnBegin(ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar)) {
-			if (ProjectContext::HasContext()) {
+			if (m_SceneViewportPanel->IsSceneLoaded()) {
 				const f32 lineHeight = ImGui::GetTextLineHeight();
 				const ImVec2 padding = ImGui::GetStyle().FramePadding;
 
@@ -119,7 +119,7 @@ namespace SW {
 				}
 
 			} else {
-				ImGui::Text("No project selected...");
+				ImGui::Text("No scene selected...");
 			}
 
 			OnEnd();

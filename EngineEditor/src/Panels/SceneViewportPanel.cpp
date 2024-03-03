@@ -36,6 +36,12 @@ namespace SW {
 			return OnMouseButtonPressed(code);
 		});
 
+		EventSystem::Register(EVENT_CODE_KEY_PRESSED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+			KeyCode code = (KeyCode)event.Payload.u16[0];
+
+			return OnKeyPressed(code);
+		});
+
 		const FramebufferSpecification spec = { 
 			.Width = 1280,
 			.Height = 720,
@@ -47,7 +53,7 @@ namespace SW {
 		m_EditorCamera = new EditorCamera();
 		m_EditorCamera->SetViewportSize((f32)spec.Width, (f32)spec.Height);
 
-		m_ActiveScene = new Scene("");
+		//m_ActiveScene = new Scene("");
 	}
 
 	SceneViewportPanel::~SceneViewportPanel()
@@ -68,7 +74,9 @@ namespace SW {
 		) {
 			m_Framebuffer->Resize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
 			m_EditorCamera->SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
-			m_ActiveScene->OnViewportResize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
+			
+			if (IsSceneLoaded())
+				m_ActiveScene->OnViewportResize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
 		}
 
 		m_EditorCamera->OnUpdate(dt);
@@ -99,18 +107,21 @@ namespace SW {
 
 		if (m_IsViewportFocused) {
 			f32 maxMoveSpeed = m_MaxMoveSpeed * (ImGui::IsKeyDown(ImGuiKey_LeftShift) ? 3.0f : 1.0f);
-			if (ImGui::IsKeyDown(ImGuiKey_W))
-				finalPosition += m_EditorCamera->GetForward() * maxMoveSpeed;
-			else if (ImGui::IsKeyDown(ImGuiKey_S))
-				finalPosition -= m_EditorCamera->GetForward() * maxMoveSpeed;
-			if (ImGui::IsKeyDown(ImGuiKey_D))
-				finalPosition += m_EditorCamera->GetRight() * maxMoveSpeed;
-			else if (ImGui::IsKeyDown(ImGuiKey_A))
-				finalPosition -= m_EditorCamera->GetRight() * maxMoveSpeed;
-			else if (ImGui::IsKeyDown(ImGuiKey_Space))
-				finalPosition += m_EditorCamera->GetUp() * maxMoveSpeed;
-			else if (ImGui::IsKeyDown(ImGuiKey_C))
-				finalPosition -= m_EditorCamera->GetUp() * maxMoveSpeed;
+
+			if (!ImGui::IsKeyDown(ImGuiKey_LeftCtrl)) {
+				if (ImGui::IsKeyDown(ImGuiKey_W))
+					finalPosition += m_EditorCamera->GetForward() * maxMoveSpeed;
+				else if (ImGui::IsKeyDown(ImGuiKey_S))
+					finalPosition -= m_EditorCamera->GetForward() * maxMoveSpeed;
+				if (ImGui::IsKeyDown(ImGuiKey_D))
+					finalPosition += m_EditorCamera->GetRight() * maxMoveSpeed;
+				else if (ImGui::IsKeyDown(ImGuiKey_A))
+					finalPosition -= m_EditorCamera->GetRight() * maxMoveSpeed;
+				else if (ImGui::IsKeyDown(ImGuiKey_Space))
+					finalPosition += m_EditorCamera->GetUp() * maxMoveSpeed;
+				else if (ImGui::IsKeyDown(ImGuiKey_C))
+					finalPosition -= m_EditorCamera->GetUp() * maxMoveSpeed;
+			}
 		}
 
 		glm::vec3 dampedPosition = Math::SmoothDamp(position, finalPosition, m_TranslationVelocity, m_TranslationDampening, 10000.0f, dt);
@@ -128,7 +139,7 @@ namespace SW {
 
 		m_Framebuffer->ClearAttachment(1, -1);
 
-		if (m_ActiveScene->BeginRendering(m_EditorCamera)) {
+		if (IsSceneLoaded() && m_ActiveScene->BeginRendering(m_EditorCamera)) {
 			m_ActiveScene->OnUpdate(dt);
 
 			if (EditorSettings::Get().ShowPhysicsColliders) {
@@ -347,13 +358,13 @@ namespace SW {
 			const ImTextureID textureID = GUI::GetTextureID(m_Framebuffer->GetColorAttachmentRendererID());
 			ImGui::Image(textureID, currentViewportSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
-			// TODO perform validation of the file
-			// TODO automatically stop scene if user wants to switch it when original is playing
+			const bool isSceneLoaded = IsSceneLoaded();
+
 			if (
-				m_ActiveScene->GetCurrentState() == SceneState::Edit &&
+				(!isSceneLoaded || m_ActiveScene->GetCurrentState() == SceneState::Edit) &&
 				ImGui::BeginDragDropTarget()
 			) {
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Scene")) {
 					std::filesystem::path path = ProjectContext::Get()->GetAssetDirectory() / static_cast<char*>(payload->Data);
 
 					if (SelectionManager::IsSelected())
@@ -368,7 +379,15 @@ namespace SW {
 				ImGui::EndDragDropTarget();
 			}
 
-			RenderSceneToolbar();
+			const ImVec2 windowPosition = ImGui::GetWindowPos();
+			const ImVec2 viewportMinRegion = ImGui::GetWindowContentRegionMin();
+			const ImVec2 viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+
+			m_ViewportBoundsMin = { viewportMinRegion.x + windowPosition.x, viewportMinRegion.y + windowPosition.y };
+			m_ViewportBoundsMax = { viewportMaxRegion.x + windowPosition.x, viewportMaxRegion.y + windowPosition.y };
+
+			if (isSceneLoaded)
+				RenderSceneToolbar(startCursorPos);
 
 			glm::mat4 cameraProjection = m_EditorCamera->GetProjectionMatrix();
 			glm::mat4 cameraView = m_EditorCamera->GetViewMatrix();
@@ -396,7 +415,7 @@ namespace SW {
 				m_EditorCamera->SetYaw(yaw);
 			}
 
-			if (SelectionManager::IsSelected() && m_ActiveScene->GetCurrentState() != SceneState::Play) {
+			if (SelectionManager::IsSelected() && isSceneLoaded && m_ActiveScene->GetCurrentState() != SceneState::Play) {
 				Entity selectedEntity = m_ActiveScene->GetEntityByID(SelectionManager::GetSelectionID());
 
 				TransformComponent& tc = selectedEntity.GetComponent<TransformComponent>();
@@ -432,116 +451,11 @@ namespace SW {
 				}
 			}
 
-			// Transform Gizmos Button Group
-			const f32 frameHeight = 1.3f * ImGui::GetFrameHeight();
-			const ImVec2 framePadding = ImGui::GetStyle().FramePadding;
-			const ImVec2 buttonSize = { frameHeight, frameHeight };
-			const f32 buttonCount = 6.0f;
-			const ImVec2 gizmoPosition = { m_ViewportBoundsMin.x + m_GizmoPosition.x, m_ViewportBoundsMin.y + m_GizmoPosition.y };
-			const ImRect bb(gizmoPosition.x, gizmoPosition.y, gizmoPosition.x + buttonSize.x + 8, gizmoPosition.y + (buttonSize.y + 2) * (buttonCount + 0.5f));
-			ImVec4 frameColor = ImGui::GetStyleColorVec4(ImGuiCol_Tab);
-			frameColor.w = 0.5f;
-			
-			ImGui::RenderFrame(bb.Min, bb.Max, ImGui::GetColorU32(frameColor), false, ImGui::GetStyle().FrameRounding);
-			m_IsGizmoBarHovered = ImGui::IsMouseHoveringRect(bb.Min, bb.Max);
-
-			glm::vec2 tempGizmoPosition = m_GizmoPosition;
-
-			ImGui::SetCursorPos({ startCursorPos.x + tempGizmoPosition.x + framePadding.x, startCursorPos.y + tempGizmoPosition.y });
-			ImGui::BeginGroup();
-			{
-				ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
-				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 1, 1 });
-
-				ImVec2 draggerCursorPos = ImGui::GetCursorPos();
-				ImGui::SetCursorPosX(draggerCursorPos.x + framePadding.x);
-				ImGui::TextUnformatted(SW_ICON_DOTS_HORIZONTAL);
-				ImVec2 draggerSize = ImGui::CalcTextSize(SW_ICON_DOTS_HORIZONTAL);
-				draggerSize.x *= 2.0f;
-				ImGui::SetCursorPos(draggerCursorPos);
-				ImGui::InvisibleButton("GizmoDragger", draggerSize);
-				static ImVec2 lastMousePosition = ImGui::GetMousePos();
-				ImVec2 mousePos = ImGui::GetMousePos();
-				if (ImGui::IsItemActive()) {
-					m_GizmoPosition.x += mousePos.x - lastMousePosition.x;
-					m_GizmoPosition.y += mousePos.y - lastMousePosition.y;
-				}
-				lastMousePosition = mousePos;
-
-				constexpr f32 alpha = 0.6f;
-				if (GUI::ToggleButton(SW_ICON_AXIS_ARROW, m_GizmoType == ImGuizmo::TRANSLATE, buttonSize, alpha, alpha))
-					m_GizmoType = ImGuizmo::TRANSLATE;
-				if (GUI::ToggleButton(SW_ICON_ROTATE_3D, m_GizmoType == ImGuizmo::ROTATE, buttonSize, alpha, alpha))
-					m_GizmoType = ImGuizmo::ROTATE;
-				if (GUI::ToggleButton(SW_ICON_ARROW_EXPAND, m_GizmoType == ImGuizmo::SCALE, buttonSize, alpha, alpha))
-					m_GizmoType = ImGuizmo::SCALE;
-				if (GUI::ToggleButton(SW_ICON_VECTOR_SQUARE, m_GizmoType == ImGuizmo::BOUNDS, buttonSize, alpha, alpha))
-					m_GizmoType = ImGuizmo::BOUNDS;
-				if (GUI::ToggleButton(SW_ICON_ARROW_EXPAND_ALL, m_GizmoType == ImGuizmo::UNIVERSAL, buttonSize, alpha, alpha))
-					m_GizmoType = ImGuizmo::UNIVERSAL;
-				if (GUI::ToggleButton(m_GizmoMode == ImGuizmo::WORLD ? SW_ICON_EARTH : SW_ICON_EARTH_OFF, m_GizmoMode == ImGuizmo::WORLD, buttonSize, alpha, alpha))
-					m_GizmoMode = m_GizmoMode == ImGuizmo::LOCAL ? ImGuizmo::WORLD : ImGuizmo::LOCAL;
-
-				ImGui::PopStyleVar(2);
-			}
-			ImGui::EndGroup();
+			if (isSceneLoaded)
+				RenderGizmoToolbar(startCursorPos);
 
 			OnEnd();
 		}
-	}
-
-	void SceneViewportPanel::RenderSceneToolbar()
-	{
-		GUI::ScopedStyle Spacing(ImGuiStyleVar_ItemSpacing, ImVec2{ 0.f, 0.f });
-		const ImVec2 windowPosition = ImGui::GetWindowPos();
-		const ImVec2 viewportMinRegion = ImGui::GetWindowContentRegionMin();
-		const ImVec2 viewportMaxRegion = ImGui::GetWindowContentRegionMax();
-
-		m_ViewportBoundsMin = { viewportMinRegion.x + windowPosition.x, viewportMinRegion.y + windowPosition.y };
-		m_ViewportBoundsMax = { viewportMaxRegion.x + windowPosition.x, viewportMaxRegion.y + windowPosition.y };
-
-		const ImVec2 windowSize = ImGui::GetWindowSize();
-		const ImVec2 buttonsPosition = { windowPosition.x + windowSize.x / 6.f, windowPosition.y - 15.f };
-
-		const f32 buttonSize = 30.f;
-
-		const SceneState currentState = m_ActiveScene->GetCurrentState();
-
-		ImGui::SetCursorPos(buttonsPosition);
-		ImGui::BeginGroup();
-		if (GUI::ToggleButton(SW_ICON_PLAY, currentState == SceneState::Play, { buttonSize, buttonSize }, 0.6f, 0.6f)) {
-			if (currentState != SceneState::Play) {
-				m_SceneCopy = m_ActiveScene->DeepCopy();
-
-				m_ActiveScene->SetNewState(SceneState::Play);
-				m_ActiveScene->OnRuntimeStart();
-			}
-		}
-
-		GUI::MoveMousePosX(buttonSize);
-		GUI::MoveMousePosY(-buttonSize);
-
-		if (GUI::ToggleButton(SW_ICON_STOP, currentState == SceneState::Edit, { buttonSize, buttonSize }, 0.6f, 0.6f)) {
-			if (currentState != SceneState::Edit) {
-				m_ActiveScene->OnRuntimeStop();
-
-				delete m_ActiveScene;
-				m_ActiveScene = nullptr;
-
-				m_ActiveScene = m_SceneCopy->DeepCopy();
-
-				delete m_SceneCopy;
-				m_SceneCopy = nullptr;
-
-				m_ActiveScene->SetNewState(SceneState::Edit);
-			}
-		}
-		ImGui::EndGroup();
-	}
-
-	void SceneViewportPanel::RenderGizmoToolbar()
-	{
-
 	}
 
 	bool SceneViewportPanel::OnMouseButtonPressed(MouseCode code)
@@ -579,6 +493,180 @@ namespace SW {
 		}
 		
 		return false;
+	}
+
+	bool SceneViewportPanel::OnKeyPressed(KeyCode code)
+	{
+		if (!IsSceneLoaded())
+			return false;
+
+		switch (code) {
+			case KeyCode::R:
+				m_GizmoType = ImGuizmo::ROTATE; break;
+			case KeyCode::T:
+				m_GizmoType = ImGuizmo::TRANSLATE; break;
+			case KeyCode::Y:
+				m_GizmoType = ImGuizmo::SCALE; break;
+			case KeyCode::U:
+				m_GizmoType = ImGuizmo::BOUNDS; break;
+			default:
+				break;
+		}
+
+		return false;
+	}
+
+	void SceneViewportPanel::RenderSceneToolbar(ImVec2 startCursorPos)
+	{
+		const f32 frameHeight = 1.3f * ImGui::GetFrameHeight();
+		const ImVec2 framePadding = ImGui::GetStyle().FramePadding;
+		const ImVec2 buttonSize = { frameHeight, frameHeight };
+		const f32 buttonCount = 4.0f;
+
+		const ImVec2 gizmoPosition = { m_ViewportBoundsMin.x + m_ViewportSize.x / 2.f + m_ToolbarPosition.x, m_ViewportBoundsMin.y + m_ToolbarPosition.y };
+		const ImRect bb(
+			gizmoPosition.x - (buttonSize.x * (buttonCount / 2.f + 0.5f)), 
+			gizmoPosition.y + 8.f,
+			gizmoPosition.x + (buttonSize.x * (buttonCount / 2.f + 0.5f)), 
+			gizmoPosition.y + (buttonSize.y + 2) + 8.f
+		);
+		
+		ImVec4 frameColor = ImGui::GetStyleColorVec4(ImGuiCol_Tab);
+		frameColor.w = 0.5f;
+
+		ImGui::RenderFrame(bb.Min, bb.Max, ImGui::GetColorU32(frameColor), false, ImGui::GetStyle().FrameRounding);
+		m_IsGizmoBarHovered = ImGui::IsMouseHoveringRect(bb.Min, bb.Max);
+
+		glm::vec2 tempGizmoPosition = m_ToolbarPosition;
+
+		ImGui::SetCursorPos({ m_ViewportSize.x / 2.f + m_ToolbarPosition.x - (buttonSize.x * (buttonCount / 2.f + 0.5f)), startCursorPos.y + tempGizmoPosition.y + 14.f });
+		ImGui::BeginGroup();
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 1, 1 });
+
+			ImVec2 draggerCursorPos = ImGui::GetCursorPos();
+
+			ImGui::SetCursorPosX(draggerCursorPos.x + framePadding.x);
+			ImGui::TextUnformatted(SW_ICON_DOTS_VERTICAL);
+
+			ImVec2 draggerSize = ImGui::CalcTextSize(SW_ICON_DOTS_VERTICAL);
+			draggerSize.x *= 2.0f;
+
+			ImGui::SetCursorPos(draggerCursorPos);
+			ImGui::InvisibleButton("ToolbarDragger", draggerSize);
+
+			static ImVec2 lastMousePosition = ImGui::GetMousePos();
+
+			ImVec2 mousePos = ImGui::GetMousePos();
+
+			if (ImGui::IsItemActive()) {
+				m_ToolbarPosition.x += mousePos.x - lastMousePosition.x;
+				m_ToolbarPosition.y += mousePos.y - lastMousePosition.y;
+			}
+
+			lastMousePosition = mousePos;
+
+			const SceneState currentState = m_ActiveScene->GetCurrentState();
+
+			constexpr f32 alpha = 0.6f;
+
+			ImGui::SameLine();
+			GUI::MoveMousePosY(-6.5f);
+
+			if (GUI::ToggleButton(SW_ICON_PLAY, currentState == SceneState::Play, { buttonSize.x + 2.f, buttonSize.y + 2.f }, alpha, alpha)) {
+				if (currentState != SceneState::Play) {
+					m_SceneCopy = m_ActiveScene->DeepCopy();
+
+					m_ActiveScene->SetNewState(SceneState::Play);
+					m_ActiveScene->OnRuntimeStart();
+				}
+			}
+
+			ImGui::SameLine();
+			GUI::MoveMousePosY(-6.5f);
+
+			if (GUI::ToggleButton(SW_ICON_STOP, currentState == SceneState::Edit, { buttonSize.x + 2.f, buttonSize.y + 2.f }, alpha, alpha)) {
+				if (currentState != SceneState::Edit) {
+					m_ActiveScene->OnRuntimeStop();
+
+					delete m_ActiveScene;
+					m_ActiveScene = nullptr;
+
+					m_ActiveScene = m_SceneCopy->DeepCopy();
+
+					delete m_SceneCopy;
+					m_SceneCopy = nullptr;
+
+					m_ActiveScene->SetNewState(SceneState::Edit);
+				}
+			}
+
+			ImGui::PopStyleVar(2);
+		}
+		ImGui::EndGroup();
+	}
+
+	void SceneViewportPanel::RenderGizmoToolbar(ImVec2 startCursorPos)
+	{
+		const f32 frameHeight = 1.3f * ImGui::GetFrameHeight();
+		const ImVec2 framePadding = ImGui::GetStyle().FramePadding;
+		const ImVec2 buttonSize = { frameHeight, frameHeight };
+		const f32 buttonCount = 4.0f;
+
+		const ImVec2 gizmoPosition = { m_ViewportBoundsMin.x + m_GizmoToolbarPosition.x, m_ViewportBoundsMin.y + m_GizmoToolbarPosition.y };
+		const ImRect bb(gizmoPosition.x, gizmoPosition.y, gizmoPosition.x + buttonSize.x + 8, gizmoPosition.y + (buttonSize.y + 2) * (buttonCount + 0.5f));
+		
+		ImVec4 frameColor = ImGui::GetStyleColorVec4(ImGuiCol_Tab);
+		frameColor.w = 0.5f;
+
+		ImGui::RenderFrame(bb.Min, bb.Max, ImGui::GetColorU32(frameColor), false, ImGui::GetStyle().FrameRounding);
+		m_IsGizmoBarHovered = ImGui::IsMouseHoveringRect(bb.Min, bb.Max);
+
+		glm::vec2 tempGizmoPosition = m_GizmoToolbarPosition;
+
+		ImGui::SetCursorPos({ startCursorPos.x + tempGizmoPosition.x + framePadding.x, startCursorPos.y + tempGizmoPosition.y });
+		ImGui::BeginGroup();
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 1, 1 });
+
+			ImVec2 draggerCursorPos = ImGui::GetCursorPos();
+
+			ImGui::SetCursorPosX(draggerCursorPos.x + framePadding.x);
+			ImGui::TextUnformatted(SW_ICON_DOTS_HORIZONTAL);
+
+			ImVec2 draggerSize = ImGui::CalcTextSize(SW_ICON_DOTS_HORIZONTAL);
+			draggerSize.x *= 2.0f;
+
+			ImGui::SetCursorPos(draggerCursorPos);
+			ImGui::InvisibleButton("GizmoDragger", draggerSize);
+
+			static ImVec2 lastMousePosition = ImGui::GetMousePos();
+
+			ImVec2 mousePos = ImGui::GetMousePos();
+
+			if (ImGui::IsItemActive()) {
+				m_GizmoToolbarPosition.x += mousePos.x - lastMousePosition.x;
+				m_GizmoToolbarPosition.y += mousePos.y - lastMousePosition.y;
+			}
+
+			lastMousePosition = mousePos;
+
+			constexpr f32 alpha = 0.6f;
+
+			if (GUI::ToggleButton(SW_ICON_ROTATE_3D, m_GizmoType == ImGuizmo::ROTATE, buttonSize, alpha, alpha))
+				m_GizmoType = ImGuizmo::ROTATE;
+			if (GUI::ToggleButton(SW_ICON_AXIS_ARROW, m_GizmoType == ImGuizmo::TRANSLATE, buttonSize, alpha, alpha))
+				m_GizmoType = ImGuizmo::TRANSLATE;
+			if (GUI::ToggleButton(SW_ICON_ARROW_EXPAND, m_GizmoType == ImGuizmo::SCALE, buttonSize, alpha, alpha))
+				m_GizmoType = ImGuizmo::SCALE;
+			if (GUI::ToggleButton(SW_ICON_SELECT_OFF, m_GizmoType == ImGuizmo::BOUNDS, buttonSize, alpha, alpha))
+				m_GizmoType = ImGuizmo::BOUNDS;
+
+			ImGui::PopStyleVar(2);
+		}
+		ImGui::EndGroup();
 	}
 
 }

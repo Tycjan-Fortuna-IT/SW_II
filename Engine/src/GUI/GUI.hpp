@@ -1150,8 +1150,8 @@ namespace SW::GUI {
 		}
 
 		if (ImGui::BeginDragDropTarget()) {
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-				*texture = AssetManager::GetTexture2D(static_cast<char*>(payload->Data)); // todo perform validation of the file
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Texture")) {
+				*texture = AssetManager::GetTexture2D(static_cast<char*>(payload->Data));
 			}
 			ImGui::EndDragDropTarget();
 		}
