@@ -212,9 +212,13 @@ namespace SW {
 
 				const b2Vec2 position = body->GetPosition();
 
+				Entity entity = { handle, this };
+
 				tc.Position.x = position.x;
 				tc.Position.y = position.y;
 				tc.Rotation.z = body->GetAngle();
+
+				entity.ConvertToLocalSpace();
 			}
 
 			for (auto&& [handle, djc] : m_Registry.GetEntitiesWith<DistanceJoint2DComponent>().each()) {

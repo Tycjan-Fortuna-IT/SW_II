@@ -1,8 +1,8 @@
 /**
  * @file Entity.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.2
- * @date 2024-02-22
+ * @version 0.1.3
+ * @date 2024-03-03
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -237,6 +237,15 @@ namespace SW {
 			rc.ParentID = 0;
 		}
 
+		/**
+		 * @brief Returns the world space transformation matrix of the entity.
+		 *
+		 * This function calculates the world space transformation matrix of the entity by traversing the parent-child hierarchy
+		 * and multiplying the local transformation matrix of each parent entity. The resulting matrix represents the entity's
+		 * transformation in world space.
+		 *
+		 * @return The world space transformation matrix of the entity.
+		 */
 		[[nodiscard]] inline glm::mat4 GetWorldSpaceTransformMatrix()
 		{
 			glm::mat4 transform(1.0f);
@@ -247,6 +256,15 @@ namespace SW {
 			return std::move(transform * GetTransform().GetTransform());
 		}
 
+		/**
+		 * @brief Returns the world space transformation of the entity.
+		 *
+		 * This function calculates the world space transformation of the entity by traversing the parent-child hierarchy
+		 * and multiplying the local transformation matrix of each parent entity. The resulting transformation represents the entity's
+		 * transformation in world space.
+		 *
+		 * @return The world space transformation of the entity.
+		 */
 		[[nodiscard]] inline TransformComponent GetWorldSpaceTransform()
 		{
 			glm::mat4 transform = GetWorldSpaceTransformMatrix();
@@ -255,6 +273,28 @@ namespace SW {
 			transformComponent.SetTransform(transform);
 
 			return std::move(transformComponent);
+		}
+
+		/**
+		 * @brief Converts the entity's transform to local space relative to its parent.
+		 * 		  If the entity has no parent, the function does nothing.
+		 * 
+		 * @return void
+		 */
+		void ConvertToLocalSpace()
+		{
+			Entity parent = GetParent();
+
+			if (!parent)
+				return;
+
+			TransformComponent& transform = GetTransform();
+
+			glm::mat4 parentTransform = parent.GetWorldSpaceTransformMatrix();
+
+			glm::mat4 localTransform = glm::inverse(parentTransform) * transform.GetTransform();
+
+			transform.SetTransform(localTransform);
 		}
 
     private:

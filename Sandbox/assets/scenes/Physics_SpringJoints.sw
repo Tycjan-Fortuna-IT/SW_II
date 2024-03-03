@@ -5,9 +5,9 @@ Entities:
       TagComponent:
         Tag: Falling
       TransformComponent:
-        Transform: [-0.274211884, -0.0432967991, 0]
-        Rotation: [0, 0, 0]
-        Scale: [3, 1, 1]
+        Transform: [-0.215145126, 1.43342018, 0]
+        Rotation: [-4.36827214e-08, -4.21281747e-08, -1.53456891]
+        Scale: [3.00000024, 0.999999762, 1]
       SpriteComponent:
         Color: [0.0817867219, 0.588235259, 0.547610998, 1]
       RelationshipComponent:
@@ -39,7 +39,7 @@ Entities:
       SpriteComponent:
         Color: [0.172953203, 0.598930478, 0.195732683, 1]
       RelationshipComponent:
-        ParentID: 0
+        ParentID: 17795518619633248643
         ChildrenCount: 0
       RigidBody2DComponent:
         Type: 2
@@ -82,7 +82,7 @@ Entities:
       SpriteComponent:
         Color: [1, 1, 1, 1]
       RelationshipComponent:
-        ParentID: 0
+        ParentID: 17795518619633248643
         ChildrenCount: 0
       RigidBody2DComponent:
         Type: 0
@@ -114,7 +114,7 @@ Entities:
       IDComponent:
         ID: 17259964157603751307
       TagComponent:
-        Tag: Sprite
+        Tag: Joint
       TransformComponent:
         Transform: [-1.69863582, 1.5, 0]
         Rotation: [0, 0, 0]
@@ -122,7 +122,7 @@ Entities:
       SpriteComponent:
         Color: [1, 1, 1, 1]
       RelationshipComponent:
-        ParentID: 0
+        ParentID: 17795518619633248643
         ChildrenCount: 0
       RigidBody2DComponent:
         Type: 0
@@ -145,3 +145,19 @@ Entities:
         BreakingForce: 3.40282347e+38
         Frequency: 0.5
         DampingRatio: 0
+  - Entity:
+      IDComponent:
+        ID: 17795518619633248643
+      TagComponent:
+        Tag: Couldbeprefab
+      TransformComponent:
+        Transform: [0, -1.39999998, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 3
+        ChildrenIDs:
+          0: 17259964157603751307
+          1: 14924479237669594077
+          2: 3180699473944458832

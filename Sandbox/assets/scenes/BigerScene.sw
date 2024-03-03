@@ -10,12 +10,11 @@ Entities:
         Scale: [1, 1, 1]
       RelationshipComponent:
         ParentID: 0
-        ChildrenCount: 4
+        ChildrenCount: 3
         ChildrenIDs:
           0: 18331807443577825100
           1: 10022383356269630104
           2: 5458427869381750040
-          3: 13322905985239132909
   - Entity:
       IDComponent:
         ID: 2535477167252287573
@@ -95,9 +94,6 @@ Entities:
       RelationshipComponent:
         ParentID: 18156684293390743624
         ChildrenCount: 0
-      CameraComponent:
-        Primary: true
-        AspectRatio: 2.07308388
       RigidBody2DComponent:
         Type: 2
         GravityScale: 1
@@ -142,18 +138,36 @@ Entities:
         IsSensor: false
   - Entity:
       IDComponent:
+        ID: 6071787040322477704
+      TagComponent:
+        Tag: Camera
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      CameraComponent:
+        Primary: true
+        AspectRatio: 2.07308388
+  - Entity:
+      IDComponent:
         ID: 6149229169700030249
       TagComponent:
         Tag: Platform
       TransformComponent:
-        Transform: [21.5927887, 0.25374651, 0]
+        Transform: [-7.59000015, -2.06542158, 0]
         Rotation: [0, 0, 0]
-        Scale: [8.75, 1, 1]
+        Scale: [10.8500004, 1, 1]
       SpriteComponent:
         Color: [0.919786096, 0.546390116, 0.15247792, 1]
       RelationshipComponent:
         ParentID: 0
-        ChildrenCount: 0
+        ChildrenCount: 2
+        ChildrenIDs:
+          0: 13361696574532116246
+          1: 14436223244464092395
       RigidBody2DComponent:
         Type: 2
         GravityScale: 1
@@ -218,7 +232,7 @@ Entities:
       TagComponent:
         Tag: Box Collider
       TransformComponent:
-        Transform: [-1.0560112, 4.31764221, 0]
+        Transform: [6.82264614, 4.31764221, 0]
         Rotation: [0, 0, 0]
         Scale: [4.69999981, 1, 1]
       SpriteComponent:
@@ -290,18 +304,15 @@ Entities:
         Rotation: [0, 0, 0]
         Scale: [1, 1, 1]
       RelationshipComponent:
-        ParentID: 1823444031938407901
-        ChildrenCount: 2
-        ChildrenIDs:
-          0: 13361696574532116246
-          1: 14436223244464092395
+        ParentID: 0
+        ChildrenCount: 0
   - Entity:
       IDComponent:
         ID: 13361696574532116246
       TagComponent:
         Tag: Hinge 1
       TransformComponent:
-        Transform: [18.7206211, 4, 0]
+        Transform: [0, 4, 0]
         Rotation: [0, 0, 0]
         Scale: [0.300000012, 0.300000012, 1]
       CircleComponent:
@@ -309,7 +320,7 @@ Entities:
         Thickness: 1
         Fade: 0.00499999989
       RelationshipComponent:
-        ParentID: 13322905985239132909
+        ParentID: 6149229169700030249
         ChildrenCount: 0
       RigidBody2DComponent:
         Type: 0
@@ -324,7 +335,7 @@ Entities:
         ConnectedEntityID: 6149229169700030249
         EnableCollision: false
         AutoLength: true
-        OriginAnchor: [0, 0]
+        OriginAnchor: [-3.79999995, 0]
         ConnectedAnchor: [-3.79999995, 0]
         Length: 0
         MinLength: 0
@@ -338,7 +349,7 @@ Entities:
       TagComponent:
         Tag: Hinge 2
       TransformComponent:
-        Transform: [24.3500023, 4, 0]
+        Transform: [0, 4, 0]
         Rotation: [0, 0, 0]
         Scale: [0.300000012, 0.300000012, 1]
       CircleComponent:
@@ -346,7 +357,7 @@ Entities:
         Thickness: 1
         Fade: 0.00499999989
       RelationshipComponent:
-        ParentID: 13322905985239132909
+        ParentID: 6149229169700030249
         ChildrenCount: 0
       RigidBody2DComponent:
         Type: 0
@@ -361,7 +372,7 @@ Entities:
         ConnectedEntityID: 6149229169700030249
         EnableCollision: false
         AutoLength: true
-        OriginAnchor: [0, 0]
+        OriginAnchor: [3.70000005, 0]
         ConnectedAnchor: [3.75, 0]
         Length: 0
         MinLength: 0
@@ -391,7 +402,7 @@ Entities:
       TagComponent:
         Tag: 1
       TransformComponent:
-        Transform: [-5.62274265, -1.64176917, 0]
+        Transform: [9.59017849, -5.32030487, 0]
         Rotation: [0, 0, 0]
         Scale: [10.8000002, 1, 1]
       SpriteComponent:
