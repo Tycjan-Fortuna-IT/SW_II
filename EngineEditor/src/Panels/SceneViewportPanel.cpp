@@ -105,7 +105,7 @@ namespace SW {
 			m_UsingEditorCamera = false;
 		}
 
-		if (m_IsViewportFocused) {
+		if (m_IsViewportFocused && IsSceneLoaded() && m_ActiveScene->GetCurrentState() != SceneState::Play) {
 			f32 maxMoveSpeed = m_MaxMoveSpeed * (ImGui::IsKeyDown(ImGuiKey_LeftShift) ? 3.0f : 1.0f);
 
 			if (!ImGui::IsKeyDown(ImGuiKey_LeftCtrl)) {
@@ -498,6 +498,9 @@ namespace SW {
 	bool SceneViewportPanel::OnKeyPressed(KeyCode code)
 	{
 		if (!IsSceneLoaded())
+			return false;
+
+		if (!m_IsViewportFocused)
 			return false;
 
 		switch (code) {

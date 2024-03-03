@@ -79,7 +79,8 @@ namespace SW {
 
 					if (cc.Primary) {
 						mainCamera = &cc.Camera;
-						cameraTransform = entity.GetWorldSpaceTransformMatrix();
+						cameraTransform = glm::translate(glm::mat4(1.0f), tc.Position) // do not apply scale to the camera
+							* glm::toMat4(glm::quat(tc.Rotation));
 
 						break;
 					}
@@ -391,8 +392,8 @@ namespace SW {
 		definition.gravityScale = rbc.GravityScale;
 		definition.position.Set(tc.Position.x, tc.Position.y);
 		definition.angle = tc.Rotation.z;
-		//definition.linearDamping = 1.f;
-		//definition.angularDamping = 10.f;
+		definition.linearDamping = rbc.LinearDamping;
+		definition.angularDamping = rbc.AngularDamping;
 
 		b2Body* rb = m_PhysicsWorld2D->CreateBody(&definition);
 

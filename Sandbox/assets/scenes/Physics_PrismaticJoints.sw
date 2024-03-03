@@ -19,6 +19,8 @@ Entities:
         Friction: 0.5
         Restitution: 0
         RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
         AllowSleep: true
       BoxCollider2DComponent:
         Size: [0.5, 0.5]
@@ -73,6 +75,8 @@ Entities:
         Friction: 0.5
         Restitution: 0
         RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
         AllowSleep: true
       BoxCollider2DComponent:
         Size: [0.5, 0.5]

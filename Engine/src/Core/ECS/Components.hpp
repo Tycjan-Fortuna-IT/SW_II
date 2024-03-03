@@ -225,6 +225,8 @@ namespace SW {
 		f32 Friction = 0.5f;		/**< The friction coefficient [0 - 1] range. */
 		f32 Restitution = 0.f;				/**< The restitution (elasticity) [0 - 1] range. */
 		f32 RestitutionThreshold = 0.5f;	/**< Restitution velocity threshold, usually in [m/s] (above this speed will bounce). */
+		f32 LinearDamping = 0.0f;	/**< The linear damping of the rigid body. */
+		f32 AngularDamping = 0.0f;	/**< The angular damping of the rigid body. */
 
 		bool AllowSleep = true;		/**< Set this flag to false if this body should never fall asleep. */
 	};

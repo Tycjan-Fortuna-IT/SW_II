@@ -42,8 +42,7 @@ namespace SW {
 					ImGui::EndPopup();
 				}
 
-				constexpr ImGuiTableFlags tableFlags = ImGuiTableFlags_RowBg
-					| ImGuiTableFlags_ContextMenuInBody
+				constexpr ImGuiTableFlags tableFlags = ImGuiTableFlags_ContextMenuInBody
 					| ImGuiTableFlags_BordersInner
 					| ImGuiTableFlags_ScrollY;
 

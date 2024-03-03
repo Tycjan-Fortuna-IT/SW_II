@@ -156,17 +156,17 @@ namespace SW {
 
 			DrawComponent<SpriteComponent>(entity, [](SpriteComponent& component) {
 				GUI::BeginProperties("##sprite_property");
-				GUI::DrawVector4ColorPickerProperty(component.Color, "Color");
-				GUI::DrawTextureProperty(&component.Texture, "Texture");
-				GUI::DrawFloatingPointProperty(component.TilingFactor, "Tiling", nullptr, 1.f, 10.f);
+				GUI::DrawVector4ColorPickerProperty(component.Color, "Color", "Color of the sprite");
+				GUI::DrawTextureProperty(&component.Texture, "Texture", "Texture to be used (transparency is supported)");
+				GUI::DrawFloatingPointProperty(component.TilingFactor, "Tiling", "Tiling factor of the texture (how many times the texture should be repeated)", 0.f, 10.f);
 				GUI::EndProperties();
 			}, true);
 
 			DrawComponent<CircleComponent>(entity, [](CircleComponent& component) {
 				GUI::BeginProperties("##circle_property");
-				GUI::DrawVector4ColorPickerProperty(component.Color, "Color");
-				GUI::DrawFloatingPointProperty(component.Thickness, "Thickness", nullptr, 0.f);
-				GUI::DrawFloatingPointProperty(component.Fade, "Fade", nullptr, 0.f);
+				GUI::DrawVector4ColorPickerProperty(component.Color, "Color", "Color of the circle");
+				GUI::DrawFloatingPointProperty(component.Thickness, "Thickness", "Decreasing thickness will start to create a ring inside", 0.f, 1.f);
+				GUI::DrawFloatingPointProperty(component.Fade, "Fade", "How much the circle starts to fade from outside", 0.f, 4.f);
 				GUI::EndProperties();
 			}, true);
 
@@ -175,7 +175,7 @@ namespace SW {
 				GUI::DrawFontDropdownProperty(&component.Font, "Font", "Font to be used");
 				if (component.Font) {
 					GUI::DrawMultilineTextInputProperty(component.TextString, "Text", "Text to display (max 500 characters)");
-					GUI::DrawVector4ColorPickerProperty(component.Color, "Color");
+					GUI::DrawVector4ColorPickerProperty(component.Color, "Color", "Color of the text");
 					GUI::DrawFloatingPointProperty(component.Kerning, "Kerning", "The space between the characters", 0.f, 10.f);
 					GUI::DrawFloatingPointProperty(component.LineSpacing, "Line Spacing", "The space between the lines", 0.f, 10.f);
 				}
@@ -184,7 +184,7 @@ namespace SW {
 
 			DrawComponent<CameraComponent>(entity, [](CameraComponent& component) {
 				GUI::BeginProperties("##camera_property");
-				GUI::DrawBooleanProperty(component.Primary, "Primary");
+				GUI::DrawBooleanProperty(component.Primary, "Primary", "Whether this camera is the primary camera (only one camera can be primary)");
 				GUI::EndProperties();
 			}, true);
 
@@ -194,31 +194,33 @@ namespace SW {
 					GUI::SelectOption<PhysicBodyType>{ "Static", PhysicBodyType::Static },
 					GUI::SelectOption<PhysicBodyType>{ "Kinematic", PhysicBodyType::Kinematic },
 					GUI::SelectOption<PhysicBodyType>{ "Dynamic", PhysicBodyType::Dynamic }
-				}, "Body Type");
+				}, "Body Type", "The type of the body, static bodies are immovable, kinematic bodies are movable but not affected by forces, dynamic bodies are movable and affected by forces");
 				if (component.Type == PhysicBodyType::Dynamic) {
-					GUI::DrawFloatingPointProperty(component.GravityScale, "Gravity Scale");
-					GUI::DrawFloatingPointProperty(component.Friction, "Friction", nullptr, 0.f, 1.f);
-					GUI::DrawFloatingPointProperty(component.Restitution, "Restitution", nullptr, 0.f, 1.f);
-					GUI::DrawFloatingPointProperty(component.RestitutionThreshold, "Restitution Threshold", nullptr);
-					GUI::DrawBooleanProperty(component.AllowSleep, "Allow Sleep");
+					GUI::DrawFloatingPointProperty(component.GravityScale, "Gravity Scale", "The gravity scale of the body", -10.f, 10.f);
+					GUI::DrawFloatingPointProperty(component.Friction, "Friction", "The friction of the body (how much it resists movement)", 0.f, 1.f);
+					GUI::DrawFloatingPointProperty(component.Restitution, "Restitution", "The restitution of the body (how much it bounces)", 0.f, 1.f);
+					GUI::DrawFloatingPointProperty(component.RestitutionThreshold, "Restitution Threshold", "The velocity threshold for the restitution", 0.f, 1.f);
+					GUI::DrawFloatingPointProperty(component.LinearDamping, "Linear Damping", "The linear damping of the body (how much it resists movement)", 0.f, 1.f);
+					GUI::DrawFloatingPointProperty(component.AngularDamping, "Angular Damping", "The angular damping of the body (how much it resists rotation)", 0.f, 1.f);
+					GUI::DrawBooleanProperty(component.AllowSleep, "Allow Sleep", "Whether the body should be allowed to sleep");
 				}
 				GUI::EndProperties();
 			}, true);
 
 			DrawComponent<BoxCollider2DComponent>(entity, [](BoxCollider2DComponent& component) {
 				GUI::BeginProperties("##box_collider_2d_property");
-				GUI::DrawVector2ControlProperty(component.Size, "Size", nullptr, 0.5f);
-				GUI::DrawVector2ControlProperty(component.Offset, "Offset");
-				GUI::DrawFloatingPointProperty(component.Density, "Density", nullptr, 0.f);
+				GUI::DrawVector2ControlProperty(component.Size, "Size", "Size of the collider", 0.5f);
+				GUI::DrawVector2ControlProperty(component.Offset, "Offset", "Offset of the collider from origin");
+				GUI::DrawFloatingPointProperty(component.Density, "Density", "Density of the collider (mass = density * area)", 0.f);
 				GUI::DrawBooleanProperty(component.IsSensor, "Is Sensor?", "Whether to react to the collision or just sense it.");
 				GUI::EndProperties();
 			}, true);
 
 			DrawComponent<CircleCollider2DComponent>(entity, [](CircleCollider2DComponent& component) {
 				GUI::BeginProperties("##circle_collider_2d_property");
-				GUI::DrawFloatingPointProperty(component.Radius, "Radius", nullptr, 0.f);
-				GUI::DrawVector2ControlProperty(component.Offset, "Offset");
-				GUI::DrawFloatingPointProperty(component.Density, "Density", nullptr, 0.f);
+				GUI::DrawFloatingPointProperty(component.Radius, "Radius", "Radius of the collider", 0.5f);
+				GUI::DrawVector2ControlProperty(component.Offset, "Offset", "Offset of the collider from origin");
+				GUI::DrawFloatingPointProperty(component.Density, "Density", "Density of the collider (mass = density * area)", 0.f);
 				GUI::DrawBooleanProperty(component.IsSensor, "Is Sensor?", "Whether to react to the collision or just sense it.");
 				GUI::EndProperties();
 			}, true);
@@ -226,20 +228,20 @@ namespace SW {
 			DrawComponent<PolygonCollider2DComponent>(entity, [](PolygonCollider2DComponent& component) {
 				GUI::BeginProperties("##polygon_collider_2d_property");
 				GUI::DrawVector2TableList(component.Vertices, "Edges", "List of all of the edges of the polygon collider (minimum 3 edges!)");
-				GUI::DrawVector2ControlProperty(component.Offset, "Offset");
-				GUI::DrawFloatingPointProperty(component.Density, "Density", nullptr, 0.f);
+				GUI::DrawVector2ControlProperty(component.Offset, "Offset", "Offset of the collider from origin");
+				GUI::DrawFloatingPointProperty(component.Density, "Density", "Density of the collider (mass = density * area)", 0.f);
 				GUI::DrawBooleanProperty(component.IsSensor, "Is Sensor?", "Whether to react to the collision or just sense it.");
 				GUI::EndProperties();
 			}, true);
 
 			DrawComponent<BuoyancyEffector2DComponent>(entity, [](BuoyancyEffector2DComponent& component) {
 				GUI::BeginProperties("##buoancy_effector_2d_property");
-				GUI::DrawFloatingPointProperty(component.DragMultiplier, "Drag Multiplier");
-				GUI::DrawFloatingPointProperty(component.FlowMagnitude, "Flow Magnitude");
+				GUI::DrawFloatingPointProperty(component.DragMultiplier, "Drag Multiplier", "The drag multiplier of the effector (how much it resists movement)");
+				GUI::DrawFloatingPointProperty(component.FlowMagnitude, "Flow Magnitude", "The magnitude of the flow force in Newtons");
 				f32 angle = glm::degrees(component.FlowAngle);
-				GUI::DrawFloatingPointProperty(angle, "Flow Angle ");
+				GUI::DrawFloatingPointProperty(angle, "Flow Angle", "The angle of the flow force in degrees");
 				component.FlowAngle = glm::radians(angle);
-				GUI::DrawFloatingPointProperty(component.Density, "Density", nullptr, 0.f);
+				GUI::DrawFloatingPointProperty(component.Density, "Density", "Density of the collider (mass = density * area)", 0.f);
 				GUI::EndProperties();
 			}, true);
 

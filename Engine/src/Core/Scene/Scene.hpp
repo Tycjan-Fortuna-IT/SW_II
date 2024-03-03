@@ -203,8 +203,8 @@ namespace SW {
 		b2World* m_PhysicsWorld2D;		/**< The physics world of the scene. */
 		Physics2DContactListener* m_PhysicsContactListener2D = nullptr;
 
-		u32 m_VelocityIterations = 6;			/**< The number of velocity iterations for the physics simulation. */
-		u32 m_PositionIterations = 2;			/**< The number of position iterations for the physics simulation. */
+		u32 m_VelocityIterations = 8;			/**< The number of velocity iterations for the physics simulation. */
+		u32 m_PositionIterations = 3;			/**< The number of position iterations for the physics simulation. */
 		f32 m_PhysicsFrameAccumulator = 0.0f;	/**< The frame accumulator for the physics simulation. */
 
 		/**

@@ -254,7 +254,7 @@ namespace SW {
 
 				if (m_Viewport->IsSceneLoaded()) {
 					if (ImGui::MenuItem("Save Current Scene", "Ctrl+S")) {
-
+						SaveCurrentScene();
 					}
 				}
 

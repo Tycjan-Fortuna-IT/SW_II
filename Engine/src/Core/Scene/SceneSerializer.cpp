@@ -231,6 +231,8 @@ namespace SW {
 				output << YAML::Key << "Friction" << YAML::Value << rbc.Friction;
 				output << YAML::Key << "Restitution" << YAML::Value << rbc.Restitution;
 				output << YAML::Key << "RestitutionThreshold" << YAML::Value << rbc.RestitutionThreshold;
+				output << YAML::Key << "LinearDamping" << YAML::Value << rbc.LinearDamping;
+				output << YAML::Key << "AngularDamping" << YAML::Value << rbc.AngularDamping;
 				output << YAML::Key << "AllowSleep" << YAML::Value << rbc.AllowSleep;
 				output << YAML::EndMap;
 			}
@@ -501,6 +503,8 @@ namespace SW {
 				rbc.Friction = rigidBody2DComponent["Friction"].as<f32>();
 				rbc.Restitution = rigidBody2DComponent["Restitution"].as<f32>();
 				rbc.RestitutionThreshold = rigidBody2DComponent["RestitutionThreshold"].as<f32>();
+				rbc.LinearDamping = rigidBody2DComponent["LinearDamping"].as<f32>();
+				rbc.AngularDamping = rigidBody2DComponent["AngularDamping"].as<f32>();
 				rbc.AllowSleep = rigidBody2DComponent["AllowSleep"].as<bool>();
 			}
 
