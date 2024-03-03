@@ -521,14 +521,14 @@ namespace SW {
 		const f32 frameHeight = 1.3f * ImGui::GetFrameHeight();
 		const ImVec2 framePadding = ImGui::GetStyle().FramePadding;
 		const ImVec2 buttonSize = { frameHeight, frameHeight };
-		const f32 buttonCount = 4.0f;
+		const f32 buttonCount = 3.0f;
 
 		const ImVec2 gizmoPosition = { m_ViewportBoundsMin.x + m_ViewportSize.x / 2.f + m_ToolbarPosition.x, m_ViewportBoundsMin.y + m_ToolbarPosition.y };
 		const ImRect bb(
-			gizmoPosition.x - (buttonSize.x * (buttonCount / 2.f + 0.5f)), 
+			gizmoPosition.x - ((buttonSize.x + 1.f) * (buttonCount / 2.f + 0.5f)), 
 			gizmoPosition.y + 8.f,
-			gizmoPosition.x + (buttonSize.x * (buttonCount / 2.f + 0.5f)), 
-			gizmoPosition.y + (buttonSize.y + 2) + 8.f
+			gizmoPosition.x + ((buttonSize.x + 1.f) * (buttonCount / 2.f + 0.5f)), 
+			gizmoPosition.y + (buttonSize.y + 2.f) + 8.f
 		);
 		
 		ImVec4 frameColor = ImGui::GetStyleColorVec4(ImGuiCol_Tab);
@@ -572,14 +572,28 @@ namespace SW {
 			constexpr f32 alpha = 0.6f;
 
 			ImGui::SameLine();
+			GUI::MoveMousePosX(-12.f);
 			GUI::MoveMousePosY(-6.5f);
 
 			if (GUI::ToggleButton(SW_ICON_PLAY, currentState == SceneState::Play, { buttonSize.x + 2.f, buttonSize.y + 2.f }, alpha, alpha)) {
 				if (currentState != SceneState::Play) {
-					m_SceneCopy = m_ActiveScene->DeepCopy();
+					if (currentState == SceneState::Pause) {
+						m_ActiveScene->SetNewState(SceneState::Play);
+					} else {
+						m_SceneCopy = m_ActiveScene->DeepCopy();
 
-					m_ActiveScene->SetNewState(SceneState::Play);
-					m_ActiveScene->OnRuntimeStart();
+						m_ActiveScene->SetNewState(SceneState::Play);
+						m_ActiveScene->OnRuntimeStart();
+					}
+				}
+			}
+
+			ImGui::SameLine();
+			GUI::MoveMousePosY(-6.5f);
+
+			if (GUI::ToggleButton(SW_ICON_PAUSE, currentState == SceneState::Pause, { buttonSize.x + 2.f, buttonSize.y + 2.f }, alpha, alpha)) {
+				if (currentState == SceneState::Play) {
+					m_ActiveScene->SetNewState(SceneState::Pause);
 				}
 			}
 

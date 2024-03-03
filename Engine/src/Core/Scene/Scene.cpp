@@ -69,7 +69,8 @@ namespace SW {
 		switch (m_SceneState) {
 			case SW::SceneState::Edit:
 				Renderer2D::BeginScene(camera); break;
-			case SW::SceneState::Play: {
+			case SW::SceneState::Play:
+			case SW::SceneState::Pause: {
 				glm::mat4 cameraTransform;
 				SceneCamera* mainCamera = nullptr;
 
@@ -91,8 +92,6 @@ namespace SW {
 
 				break;
 			}
-			case SW::SceneState::Pause:
-				SW_FATAL("Not yet implemented!"); break;
 			case SW::SceneState::Simulate:
 				SW_FATAL("Not yet implemented!"); break;
 		}
@@ -191,96 +190,98 @@ namespace SW {
 	void Scene::OnUpdateRuntime(Timestep dt)
 	{
 #pragma region Physics
-		constexpr f32 physicsStepRate = 50.0f;
-		constexpr f32 physicsTs = 1.0f / physicsStepRate;
+		if (m_SceneState != SceneState::Pause) {
+			constexpr f32 physicsStepRate = 50.0f;
+			constexpr f32 physicsTs = 1.0f / physicsStepRate;
 
-		m_PhysicsFrameAccumulator += dt;
+			m_PhysicsFrameAccumulator += dt;
 
-		while (m_PhysicsFrameAccumulator >= physicsTs) {
-			m_PhysicsContactListener2D->Step(physicsTs);
-			m_PhysicsWorld2D->Step(physicsTs, static_cast<int32_t>(m_VelocityIterations), static_cast<int32_t>(m_PositionIterations));
+			while (m_PhysicsFrameAccumulator >= physicsTs) {
+				m_PhysicsContactListener2D->Step(physicsTs);
+				m_PhysicsWorld2D->Step(physicsTs, static_cast<int32_t>(m_VelocityIterations), static_cast<int32_t>(m_PositionIterations));
 
-			m_PhysicsFrameAccumulator -= physicsTs;
-		}
+				m_PhysicsFrameAccumulator -= physicsTs;
+			}
 
-		for (auto&& [handle, tc, rbc] : m_Registry.GetEntitiesWith<TransformComponent, RigidBody2DComponent>().each()) {
-			const b2Body* body = static_cast<b2Body*>(rbc.Handle);
+			for (auto&& [handle, tc, rbc] : m_Registry.GetEntitiesWith<TransformComponent, RigidBody2DComponent>().each()) {
+				const b2Body* body = static_cast<b2Body*>(rbc.Handle);
 
-			if (!body->IsAwake())
-				continue;
+				if (!body->IsAwake())
+					continue;
 
-			const b2Vec2 position = body->GetPosition();
+				const b2Vec2 position = body->GetPosition();
 
-			tc.Position.x = position.x;
-			tc.Position.y = position.y;
-			tc.Rotation.z = body->GetAngle();
-		}
+				tc.Position.x = position.x;
+				tc.Position.y = position.y;
+				tc.Rotation.z = body->GetAngle();
+			}
 
-		for (auto&& [handle, djc] : m_Registry.GetEntitiesWith<DistanceJoint2DComponent>().each()) {
-			if (djc.RuntimeJoint) {
-				b2Joint* joint = (b2Joint*)(djc.RuntimeJoint);
+			for (auto&& [handle, djc] : m_Registry.GetEntitiesWith<DistanceJoint2DComponent>().each()) {
+				if (djc.RuntimeJoint) {
+					b2Joint* joint = (b2Joint*)(djc.RuntimeJoint);
 
-				if (joint->GetReactionForce(physicsStepRate).LengthSquared() > djc.BreakingForce * djc.BreakingForce) {
-					m_PhysicsWorld2D->DestroyJoint(joint);
+					if (joint->GetReactionForce(physicsStepRate).LengthSquared() > djc.BreakingForce * djc.BreakingForce) {
+						m_PhysicsWorld2D->DestroyJoint(joint);
 
-					djc.RuntimeJoint = nullptr;
+						djc.RuntimeJoint = nullptr;
+					}
 				}
 			}
-		}
 
-		for (auto&& [handle, rjc] : m_Registry.GetEntitiesWith<RevolutionJoint2DComponent>().each()) {
-			if (rjc.RuntimeJoint) {
-				b2Joint* joint = (b2Joint*)(rjc.RuntimeJoint);
+			for (auto&& [handle, rjc] : m_Registry.GetEntitiesWith<RevolutionJoint2DComponent>().each()) {
+				if (rjc.RuntimeJoint) {
+					b2Joint* joint = (b2Joint*)(rjc.RuntimeJoint);
 
-				if (
-					joint->GetReactionForce(physicsStepRate).LengthSquared() > rjc.BreakingForce * rjc.BreakingForce ||
-					joint->GetReactionTorque(physicsStepRate) > rjc.BreakingTorque
-				) {
-					m_PhysicsWorld2D->DestroyJoint(joint);
+					if (
+						joint->GetReactionForce(physicsStepRate).LengthSquared() > rjc.BreakingForce * rjc.BreakingForce ||
+						joint->GetReactionTorque(physicsStepRate) > rjc.BreakingTorque
+					) {
+						m_PhysicsWorld2D->DestroyJoint(joint);
 
-					rjc.RuntimeJoint = nullptr;
+						rjc.RuntimeJoint = nullptr;
+					}
 				}
 			}
-		}
 
-		for (auto&& [handle, pjc] : m_Registry.GetEntitiesWith<PrismaticJoint2DComponent>().each()) {
-			if (pjc.RuntimeJoint) {
-				b2Joint* joint = (b2Joint*)(pjc.RuntimeJoint);
+			for (auto&& [handle, pjc] : m_Registry.GetEntitiesWith<PrismaticJoint2DComponent>().each()) {
+				if (pjc.RuntimeJoint) {
+					b2Joint* joint = (b2Joint*)(pjc.RuntimeJoint);
 
-				if (
-					joint->GetReactionForce(physicsStepRate).LengthSquared() > pjc.BreakingForce * pjc.BreakingForce ||
-					joint->GetReactionTorque(physicsStepRate) > pjc.BreakingTorque
-				) {
-					m_PhysicsWorld2D->DestroyJoint(joint);
+					if (
+						joint->GetReactionForce(physicsStepRate).LengthSquared() > pjc.BreakingForce * pjc.BreakingForce ||
+						joint->GetReactionTorque(physicsStepRate) > pjc.BreakingTorque
+					) {
+						m_PhysicsWorld2D->DestroyJoint(joint);
 
-					pjc.RuntimeJoint = nullptr;
+						pjc.RuntimeJoint = nullptr;
+					}
 				}
 			}
-		}
 
-		for (auto&& [handle, sjc] : m_Registry.GetEntitiesWith<SpringJoint2DComponent>().each()) {
-			if (sjc.RuntimeJoint) {
-				b2Joint* joint = (b2Joint*)(sjc.RuntimeJoint);
+			for (auto&& [handle, sjc] : m_Registry.GetEntitiesWith<SpringJoint2DComponent>().each()) {
+				if (sjc.RuntimeJoint) {
+					b2Joint* joint = (b2Joint*)(sjc.RuntimeJoint);
 
-				if (joint->GetReactionForce(physicsStepRate).LengthSquared() > sjc.BreakingForce * sjc.BreakingForce) {
-					m_PhysicsWorld2D->DestroyJoint(joint);
+					if (joint->GetReactionForce(physicsStepRate).LengthSquared() > sjc.BreakingForce * sjc.BreakingForce) {
+						m_PhysicsWorld2D->DestroyJoint(joint);
 
-					sjc.RuntimeJoint = nullptr;
+						sjc.RuntimeJoint = nullptr;
+					}
 				}
 			}
-		}
 
-		for (auto&& [handle, wjc] : m_Registry.GetEntitiesWith<WheelJoint2DComponent>().each()) {
-			if (wjc.RuntimeJoint) {
-				b2Joint* joint = (b2Joint*)(wjc.RuntimeJoint);
+			for (auto&& [handle, wjc] : m_Registry.GetEntitiesWith<WheelJoint2DComponent>().each()) {
+				if (wjc.RuntimeJoint) {
+					b2Joint* joint = (b2Joint*)(wjc.RuntimeJoint);
 
-				if (
-					joint->GetReactionForce(physicsStepRate).LengthSquared() > wjc.BreakingForce * wjc.BreakingForce ||
-					joint->GetReactionTorque(physicsStepRate) > wjc.BreakingTorque
-				) {
-					m_PhysicsWorld2D->DestroyJoint(joint);
+					if (
+						joint->GetReactionForce(physicsStepRate).LengthSquared() > wjc.BreakingForce * wjc.BreakingForce ||
+						joint->GetReactionTorque(physicsStepRate) > wjc.BreakingTorque
+					) {
+						m_PhysicsWorld2D->DestroyJoint(joint);
 
-					wjc.RuntimeJoint = nullptr;
+						wjc.RuntimeJoint = nullptr;
+					}
 				}
 			}
 		}

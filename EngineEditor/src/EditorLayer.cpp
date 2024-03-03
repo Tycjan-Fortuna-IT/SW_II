@@ -84,9 +84,22 @@ namespace SW {
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 
 		drawList->AddRectFilled(titlebarMin, titlebarMax, Color::TitleBar);
-		ImU32 gradientColor = m_Viewport->IsSceneLoaded() ? (
-			m_Viewport->GetCurrentScene()->GetCurrentState() == SceneState::Edit ?
-				Color::LightBlack : IM_COL32(55, 91, 71, 255)) : Color::LightBlack;
+		ImU32 gradientColor = IM_COL32(91, 55, 55, 255);
+
+		if (m_Viewport->IsSceneLoaded()) {
+			switch(m_Viewport->GetCurrentScene()->GetCurrentState()) {
+				case SceneState::Edit:
+					gradientColor = Color::LightBlack;
+					break;
+				case SceneState::Play:
+					gradientColor = IM_COL32(55, 91, 71, 255);
+					break;
+				case SceneState::Pause:
+					gradientColor = IM_COL32(91, 91, 55, 255);
+					break;
+			}
+		}
+		
 		drawList->AddRectFilledMultiColor(titlebarMin, ImVec2(titlebarMin.x + 600.0f, titlebarMax.y), gradientColor, Color::TitleBar, Color::TitleBar, gradientColor);
 
 		{

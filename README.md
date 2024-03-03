@@ -27,8 +27,8 @@ Right now, the engine is very bare-bones. Its most remarkable features are:
 | **2D Renderer**       | 2D batch renderer supporting OpenGL.                                                  | WIP 💻 |
 | **ImGui support**     | Basic game editor and in-game debug UI using *dear imgui*.                            | Done ✔️ |
 | **Asset manager**      | Basic asset handling API.                                 | TODO 📋 |
-| **Font**               | Extend the Renderer capabilities so it can draw text.     | TODO 📋  |
-| **2D Physics**        | 2D Physics using *Box2D* with Rigidbody, Box and Circle Colliders and joints.         | TODO 📋 |
+| **Font**               | Extend the Renderer capabilities so it can draw text.     | Done ✔️  |
+| **2D Physics**        | 2D Physics using *Box2D* with Rigidbody, Box and Circle Colliders and joints.         | Done ✔️ |
 | **Scripting**         | Basic scripting in C#.                                                   | TODO 📋 |
 | **C# API**             | C# API for all the components.                            | TODO 📋  |
 | **Audio**             | Basic Sound API with spatialization..                              | TODO 📋 |
