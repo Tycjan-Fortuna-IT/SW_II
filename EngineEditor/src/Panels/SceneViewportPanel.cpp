@@ -66,6 +66,8 @@ namespace SW {
 
 	void SceneViewportPanel::OnUpdate(Timestep dt)
 	{
+		PROFILE_FUNCTION();
+
 		FramebufferSpecification spec = m_Framebuffer->GetSpecification();
 
 		if (
@@ -371,6 +373,8 @@ namespace SW {
 
 	void SceneViewportPanel::OnRender()
 	{
+		PROFILE_FUNCTION();
+
 		GUI::ScopedStyle NoWindowPadding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.f , 0.f });
 
 		if (OnBegin(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse)) {
@@ -402,6 +406,9 @@ namespace SW {
 					Scene* newScene = SceneSerializer::Deserialize(path.string());
 
 					SetCurrentScene(newScene);
+					
+					newScene->SortEntities();
+
 				}
 				ImGui::EndDragDropTarget();
 			}

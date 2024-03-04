@@ -62,6 +62,8 @@ namespace SW {
 
 	void EditorLayer::OnUpdate(Timestep dt)
 	{
+		PROFILE_FUNCTION();
+
 		for (Panel* panel : m_Panels) {
 			if (panel->IsShowing())
 				panel->OnUpdate(dt);
@@ -70,6 +72,8 @@ namespace SW {
 
 	f32 EditorLayer::DrawTitleBar()
 	{
+		PROFILE_FUNCTION();
+
 		constexpr f32 titlebarHeight = 57.0f;
 		const ImVec2 windowPadding = ImGui::GetCurrentWindow()->WindowPadding;
 
@@ -229,6 +233,8 @@ namespace SW {
 
 	void EditorLayer::DrawMenuBar()
 	{
+		PROFILE_FUNCTION();
+
 		ImGui::SetCursorPosX(120); // just so it doesn't interfere with the SW logo
 
 		const ImRect menuBarRect = { 
@@ -287,6 +293,8 @@ namespace SW {
 
 	void EditorLayer::OnRender()
 	{
+		PROFILE_FUNCTION();
+
 		Application::Get()->GetWindow()->RegisterOverTitlebar(false);
 
 		ImGuiIO& io = ImGui::GetIO();

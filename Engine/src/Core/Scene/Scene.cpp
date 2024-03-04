@@ -47,7 +47,9 @@ namespace SW {
 	{
 		entity.RemoveParent();
 
-		for (u64 childId : entity.GetRelations().ChildrenIDs) {
+		RelationshipComponent& rc = entity.GetRelations();
+
+		for (u64 childId : rc.ChildrenIDs) {
 			Entity childToDelete = GetEntityByID(childId);
 
 			DestroyEntity(childToDelete);
@@ -55,6 +57,8 @@ namespace SW {
 
 		m_EntityMap.erase(entity.GetID());
 		m_Registry.DestroyEntity(entity);
+
+		SortEntities();
 	}
 
     void Scene::DestroyAllEntities()
@@ -63,6 +67,16 @@ namespace SW {
 
 		m_EntityMap.clear();
     }
+
+	void Scene::SortEntities()
+	{
+		m_Registry.GetRegistryHandle().sort<IDComponent>([&](const auto lhs, const auto rhs) {
+			auto lhsEntity = m_EntityMap.find(lhs.ID);
+			auto rhsEntity = m_EntityMap.find(rhs.ID);
+
+			return static_cast<u32>(lhsEntity->second) < static_cast<u32>(rhsEntity->second);
+		});
+	}
 
 	bool Scene::BeginRendering(EditorCamera* camera)
 	{
@@ -166,6 +180,8 @@ namespace SW {
 
     void Scene::OnUpdateEditor(Timestep dt)
     {
+		PROFILE_FUNCTION();
+
 		for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<SpriteComponent>().each()) {
 			Entity entity = { handle, this };
 
@@ -190,8 +206,12 @@ namespace SW {
 
 	void Scene::OnUpdateRuntime(Timestep dt)
 	{
+		PROFILE_FUNCTION();
+
 #pragma region Physics
 		if (m_SceneState != SceneState::Pause) {
+			PROFILE_SCOPE("Scene::OnUpdateRuntime() - Physics update");
+
 			constexpr f32 physicsStepRate = 50.0f;
 			constexpr f32 physicsTs = 1.0f / physicsStepRate;
 
@@ -335,14 +355,14 @@ namespace SW {
 		return {};
 	}
 
-	template <typename C>
-	inline static void CopyComponent(Scene* scene, EntityRegistry& sourceRegistry, entt::registry& destinationRegistryHandle)
+	template<typename T>
+	inline static void CopyComponent(entt::registry& dstRegistry, entt::registry& srcRegistry, const std::unordered_map<u64, entt::entity>& enttMap)
 	{
-		for (auto&& [handle, idc, component] : sourceRegistry.GetEntitiesWith<IDComponent, C>().each()) {
-			C& componentToCopy = scene->GetEntityByID(idc.ID).GetComponent<C>();
-			Entity destination = scene->GetEntityByID(idc.ID);
+		for (auto srcEntity : srcRegistry.view<T>()) {
+			entt::entity destEntity = enttMap.at(srcRegistry.get<IDComponent>(srcEntity).ID);
 
-			destinationRegistryHandle.emplace_or_replace<C>(destination, componentToCopy);
+			T& srcComponent = srcRegistry.get<T>(srcEntity);
+			T& destComponent = dstRegistry.emplace_or_replace<T>(destEntity, srcComponent);
 		}
 	}
 
@@ -350,44 +370,39 @@ namespace SW {
     {
 		Scene* copy = new Scene(m_FilePath);
 
+		std::unordered_map<u64, entt::entity> enttMap;
+
+		entt::registry& currentRegistry = m_Registry.GetRegistryHandle();
 		entt::registry& copyRegistry = copy->GetRegistry().GetRegistryHandle();
 
-		for (auto&& [handle, idc, tc] : m_Registry.GetEntitiesWith<IDComponent, TagComponent>().each()) {
-			Entity current = { handle, this };
-			RelationshipComponent& currentRelations = current.GetRelations();
+		for (auto entity : currentRegistry.view<IDComponent>()) {
+			u64 uuid = currentRegistry.get<IDComponent>(entity).ID;
+			std::string& name = currentRegistry.get<TagComponent>(entity).Tag;
 
-			Entity copied = copy->CreateEntityWithID(idc.ID, tc.Tag);
-			RelationshipComponent& copiedRelations = copied.GetRelations();
-
-			copiedRelations.ParentID = currentRelations.ParentID;
-
-			for (u64 childId : currentRelations.ChildrenIDs) {
-				copiedRelations.ChildrenIDs.emplace_back(childId);
-			}
-
-			copyRegistry.emplace_or_replace<RelationshipComponent>(copied, copiedRelations);
+			enttMap[uuid] = copy->CreateEntityWithID(uuid, name);
 		}
 
-		CopyComponent<TransformComponent>(this, m_Registry, copyRegistry);
-		CopyComponent<SpriteComponent>(this, m_Registry, copyRegistry);
-		CopyComponent<CircleComponent>(this, m_Registry, copyRegistry);
-		CopyComponent<TextComponent>(this, m_Registry, copyRegistry);
-		CopyComponent<CameraComponent>(this, m_Registry, copyRegistry);
-		CopyComponent<RigidBody2DComponent>(this, m_Registry, copyRegistry);
-		CopyComponent<BoxCollider2DComponent>(this, m_Registry, copyRegistry);
-		CopyComponent<CircleCollider2DComponent>(this, m_Registry, copyRegistry);
-		CopyComponent<PolygonCollider2DComponent>(this, m_Registry, copyRegistry);
-		CopyComponent<BuoyancyEffector2DComponent>(this, m_Registry, copyRegistry);
-		CopyComponent<DistanceJoint2DComponent>(this, m_Registry, copyRegistry);
-		CopyComponent<RevolutionJoint2DComponent>(this, m_Registry, copyRegistry);
-		CopyComponent<PrismaticJoint2DComponent>(this, m_Registry, copyRegistry);
-		CopyComponent<SpringJoint2DComponent>(this, m_Registry, copyRegistry);
-		CopyComponent<WheelJoint2DComponent>(this, m_Registry, copyRegistry);
+		CopyComponent<TransformComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<SpriteComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<CircleComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<RelationshipComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<TextComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<CameraComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<RigidBody2DComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<BoxCollider2DComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<CircleCollider2DComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<PolygonCollider2DComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<BuoyancyEffector2DComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<DistanceJoint2DComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<RevolutionJoint2DComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<PrismaticJoint2DComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<SpringJoint2DComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<WheelJoint2DComponent>(copyRegistry, currentRegistry, enttMap);
 
 		return copy;
     }
 
-    void Scene::CreateRigidbody2D(Entity entity, const TransformComponent& tc, RigidBody2DComponent& rbc)
+	void Scene::CreateRigidbody2D(Entity entity, const TransformComponent& tc, RigidBody2DComponent& rbc)
 	{
 		b2BodyDef definition;
 		definition.type = static_cast<b2BodyType>(rbc.Type);

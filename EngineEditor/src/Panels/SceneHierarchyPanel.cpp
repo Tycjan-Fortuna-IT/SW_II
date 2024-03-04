@@ -10,7 +10,10 @@
 namespace SW {
 
 	SceneHierarchyPanel::SceneHierarchyPanel(SceneViewportPanel* sceneViewportPanel)
-		: Panel("Scene Hierarchy", SW_ICON_VIEW_LIST, true), m_SceneViewportPanel(sceneViewportPanel) {}
+		: Panel("Scene Hierarchy", SW_ICON_VIEW_LIST, true), m_SceneViewportPanel(sceneViewportPanel)
+	{
+		
+	}
 
 	void SceneHierarchyPanel::OnUpdate(Timestep dt)
 	{
@@ -19,6 +22,8 @@ namespace SW {
 
 	void SceneHierarchyPanel::OnRender()
 	{
+		PROFILE_FUNCTION();
+
 		GUI::ScopedStyle CellPadding(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
 
 		if (OnBegin(ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar)) {
@@ -66,23 +71,6 @@ namespace SW {
 
 					const auto& view = m_SceneViewportPanel->GetCurrentScene()->GetRegistry()
 						.GetEntitiesWith<IDComponent, TagComponent, RelationshipComponent>();
-
-					/*std::map<u64, std::tuple<Entity, u64, std::string, RelationshipComponent>> sortedEntities;
-
-					for (auto&& [handle, idc, tc, rsc] : view.each())
-						sortedEntities[idc.ID] = std::make_tuple(Entity{ handle, m_SceneViewportPanel->GetCurrentScene() }, idc.ID, tc.Tag, rsc);
-
-					for (auto& element : sortedEntities) {
-						auto& tuple = std::get<1>(element);
-						Entity entity = std::get<0>(tuple);
-						u64 ID = std::get<1>(tuple);
-						std::string tag = std::get<2>(tuple);
-						RelationshipComponent rsc = std::get<3>(tuple);
-
-						if (!rsc.ParentID) {
-							RenderEntityNode(entity, ID, tag, rsc);
-						}
-					} TODO: Investigate performance impact of this sorting */ 
 
 					for (auto&& [handle, idc, tc, rsc] : view.each()) {
 						if (!rsc.ParentID) {

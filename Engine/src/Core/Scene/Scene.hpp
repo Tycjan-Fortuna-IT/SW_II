@@ -185,6 +185,8 @@ namespace SW {
 		 */
 		u32 GetViewportHeight() const { return m_ViewportHeight; }
 
+		void SortEntities();
+
 		glm::vec2 Gravity = { 0.0f, -9.80665f };	/**< The gravity of the scene. */
 
 	private:
