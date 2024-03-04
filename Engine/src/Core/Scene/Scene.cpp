@@ -366,6 +366,16 @@ namespace SW {
 		}
 	}
 
+	template<typename T>
+	inline static void CopyComponentIfExists(entt::entity dst, entt::registry& srcRegistry, entt::entity src)
+	{
+		if (srcRegistry.all_of<T>(src)) {
+			T& srcComponent = srcRegistry.get<T>(src);
+
+			srcRegistry.emplace_or_replace<T>(dst, srcComponent);
+		}
+	}
+
     Scene* Scene::DeepCopy()
     {
 		Scene* copy = new Scene(m_FilePath);
@@ -402,9 +412,46 @@ namespace SW {
 		return copy;
     }
 
-	void Scene::DuplicateEntity(Entity entity)
+	Entity Scene::DuplicateEntity(Entity entity)
 	{
+		entt::registry& currentRegistry = m_Registry.GetRegistryHandle();
 
+		Entity newEntity = CreateEntity();
+
+		CopyComponentIfExists<TagComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<TransformComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<SpriteComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<CircleComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<TextComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<CameraComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<RigidBody2DComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<BoxCollider2DComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<CircleCollider2DComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<PolygonCollider2DComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<BuoyancyEffector2DComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<DistanceJoint2DComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<RevolutionJoint2DComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<PrismaticJoint2DComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<SpringJoint2DComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<WheelJoint2DComponent>(newEntity, currentRegistry, entity);
+
+		auto parentNewEntity = [&entity, scene = this](Entity newEntity) {
+			if (Entity parent = entity.GetParent()) {
+				newEntity.SetParent(parent);
+
+				parent.GetRelations().ChildrenIDs.push_back(newEntity.GetID());
+			}
+		};
+
+		std::vector<u64> childIds = entity.GetRelations().ChildrenIDs;
+
+		for (u64 childId : childIds) {
+			Entity childDuplicate = DuplicateEntity(GetEntityByID(childId));
+			
+			childDuplicate.SetParent(newEntity);
+		}
+
+		return newEntity;
 	}
 
 	void Scene::CreateRigidbody2D(Entity entity, const TransformComponent& tc, RigidBody2DComponent& rbc)

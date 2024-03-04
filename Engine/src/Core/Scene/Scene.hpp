@@ -1,8 +1,8 @@
 /**
  * @file Scene.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.4
- * @date 2024-03-03
+ * @version 0.1.5
+ * @date 2024-03-04
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -170,6 +170,13 @@ namespace SW {
 		 * @return Scene* The copy of the scene.
 		 */
 		Scene* DeepCopy();
+
+		/**
+		 * @brief Duplicates the entity. (deep copy with all components)
+		 * 
+		 * @return Entity The duplicated entity.
+		 */
+		Entity DuplicateEntity(Entity entity);
 
 		/**
 		 * @brief Get the width of the viewport.
