@@ -21,7 +21,7 @@ Entities:
       TagComponent:
         Tag: Left Wheel
       TransformComponent:
-        Transform: [-9.5, 0.200000003, 1.49011612e-08]
+        Transform: [-9.50000191, 0.219395161, -0.00012205659]
         Rotation: [0, 0, 0]
         Scale: [1, 1, 1.04558396]
       CircleComponent:
@@ -43,20 +43,20 @@ Entities:
       CircleCollider2DComponent:
         Radius: 0.5
         Offset: [0, 0]
-        Density: 25
+        Density: 1
         IsSensor: false
       WheelJoint2DComponent:
         ConnectedEntityID: 4175566080875530561
         OriginAnchor: [0, 0]
         LowerTranslation: 0
         UpperTranslation: 0
-        MotorSpeed: 50
-        MaxMotorTorque: 45
+        MotorSpeed: 5
+        MaxMotorTorque: 12.5
         BreakingForce: 3.40282347e+38
         BreakingTorque: 3.40282347e+38
-        Frequency: 0
-        DampingRatio: 0.699999988
-        EnableLimit: true
+        Frequency: 10
+        DampingRatio: 0
+        EnableLimit: false
         EnableMotor: true
         EnableCollision: false
   - Entity:
@@ -86,7 +86,7 @@ Entities:
       TagComponent:
         Tag: Body
       TransformComponent:
-        Transform: [-8, 0.818944097, -0.00999999978]
+        Transform: [-8, 1.03081608, -0.00999999978]
         Rotation: [0, 0, 0]
         Scale: [4.47966337, 1.49409747, 1]
       SpriteComponent:
@@ -106,7 +106,35 @@ Entities:
       BoxCollider2DComponent:
         Size: [0.5, 0.5]
         Offset: [0, 0]
-        Density: 4
+        Density: 1
+        IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 4238985469750613728
+      TagComponent:
+        Tag: Platform
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [7.55000019, 1, 1]
+      SpriteComponent:
+        Color: [0.807486653, 0.700111151, 0.159770086, 1]
+      RelationshipComponent:
+        ParentID: 15895639110335943461
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 2
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        AllowSleep: true
+      BoxCollider2DComponent:
+        Size: [0.5, 0.5]
+        Offset: [0, 0]
+        Density: 1
         IsSensor: false
   - Entity:
       IDComponent:
@@ -114,7 +142,7 @@ Entities:
       TagComponent:
         Tag: 3
       TransformComponent:
-        Transform: [12.5867004, 0.366147041, 0]
+        Transform: [12.7799997, 0.389999986, 0]
         Rotation: [0, 0, 0]
         Scale: [9.05000019, 1, 1]
       SpriteComponent:
@@ -138,6 +166,39 @@ Entities:
         IsSensor: false
   - Entity:
       IDComponent:
+        ID: 5701364074816771619
+      TagComponent:
+        Tag: Left Line
+      TransformComponent:
+        Transform: [0, 3, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 15895639110335943461
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 0
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        AllowSleep: true
+      SpringJoint2DComponent:
+        ConnectedEntityID: 4238985469750613728
+        EnableCollision: false
+        AutoLength: true
+        OriginAnchor: [-3, 0]
+        ConnectedAnchor: [-3, 0]
+        Length: 0
+        MinLength: 0
+        MaxLength: 1
+        BreakingForce: 3.40282347e+38
+        Frequency: 2
+        DampingRatio: 0.5
+  - Entity:
+      IDComponent:
         ID: 6071787040322477704
       TagComponent:
         Tag: Camera
@@ -153,42 +214,11 @@ Entities:
         AspectRatio: 2.07308388
   - Entity:
       IDComponent:
-        ID: 6149229169700030249
-      TagComponent:
-        Tag: Platform
-      TransformComponent:
-        Transform: [-7.59000015, -2.06542158, 0]
-        Rotation: [0, 0, 0]
-        Scale: [10.8500004, 1, 1]
-      SpriteComponent:
-        Color: [0.919786096, 0.546390116, 0.15247792, 1]
-      RelationshipComponent:
-        ParentID: 0
-        ChildrenCount: 2
-        ChildrenIDs:
-          0: 13361696574532116246
-          1: 14436223244464092395
-      RigidBody2DComponent:
-        Type: 2
-        GravityScale: 1
-        Friction: 0.5
-        Restitution: 0
-        RestitutionThreshold: 0.5
-        LinearDamping: 0
-        AngularDamping: 0
-        AllowSleep: true
-      BoxCollider2DComponent:
-        Size: [0.5, 0.5]
-        Offset: [0, 0]
-        Density: 1
-        IsSensor: false
-  - Entity:
-      IDComponent:
         ID: 6419327897363398420
       TagComponent:
         Tag: Right Wheel
       TransformComponent:
-        Transform: [-6.5, 0.199938953, -0.000122070312]
+        Transform: [-6.5, 0.199939013, -0.000122070312]
         Rotation: [0, 0, 0]
         Scale: [1, 1, 5.07999945]
       CircleComponent:
@@ -210,7 +240,7 @@ Entities:
       CircleCollider2DComponent:
         Radius: 0.5
         Offset: [0, 0]
-        Density: 25
+        Density: 1
         IsSensor: false
       WheelJoint2DComponent:
         ConnectedEntityID: 4175566080875530561
@@ -221,9 +251,9 @@ Entities:
         MaxMotorTorque: 20
         BreakingForce: 3.40282347e+38
         BreakingTorque: 3.40282347e+38
-        Frequency: 0
+        Frequency: 10
         DampingRatio: 0.699999988
-        EnableLimit: true
+        EnableLimit: false
         EnableMotor: false
         EnableCollision: false
   - Entity:
@@ -232,7 +262,7 @@ Entities:
       TagComponent:
         Tag: Box Collider
       TransformComponent:
-        Transform: [6.82264614, 4.31764221, 0]
+        Transform: [6.82264614, 5.4365387, 0]
         Rotation: [0, 0, 0]
         Scale: [4.69999981, 1, 1]
       SpriteComponent:
@@ -296,97 +326,27 @@ Entities:
         IsSensor: false
   - Entity:
       IDComponent:
-        ID: 13322905985239132909
+        ID: 15895639110335943461
       TagComponent:
-        Tag: Platform
+        Tag: HingePlatform
       TransformComponent:
-        Transform: [0, 0, 0]
+        Transform: [-3.56999993, -0.300000012, 0]
         Rotation: [0, 0, 0]
         Scale: [1, 1, 1]
       RelationshipComponent:
         ParentID: 0
-        ChildrenCount: 0
-  - Entity:
-      IDComponent:
-        ID: 13361696574532116246
-      TagComponent:
-        Tag: Hinge 1
-      TransformComponent:
-        Transform: [0, 4, 0]
-        Rotation: [0, 0, 0]
-        Scale: [0.300000012, 0.300000012, 1]
-      CircleComponent:
-        Color: [1, 0, 0, 1]
-        Thickness: 1
-        Fade: 0.00499999989
-      RelationshipComponent:
-        ParentID: 6149229169700030249
-        ChildrenCount: 0
-      RigidBody2DComponent:
-        Type: 0
-        GravityScale: 1
-        Friction: 0.5
-        Restitution: 0
-        RestitutionThreshold: 0.5
-        LinearDamping: 0
-        AngularDamping: 0
-        AllowSleep: true
-      SpringJoint2DComponent:
-        ConnectedEntityID: 6149229169700030249
-        EnableCollision: false
-        AutoLength: true
-        OriginAnchor: [-3.79999995, 0]
-        ConnectedAnchor: [-3.79999995, 0]
-        Length: 0
-        MinLength: 0
-        MaxLength: 1.5
-        BreakingForce: 3.40282347e+38
-        Frequency: 2
-        DampingRatio: 0.150000006
-  - Entity:
-      IDComponent:
-        ID: 14436223244464092395
-      TagComponent:
-        Tag: Hinge 2
-      TransformComponent:
-        Transform: [0, 4, 0]
-        Rotation: [0, 0, 0]
-        Scale: [0.300000012, 0.300000012, 1]
-      CircleComponent:
-        Color: [1, 0, 0, 1]
-        Thickness: 1
-        Fade: 0.00499999989
-      RelationshipComponent:
-        ParentID: 6149229169700030249
-        ChildrenCount: 0
-      RigidBody2DComponent:
-        Type: 0
-        GravityScale: 1
-        Friction: 0.5
-        Restitution: 0
-        RestitutionThreshold: 0.5
-        LinearDamping: 0
-        AngularDamping: 0
-        AllowSleep: true
-      SpringJoint2DComponent:
-        ConnectedEntityID: 6149229169700030249
-        EnableCollision: false
-        AutoLength: true
-        OriginAnchor: [3.70000005, 0]
-        ConnectedAnchor: [3.75, 0]
-        Length: 0
-        MinLength: 0
-        MaxLength: 1.5
-        BreakingForce: 3.40282347e+38
-        Frequency: 2
-        DampingRatio: 0.150000006
+        ChildrenCount: 3
+        ChildrenIDs:
+          0: 5701364074816771619
+          1: 4238985469750613728
+          2: 18383681532785808073
   - Entity:
       IDComponent:
         ID: 18156684293390743624
       TagComponent:
         Tag: Car
       TransformComponent:
-        Transform: [0, 0, 0]
+        Transform: [3.6500001, 2.1500001, 0]
         Rotation: [0, 0, 0]
         Scale: [1, 1, 1]
       RelationshipComponent:
@@ -424,3 +384,36 @@ Entities:
         Offset: [0, 0]
         Density: 1
         IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 18383681532785808073
+      TagComponent:
+        Tag: Right Line
+      TransformComponent:
+        Transform: [3, 3, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 15895639110335943461
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 0
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        AllowSleep: true
+      SpringJoint2DComponent:
+        ConnectedEntityID: 4238985469750613728
+        EnableCollision: false
+        AutoLength: true
+        OriginAnchor: [0, 0]
+        ConnectedAnchor: [3, 0]
+        Length: 0
+        MinLength: 0
+        MaxLength: 1
+        BreakingForce: 3.40282347e+38
+        Frequency: 2
+        DampingRatio: 0.5

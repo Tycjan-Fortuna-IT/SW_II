@@ -339,6 +339,34 @@ namespace SW {
 			return true;
 		}
 
+		static bool DecomposeTransformForTranslation(const glm::mat4& transform, glm::vec3& translation)
+		{
+			// From glm::decompose in matrix_decompose.inl
+			using namespace glm;
+			using T = f32;
+
+			mat4 LocalMatrix(transform);
+
+			// Normalize the matrix.
+			if (epsilonEqual(LocalMatrix[3][3], 0.0f, epsilon<T>()))
+				return false;
+
+			// First, isolate perspective.  This is the messiest.
+			if (
+				epsilonNotEqual(LocalMatrix[0][3], static_cast<T>(0), epsilon<T>()) ||
+				epsilonNotEqual(LocalMatrix[1][3], static_cast<T>(0), epsilon<T>()) ||
+				epsilonNotEqual(LocalMatrix[2][3], static_cast<T>(0), epsilon<T>())) {
+				// Clear the perspective partition
+				LocalMatrix[0][3] = LocalMatrix[1][3] = LocalMatrix[2][3] = static_cast<T>(0);
+				LocalMatrix[3][3] = static_cast<T>(1);
+			}
+
+			// Next take care of translation (easy).
+			translation = vec3(LocalMatrix[3]);
+
+			return true;
+		}
+
 		/**
 		 * Smoothly interpolates between the current value and the target value over time using the SmoothDamp algorithm.
 		 * 

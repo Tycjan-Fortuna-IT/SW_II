@@ -22,6 +22,7 @@
 #include "Core/Defines.hpp"
 #include "Core/Debug/LogSystem.hpp"
 #include "Core/Base.hpp"
+#include "Core/Debug/Profiler.hpp"
 
 #include "Core/Application.hpp"
 #include "Core/Layer.hpp"

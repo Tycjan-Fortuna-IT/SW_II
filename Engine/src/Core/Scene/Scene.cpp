@@ -423,7 +423,7 @@ namespace SW {
 	void Scene::CreateBoxCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, BoxCollider2DComponent& bcc)
 	{
 		b2PolygonShape boxShape;
-		boxShape.SetAsBox(bcc.Size.x * tc.Scale.x, bcc.Size.y * tc.Scale.y, { bcc.Offset.x, bcc.Offset.y }, 0.0f);
+		boxShape.SetAsBox(tc.Scale.x * bcc.Size.x, tc.Scale.y * bcc.Size.y, b2Vec2(tc.Scale.x * bcc.Offset.x, tc.Scale.y * bcc.Offset.y), 0.0f);
 
 		b2FixtureDef fixtureDef;
 		fixtureDef.shape = &boxShape;
@@ -444,7 +444,7 @@ namespace SW {
 	{
 		b2CircleShape circleShape;
 		circleShape.m_radius = ccc.Radius * glm::max(tc.Scale.x, tc.Scale.y);
-		circleShape.m_p = { ccc.Offset.x, ccc.Offset.y };
+		circleShape.m_p.Set(ccc.Offset.x, ccc.Offset.y);
 
 		b2FixtureDef fixtureDef;
 		fixtureDef.shape = &circleShape;

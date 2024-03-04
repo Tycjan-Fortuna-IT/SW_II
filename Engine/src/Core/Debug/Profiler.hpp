@@ -8,7 +8,7 @@
  */
 #pragma once
 
-#define ENABLE_PROFILING !SW_DIST_BUILD
+#define ENABLE_PROFILING SW_RELEASE_BUILD
 
 #if ENABLE_PROFILING 
 #include <tracy/Tracy.hpp>

@@ -28,7 +28,7 @@ Entities:
       TagComponent:
         Tag: Hook
       TransformComponent:
-        Transform: [3.20669842, 2.20468235, 0]
+        Transform: [4.377841, 2.20468235, 0]
         Rotation: [0, 0, 0]
         Scale: [1, 1, 1]
       SpriteComponent:
@@ -67,8 +67,8 @@ Entities:
         Tag: Sprite
       TransformComponent:
         Transform: [-2.99290323, -0.748230934, 0.000122070312]
-        Rotation: [0, 0, -0.430223614]
-        Scale: [3.5999999, 1, 1]
+        Rotation: [0, 0, 0]
+        Scale: [4.5, 1, 1]
       SpriteComponent:
         Color: [0.0810432062, 0.44602102, 0.582887709, 1]
       RelationshipComponent:
@@ -92,7 +92,7 @@ Entities:
         ConnectedEntityID: 1946361277871489626
         EnableCollision: false
         AutoLength: true
-        OriginAnchor: [0, 0]
+        OriginAnchor: [-2, 0]
         ConnectedAnchor: [0, 0]
         Length: 0
         MinLength: 0
@@ -134,7 +134,7 @@ Entities:
       TagComponent:
         Tag: Sprite
       TransformComponent:
-        Transform: [5.37126064, -1.14536178, 0.000244137656]
+        Transform: [6.10941982, -1.14536178, 0.000244137656]
         Rotation: [0, 0, 0]
         Scale: [3.69999981, 1, 1]
       SpriteComponent:

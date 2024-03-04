@@ -7,7 +7,6 @@
 #include "Utils/FileSystem.hpp"
 #include "AssetManager.hpp"
 #include "Renderer/RendererAPI.hpp"
-#include "Debug/Profiler.hpp"
 
 namespace SW {
 

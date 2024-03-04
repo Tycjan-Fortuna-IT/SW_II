@@ -20,6 +20,7 @@
 #include "Core/Defines.hpp"
 #include "Core/Debug/LogSystem.hpp"
 #include "Core/Base.hpp"
+#include "Core/Debug/Profiler.hpp"
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui.h>
