@@ -75,7 +75,7 @@ namespace SW {
 					for (auto&& [handle, idc, tc, rsc] : view.each()) {
 						if (!rsc.ParentID) {
 							const Entity entity = { handle,  m_SceneViewportPanel->GetCurrentScene() };
-							RenderEntityNode(entity, idc.ID, tc.Tag, rsc);
+							RenderEntityNode(entity, idc.ID, tc, rsc);
 						}
 					}
 
@@ -85,7 +85,6 @@ namespace SW {
 						ImGui::EndPopup();
 					}
 
-					
 					ImGui::EndTable();
 
 					if (m_DraggedEntity && m_DraggedEntityTarget) {
@@ -127,9 +126,9 @@ namespace SW {
 		}
 	}
 
-	ImRect SceneHierarchyPanel::RenderEntityNode(Entity entity, u64 id, const std::string& tag, const RelationshipComponent& rsc, u32 depth)
+	ImRect SceneHierarchyPanel::RenderEntityNode(Entity entity, u64 id, TagComponent& tc, const RelationshipComponent& rsc, u32 depth)
 	{
-		if (!entity || !m_SearchFilter.FilterPass(tag))
+		if (!entity || !m_SearchFilter.FilterPass(tc.Tag))
 			return { 0,0,0,0 };
 
 		ImGui::TableNextRow();
@@ -153,7 +152,7 @@ namespace SW {
 			flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 		}
 
-		const bool opened = ImGui::TreeNodeEx(reinterpret_cast<void*>(id), flags, "%s %s", SW_ICON_CUBE_OUTLINE, tag.c_str());
+		const bool opened = ImGui::TreeNodeEx(reinterpret_cast<void*>(id), flags, "%s %s", SW_ICON_CUBE_OUTLINE, tc.Tag.c_str());
 
 		if (selected)
 			ImGui::PopStyleColor(2);
@@ -169,12 +168,22 @@ namespace SW {
 		}
 
 		if (ImGui::BeginPopupContextItem()) {
+			if (ImGui::MenuItemEx("Rename", SW_ICON_RENAME_BOX, "F2"))
+				m_RenamingEntity = entity;
+
+			if (ImGui::MenuItemEx("Duplicate", SW_ICON_CONTENT_DUPLICATE, "Ctrl+D"))
+				m_SceneViewportPanel->GetCurrentScene()->DuplicateEntity(entity);
+
 			if (ImGui::MenuItemEx("Delete", SW_ICON_DELETE, "Del")) {
 				if (SelectionManager::GetSelectionID() == id)
 					SelectionManager::Deselect();
 
 				m_EntityToDelete = entity;
 			}
+
+			ImGui::Separator();
+
+			DrawEntityCreateMenu(m_SceneViewportPanel->GetCurrentScene(), entity);
 
 			ImGui::EndPopup();
 		}
@@ -195,8 +204,30 @@ namespace SW {
 
 			if (ImGui::BeginDragDropSource()) {
 				ImGui::SetDragDropPayload("Entity", &entity, sizeof(entity));
-				ImGui::TextUnformatted(tag.c_str());
+				ImGui::TextUnformatted(tc.Tag.c_str());
 				ImGui::EndDragDropSource();
+			}
+		}
+
+		if (entity == m_RenamingEntity) {
+			static bool renaming = false;
+
+			if (!renaming) {
+				renaming = true;
+				ImGui::SetKeyboardFocusHere();
+			}
+
+			char buffer[256];
+
+			memcpy(buffer, tc.Tag.c_str(), std::min(sizeof(buffer), tc.Tag.size() + 1));
+
+			if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
+				tc.Tag = buffer;
+
+			if (ImGui::IsItemDeactivated()) {
+				renaming = false;
+
+				m_RenamingEntity = {};
 			}
 		}
 
@@ -217,7 +248,7 @@ namespace SW {
 					auto&& [tc, rsc] = child.GetAllComponents<TagComponent, RelationshipComponent>();
 
 					const f32 HorizontalTreeLineSize = rsc.ChildrenIDs.empty() ? 18.0f : 9.0f;
-					const ImRect childRect = RenderEntityNode(child, childId, tc.Tag, rsc, depth + 1);
+					const ImRect childRect = RenderEntityNode(child, childId, tc, rsc, depth + 1);
 					const f32 midpoint = (childRect.Min.y + childRect.Max.y) / 2.0f;
 
 					drawList->AddLine(ImVec2(verticalLineStart.x, midpoint), ImVec2(verticalLineStart.x + HorizontalTreeLineSize, midpoint), treeLineColor[depth], lineThickness);
@@ -235,72 +266,83 @@ namespace SW {
 		return nodeRect;
 	}
 
-	void SceneHierarchyPanel::DrawEntityCreateMenu(Scene* scene)
-	{		
-		if (ImGui::BeginMenu("Create new entity")) {
+	void SceneHierarchyPanel::DrawEntityCreateMenu(Scene* scene, Entity toParent)
+	{
+		Entity entity = {};
 
-			if (ImGui::MenuItemEx("Empty Entity", SW_ICON_CUBE_OUTLINE)) {
-				scene->CreateEntity("Entity");
+		if (ImGui::MenuItemEx("Empty Entity", SW_ICON_CUBE_OUTLINE)) {
+			entity = scene->CreateEntity("Entity");
+
+			if (toParent) entity.SetParent(toParent);
+		}
+
+		if (ImGui::BeginMenuEx("2D", SW_ICON_ARRANGE_BRING_FORWARD)) {
+
+			if (ImGui::MenuItemEx("Sprite", SW_ICON_IMAGE_SIZE_SELECT_ACTUAL)) {
+				entity = scene->CreateEntity("Sprite");
+				entity.AddComponent<SpriteComponent>();
+
+				if (toParent) entity.SetParent(toParent);
+
+				ImGui::CloseCurrentPopup();
 			}
 
-			if (ImGui::BeginMenuEx("2D", SW_ICON_ARRANGE_BRING_FORWARD)) {
+			if (ImGui::MenuItemEx("Circle", SW_ICON_CHECKBOX_BLANK_CIRCLE)) {
+				entity = scene->CreateEntity("Circle");
+				entity.AddComponent<CircleComponent>();
 
-				if (ImGui::MenuItemEx("Sprite", SW_ICON_IMAGE_SIZE_SELECT_ACTUAL)) {
-					Entity entity = scene->CreateEntity("Sprite");
-					entity.AddComponent<SpriteComponent>();
+				if (toParent) entity.SetParent(toParent);
 
-					ImGui::CloseCurrentPopup();
-				}
-
-				if (ImGui::MenuItemEx("Circle", SW_ICON_CHECKBOX_BLANK_CIRCLE)) {
-					Entity entity = scene->CreateEntity("Circle");
-					entity.AddComponent<CircleComponent>();
-
-					ImGui::CloseCurrentPopup();
-				}
-
-				if (ImGui::MenuItemEx("Text", SW_ICON_FORMAT_TEXT)) {
-					Entity entity = scene->CreateEntity("Text");
-					entity.AddComponent<TextComponent>();
-
-					ImGui::CloseCurrentPopup();
-				}
-
-				if (ImGui::MenuItemEx("Box Collider", SW_ICON_CHECKBOX_BLANK_OUTLINE)) {
-					Entity entity = scene->CreateEntity("Box Collider");
-					entity.AddComponent<SpriteComponent>();
-					entity.AddComponent<RigidBody2DComponent>();
-					entity.AddComponent<BoxCollider2DComponent>();
-
-					ImGui::CloseCurrentPopup();
-				}
-
-				if (ImGui::MenuItemEx("Circle Collider", SW_ICON_CHECKBOX_BLANK_CIRCLE_OUTLINE)) {
-					Entity entity = scene->CreateEntity("Circle Collider");
-					entity.AddComponent<CircleComponent>();
-					entity.AddComponent<RigidBody2DComponent>();
-					entity.AddComponent<CircleCollider2DComponent>();
-
-					ImGui::CloseCurrentPopup();
-				}
-
-				if (ImGui::MenuItemEx("Camera", SW_ICON_CAMERA)) {
-					Entity entity = scene->CreateEntity("Camera");
-
-					SceneCamera camera(m_SceneViewportPanel->GetViewportAspectRatio());
-
-					entity.AddComponent<CameraComponent>(camera);
-
-					ImGui::CloseCurrentPopup();
-				}
-
-				ImGui::EndMenu();
+				ImGui::CloseCurrentPopup();
 			}
 
-			if (ImGui::BeginMenuEx("3D", SW_ICON_PACKAGE_VARIANT_CLOSED)) {
+			if (ImGui::MenuItemEx("Text", SW_ICON_FORMAT_TEXT)) {
+				entity = scene->CreateEntity("Text");
+				entity.AddComponent<TextComponent>();
 
-				ImGui::EndMenu();
+				if (toParent) entity.SetParent(toParent);
+
+				ImGui::CloseCurrentPopup();
 			}
+
+			if (ImGui::MenuItemEx("Box Collider", SW_ICON_CHECKBOX_BLANK_OUTLINE)) {
+				entity = scene->CreateEntity("Box Collider");
+				entity.AddComponent<SpriteComponent>();
+				entity.AddComponent<RigidBody2DComponent>();
+				entity.AddComponent<BoxCollider2DComponent>();
+
+				if (toParent) entity.SetParent(toParent);
+
+				ImGui::CloseCurrentPopup();
+			}
+
+			if (ImGui::MenuItemEx("Circle Collider", SW_ICON_CHECKBOX_BLANK_CIRCLE_OUTLINE)) {
+				entity = scene->CreateEntity("Circle Collider");
+				entity.AddComponent<CircleComponent>();
+				entity.AddComponent<RigidBody2DComponent>();
+				entity.AddComponent<CircleCollider2DComponent>();
+
+				if (toParent) entity.SetParent(toParent);
+
+				ImGui::CloseCurrentPopup();
+			}
+
+			if (ImGui::MenuItemEx("Camera", SW_ICON_CAMERA)) {
+				entity = scene->CreateEntity("Camera");
+
+				SceneCamera camera(m_SceneViewportPanel->GetViewportAspectRatio());
+
+				entity.AddComponent<CameraComponent>(camera);
+
+				if (toParent) entity.SetParent(toParent);
+
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenuEx("3D", SW_ICON_PACKAGE_VARIANT_CLOSED)) {
 
 			ImGui::EndMenu();
 		}

@@ -402,6 +402,11 @@ namespace SW {
 		return copy;
     }
 
+	void Scene::DuplicateEntity(Entity entity)
+	{
+
+	}
+
 	void Scene::CreateRigidbody2D(Entity entity, const TransformComponent& tc, RigidBody2DComponent& rbc)
 	{
 		b2BodyDef definition;

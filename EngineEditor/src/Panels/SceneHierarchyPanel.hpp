@@ -1,8 +1,8 @@
 /**
  * @file SceneHierarchyPanel.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.2
- * @date 2024-02-22
+ * @version 0.1.3
+ * @date 2024-03-04
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -62,23 +62,30 @@ namespace SW {
 		 * 
 		 * @param entity The entity to draw.
 		 * @param id The unique id of the entity.
-		 * @param tag The tag of the entity.
+		 * @param tc The tag component of the entity.
 		 * @param rsc The relationship component of the entity.
 		 * @param depth The depth of the entity in the hierarchy.
 		 * @return ImRect The rectangle of the created entity node.
 		 */
-		ImRect RenderEntityNode(Entity entity, u64 id, const std::string& tag, const RelationshipComponent& rsc, u32 depth = 0);
+		ImRect RenderEntityNode(Entity entity, u64 id, TagComponent& tc, const RelationshipComponent& rsc, u32 depth = 0);
 
 	private:
 		GUI::TextFilter m_SearchFilter;		/**< Search filter used to search for entities by their tag */
 
 		Entity m_DraggedEntity;			/**< The entity that is currently being dragged. */
 		Entity m_DraggedEntityTarget;	/**< The entity that the dragged entity is being dragged onto. */
-		Entity m_EntityToDelete;
+		Entity m_EntityToDelete;		/**< The entity that is currently being deleted. */
+		Entity m_RenamingEntity;		/**< The entity that is currently being renamed. */
 
 		SceneViewportPanel* m_SceneViewportPanel = nullptr;	/**< The current scene viewport context. */
 
-		void DrawEntityCreateMenu(Scene* scene);
+		/**
+		 * @brief Draws the entity creation menu in the scene hierarchy panel.
+		 *
+		 * @param scene A pointer to the current scene.
+		 * @param toParent (Optional) The entity to parent the newly created entity to.
+		 */
+		void DrawEntityCreateMenu(Scene* scene, Entity toParent = {});
 	};
 
 }

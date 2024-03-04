@@ -1,8 +1,8 @@
 /**
  * @file Entity.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.3
- * @date 2024-03-03
+ * @version 0.1.4
+ * @date 2024-03-04
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -142,6 +142,14 @@ namespace SW {
 		 * @return The entity handle as an unsigned integer.
 		 */
         operator u32() const { return (u32)m_Handle; }
+
+		/**
+		 * @brief Overloaded equality operator for comparing two Entity objects.
+		 * 
+		 * @param other The Entity object to compare with.
+		 * @return true if the two Entity objects are equal, false otherwise.
+		 */
+		bool operator==(const Entity& other) const { return m_Handle == other.m_Handle && m_Scene == other.m_Scene; }
 
 		/**
 		 * Checks if the current entity is the parent of the given entity.
