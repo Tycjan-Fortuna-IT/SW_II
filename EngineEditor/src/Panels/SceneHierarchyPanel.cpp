@@ -171,8 +171,12 @@ namespace SW {
 			if (ImGui::MenuItemEx("Rename", SW_ICON_RENAME_BOX, "F2"))
 				m_RenamingEntity = entity;
 
-			if (ImGui::MenuItemEx("Duplicate", SW_ICON_CONTENT_DUPLICATE, "Ctrl+D"))
-				m_SceneViewportPanel->GetCurrentScene()->DuplicateEntity(entity);
+			if (ImGui::MenuItemEx("Duplicate", SW_ICON_CONTENT_DUPLICATE, "Ctrl+D")) {
+
+				std::unordered_map<u64, Entity> duplicatedEntities;
+
+				m_SceneViewportPanel->GetCurrentScene()->DuplicateEntity(entity, duplicatedEntities);
+			}
 
 			if (ImGui::MenuItemEx("Delete", SW_ICON_DELETE, "Del")) {
 				if (SelectionManager::GetSelectionID() == id)

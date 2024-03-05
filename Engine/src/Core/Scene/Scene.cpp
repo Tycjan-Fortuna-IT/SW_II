@@ -397,16 +397,6 @@ namespace SW {
 		}
 	}
 
-	template<typename T>
-	inline static void CopyComponentIfExists(entt::entity dst, entt::registry& srcRegistry, entt::entity src)
-	{
-		if (srcRegistry.all_of<T>(src)) {
-			T& srcComponent = srcRegistry.get<T>(src);
-
-			srcRegistry.emplace_or_replace<T>(dst, srcComponent);
-		}
-	}
-
     Scene* Scene::DeepCopy()
     {
 		Scene* copy = new Scene(m_FilePath);
@@ -443,8 +433,21 @@ namespace SW {
 		return copy;
     }
 
-	Entity Scene::DuplicateEntity(Entity entity)
+#define CopyReferencedEntities(T) \
+	if (entity.HasComponent<T>()) { \
+		auto& component = entity.GetComponent<T>(); \
+		Entity connectedEntity = GetEntityByID(component.ConnectedEntityID); \
+		Entity duplicatedConnectedEntity = DuplicateEntity(connectedEntity, duplicatedEntities); \
+		auto& newComponent = newEntity.GetComponent<T>(); \
+		newComponent.ConnectedEntityID = duplicatedConnectedEntity.GetID(); \
+	}
+
+	Entity Scene::DuplicateEntity(Entity entity, std::unordered_map<u64, Entity>& duplicatedEntities)
 	{
+		if (duplicatedEntities.count(entity.GetID()) > 0) {
+			return duplicatedEntities[entity.GetID()];
+		}
+
 		entt::registry& currentRegistry = m_Registry.GetRegistryHandle();
 
 		Entity newEntity = CreateEntity();
@@ -466,10 +469,18 @@ namespace SW {
 		CopyComponentIfExists<SpringJoint2DComponent>(newEntity, currentRegistry, entity);
 		CopyComponentIfExists<WheelJoint2DComponent>(newEntity, currentRegistry, entity);
 
+		CopyReferencedEntities(DistanceJoint2DComponent);
+		CopyReferencedEntities(RevolutionJoint2DComponent);
+		CopyReferencedEntities(PrismaticJoint2DComponent);
+		CopyReferencedEntities(SpringJoint2DComponent);
+		CopyReferencedEntities(WheelJoint2DComponent);
+
+		duplicatedEntities[entity.GetID()] = newEntity;
+
 		std::vector<u64> childIds = entity.GetRelations().ChildrenIDs;
 
 		for (u64 childId : childIds) {
-			Entity childDuplicate = DuplicateEntity(GetEntityByID(childId));
+			Entity childDuplicate = DuplicateEntity(GetEntityByID(childId), duplicatedEntities);
 			
 			childDuplicate.SetParent(newEntity);
 		}

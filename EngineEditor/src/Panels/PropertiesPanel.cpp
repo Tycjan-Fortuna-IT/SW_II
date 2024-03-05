@@ -11,15 +11,6 @@
 
 namespace SW {
 
-	static std::unordered_map<size_t, std::string> s_ComponentNames;
-
-	template<typename Component>
-	static void AddComponentName(const std::string& name)
-	{
-		const size_t id = entt::type_id<Component>().hash();
-		s_ComponentNames[id] = name;
-	}
-
 	PropertiesPanel::PropertiesPanel(SceneViewportPanel* sceneViewportPanel)
 		: Panel("Properties", SW_ICON_INFORMATION, true), m_SceneViewportPanel(sceneViewportPanel)
 	{
@@ -43,6 +34,14 @@ namespace SW {
 		AddComponentName<PrismaticJoint2DComponent>(SW_ICON_VIEW_AGENDA "  Prismatic Joint 2D");
 		AddComponentName<SpringJoint2DComponent>(SW_ICON_ARROW_EXPAND " Spring Joint 2D");
 		AddComponentName<WheelJoint2DComponent>(SW_ICON_CAR " Wheel Joint 2D");
+
+		m_ComponentCopyScene = new Scene("");
+		m_ComponentCopyEntity = m_ComponentCopyScene->CreateEntity();
+	}
+
+	PropertiesPanel::~PropertiesPanel()
+	{
+		delete m_ComponentCopyScene;
 	}
 
 	void PropertiesPanel::OnUpdate(Timestep dt)
@@ -50,61 +49,10 @@ namespace SW {
 
 	}
 
-	template<typename T, typename Fn>
-		requires std::is_invocable_v<Fn, T&>
-	static void DrawComponent(Entity entity, Fn fn, bool removable = true)
-	{
-		if (!entity.HasComponent<T>())
-			return;
-
-		static constexpr ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen
-			| ImGuiTreeNodeFlags_SpanAvailWidth
-			| ImGuiTreeNodeFlags_AllowItemOverlap
-			| ImGuiTreeNodeFlags_Framed
-			| ImGuiTreeNodeFlags_FramePadding;
-
-		T& component = entity.GetComponent<T>();
-
-		const f32 lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + lineHeight * 0.25f);
-
-		const size_t id = entt::type_id<T>().hash();
-		const bool open = ImGui::TreeNodeEx(reinterpret_cast<void*>(id), treeFlags, "%s", s_ComponentNames[id].c_str());
-
-		bool removeComponent = false;
-
-		if (removable) {
-			ImGui::PushID(static_cast<int>(id));
-
-			const f32 frameHeight = ImGui::GetFrameHeight();
-
-			ImGui::SameLine(ImGui::GetContentRegionMax().x - frameHeight * 1.2f);
-
-			if (ImGui::Button(SW_ICON_SETTINGS, ImVec2{ frameHeight * 1.2f, frameHeight }))
-				ImGui::OpenPopup("ComponentSettings");
-
-			if (ImGui::BeginPopup("ComponentSettings")) {
-				if (ImGui::MenuItemEx("Remove Component", SW_ICON_DELETE))
-					removeComponent = true;
-
-				ImGui::EndPopup();
-			}
-
-			ImGui::PopID();
-		}
-
-		if (open) {
-			fn(component);
-			ImGui::TreePop();
-		}
-
-		if (removeComponent)
-			entity.RemoveComponent<T>();
-	}
-
 	void PropertiesPanel::OnRender()
 	{
+		constexpr f32 MaxFloatValue = FLT_MAX / 2.f;
+
 		if (OnBegin()) {
 			if (!SelectionManager::IsSelected()) {
 				OnEnd(); return;
@@ -176,8 +124,8 @@ namespace SW {
 				if (component.Font) {
 					GUI::DrawMultilineTextInputProperty(component.TextString, "Text", "Text to display (max 500 characters)");
 					GUI::DrawVector4ColorPickerProperty(component.Color, "Color", "Color of the text");
-					GUI::DrawFloatingPointProperty(component.Kerning, "Kerning", "The space between the characters", 0.f, 10.f);
-					GUI::DrawFloatingPointProperty(component.LineSpacing, "Line Spacing", "The space between the lines", 0.f, 10.f);
+					GUI::DrawFloatingPointProperty(component.Kerning, "Kerning", "The space between the characters", 0.f, MaxFloatValue);
+					GUI::DrawFloatingPointProperty(component.LineSpacing, "Line Spacing", "The space between the lines", 0.f, MaxFloatValue);
 				}
 				GUI::EndProperties();
 			}, true);
@@ -198,11 +146,11 @@ namespace SW {
 				if (component.Type == PhysicBodyType::Kinematic || component.Type == PhysicBodyType::Dynamic) {
 					GUI::DrawBooleanProperty(component.AutoMass, "Auto mass", "Whether the body's mass should be determined automatically or based on set mass");
 					if (!component.AutoMass) {
-						GUI::DrawFloatingPointProperty(component.Mass, "Mass", "The mass of the body", 0.f);
+						GUI::DrawFloatingPointProperty(component.Mass, "Mass", "The mass of the body", 0.f, MaxFloatValue);
 					}
 				}
 				if (component.Type == PhysicBodyType::Dynamic) {
-					GUI::DrawFloatingPointProperty(component.GravityScale, "Gravity Scale", "The gravity scale of the body", -10.f, 10.f);
+					GUI::DrawFloatingPointProperty(component.GravityScale, "Gravity Scale", "The gravity scale of the body");
 					GUI::DrawFloatingPointProperty(component.Friction, "Friction", "The friction of the body (how much it resists movement)", 0.f, 1.f);
 					GUI::DrawFloatingPointProperty(component.Restitution, "Restitution", "The restitution of the body (how much it bounces)", 0.f, 1.f);
 					GUI::DrawFloatingPointProperty(component.RestitutionThreshold, "Restitution Threshold", "The velocity threshold for the restitution", 0.f, 1.f);
@@ -219,16 +167,16 @@ namespace SW {
 				GUI::BeginProperties("##box_collider_2d_property");
 				GUI::DrawVector2ControlProperty(component.Size, "Size", "Size of the collider", 0.5f);
 				GUI::DrawVector2ControlProperty(component.Offset, "Offset", "Offset of the collider from origin");
-				GUI::DrawFloatingPointProperty(component.Density, "Density", "Density of the collider (mass = density * area)", 0.f);
+				GUI::DrawFloatingPointProperty(component.Density, "Density", "Density of the collider (mass = density * area)", 0.f, MaxFloatValue);
 				GUI::DrawBooleanProperty(component.IsSensor, "Is Sensor?", "Whether to react to the collision or just sense it.");
 				GUI::EndProperties();
 			}, true);
 
 			DrawComponent<CircleCollider2DComponent>(entity, [](CircleCollider2DComponent& component) {
 				GUI::BeginProperties("##circle_collider_2d_property");
-				GUI::DrawFloatingPointProperty(component.Radius, "Radius", "Radius of the collider", 0.5f);
+				GUI::DrawFloatingPointProperty(component.Radius, "Radius", "Radius of the collider", 0.1f, MaxFloatValue);
 				GUI::DrawVector2ControlProperty(component.Offset, "Offset", "Offset of the collider from origin");
-				GUI::DrawFloatingPointProperty(component.Density, "Density", "Density of the collider (mass = density * area)", 0.f);
+				GUI::DrawFloatingPointProperty(component.Density, "Density", "Density of the collider (mass = density * area)", 0.f, MaxFloatValue);
 				GUI::DrawBooleanProperty(component.IsSensor, "Is Sensor?", "Whether to react to the collision or just sense it.");
 				GUI::EndProperties();
 			}, true);
@@ -237,7 +185,7 @@ namespace SW {
 				GUI::BeginProperties("##polygon_collider_2d_property");
 				GUI::DrawVector2TableList(component.Vertices, "Edges", "List of all of the edges of the polygon collider (minimum 3 edges!)");
 				GUI::DrawVector2ControlProperty(component.Offset, "Offset", "Offset of the collider from origin");
-				GUI::DrawFloatingPointProperty(component.Density, "Density", "Density of the collider (mass = density * area)", 0.f);
+				GUI::DrawFloatingPointProperty(component.Density, "Density", "Density of the collider (mass = density * area)", 0.f, MaxFloatValue);
 				GUI::DrawBooleanProperty(component.IsSensor, "Is Sensor?", "Whether to react to the collision or just sense it.");
 				GUI::EndProperties();
 			}, true);
@@ -249,7 +197,7 @@ namespace SW {
 				f32 angle = glm::degrees(component.FlowAngle);
 				GUI::DrawFloatingPointProperty(angle, "Flow Angle", "The angle of the flow force in degrees");
 				component.FlowAngle = glm::radians(angle);
-				GUI::DrawFloatingPointProperty(component.Density, "Density", "Density of the collider (mass = density * area)", 0.f);
+				GUI::DrawFloatingPointProperty(component.Density, "Density", "Density of the collider (mass = density * area)", 0.f, MaxFloatValue);
 				GUI::EndProperties();
 			}, true);
 
@@ -258,14 +206,14 @@ namespace SW {
 				GUI::DrawEntityDropdownProperty(component.ConnectedEntityID, m_SceneViewportPanel->GetCurrentScene(), "Connected entity", "The joint will connect to this entity's rigid body");
 				GUI::DrawVector2ControlProperty(component.OriginAnchor, "Origin Anchor", "The anchor point of this body");
 				GUI::DrawVector2ControlProperty(component.ConnectedAnchor, "Connected Anchor", "The anchor point of the connected body");
-				GUI::DrawFloatingPointProperty(component.BreakingForce, "Breaking Force", "The force acting on the joint to break it in Newtons", 0.f);
+				GUI::DrawFloatingPointProperty(component.BreakingForce, "Breaking Force", "The force acting on the joint to break it in Newtons", 0.f, MaxFloatValue);
 				GUI::DrawBooleanProperty(component.EnableCollision, "Enable collision", "Whether connected by joint bodies should collide with each other");
 				GUI::DrawBooleanProperty(component.AutoLength, "Auto length", "Whether the distance should be automatically calculated");
 				if (!component.AutoLength) {
-					GUI::DrawFloatingPointProperty(component.Length, "Length", "The distance between the two bodies", 0.f);
+					GUI::DrawFloatingPointProperty(component.Length, "Length", "The distance between the two bodies", 0.f, MaxFloatValue);
 				}
-				GUI::DrawFloatingPointProperty(component.MinLength, "Min Length", "The minimum distance between the two bodies", 0.f);
-				GUI::DrawFloatingPointProperty(component.MaxLength, "Max Length", "The maximum distance between the two bodies", component.MinLength);
+				GUI::DrawFloatingPointProperty(component.MinLength, "Min Length", "The minimum distance between the two bodies", 0.f, component.MaxLength);
+				GUI::DrawFloatingPointProperty(component.MaxLength, "Max Length", "The maximum distance between the two bodies", component.MinLength, MaxFloatValue);
 				GUI::EndProperties();
 			}, true);
 
@@ -286,11 +234,11 @@ namespace SW {
 				}
 				GUI::DrawBooleanProperty(component.EnableMotor, "Enable Motor", "Whether the joint should have a motor");
 				if (component.EnableMotor) {
-					GUI::DrawFloatingPointProperty(component.MotorSpeed, "Motor Speed", "The speed of the motor in radians per second", 0.f);
-					GUI::DrawFloatingPointProperty(component.MaxMotorTorque, "Max Motor Torque", "The maximum torque of the motor in Newtons", 0.f);
+					GUI::DrawFloatingPointProperty(component.MotorSpeed, "Motor Speed", "The speed of the motor in radians per second");
+					GUI::DrawFloatingPointProperty(component.MaxMotorTorque, "Max Motor Torque", "The maximum torque of the motor in Newtons");
 				}
-				GUI::DrawFloatingPointProperty(component.BreakingTorque, "Breaking Torque", "The torque acting on the joint to break it in Newtons", 0.f);
-				GUI::DrawFloatingPointProperty(component.BreakingForce, "Breaking Force", "The force acting on the joint to break it in Newtons", 0.f);
+				GUI::DrawFloatingPointProperty(component.BreakingTorque, "Breaking Torque", "The torque acting on the joint to break it in Newtons", 0.f, MaxFloatValue);
+				GUI::DrawFloatingPointProperty(component.BreakingForce, "Breaking Force", "The force acting on the joint to break it in Newtons", 0.f, MaxFloatValue);
 
 				GUI::EndProperties();
 			}, true);
@@ -310,8 +258,8 @@ namespace SW {
 				}
 				GUI::DrawBooleanProperty(component.EnableMotor, "Enable Motor", "Whether the joint should have a motor");
 				if (component.EnableMotor) {
-					GUI::DrawFloatingPointProperty(component.MotorSpeed, "Motor Speed", "The speed of the motor in radians per second", 0.f);
-					GUI::DrawFloatingPointProperty(component.MaxMotorForce, "Max Motor Force", "The maximum force of the motor in Newtons", 0.f);
+					GUI::DrawFloatingPointProperty(component.MotorSpeed, "Motor Speed", "The speed of the motor in radians per second", 0.f, MaxFloatValue);
+					GUI::DrawFloatingPointProperty(component.MaxMotorForce, "Max Motor Force", "The maximum force of the motor in Newtons", 0.f, MaxFloatValue);
 				}
 				GUI::EndProperties();
 			}, true);
@@ -327,8 +275,8 @@ namespace SW {
 				if (!component.AutoLength) {
 					GUI::DrawFloatingPointProperty(component.Length, "Length", "The distance between the two bodies", 0.f);
 				}
-				GUI::DrawFloatingPointProperty(component.MinLength, "Min Length", "The minimum distance between the two bodies", 0.f);
-				GUI::DrawFloatingPointProperty(component.MaxLength, "Max Length", "The maximum distance between the two bodies", component.MinLength);
+				GUI::DrawFloatingPointProperty(component.MinLength, "Min Length", "The minimum distance between the two bodies", 0.f, component.MaxLength);
+				GUI::DrawFloatingPointProperty(component.MaxLength, "Max Length", "The maximum distance between the two bodies", component.MinLength, MaxFloatValue);
 				GUI::DrawFloatingPointProperty(component.Frequency, "Frequency", "The linear stiffness in N/m.");
 				GUI::DrawFloatingPointProperty(component.DampingRatio, "Damping Ratio", "The linear damping in N*s/m.", 0.0f, 1.0f);
 				GUI::EndProperties();
@@ -346,8 +294,8 @@ namespace SW {
 				}
 				GUI::DrawBooleanProperty(component.EnableMotor, "Enable Motor", "Whether the joint should have a motor");
 				if (component.EnableMotor) {
-					GUI::DrawFloatingPointProperty(component.MotorSpeed, "Motor Speed", "The speed of the motor in radians per second", 0.f);
-					GUI::DrawFloatingPointProperty(component.MaxMotorTorque, "Max Motor Torque", "The maximum torque of the motor in Newtons", 0.f);
+					GUI::DrawFloatingPointProperty(component.MotorSpeed, "Motor Speed", "The speed of the motor in radians per second");
+					GUI::DrawFloatingPointProperty(component.MaxMotorTorque, "Max Motor Torque", "The maximum torque of the motor in Newtons");
 				}
 				GUI::DrawFloatingPointProperty(component.Frequency, "Frequency", "The linear stiffness in N/m.");
 				GUI::DrawFloatingPointProperty(component.DampingRatio, "Damping Ratio", "The linear damping in N*s/m.", 0.0f, 1.0f);

@@ -185,9 +185,12 @@ namespace SW {
 		/**
 		 * @brief Duplicates the entity. (deep copy with all components)
 		 * 
+		 * @param entity The entity to duplicate.
+		 * @param duplicatedEntities The map of already duplicated entities.
+		 * 
 		 * @return Entity The duplicated entity.
 		 */
-		Entity DuplicateEntity(Entity entity);
+		Entity DuplicateEntity(Entity entity, std::unordered_map<u64, Entity>& duplicatedEntities);
 
 		/**
 		 * @brief Get the width of the viewport.
@@ -203,7 +206,22 @@ namespace SW {
 		 */
 		u32 GetViewportHeight() const { return m_ViewportHeight; }
 
+		/**
+		 * @brief Sort entities by their IDs.
+		 */
 		void SortEntities();
+
+		template<typename T>
+		inline void CopyComponentIfExists(entt::entity dst, entt::registry& dstRegistry, entt::entity src)
+		{
+			entt::registry& registry = m_Registry.GetRegistryHandle();
+
+			if (registry.all_of<T>(src)) {
+				T& srcComponent = registry.get<T>(src);
+
+				dstRegistry.emplace_or_replace<T>(dst, srcComponent);
+			}
+		}
 
 		glm::vec2 Gravity = { 0.0f, -9.80665f };	/**< The gravity of the scene. */
 

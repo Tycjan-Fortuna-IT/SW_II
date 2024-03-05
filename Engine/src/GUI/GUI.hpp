@@ -1293,11 +1293,12 @@ namespace SW::GUI {
 		if constexpr (sizeof(T) == 8)
 			dataType = ImGuiDataType_Double;
 
-		if (max > min)
+		if (max > min) {
 			ImGui::SliderScalar("##property_f32ing_point", dataType, &value, &min, &max, format);
-		else
-			ImGui::DragScalar("##property_f32ing_point", dataType, &value, delta, nullptr, nullptr, format);
-
+		} else {
+			ImGui::DragScalar("##property_f32ing_point", dataType, &value, delta, &min, &max, format);
+		}
+		
 		EndPropertyGrid();
 	}
 
