@@ -218,17 +218,22 @@ namespace SW {
 	{
 		PhysicBodyType Type = PhysicBodyType::Static;	/**< By default the body is static */
 
-		void* Handle = nullptr;		/**< Internal box2D physics body handle */
+		void* Handle = nullptr;				/**< Internal box2D physics body handle */
 
-		f32 GravityScale = 1.0f;	/**< Scale the gravity applied to this body. */
+		f32 GravityScale = 1.0f;			/**< Scale the gravity applied to this body. */
 
-		f32 Friction = 0.5f;		/**< The friction coefficient [0 - 1] range. */
+		f32 Mass = 1.0f;					/**< The mass of the body. [0-oo] */
+		f32 Friction = 0.5f;				/**< The friction coefficient [0 - 1] range. */
 		f32 Restitution = 0.f;				/**< The restitution (elasticity) [0 - 1] range. */
 		f32 RestitutionThreshold = 0.5f;	/**< Restitution velocity threshold, usually in [m/s] (above this speed will bounce). */
-		f32 LinearDamping = 0.0f;	/**< The linear damping of the rigid body. */
-		f32 AngularDamping = 0.0f;	/**< The angular damping of the rigid body. */
+		f32 LinearDamping = 0.0f;			/**< The linear damping of the rigid body. */
+		f32 AngularDamping = 0.0f;			/**< The angular damping of the rigid body. */
 
-		bool AllowSleep = true;		/**< Set this flag to false if this body should never fall asleep. */
+		bool AutoMass = true;				/**< Whether the body's mass should be determined automatically or based on set mass */
+		bool AllowSleep = true;				/**< Set this flag to false if this body should never fall asleep. */
+		bool InitiallyAwake = true;			/**< Is this body initially awake or sleeping? */
+		bool FixedRotation = false;			/**< Should this body be prevented from rotating? Useful for characters. */
+		bool IsBullet = false;				/**< Is this a fast moving body that should be prevented from tunneling through other moving bodies? */
 	};
 
 	/**

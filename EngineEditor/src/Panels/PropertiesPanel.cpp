@@ -195,6 +195,12 @@ namespace SW {
 					GUI::SelectOption<PhysicBodyType>{ "Kinematic", PhysicBodyType::Kinematic },
 					GUI::SelectOption<PhysicBodyType>{ "Dynamic", PhysicBodyType::Dynamic }
 				}, "Body Type", "The type of the body, static bodies are immovable, kinematic bodies are movable but not affected by forces, dynamic bodies are movable and affected by forces");
+				if (component.Type == PhysicBodyType::Kinematic || component.Type == PhysicBodyType::Dynamic) {
+					GUI::DrawBooleanProperty(component.AutoMass, "Auto mass", "Whether the body's mass should be determined automatically or based on set mass");
+					if (!component.AutoMass) {
+						GUI::DrawFloatingPointProperty(component.Mass, "Mass", "The mass of the body", 0.f);
+					}
+				}
 				if (component.Type == PhysicBodyType::Dynamic) {
 					GUI::DrawFloatingPointProperty(component.GravityScale, "Gravity Scale", "The gravity scale of the body", -10.f, 10.f);
 					GUI::DrawFloatingPointProperty(component.Friction, "Friction", "The friction of the body (how much it resists movement)", 0.f, 1.f);
@@ -203,6 +209,8 @@ namespace SW {
 					GUI::DrawFloatingPointProperty(component.LinearDamping, "Linear Damping", "The linear damping of the body (how much it resists movement)", 0.f, 1.f);
 					GUI::DrawFloatingPointProperty(component.AngularDamping, "Angular Damping", "The angular damping of the body (how much it resists rotation)", 0.f, 1.f);
 					GUI::DrawBooleanProperty(component.AllowSleep, "Allow Sleep", "Whether the body should be allowed to sleep");
+					GUI::DrawBooleanProperty(component.InitiallyAwake, "Initially Awake", "Whether the body should be allowed to sleep");
+					GUI::DrawBooleanProperty(component.IsBullet, "Is Bullet", "Is this a fast moving body that should be prevented from tunneling through other moving bodies?");
 				}
 				GUI::EndProperties();
 			}, true);

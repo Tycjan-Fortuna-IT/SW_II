@@ -15,6 +15,8 @@ Entities:
         ChildrenCount: 0
       RigidBody2DComponent:
         Type: 0
+        AutoMass: true
+        Mass: 1
         GravityScale: 1
         Friction: 0.5
         Restitution: 0
@@ -22,6 +24,8 @@ Entities:
         LinearDamping: 0
         AngularDamping: 0
         AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
       BoxCollider2DComponent:
         Size: [0.5, 0.5]
         Offset: [0, 0]
@@ -45,6 +49,8 @@ Entities:
         ChildrenCount: 0
       RigidBody2DComponent:
         Type: 2
+        AutoMass: true
+        Mass: 1
         GravityScale: 1
         Friction: 0.5
         Restitution: 0
@@ -52,6 +58,8 @@ Entities:
         LinearDamping: 0
         AngularDamping: 0
         AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
       CircleCollider2DComponent:
         Radius: 0.5
         Offset: [0, 0]
@@ -89,6 +97,8 @@ Entities:
         ChildrenCount: 0
       RigidBody2DComponent:
         Type: 2
+        AutoMass: true
+        Mass: 1
         GravityScale: 1
         Friction: 0.5
         Restitution: 0
@@ -96,6 +106,8 @@ Entities:
         LinearDamping: 0
         AngularDamping: 0
         AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
       CircleCollider2DComponent:
         Radius: 0.5
         Offset: [0, 0]
@@ -146,6 +158,8 @@ Entities:
         ChildrenCount: 0
       RigidBody2DComponent:
         Type: 2
+        AutoMass: true
+        Mass: 1
         GravityScale: 1
         Friction: 0.5
         Restitution: 0
@@ -153,6 +167,8 @@ Entities:
         LinearDamping: 0
         AngularDamping: 0
         AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
       BoxCollider2DComponent:
         Size: [0.5, 0.5]
         Offset: [0, 0]

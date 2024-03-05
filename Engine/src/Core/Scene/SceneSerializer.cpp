@@ -227,6 +227,8 @@ namespace SW {
 				output << YAML::Key << "RigidBody2DComponent";
 				output << YAML::BeginMap;
 				output << YAML::Key << "Type" << YAML::Value << (int)rbc.Type;
+				output << YAML::Key << "AutoMass" << YAML::Value << rbc.AutoMass;
+				output << YAML::Key << "Mass" << YAML::Value << rbc.Mass;
 				output << YAML::Key << "GravityScale" << YAML::Value << rbc.GravityScale;
 				output << YAML::Key << "Friction" << YAML::Value << rbc.Friction;
 				output << YAML::Key << "Restitution" << YAML::Value << rbc.Restitution;
@@ -234,6 +236,8 @@ namespace SW {
 				output << YAML::Key << "LinearDamping" << YAML::Value << rbc.LinearDamping;
 				output << YAML::Key << "AngularDamping" << YAML::Value << rbc.AngularDamping;
 				output << YAML::Key << "AllowSleep" << YAML::Value << rbc.AllowSleep;
+				output << YAML::Key << "InitiallyAwake" << YAML::Value << rbc.InitiallyAwake;
+				output << YAML::Key << "IsBullet" << YAML::Value << rbc.IsBullet;
 				output << YAML::EndMap;
 			}
 
@@ -499,6 +503,8 @@ namespace SW {
 				RigidBody2DComponent& rbc = deserialized.AddComponent<RigidBody2DComponent>();
 
 				rbc.Type = (PhysicBodyType)rigidBody2DComponent["Type"].as<int>();
+				rbc.AutoMass = rigidBody2DComponent["AutoMass"].as<bool>();
+				rbc.Mass = rigidBody2DComponent["Mass"].as<f32>();
 				rbc.GravityScale = rigidBody2DComponent["GravityScale"].as<f32>();
 				rbc.Friction = rigidBody2DComponent["Friction"].as<f32>();
 				rbc.Restitution = rigidBody2DComponent["Restitution"].as<f32>();
@@ -506,6 +512,8 @@ namespace SW {
 				rbc.LinearDamping = rigidBody2DComponent["LinearDamping"].as<f32>();
 				rbc.AngularDamping = rigidBody2DComponent["AngularDamping"].as<f32>();
 				rbc.AllowSleep = rigidBody2DComponent["AllowSleep"].as<bool>();
+				rbc.InitiallyAwake = rigidBody2DComponent["InitiallyAwake"].as<bool>();
+				rbc.IsBullet = rigidBody2DComponent["IsBullet"].as<bool>();
 			}
 
 			if (YAML::Node boxCollider2DComponent = entity["Entity"]["BoxCollider2DComponent"]) {

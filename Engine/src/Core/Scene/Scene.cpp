@@ -483,6 +483,9 @@ namespace SW {
 		definition.type = static_cast<b2BodyType>(rbc.Type);
 		definition.fixedRotation = false;
 		definition.allowSleep = rbc.AllowSleep;
+		definition.awake = rbc.InitiallyAwake;
+		definition.fixedRotation = rbc.FixedRotation;
+		definition.bullet = rbc.IsBullet;
 		definition.gravityScale = rbc.GravityScale;
 		definition.position.Set(tc.Position.x, tc.Position.y);
 		definition.angle = tc.Rotation.z;
@@ -491,10 +494,12 @@ namespace SW {
 
 		b2Body* rb = m_PhysicsWorld2D->CreateBody(&definition);
 
-		b2MassData massData = rb->GetMassData();
-		massData.mass = 1.f;
-		
-		rb->SetMassData(&massData);
+		if (!rbc.AutoMass && rbc.Mass > 0.01f) {
+			b2MassData massData = rb->GetMassData();
+			massData.mass = rbc.Mass;
+			rb->SetMassData(&massData);
+		}
+
 		rbc.Handle = rb;
 
 		if (entity.HasComponent<BoxCollider2DComponent>()) {
