@@ -1,8 +1,8 @@
 ﻿/**
  * @file GUI.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.2.3
- * @date 2024-03-02
+ * @version 0.2.4
+ * @date 2024-03-05
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -1001,6 +1001,14 @@ namespace SW::GUI {
 		ImVec2 padding = ImGui::GetStyle().FramePadding;
 		ImGui::SetCursorPos({ pos.x + padding.x, pos.y + padding.y });
 		ImGui::Text("%s", tag.c_str());
+
+		if (ID) {
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
+				ImGui::BeginTooltip();
+				ImGui::Text("ID: %llu", ID);
+				ImGui::EndTooltip();
+			}
+		}
 
 		if (!ID)
 			ImGui::PopStyleColor();

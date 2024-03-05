@@ -85,7 +85,7 @@ namespace SW {
 				ImGui::OpenPopup("ComponentSettings");
 
 			if (ImGui::BeginPopup("ComponentSettings")) {
-				if (ImGui::MenuItem("Remove Component"))
+				if (ImGui::MenuItemEx("Remove Component", SW_ICON_DELETE))
 					removeComponent = true;
 
 				ImGui::EndPopup();

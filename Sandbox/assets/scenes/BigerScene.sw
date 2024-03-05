@@ -1,6 +1,39 @@
 Entities:
   - Entity:
       IDComponent:
+        ID: 1804136898320342281
+      TagComponent:
+        Tag: Right Line
+      TransformComponent:
+        Transform: [3, 3, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 9189886445870706617
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 0
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        AllowSleep: true
+      SpringJoint2DComponent:
+        ConnectedEntityID: 11261900507726111826
+        EnableCollision: false
+        AutoLength: true
+        OriginAnchor: [0, 0]
+        ConnectedAnchor: [3, 0]
+        Length: 0
+        MinLength: 0
+        MaxLength: 1
+        BreakingForce: 3.40282347e+38
+        Frequency: 2
+        DampingRatio: 0.5
+  - Entity:
+      IDComponent:
         ID: 1823444031938407901
       TagComponent:
         Tag: Floor
@@ -136,6 +169,39 @@ Entities:
         Offset: [0, 0]
         Density: 1
         IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 4640612343552914116
+      TagComponent:
+        Tag: Left Line
+      TransformComponent:
+        Transform: [0, 3, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 9189886445870706617
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 0
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        AllowSleep: true
+      SpringJoint2DComponent:
+        ConnectedEntityID: 11261900507726111826
+        EnableCollision: false
+        AutoLength: true
+        OriginAnchor: [-3, 0]
+        ConnectedAnchor: [-3, 0]
+        Length: 0
+        MinLength: 0
+        MaxLength: 1
+        BreakingForce: 3.40282347e+38
+        Frequency: 2
+        DampingRatio: 0.5
   - Entity:
       IDComponent:
         ID: 5458427869381750040
@@ -298,6 +364,22 @@ Entities:
         EnableCollision: false
   - Entity:
       IDComponent:
+        ID: 9189886445870706617
+      TagComponent:
+        Tag: HingePlatform
+      TransformComponent:
+        Transform: [-11.3779449, -0.300000012, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 3
+        ChildrenIDs:
+          0: 4640612343552914116
+          1: 11261900507726111826
+          2: 1804136898320342281
+  - Entity:
+      IDComponent:
         ID: 10022383356269630104
       TagComponent:
         Tag: 2
@@ -312,6 +394,34 @@ Entities:
         ChildrenCount: 0
       RigidBody2DComponent:
         Type: 0
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        AllowSleep: true
+      BoxCollider2DComponent:
+        Size: [0.5, 0.5]
+        Offset: [0, 0]
+        Density: 1
+        IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 11261900507726111826
+      TagComponent:
+        Tag: Platform
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [7.55000019, 1, 1]
+      SpriteComponent:
+        Color: [0.807486653, 0.700111151, 0.159770086, 1]
+      RelationshipComponent:
+        ParentID: 9189886445870706617
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 2
         GravityScale: 1
         Friction: 0.5
         Restitution: 0

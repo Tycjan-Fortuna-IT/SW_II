@@ -43,19 +43,42 @@ namespace SW {
 		return entity;
 	}
 
+	template <typename T>
+	static void RemoveReferencedConnections(entt::registry& registry, entt::entity handle, u64 id)
+	{
+		for (entt::entity handle : registry.view<T>()) {
+			T& component = registry.get<T>(handle);
+
+			if (component.ConnectedEntityID == id)
+				component.ConnectedEntityID = 0;
+		}
+	}
+
 	void Scene::DestroyEntity(Entity entity)
 	{
 		entity.RemoveParent();
 
 		RelationshipComponent& rc = entity.GetRelations();
 
-		for (u64 childId : rc.ChildrenIDs) {
+		const std::vector<u64> children = rc.ChildrenIDs;
+		
+		for (u64 childId : children) {
 			Entity childToDelete = GetEntityByID(childId);
 
 			DestroyEntity(childToDelete);
 		}
 
-		m_EntityMap.erase(entity.GetID());
+		u64 id = entity.GetID();
+
+		entt::registry& registry = m_Registry.GetRegistryHandle();
+
+		RemoveReferencedConnections<DistanceJoint2DComponent>(registry, entity, id);
+		RemoveReferencedConnections<RevolutionJoint2DComponent>(registry, entity, id);
+		RemoveReferencedConnections<PrismaticJoint2DComponent>(registry, entity, id);
+		RemoveReferencedConnections<SpringJoint2DComponent>(registry, entity, id);
+		RemoveReferencedConnections<WheelJoint2DComponent>(registry, entity, id);
+
+		m_EntityMap.erase(id);
 		m_Registry.DestroyEntity(entity);
 
 		SortEntities();
@@ -350,7 +373,15 @@ namespace SW {
 		if (m_EntityMap.find(id) != m_EntityMap.end())
 			return { m_EntityMap.at(id), this };
 
-		ASSERT(false, "Entity not found!"); // to do allow in ASSERTS to format strings
+		ASSERT(false, "Entity not found!"); // TODO: allow in ASSERTS to format strings
+
+		return {};
+	}
+
+	Entity Scene::TryGetEntityByID(u64 id)
+	{
+		if (m_EntityMap.find(id) != m_EntityMap.end())
+			return { m_EntityMap.at(id), this };
 
 		return {};
 	}
@@ -358,7 +389,7 @@ namespace SW {
 	template<typename T>
 	inline static void CopyComponent(entt::registry& dstRegistry, entt::registry& srcRegistry, const std::unordered_map<u64, entt::entity>& enttMap)
 	{
-		for (auto srcEntity : srcRegistry.view<T>()) {
+		for (entt::entity srcEntity : srcRegistry.view<T>()) {
 			entt::entity destEntity = enttMap.at(srcRegistry.get<IDComponent>(srcEntity).ID);
 
 			T& srcComponent = srcRegistry.get<T>(srcEntity);
@@ -434,14 +465,6 @@ namespace SW {
 		CopyComponentIfExists<PrismaticJoint2DComponent>(newEntity, currentRegistry, entity);
 		CopyComponentIfExists<SpringJoint2DComponent>(newEntity, currentRegistry, entity);
 		CopyComponentIfExists<WheelJoint2DComponent>(newEntity, currentRegistry, entity);
-
-		auto parentNewEntity = [&entity, scene = this](Entity newEntity) {
-			if (Entity parent = entity.GetParent()) {
-				newEntity.SetParent(parent);
-
-				parent.GetRelations().ChildrenIDs.push_back(newEntity.GetID());
-			}
-		};
 
 		std::vector<u64> childIds = entity.GetRelations().ChildrenIDs;
 

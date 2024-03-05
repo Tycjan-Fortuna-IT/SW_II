@@ -1,4 +1,6 @@
 [ ] - Standardize a pallete of colors, equivalents in different types, ImVec4, ImU32 ...
+[ ] - ASSERT macro rework, allow for no param, and formatted strings
+    (no param would print e.g. function and line number of a breakpoint occurrence)
 
 [ ] - 2D
     [ ] - Physics

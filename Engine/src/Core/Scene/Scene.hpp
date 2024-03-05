@@ -1,8 +1,8 @@
 /**
  * @file Scene.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.5
- * @date 2024-03-04
+ * @version 0.1.6
+ * @date 2024-03-05
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -133,9 +133,20 @@ namespace SW {
 		/**
 		 * @brief Retrieves the entity with the specified ID.
 		 * @param id The ID of the entity.
-		 * @return The entity with the specified ID, or an invalid entity if not found.
+		 * @return The entity with the specified ID.
+		 * 
+		 * @warning Entity is expected to exist (runtime error if it doesn't)!
 		 */
 		Entity GetEntityByID(u64 id);
+
+		/**
+		 * @brief Retrieves the entity with the specified ID.
+		 * @param id The ID of the entity.
+		 * @return The entity with the specified ID, or an invalid entity if not found.
+		 *
+		 * @warning Entity is not expected to exist (empty returned if it doesn't) - caller must check!
+		 */
+		Entity TryGetEntityByID(u64 id);
 
 		/**
 		 * @brief Retrieves the filepath to the serialized scene.
