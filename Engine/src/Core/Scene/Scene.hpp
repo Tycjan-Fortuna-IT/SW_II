@@ -211,6 +211,14 @@ namespace SW {
 		 */
 		void SortEntities();
 
+		/**
+		 * Copies a component from one entity to another if it exists.
+		 * 
+		 * @tparam T The type of the component to copy.
+		 * @param dst The destination entity to copy the component to.
+		 * @param dstRegistry The registry of the destination entity.
+		 * @param src The source entity to copy the component from.
+		 */
 		template<typename T>
 		inline void CopyComponentIfExists(entt::entity dst, entt::registry& dstRegistry, entt::entity src)
 		{
@@ -221,6 +229,22 @@ namespace SW {
 
 				dstRegistry.emplace_or_replace<T>(dst, srcComponent);
 			}
+		}
+
+		/**
+		 * Copies a component from one entity to another entity in a scene.
+		 * 
+		 * @tparam T The type of the component to copy.
+		 * @param destination The destination scene where the component will be copied to.
+		 * @param from The entity from which the component will be copied.
+		 * @param to The entity to which the component will be copied.
+		 */
+		template<typename T>
+		inline void CopyComponentIntoScene(Scene* destination, Entity from, Entity to)
+		{
+			entt::registry& destRegistry = destination->GetRegistry().GetRegistryHandle();	
+
+			CopyComponentIfExists<T>(to, destRegistry, from);
 		}
 
 		glm::vec2 Gravity = { 0.0f, -9.80665f };	/**< The gravity of the scene. */

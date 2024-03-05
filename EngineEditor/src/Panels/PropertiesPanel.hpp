@@ -99,43 +99,34 @@ namespace SW {
 
 			bool removeComponent = false;
 
-			if (removable) {
-				ImGui::PushID(static_cast<int>(id));
+			ImGui::PushID(static_cast<int>(id));
 
-				const f32 frameHeight = ImGui::GetFrameHeight();
+			const f32 frameHeight = ImGui::GetFrameHeight();
 
-				ImGui::SameLine(ImGui::GetContentRegionMax().x - frameHeight * 1.2f);
+			ImGui::SameLine(ImGui::GetContentRegionMax().x - frameHeight * 1.2f);
 
-				if (ImGui::Button(SW_ICON_SETTINGS, ImVec2{ frameHeight * 1.2f, frameHeight }))
-					ImGui::OpenPopup("ComponentSettings");
+			if (ImGui::Button(SW_ICON_SETTINGS, ImVec2{ frameHeight * 1.2f, frameHeight }))
+				ImGui::OpenPopup("ComponentSettings");
 
-				if (ImGui::BeginPopup("ComponentSettings")) {
-					//if (ImGui::MenuItemEx("Copy", SW_ICON_CONTENT_COPY)) {
-					//	entt::registry& registry = m_SceneViewportPanel->GetCurrentScene()->GetRegistry().GetRegistryHandle();
-
-					//	m_SceneViewportPanel->GetCurrentScene()->CopyComponentToScene<T>(m_ComponentCopyEntity, m_ComponentCopyScene, entity);
-
-					//	//m_ComponentCopyScene->CopyComponentToScene<T>(m_ComponentCopyEntity, m_SceneViewportPanel->GetCurrentScene(), entity);
-					//	//CopyComponentToScene
-					//	//m_ComponentCopyScene->CopyComponentIfExists<T>(entity, registry, m_ComponentCopyEntity);
-					//}
-
-					//if (ImGui::MenuItemEx("Paste", SW_ICON_CONTENT_PASTE)) {
-					//	entt::registry& registry = m_ComponentCopyScene->GetRegistry().GetRegistryHandle();
-
-					//	//m_SceneViewportPanel->GetCurrentScene()->CopyComponentToScene<T>(m_ComponentCopyEntity, m_ComponentCopyScene, entity);
-
-					//	//m_ComponentCopyScene->CopyComponentIfExists<T>(m_ComponentCopyEntity, registry, entity);
-					//}
-
-					if (ImGui::MenuItemEx("Remove", SW_ICON_DELETE))
-						removeComponent = true;
-
-					ImGui::EndPopup();
+			if (ImGui::BeginPopup("ComponentSettings")) {
+				if (ImGui::MenuItemEx("Copy", SW_ICON_CONTENT_COPY)) {
+					m_SceneViewportPanel->GetCurrentScene()->CopyComponentIntoScene<T>(m_ComponentCopyScene, entity, m_ComponentCopyEntity);
 				}
 
-				ImGui::PopID();
+				if (ImGui::MenuItemEx("Paste", SW_ICON_CONTENT_PASTE)) {
+					m_ComponentCopyScene->CopyComponentIntoScene<T>(m_SceneViewportPanel->GetCurrentScene(), m_ComponentCopyEntity, entity);
+				}
+
+				if (removable) {
+					if (ImGui::MenuItemEx("Remove", SW_ICON_DELETE)) {
+						removeComponent = true;
+					}
+				}
+
+				ImGui::EndPopup();
 			}
+
+			ImGui::PopID();
 
 			if (open) {
 				fn(component);

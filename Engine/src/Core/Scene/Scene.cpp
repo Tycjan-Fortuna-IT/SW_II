@@ -436,10 +436,13 @@ namespace SW {
 #define CopyReferencedEntities(T) \
 	if (entity.HasComponent<T>()) { \
 		auto& component = entity.GetComponent<T>(); \
-		Entity connectedEntity = GetEntityByID(component.ConnectedEntityID); \
-		Entity duplicatedConnectedEntity = DuplicateEntity(connectedEntity, duplicatedEntities); \
-		auto& newComponent = newEntity.GetComponent<T>(); \
-		newComponent.ConnectedEntityID = duplicatedConnectedEntity.GetID(); \
+		\
+		if (component.ConnectedEntityID) { \
+			Entity connectedEntity = GetEntityByID(component.ConnectedEntityID); \
+			Entity duplicatedConnectedEntity = DuplicateEntity(connectedEntity, duplicatedEntities); \
+			auto& newComponent = newEntity.GetComponent<T>(); \
+			newComponent.ConnectedEntityID = duplicatedConnectedEntity.GetID(); \
+		} \
 	}
 
 	Entity Scene::DuplicateEntity(Entity entity, std::unordered_map<u64, Entity>& duplicatedEntities)
