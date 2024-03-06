@@ -90,6 +90,7 @@ namespace SW {
 
 		bool m_IsViewportFocused = false;		/** @brief Is the viewport focused. */
 		bool m_IsGizmoBarHovered = false;
+		bool m_IsToolbarHovered = false;
 
 		glm::vec2 m_ViewportSize = glm::vec2(50.f);			/** @brief The viewport size. */
 		glm::vec2 m_ViewportBoundsMin = glm::vec2(0.f);		/** @brief The minimum bounds of the viewport. */

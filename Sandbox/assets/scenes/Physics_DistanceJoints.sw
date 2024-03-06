@@ -125,6 +125,10 @@ Entities:
       CameraComponent:
         Primary: true
         AspectRatio: 1.85000002
+        ProjectionType: 1
+        OrthographicSize: 10
+        OrthographicNearClip: -1
+        OrthographicFarClip: 1
   - Entity:
       IDComponent:
         ID: 16312124345262141903

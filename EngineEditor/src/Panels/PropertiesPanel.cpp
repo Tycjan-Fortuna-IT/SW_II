@@ -8,6 +8,7 @@
 #include "GUI/Icons.hpp"
 #include "Core/AssetManager.hpp"
 #include "Core/ECS/Entity.hpp"
+#include "Core/Scene/SceneCamera.hpp"
 
 namespace SW {
 
@@ -133,6 +134,48 @@ namespace SW {
 			DrawComponent<CameraComponent>(entity, [](CameraComponent& component) {
 				GUI::BeginProperties("##camera_property");
 				GUI::DrawBooleanProperty(component.Primary, "Primary", "Whether this camera is the primary camera (only one camera can be primary)");
+
+				ProjectionType type = component.Camera.GetProjectionType();
+
+				if (
+					GUI::DrawSelectableProperty(type, {
+						GUI::SelectOption<ProjectionType>{ "Orthographic", ProjectionType::Orthographic },
+						GUI::SelectOption<ProjectionType>{ "Perspective", ProjectionType::Perspective },
+					}, "Projection Type")
+				) {
+					component.Camera.SetProjectionType(type);
+				}
+
+				if (type == ProjectionType::Orthographic) {
+
+					f32 orthoSize = component.Camera.GetOrthographicSize();
+					if (GUI::DrawFloatingPointProperty(orthoSize, "Size", "Size of the camera", 0.f, MaxFloatValue))
+						component.Camera.SetOrthographicSize(orthoSize);
+
+					f32 orthoNear = component.Camera.GetOrthographicNearClip();
+					if (GUI::DrawFloatingPointProperty(orthoNear, "Near Clip", "The near clip of the camera", 0.f, MaxFloatValue))
+						component.Camera.SetOrthographicNearClip(orthoNear);
+
+					f32 orthoFar = component.Camera.GetOrthographicFarClip();
+					if (GUI::DrawFloatingPointProperty(orthoFar, "Far Clip", "The far clip of the camera", 0.f, MaxFloatValue))
+						component.Camera.SetOrthographicFarClip(orthoFar);
+
+				} else if (type == ProjectionType::Perspective) {
+
+					f32 verticalFov = glm::degrees(component.Camera.GetPerspectiveVerticalFOV());
+					if (GUI::DrawFloatingPointProperty(verticalFov, "Vertical FOV", "Vertical field of view of the camera in degrees", 0.f, 180.f))
+						component.Camera.SetPerspectiveVerticalFOV(glm::radians(verticalFov));
+
+					f32 perspectiveNear = component.Camera.GetPerspectiveNearClip();
+					if (GUI::DrawFloatingPointProperty(perspectiveNear, "Near Clip", "The near clip of the camera", 0.f, MaxFloatValue))
+						component.Camera.SetPerspectiveNearClip(perspectiveNear);
+
+					f32 perspectiveFar = component.Camera.GetPerspectiveFarClip();
+					if (GUI::DrawFloatingPointProperty(perspectiveFar, "Far Clip", "The far clip of the camera", 0.f, MaxFloatValue))
+						component.Camera.SetPerspectiveFarClip(perspectiveFar);
+
+				}
+
 				GUI::EndProperties();
 			}, true);
 

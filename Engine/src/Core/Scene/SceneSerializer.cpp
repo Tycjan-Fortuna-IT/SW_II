@@ -218,6 +218,22 @@ namespace SW {
 				output << YAML::BeginMap;
 				output << YAML::Key << "Primary" << YAML::Value << cc.Primary;
 				output << YAML::Key << "AspectRatio" << YAML::Value << cc.Camera.GetAspectRatio();
+				output << YAML::Key << "ProjectionType" << YAML::Value << (int)cc.Camera.GetProjectionType();
+
+				if (cc.Camera.GetProjectionType() == ProjectionType::Orthographic) {
+
+					output << YAML::Key << "OrthographicSize" << YAML::Value << cc.Camera.GetOrthographicSize();
+					output << YAML::Key << "OrthographicNearClip" << YAML::Value << cc.Camera.GetOrthographicNearClip();
+					output << YAML::Key << "OrthographicFarClip" << YAML::Value << cc.Camera.GetOrthographicFarClip();
+
+				} else if (cc.Camera.GetProjectionType() == ProjectionType::Perspective) {
+
+					output << YAML::Key << "PerspectiveVerticalFOV" << YAML::Value << cc.Camera.GetPerspectiveVerticalFOV();
+					output << YAML::Key << "PerspectiveNearClip" << YAML::Value << cc.Camera.GetPerspectiveNearClip();
+					output << YAML::Key << "PerspectiveFarClip" << YAML::Value << cc.Camera.GetPerspectiveFarClip();
+
+				}
+
 				output << YAML::EndMap;
 			}
 
@@ -497,6 +513,21 @@ namespace SW {
 				CameraComponent& cc = deserialized.AddComponent<CameraComponent>(camera);
 
 				cc.Primary = cameraComponent["Primary"].as<bool>();
+				cc.Camera.SetProjectionType((ProjectionType)cameraComponent["ProjectionType"].as<int>());
+			
+				if (cc.Camera.GetProjectionType() == ProjectionType::Orthographic) {
+
+					cc.Camera.SetOrthographicSize(cameraComponent["OrthographicSize"].as<f32>());
+					cc.Camera.SetOrthographicNearClip(cameraComponent["OrthographicNearClip"].as<f32>());
+					cc.Camera.SetOrthographicFarClip(cameraComponent["OrthographicFarClip"].as<f32>());
+
+				} else if (cc.Camera.GetProjectionType() == ProjectionType::Perspective) {
+
+					cc.Camera.SetPerspectiveVerticalFOV(cameraComponent["PerspectiveVerticalFOV"].as<f32>());
+					cc.Camera.SetPerspectiveNearClip(cameraComponent["PerspectiveNearClip"].as<f32>());
+					cc.Camera.SetPerspectiveFarClip(cameraComponent["PerspectiveFarClip"].as<f32>());
+
+				}
 			}
 
 			if (YAML::Node rigidBody2DComponent = entity["Entity"]["RigidBody2DComponent"]) {

@@ -13,6 +13,12 @@
 
 namespace SW {
 
+	enum class ProjectionType : u8
+	{
+		Perspective = 0,
+		Orthographic = 1
+	};
+
 	/**
 	 * @class SceneCamera
 	 * @brief Represents a camera used in a scene.
@@ -47,107 +53,47 @@ namespace SW {
 		void SetViewportSize(u32 width, u32 height);
 
 		/**
-		 * @brief Updates the camera based on the elapsed time since the last update.
-		 * @param dt The elapsed time since the last update.
-		 */
-		void OnUpdate(Timestep dt);
-
-		/**
-		 * @brief Called when the viewport is resized.
-		 * @param width The new width of the viewport.
-		 * @param height The new height of the viewport.
-		 */
-		void OnViewportResize(f32 width, f32 height);
-
-		/**
-		 * @brief Called when the mouse is scrolled.
-		 * @param xOffset The horizontal offset of the mouse scroll.
-		 * @param yOffset The vertical offset of the mouse scroll.
-		 */
-		void OnMouseScrolled(f32 xOffset, f32 yOffset);
-
-		/**
 		 * @brief Gets the aspect ratio of the camera.
 		 * @return The aspect ratio of the camera.
 		 */
 		f32 GetAspectRatio() const { return m_AspectRatio; }
 
-		/**
-		 * @brief Gets the orthographic size of the camera.
-		 * @return The orthographic size of the camera.
-		 */
+		void SetPerspective(f32 verticalFov, f32 nearClip, f32 farClip);
+		void SetOrthographic(f32 size, f32 nearClip, f32 farClip);
+
+		f32 GetPerspectiveVerticalFOV() const { return m_PerspectiveFOV; }
+		void SetPerspectiveVerticalFOV(f32 verticalFov) { m_PerspectiveFOV = verticalFov; RecalculateProjection(); }
+
+		f32 GetPerspectiveNearClip() const { return m_PerspectiveNear; }
+		void SetPerspectiveNearClip(f32 nearClip) { m_PerspectiveNear = nearClip; RecalculateProjection(); }
+
+		f32 GetPerspectiveFarClip() const { return m_PerspectiveFar; }
+		void SetPerspectiveFarClip(f32 farClip) { m_PerspectiveFar = farClip; RecalculateProjection(); }
+
 		f32 GetOrthographicSize() const { return m_OrthographicSize; }
-
-		/**
-		 * @brief Gets the near clip distance of the orthographic projection.
-		 * @return The near clip distance of the orthographic projection.
-		 */
-		f32 GetOrthographicNearClip() const { return m_OrthographicNear; }
-
-		/**
-		 * @brief Gets the far clip distance of the orthographic projection.
-		 * @return The far clip distance of the orthographic projection.
-		 */
-		f32 GetOrthographicFarClip() const { return m_OrthographicFar; }
-
-		/**
-		 * @brief Sets the orthographic size of the camera.
-		 * @param size The new orthographic size.
-		 */
 		void SetOrthographicSize(f32 size) { m_OrthographicSize = size; RecalculateProjection(); }
 
-		/**
-		 * @brief Sets the near clip distance of the orthographic projection.
-		 * @param nearClip The new near clip distance.
-		 */
+		f32 GetOrthographicNearClip() const { return m_OrthographicNear; }
 		void SetOrthographicNearClip(f32 nearClip) { m_OrthographicNear = nearClip; RecalculateProjection(); }
 
-		/**
-		 * @brief Sets the far clip distance of the orthographic projection.
-		 * @param farClip The new far clip distance.
-		 */
+		f32 GetOrthographicFarClip() const { return m_OrthographicFar; }
 		void SetOrthographicFarClip(f32 farClip) { m_OrthographicFar = farClip; RecalculateProjection(); }
 
-		/**
-		 * @brief Gets the projection matrix of the camera.
-		 * @return The projection matrix of the camera.
-		 */
-		const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
-
-		/**
-		 * @brief Gets the view matrix of the camera.
-		 * @return The view matrix of the camera.
-		 */
-		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
-
-		/**
-		 * @brief Gets the view projection matrix of the camera.
-		 * @return The view projection matrix of the camera.
-		 */
-		const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
+		ProjectionType GetProjectionType() const { return m_ProjectionType; }
+		void SetProjectionType(ProjectionType type) { m_ProjectionType = type; RecalculateProjection(); }
 
 	private:
 		f32 m_OrthographicSize = 10.0f;		/**< The orthographic size of the camera. */
 		f32 m_OrthographicNear = -1.0f;		/**< The near clip distance of the orthographic projection. */
 		f32 m_OrthographicFar = 1.0f;		/**< The far clip distance of the orthographic projection. */
 
+		f32 m_PerspectiveFOV = glm::radians(45.0f);
+		f32 m_PerspectiveNear = 0.01f;
+		f32 m_PerspectiveFar = 1000.0f;
+
 		f32 m_AspectRatio = 0.0f;	/**< The aspect ratio of the camera. */
-		f32 m_ZoomLevel = 1.0f;		/**< The zoom level of the camera. */
 
-		glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };	/**< The position of the camera. */
-		f32 m_CameraRotation = 0.0f;							/**< The rotation of the camera. */
-
-		f32 m_CameraMoveSpeed = 20.0f;		/**< The speed at which the camera moves. */
-		f32 m_CameraRotationSpeed = 30.0f;	/**< The speed at which the camera rotates. */
-
-		glm::mat4 m_ProjectionMatrix;		/**< The projection matrix of the camera. */
-		glm::mat4 m_ViewMatrix;				/**< The view matrix of the camera. */
-		glm::mat4 m_ViewProjectionMatrix;	/**< The view projection matrix of the camera. */
-
-		/**
-		 * @brief Recalculates the view matrix based on the camera's position and rotation.
-		 */
-		void RecalculateViewMatrix();
+		ProjectionType m_ProjectionType = ProjectionType::Orthographic;
 
 		/**
 		 * @brief Recalculates the projection matrix based on the camera's orthographic settings.

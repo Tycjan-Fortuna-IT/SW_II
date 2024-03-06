@@ -356,6 +356,10 @@ Entities:
       CameraComponent:
         Primary: true
         AspectRatio: 1.90584421
+        ProjectionType: 1
+        OrthographicSize: 10
+        OrthographicNearClip: -1
+        OrthographicFarClip: 1
       RigidBody2DComponent:
         Type: 2
         AutoMass: true
