@@ -166,7 +166,8 @@ namespace SW {
 	 * @brief This component is used to store the camera's data with position's attached to the component.
 	 * @note This component is optional. However without even single camera the scene will not be visible!
 	 */
-	struct CameraComponent {
+	struct CameraComponent final
+	{
 		SceneCamera Camera;
 		bool Primary = true;	/** @brief In case of many cameras only the first primary one will be used. */
 

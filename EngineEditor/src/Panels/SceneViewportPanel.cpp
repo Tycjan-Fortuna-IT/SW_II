@@ -52,8 +52,6 @@ namespace SW {
 
 		m_EditorCamera = new EditorCamera();
 		m_EditorCamera->SetViewportSize((f32)spec.Width, (f32)spec.Height);
-
-		//m_ActiveScene = new Scene("");
 	}
 
 	SceneViewportPanel::~SceneViewportPanel()
@@ -146,6 +144,48 @@ namespace SW {
 
 			if (EditorSettings::Get().ShowPhysicsColliders) {
 				PROFILE_SCOPE("SceneViewportPanel::OnUpdate() - PhysicColliderRendering");
+
+				// Debug Camera Visualization
+				{
+					constexpr glm::vec4 color = glm::vec4(1.0f);
+
+					for (auto&& [handle, cc] : m_ActiveScene->GetRegistry().GetEntitiesWith<CameraComponent>().each()) {
+						Entity entity = { handle, m_ActiveScene };
+
+						if (cc.Primary) {
+							const SceneCamera& mainCamera = cc.Camera;
+							const glm::mat4 inv = glm::inverse(mainCamera.GetProjectionMatrix() * glm::inverse(entity.GetWorldSpaceTransformMatrix()));
+
+							glm::vec3 frustumCorners[8];
+							u64 i = 0;
+
+							for (f32 x = 0.0f; x < 2.0f; x += 1.0f) {
+								for (f32 y = 0.0f; y < 2.0f; y += 1.0f) {
+									for (f32 z = 0.0f; z < 2.0f; z += 1.0f) {
+										const glm::vec4 pt = inv * glm::vec4(2.0f * x - 1.0f, 2.0f * y - 1.0f, 2.0f * z - 1.0f, 1.0f);
+										
+										frustumCorners[i++] = glm::vec3(pt) / pt.w;
+									}
+								}
+							}
+
+							Renderer2D::DrawLine(frustumCorners[0], frustumCorners[1], color);
+							Renderer2D::DrawLine(frustumCorners[0], frustumCorners[2], color);
+							Renderer2D::DrawLine(frustumCorners[0], frustumCorners[4], color);
+							Renderer2D::DrawLine(frustumCorners[1], frustumCorners[3], color);
+							Renderer2D::DrawLine(frustumCorners[1], frustumCorners[5], color);
+							Renderer2D::DrawLine(frustumCorners[2], frustumCorners[3], color);
+							Renderer2D::DrawLine(frustumCorners[2], frustumCorners[6], color);
+							Renderer2D::DrawLine(frustumCorners[3], frustumCorners[7], color);
+							Renderer2D::DrawLine(frustumCorners[4], frustumCorners[5], color);
+							Renderer2D::DrawLine(frustumCorners[4], frustumCorners[6], color);
+							Renderer2D::DrawLine(frustumCorners[5], frustumCorners[7], color);
+							Renderer2D::DrawLine(frustumCorners[6], frustumCorners[7], color);
+
+							break;
+						}
+					}
+				}
 
 				// Box Colliders Visualization
 				{
@@ -449,6 +489,22 @@ namespace SW {
 				m_EditorCamera->SetYaw(yaw);
 			}
 
+			ImVec2 framePadding = ImGui::GetStyle().FramePadding;
+			f32 frameHeight = 1.3f * ImGui::GetFrameHeight();
+
+			ImGui::SetNextItemAllowOverlap();
+			{
+				char resolution[32] = { 0 };
+
+				sprintf_s(&resolution[0], 32, "%ux%u", (u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
+
+				ImVec2 resolutionTextSize = ImGui::CalcTextSize(resolution);
+				ImVec2 resolutionTextPosition = { ImGui::GetCursorPosX() + m_ViewportSize.x - resolutionTextSize.x - framePadding.x, startCursorPos.y + framePadding.y };
+				
+				ImGui::SetCursorPos({ resolutionTextPosition.x, resolutionTextPosition.y });
+				ImGui::TextUnformatted(resolution);
+			}
+
 			if (SelectionManager::IsSelected() && isSceneLoaded && m_ActiveScene->GetCurrentState() != SceneState::Play) {
 				Entity selectedEntity = m_ActiveScene->GetEntityByID(SelectionManager::GetSelectionID());
 
@@ -521,7 +577,7 @@ namespace SW {
 				
 				SelectionManager::SelectByID(idc.ID);
 			} else {
-				if (!ImGuizmo::IsOver() && !ImGuizmo::IsUsingAny() && !m_IsGizmoBarHovered)
+				if (!ImGuizmo::IsOver() && !ImGuizmo::IsUsingAny() && !m_IsGizmoBarHovered && !m_IsToolbarHovered)
 					SelectionManager::Deselect();
 			}
 		}
@@ -572,7 +628,7 @@ namespace SW {
 		frameColor.w = 0.5f;
 
 		ImGui::RenderFrame(bb.Min, bb.Max, ImGui::GetColorU32(frameColor), false, ImGui::GetStyle().FrameRounding);
-		m_IsGizmoBarHovered = ImGui::IsMouseHoveringRect(bb.Min, bb.Max);
+		m_IsToolbarHovered = ImGui::IsMouseHoveringRect(bb.Min, bb.Max);
 
 		glm::vec2 tempGizmoPosition = m_ToolbarPosition;
 

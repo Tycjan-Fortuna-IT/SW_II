@@ -1281,11 +1281,15 @@ namespace SW::GUI {
 	 * @param max The maximum value for the property (optional).
 	 * @param delta The delta value for the property (optional).
 	 * @param format The format string for displaying the value (optional).
+	 * 
+	 * @return Whether something changed.
 	 */
 	template<std::floating_point T>
-	static void DrawFloatingPointProperty(
+	static bool DrawFloatingPointProperty(
 		T& value, const char* label, const char* tooltip = nullptr, T min = 0, T max = 0, f32 delta = 0.1f, const char* format = "%.3f"
 	) {
+		bool changed = false;
+
 		BeginPropertyGrid(label, tooltip);
 
 		int dataType = ImGuiDataType_Float;
@@ -1293,13 +1297,17 @@ namespace SW::GUI {
 		if constexpr (sizeof(T) == 8)
 			dataType = ImGuiDataType_Double;
 
-		if (max > min) {
-			ImGui::SliderScalar("##property_f32ing_point", dataType, &value, &min, &max, format);
-		} else {
-			ImGui::DragScalar("##property_f32ing_point", dataType, &value, delta, &min, &max, format);
-		}
+		//if (max > min) { TODO: Come up with a separate method to once and for all fix min, max problem, and big values drag
+			//if (ImGui::SliderScalar("##property_f32ing_point", dataType, &value, &min, &max, format))
+				//changed = true;
+		//} else {
+			if (ImGui::DragScalar("##property_f32ing_point", dataType, &value, delta, &min, &max, format))
+				changed = true;
+		//}
 		
 		EndPropertyGrid();
+
+		return changed;
 	}
 
 	/**
@@ -1327,12 +1335,16 @@ namespace SW::GUI {
 	 * @param options The list of selectable options.
 	 * @param label The label for the property.
 	 * @param tooltip The tooltip for the property (optional).
+	 * 
+	 * @return bool Whether something has changed
 	 */
-	template<typename T>
-	static void DrawSelectableProperty(
+	template <typename T>
+	static bool DrawSelectableProperty(
 		T& value, std::initializer_list<SelectOption<T>> options, const char* label, const char* tooltip = nullptr
 	) {
 		BeginPropertyGrid(label, tooltip);
+
+		bool changed = false;
 
 		std::string chosenName = "";
 
@@ -1348,6 +1360,8 @@ namespace SW::GUI {
 
 				if (ImGui::Selectable(option.Label.c_str(), isSelected)) {
 					value = option.value;
+
+					changed = true;
 				}
 
 				if (isSelected)
@@ -1358,6 +1372,8 @@ namespace SW::GUI {
 		}
 
 		EndPropertyGrid();
+
+		return changed;
 	}
 
 	/**
