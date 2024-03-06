@@ -86,6 +86,8 @@ namespace SW {
 		 * @param toParent (Optional) The entity to parent the newly created entity to.
 		 */
 		void DrawEntityCreateMenu(Scene* scene, Entity toParent = {});
+
+		bool OnKeyPressed(KeyCode code);
 	};
 
 }

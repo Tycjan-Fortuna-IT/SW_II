@@ -12,7 +12,11 @@ namespace SW {
 	SceneHierarchyPanel::SceneHierarchyPanel(SceneViewportPanel* sceneViewportPanel)
 		: Panel("Scene Hierarchy", SW_ICON_VIEW_LIST, true), m_SceneViewportPanel(sceneViewportPanel)
 	{
-		
+		EventSystem::Register(EVENT_CODE_KEY_PRESSED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+			KeyCode code = (KeyCode)event.Payload.u16[0];
+
+			return OnKeyPressed(code);
+		});
 	}
 
 	void SceneHierarchyPanel::OnUpdate(Timestep dt)
@@ -350,6 +354,41 @@ namespace SW {
 
 			ImGui::EndMenu();
 		}
+	}
+
+	bool SceneHierarchyPanel::OnKeyPressed(KeyCode code)
+	{
+		if (!SelectionManager::IsSelected())
+			return false;
+
+		Entity entity = m_SceneViewportPanel->GetCurrentScene()->GetEntityByID(SelectionManager::GetSelectionID());
+
+		const bool ctrl = Input::IsKeyPressed(KeyCode::LeftControl) || Input::IsKeyPressed(KeyCode::RightControl);
+
+		switch (code) {
+			case KeyCode::F2:
+			{
+				m_RenamingEntity = entity;
+				break;
+			}
+			case KeyCode::D:
+			{
+				if (ctrl) {
+					std::unordered_map<u64, Entity> duplicatedEntities;
+
+					m_SceneViewportPanel->GetCurrentScene()->DuplicateEntity(entity, duplicatedEntities);
+				}
+				break;
+			}
+			case KeyCode::Delete:
+			{
+				m_EntityToDelete = entity;
+				SelectionManager::Deselect();
+				break;
+			}
+		}
+
+		return false;
 	}
 
 }
