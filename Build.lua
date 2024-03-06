@@ -62,3 +62,6 @@ group "Engine"
 group ""
 
 include "EngineEditor/Build-EngineEditor.lua"
+
+include "Scripting.Managed/Build-Scripting-Managed.lua"
+include "Scripting.Native/Build-Scripting-Native.lua"

@@ -1,0 +1,42 @@
+project "Scripting.Native"
+    language "C++"
+    cppdialect "C++20"
+    kind "StaticLib"
+    staticruntime "Off"
+
+    architecture "x86_64"
+
+    targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
+
+    pchheader "pch.hpp"
+    pchsource "src/pch.cpp"
+
+    forceincludes { "pch.hpp" }
+
+    files {
+        "src/**.cpp",
+        "src/**.hpp",
+    }
+
+    includedirs { 
+        "src/"
+    }
+    
+    externalincludedirs { 
+        "../vendor/DotNetCore/"
+    }
+
+    filter "configurations:Debug"
+        runtime "Debug"
+        symbols "On"
+
+    filter "configurations:Release"
+        runtime "Release"
+        optimize "On"
+        symbols "On"
+
+    filter "configurations:Dist"
+        runtime "Release"
+        optimize "On"
+        symbols "Off"
