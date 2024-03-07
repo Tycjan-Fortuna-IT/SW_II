@@ -1,4 +1,4 @@
-premake.api.addAllowed("debuggertype", "NativeWithManagedCore")
+-- premake.api.addAllowed("debuggertype", "NativeWithManagedCore")
 
 project "Scripting.Native"
     language "C++"
@@ -13,11 +13,6 @@ project "Scripting.Native"
     targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 
-    pchheader "pch.hpp"
-    pchsource "src/pch.cpp"
-
-    forceincludes { "pch.hpp" }
-
     files {
         "src/**.cpp",
         "src/**.hpp",
@@ -28,7 +23,7 @@ project "Scripting.Native"
     }
     
     externalincludedirs { 
-        "%{wks.location}/Scripting.Native/vendor/DotNetCore/"
+        "%{wks.location}/Scripting.Native/vendor/DotNetCore"
     }
 
     filter "configurations:Debug"

@@ -3,7 +3,7 @@ project "Scripting.Example.Native"
     cppdialect "C++20"
     kind "ConsoleApp"
     staticruntime "Off"
-    debuggertype "NativeWithManagedCore"
+    -- debuggertype "NativeWithManagedCore"
 
     architecture "x86_64"
 
@@ -16,7 +16,10 @@ project "Scripting.Example.Native"
     }
 
 
-    externalincludedirs { "../../Scripting.Native/src/" }
+    externalincludedirs { 
+        "../../Scripting.Native/src/",
+        "%{wks.location}/Scripting.Native/vendor/DotNetCore"
+    }
 
 	-- postbuildcommands {
 	-- 	'{COPYFILE} "%{wks.location}/Coral.Managed/Coral.Managed.runtimeconfig.json" "%{cfg.targetdir}"',
