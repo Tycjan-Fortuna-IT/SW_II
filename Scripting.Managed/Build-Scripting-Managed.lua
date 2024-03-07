@@ -1,5 +1,3 @@
-include "../PropertyTags.lua"
-
 project "Scripting.Managed"
     language "C#"
     dotnetframework "net8.0"

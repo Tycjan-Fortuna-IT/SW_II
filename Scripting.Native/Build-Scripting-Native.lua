@@ -1,8 +1,12 @@
+premake.api.addAllowed("debuggertype", "NativeWithManagedCore")
+
 project "Scripting.Native"
     language "C++"
     cppdialect "C++20"
     kind "StaticLib"
     staticruntime "Off"
+
+    dependson "Scripting.Managed"
 
     architecture "x86_64"
 
@@ -24,7 +28,7 @@ project "Scripting.Native"
     }
     
     externalincludedirs { 
-        "../vendor/DotNetCore/"
+        "%{wks.location}/Scripting.Native/vendor/DotNetCore/"
     }
 
     filter "configurations:Debug"

@@ -1,4 +1,5 @@
 include "SolutionItems.lua"
+include "PropertyTags.lua"
 include "Dependencies.lua"
 
 workspace "SW_II"
@@ -61,7 +62,11 @@ group "Engine"
 	include "Engine/Build-Engine.lua"
 group ""
 
-include "EngineEditor/Build-EngineEditor.lua"
+group "Scripting"
+    include "Scripting.Managed/Build-Scripting-Managed.lua"
+    include "Scripting.Native/Build-Scripting-Native.lua"
+    include "Scripting.Example/Managed/Build-Scripting-Example-Managed.lua"
+    include "Scripting.Example/Native/Build-Scripting-Example-Native.lua"
+group ""
 
-include "Scripting.Managed/Build-Scripting-Managed.lua"
-include "Scripting.Native/Build-Scripting-Native.lua"
+include "EngineEditor/Build-EngineEditor.lua"
