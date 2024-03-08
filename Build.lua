@@ -3,7 +3,6 @@ include "PropertyTags.lua"
 include "Dependencies.lua"
 
 workspace "SW_II"
-    architecture "x86_64"
     configurations { "Debug", "Release", "Dist" }
     startproject "EngineEditor"
     conformancemode "On"
@@ -54,6 +53,9 @@ workspace "SW_II"
             "-fno-char8_t"
         }
 
+    filter "language:C++ or language:C"
+		architecture "x86_64"
+
 -- Folder name containing compiled output in a following format: /[config]-[platform]-[architecture]/.
 -- e.g. folder Windows-x64/Debug
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
@@ -62,11 +64,6 @@ group "Engine"
 	include "Engine/Build-Engine.lua"
 group ""
 
-group "Scripting"
-    include "Scripting.Managed/Build-Scripting-Managed.lua"
-    include "Scripting.Native/Build-Scripting-Native.lua"
-    include "Scripting.Example/Managed/Build-Scripting-Example-Managed.lua"
-    include "Scripting.Example/Native/Build-Scripting-Example-Native.lua"
-group ""
-
 include "EngineEditor/Build-EngineEditor.lua"
+
+include "Sandbox/Build-Sandbox.lua"

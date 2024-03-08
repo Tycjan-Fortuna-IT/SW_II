@@ -1,5 +1,6 @@
 project "Engine"
     kind "StaticLib"
+    architecture "x86_64"
 
     targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
@@ -73,9 +74,11 @@ project "Engine"
         include "Engine/vendor/Box2D"
         include "Engine/vendor/msdf-atlas-gen"
         include "Engine/vendor/tracy"
+        include "Engine/vendor/Coral/Coral.Native"
+        include "Engine/vendor/Coral/Coral.Managed"
     group ""
     
     group "Engine"
-        include "EngineTest/Build-EngineTest.lua"
+        include "Engine.ScriptCore/Build-ScriptCore.lua"
+        -- include "EngineTest/Build-EngineTest.lua"
     group ""
-

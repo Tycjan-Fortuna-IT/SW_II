@@ -69,6 +69,10 @@ Dependencies = {
     DBGHELP = {
         LinkAs = "Dbghelp",
     },
+    Coral = {
+		LinkAs = "Coral.Native",
+        IncludeDir = "%{wks.location}/Engine/vendor/Coral/Coral.Native/Include"
+    },
 }
 
 function IncludeEngineDependencies(additional)

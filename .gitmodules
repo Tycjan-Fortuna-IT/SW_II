@@ -31,3 +31,6 @@
 [submodule "Engine/vendor/tracy/tracy"]
 	path = Engine/vendor/tracy/tracy
 	url = https://github.com/wolfpld/tracy.git
+[submodule "Engine/vendor/Coral"]
+	path = Engine/vendor/Coral
+	url = https://github.com/StudioCherno/Coral.git

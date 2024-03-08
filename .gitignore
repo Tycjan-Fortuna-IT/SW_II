@@ -410,3 +410,10 @@ FodyWeavers.xsd
 /docs/html
 
 Makefile
+
+**.dll
+**.json
+**.recipe
+**.csproj
+EngineEditor/assets/scripts/intermediates
+Sandbox/assets/scripts/src/intermediates
