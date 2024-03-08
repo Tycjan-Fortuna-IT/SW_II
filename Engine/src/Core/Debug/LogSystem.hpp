@@ -90,7 +90,7 @@ namespace SW {
 					logger->error(fmt::vformat(message, fmt::make_format_args(std::forward<Args>(args)...))); break;
 				case LOG_LEVEL_FATAL:
 					logger->critical(fmt::vformat(message, fmt::make_format_args(std::forward<Args>(args)...)));
-					DEBUG_BREAK(); break;
+					break;
 			}
 		}
 

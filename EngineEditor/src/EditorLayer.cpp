@@ -13,6 +13,7 @@
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Project/Project.hpp"
 #include "Core/Project/ProjectSerializer.hpp"
+#include "Core/Scripting/ScriptingCore.hpp"
 
 namespace SW {
 
@@ -444,7 +445,9 @@ namespace SW {
 			std::string path = filepath.string();
 
 			Project* newProject = ProjectSerializer::Deserialize(path);
-			ProjectContext::Set(newProject);
+			ProjectContext::Set(newProject); // TODO: Make projects switchable
+
+			ScriptingCore::Get().Initialize();
 
 			EventSystem::Emit({
 				.Code = EVENT_CODE_PROJECT_LOADED,
