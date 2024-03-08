@@ -2,8 +2,6 @@
 
 #include <ShlObj_core.h>
 
-#include "HostFXRErrorCodes.hpp"
-
 namespace SW {
 
 	ScriptingHost::ScriptingHost()
@@ -41,11 +39,17 @@ namespace SW {
 			BERROR("Path to hostfxr.dll must not be empty!");
 
 		if (settings.ScriptingModulePath.empty())
-			BERROR("Path to scripting module must not be empty!");
+			BERROR("Path to Scripting.Managed.runtimeconfig.json must not be empty!");
 
 		m_Settings = settings;
 
-		void* handle = LoadLibraryA(m_Settings.FXRPath.c_str());
+		void* handle = nullptr;
+
+#ifdef SW_WIDE_CHARS
+		handle = LoadLibraryW(m_Settings.FXRPath.c_str());
+#else
+		handle = LoadLibraryA(m_Settings.FXRPath.string().c_str());
+#endif
 
 		if (!handle)
 			BERROR("Failed to load hostfxr.dll library!");
@@ -78,6 +82,20 @@ namespace SW {
 
 		if (status != StatusCode::Success)
 			BERROR("Runtime delegate failed to load!");
+
+		m_MainManagedLibrarypath = std::filesystem::path(m_Settings.ScriptingModulePath) / "Scripting.Managed.dll";
+
+		if (!std::filesystem::exists(m_MainManagedLibrarypath))
+			BERROR("Could not find Scripting.Managed.dll file!");
+
+		using InitializeFnPtr = void(*)();
+		InitializeFnPtr initializeFn = nullptr;
+		initializeFn = LoadManagedFunctionPtr<InitializeFnPtr>(SW_STR("Scripting.Managed.ScriptingHost, Scripting.Managed"), SW_STR("Initialize"));
+
+		if (!initializeFn)
+			BERROR("Could not find Scripting.Managed.ScriptingHost.Initialize()");
+
+		initializeFn();
 
 		return true;
 	}
