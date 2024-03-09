@@ -8,11 +8,18 @@
  */
 #pragma once
 
+namespace Coral { class ManagedAssembly; }
+
 namespace SW {
 
 	class InternalCallManager
 	{
-	
+	public:
+		static void Initialize(Coral::ManagedAssembly* coreAssembly);
+
+	private:
+		static void RegisterTypes(Coral::ManagedAssembly* coreAssembly);
+		static void RegisterInternalCalls(Coral::ManagedAssembly* coreAssembly);
 	};
 
 }

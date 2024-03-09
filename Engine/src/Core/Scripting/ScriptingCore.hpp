@@ -8,11 +8,17 @@
  */
 #pragma once
 
+#include "ScriptStorage.hpp"
+#include "Core/Buffer.hpp"
+
+#include <Coral/ManagedObject.hpp>
+#include <Coral/Type.hpp>
+#include <Coral/Array.hpp>
+
 namespace Coral {
 	class AssemblyLoadContext; 
 	class HostInstance;
 	class ManagedAssembly;
-	class Type;
 }
 
 namespace SW {
@@ -23,6 +29,37 @@ namespace SW {
 	struct AssemblyData {
 		Coral::ManagedAssembly* Assembly;
 		std::unordered_map<u64, Coral::Type*> CachedTypes;
+	};
+
+	struct FieldMetadata {
+		std::string Name;
+		DataType Type;
+		Coral::Type* ManagedType;
+
+		Buffer DefaultValue;
+
+		template<typename T>
+		void SetDefaultValue(Coral::ManagedObject& temp)
+		{
+			if (ManagedType->IsSZArray()) {
+				Coral::Array<T> value = temp.GetFieldValue<Coral::Array<T>>(Name);
+
+				DefaultValue = Buffer::Copy(value.Data(), (u32)value.ByteLength());
+
+				Coral::Array<T>::Free(value);
+			} else {
+				DefaultValue.Allocate(sizeof(T));
+
+				T value = temp.GetFieldValue<T>(Name);
+
+				DefaultValue.Write(&value, sizeof(T));
+			}
+		}
+	};
+
+	struct ScriptMetadata {
+		std::string FullName;
+		std::unordered_map<u32, FieldMetadata> Fields;
 	};
 
 	class ScriptingCore
@@ -36,6 +73,15 @@ namespace SW {
 
 		void SetCurrentScene(Scene* scene) { m_CurrentScene = scene; }
 		Scene* GetCurrentScene() { return m_CurrentScene; }
+
+		void BuildAssemblyCache(AssemblyData* assemblyData);
+
+		bool IsValidScript(u64 scriptID) const;
+
+		const ScriptMetadata& GetScriptMetadata(u64 scriptID) const;
+		const std::unordered_map<u64, ScriptMetadata>& GetAllScripts() const { return m_ScriptMetadata; }
+
+		const Coral::Type* GetTypeByName(std::string_view name) const;
 
 		static ScriptingCore& Get();
 
@@ -55,6 +101,10 @@ namespace SW {
 
 		AssemblyData* m_CoreAssemblyData = nullptr;
 		AssemblyData* m_AppAssemblyData = nullptr;
+	
+		std::unordered_map<u64, ScriptMetadata> m_ScriptMetadata;
+
+		void LoadProjectAssembly();
 	};
 
 }

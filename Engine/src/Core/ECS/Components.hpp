@@ -13,6 +13,7 @@
 #include "Core/OpenGL/Texture2D.hpp"
 #include "Core/Math/Math.hpp"
 #include "Core/OpenGL/Font.hpp"
+#include "Core/Scripting/CSharpObject.hpp"
 
 namespace SW {
 
@@ -198,6 +199,15 @@ namespace SW {
 		RelationshipComponent(RelationshipComponent&& other) = default;
 		RelationshipComponent& operator=(const RelationshipComponent& other) = default;
 		RelationshipComponent& operator=(RelationshipComponent&& other) = default;
+	};
+
+	struct ScriptComponent final
+	{
+		u64 ScriptID = 0;
+		CSharpObject Instance;
+		std::vector<u32> FieldIDs;
+
+		bool IsRuntimeInitialized = false;
 	};
 
 	/**

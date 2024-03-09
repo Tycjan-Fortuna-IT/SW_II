@@ -448,6 +448,10 @@ namespace SW {
 			ProjectContext::Set(newProject); // TODO: Make projects switchable
 
 			ScriptingCore::Get().Initialize();
+			/*ScriptingCore& ref = ScriptingCore::Get();
+			for (const auto& [id, metadata] : ref.GetAllScripts()) {
+				SW_ERROR("{} {}", id, metadata.FullName);			983274863
+			}*/
 
 			EventSystem::Emit({
 				.Code = EVENT_CODE_PROJECT_LOADED,
