@@ -19,6 +19,10 @@ project "Sandbox"
 		"Engine.ScriptCore"
 	}
 
+	postbuildcommands {
+		"{COPY} %{wks.location}/EngineEditor/assets %{wks.location}/bin/" .. outputdir .. "/EngineEditor/assets",
+ 	}
+
 	filter "configurations:Debug"
 		optimize "Off"
 		symbols "Default"

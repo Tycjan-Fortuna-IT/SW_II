@@ -10,6 +10,7 @@
 #include "Core/ECS/Entity.hpp"
 #include "Core/Editor/EditorCamera.hpp"
 #include "Core/Physics/Physics2DContactListener.hpp"
+#include "Core/Scripting/ScriptingCore.hpp"
 
 namespace SW {
 
@@ -185,10 +186,28 @@ namespace SW {
 
 			CreateWheelJoint2D(entity, rbc, wjc);
 		}
+
+		for (auto&& [handle, id, sc] : m_Registry.GetEntitiesWith<IDComponent, ScriptComponent>().each()) {
+			Entity entity = { handle, this };
+
+			m_ScriptStorage.InitializeEntityStorage(sc.ScriptID, (u64)id.ID);
+			sc.Instance = ScriptingCore::Get().Instantiate<u64>(id.ID, m_ScriptStorage, (u64)id.ID);
+			sc.Instance.Invoke("OnCreate");
+		}
 	}
 
 	void Scene::OnRuntimeStop()
 	{
+		for (auto&& [handle, id, sc] : m_Registry.GetEntitiesWith<IDComponent, ScriptComponent>().each()) {
+			Entity entity = { handle, this };
+
+			sc.Instance.Invoke("OnDestroy");
+
+			ScriptingCore::Get().DestroyInstance(id.ID, m_ScriptStorage);
+
+			m_ScriptStorage.ShutdownEntityStorage(sc.ScriptID, (u64)id.ID);
+		}
+
 		delete m_PhysicsWorld2D;
 		delete m_PhysicsContactListener2D;
 	}
@@ -336,6 +355,22 @@ namespace SW {
 
 #pragma endregion
 
+		{
+			PROFILE_SCOPE("Scene::OnUpdate - C# OnUpdate");
+
+			for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<ScriptComponent>().each()) {
+				sc.Instance.Invoke<f32>("OnUpdate", dt);
+			}
+		}
+
+		{
+			PROFILE_SCOPE("Scene::OnUpdate - C# OnLateUpdate");
+
+			for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<ScriptComponent>().each()) {
+				sc.Instance.Invoke<f32>("OnLateUpdate", dt);
+			}
+		}
+
 		for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<SpriteComponent>().each()) {
 			Entity entity = { handle, this };
 
@@ -417,6 +452,7 @@ namespace SW {
 		CopyComponent<SpriteComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<CircleComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<RelationshipComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<ScriptComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<TextComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<CameraComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<RigidBody2DComponent>(copyRegistry, currentRegistry, enttMap);
@@ -429,6 +465,8 @@ namespace SW {
 		CopyComponent<PrismaticJoint2DComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<SpringJoint2DComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<WheelJoint2DComponent>(copyRegistry, currentRegistry, enttMap);
+
+		m_ScriptStorage.CopyTo(copy->m_ScriptStorage);
 
 		return copy;
     }

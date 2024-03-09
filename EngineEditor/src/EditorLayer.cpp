@@ -278,9 +278,23 @@ namespace SW {
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("View")) {
-				if (ImGui::MenuItem("Show viewport")) {
+			if (ImGui::BeginMenu("Scripting")) {
+				if (ImGui::MenuItem("Reload C# Assemblies")) {
+					ScriptingCore& core = ScriptingCore::Get();
 
+					ScriptStorage tempStorage;
+
+					auto& scriptStorage = m_Viewport->GetCurrentScene()->GetScriptStorage();
+					scriptStorage.CopyTo(tempStorage);
+					scriptStorage.Clear();
+
+					core.Shutdown();
+					core.Initialize();
+
+					tempStorage.CopyTo(scriptStorage);
+					tempStorage.Clear();
+
+					scriptStorage.SynchronizeStorage();
 				}
 
 				ImGui::EndMenu();
@@ -448,10 +462,6 @@ namespace SW {
 			ProjectContext::Set(newProject); // TODO: Make projects switchable
 
 			ScriptingCore::Get().Initialize();
-			/*ScriptingCore& ref = ScriptingCore::Get();
-			for (const auto& [id, metadata] : ref.GetAllScripts()) {
-				SW_ERROR("{} {}", id, metadata.FullName);			983274863
-			}*/
 
 			EventSystem::Emit({
 				.Code = EVENT_CODE_PROJECT_LOADED,

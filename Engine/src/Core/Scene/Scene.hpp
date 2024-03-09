@@ -13,6 +13,7 @@
 #include "Core/Math/Vector2.hpp"
 #include "Core/ECS/EntityRegistry.hpp"
 #include "Core/ECS/Components.hpp"
+#include "Core/Scripting/ScriptStorage.hpp"
 
 class b2World;
 
@@ -247,6 +248,13 @@ namespace SW {
 			CopyComponentIfExists<T>(to, destRegistry, from);
 		}
 
+		/**
+		 * @brief Gets the script storage associated with the scene.
+		 * 
+		 * @return A reference to the script storage.
+		 */
+		ScriptStorage& GetScriptStorage() { return m_ScriptStorage; }
+
 		glm::vec2 Gravity = { 0.0f, -9.80665f };	/**< The gravity of the scene. */
 
 	private:
@@ -268,6 +276,8 @@ namespace SW {
 		u32 m_VelocityIterations = 8;			/**< The number of velocity iterations for the physics simulation. */
 		u32 m_PositionIterations = 3;			/**< The number of position iterations for the physics simulation. */
 		f32 m_PhysicsFrameAccumulator = 0.0f;	/**< The frame accumulator for the physics simulation. */
+
+		ScriptStorage m_ScriptStorage;			/**< The script storage of the scene. */
 
 		/**
 		 * @brief Register entity's rigidbody component in the physics world.

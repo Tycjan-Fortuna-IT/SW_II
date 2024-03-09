@@ -1,8 +1,8 @@
 /**
  * @file Components.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.5
- * @date 2024-03-02
+ * @version 0.1.6
+ * @date 2024-03-09
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -203,11 +203,11 @@ namespace SW {
 
 	struct ScriptComponent final
 	{
-		u64 ScriptID = 0;
-		CSharpObject Instance;
-		std::vector<u32> FieldIDs;
+		u64 ScriptID = 983274863;	/** @brief Unique ID of the script. */
+		
+		CSharpObject Instance;		/** @brief Instance of the script. */
 
-		bool IsRuntimeInitialized = false;
+		std::vector<u32> FieldIDs;	/** @brief IDs of the fields. */
 	};
 
 	/**

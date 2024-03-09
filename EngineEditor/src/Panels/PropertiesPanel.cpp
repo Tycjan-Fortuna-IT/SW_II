@@ -24,6 +24,8 @@ namespace SW {
 		
 		AddComponentName<CameraComponent>(SW_ICON_CAMERA "  Camera");
 
+		AddComponentName<ScriptComponent>(SW_ICON_SCRIPT " Script");
+
 		AddComponentName<RigidBody2DComponent>(SW_ICON_SOCCER "  Rigid Body 2D");
 		AddComponentName<BoxCollider2DComponent>(SW_ICON_CHECKBOX_BLANK_OUTLINE "  Box Collider 2D");
 		AddComponentName<CircleCollider2DComponent>(SW_ICON_CHECKBOX_BLANK_CIRCLE_OUTLINE "  Circle Collider 2D");
@@ -175,6 +177,12 @@ namespace SW {
 						component.Camera.SetPerspectiveFarClip(perspectiveFar);
 
 				}
+
+				GUI::EndProperties();
+			}, true);
+
+			DrawComponent<ScriptComponent>(entity, [](ScriptComponent& component) {
+				GUI::BeginProperties("##script_property");
 
 				GUI::EndProperties();
 			}, true);
@@ -470,6 +478,15 @@ namespace SW {
 			}
 
 			ImGui::EndMenu();
+		}
+
+
+		if (!entity.HasComponent<ScriptComponent>()) {
+			if (ImGui::MenuItemEx("Script", SW_ICON_SCRIPT)) {
+				entity.AddComponent<ScriptComponent>();
+
+				ImGui::CloseCurrentPopup();
+			}
 		}
 
 		if (ImGui::BeginMenuEx("3D", SW_ICON_PACKAGE_VARIANT_CLOSED)) {
