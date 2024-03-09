@@ -12,6 +12,7 @@
 #include <Coral/Type.hpp>
 #include <Coral/StableVector.hpp>
 #include <Coral/Array.hpp>
+#include <Coral/Assembly.hpp>
 
 #include "ScriptStorage.hpp"
 #include "Core/Buffer.hpp"
@@ -20,7 +21,6 @@
 namespace Coral {
 	class AssemblyLoadContext; 
 	class HostInstance;
-	class ManagedAssembly;
 }
 
 namespace SW {
@@ -148,6 +148,10 @@ namespace SW {
 		 * @return The const pointer to the type.
 		 */
 		const Coral::Type* GetTypeByName(std::string_view name) const;
+
+		AssemblyData* GetCoreAssembly() { return m_CoreAssemblyData; }
+
+		AssemblyData* GetAppAssembly() { return m_AppAssemblyData; }
 
 		/**
 		 * @brief Gets the instance of the ScriptingCore.

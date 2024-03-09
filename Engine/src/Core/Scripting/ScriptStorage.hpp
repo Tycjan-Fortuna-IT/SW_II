@@ -58,11 +58,6 @@ namespace SW {
 	class FieldStorage
 	{
 	public:
-		~FieldStorage()
-		{
-			m_ValueBuffer.Release();
-		}
-
 		std::string_view GetName() const { return m_Name; }
 
 		DataType GetType() const { return m_DataType; }

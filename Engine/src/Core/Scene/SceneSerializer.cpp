@@ -4,10 +4,9 @@
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
-#include "Core/Math/Vector3.hpp"
-#include "Core/Math/Vector4.hpp"
 #include "Core/AssetManager.hpp"
 #include "Core/ECS/Entity.hpp"
+#include "../Scripting/ScriptingCore.hpp"
 
 namespace YAML {
 
@@ -207,6 +206,17 @@ namespace SW {
 						output << YAML::Key << i << YAML::Value << rsc.ChildrenIDs[i];
 					output << YAML::EndMap;
 				}
+
+				output << YAML::EndMap;
+			}
+
+			if (entity.HasComponent<ScriptComponent>()) {
+				const ScriptComponent& sc = entity.GetComponent<ScriptComponent>();
+
+				output << YAML::Key << "ScriptComponent";
+				output << YAML::BeginMap;
+
+				output << YAML::Key << "ScriptID" << YAML::Value << sc.ScriptID;
 
 				output << YAML::EndMap;
 			}
@@ -504,6 +514,20 @@ namespace SW {
 						if (child)
 							rsc.ChildrenIDs.push_back(child);
 					}
+				}
+			}
+
+			if (YAML::Node scriptComponent = entity["Entity"]["ScriptComponent"]) {
+				ScriptComponent& sc = deserialized.AddComponent<ScriptComponent>();
+
+				u64 scriptId = scriptComponent["ScriptID"].as<u64>();
+
+				ScriptingCore& core = ScriptingCore::Get();
+
+				if (core.IsValidScript(scriptId)) {
+					sc.ScriptID = scriptId;
+
+					scene->GetScriptStorage().InitializeEntityStorage(scriptId, id);
 				}
 			}
 

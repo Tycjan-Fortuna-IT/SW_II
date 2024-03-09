@@ -238,7 +238,12 @@ namespace SW {
 	void AssetPanel::InvalidateAssetDirectory()
 	{
         m_AssetsDirectory = ProjectContext::Get()->GetAssetDirectory() / "assets";
-        m_CurrentDirectory = m_AssetsDirectory;
+
+#ifdef SW_DEBUG_BUILD
+		m_CurrentDirectory = m_AssetsDirectory / "scenes";
+#else 
+		m_CurrentDirectory = m_AssetsDirectory;
+#endif
 
 		LoadDirectoryEntries();
 	}

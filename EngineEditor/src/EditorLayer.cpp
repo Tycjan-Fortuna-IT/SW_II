@@ -50,6 +50,10 @@ namespace SW {
 		Application::Get()->GetWindow()->SetVSync(true);
 
 		Renderer2D::Initialize();
+
+#ifdef SW_DEBUG_BUILD
+		OpenProject();
+#endif
 	}
 
 	void EditorLayer::OnDetach()

@@ -203,7 +203,7 @@ namespace SW {
 
 	struct ScriptComponent final
 	{
-		u64 ScriptID = 983274863;	/** @brief Unique ID of the script. */
+		u64 ScriptID = 0;			/** @brief Unique ID of the script. */
 		
 		CSharpObject Instance;		/** @brief Instance of the script. */
 

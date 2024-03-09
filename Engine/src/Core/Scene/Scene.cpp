@@ -79,6 +79,13 @@ namespace SW {
 		RemoveReferencedConnections<SpringJoint2DComponent>(registry, entity, id);
 		RemoveReferencedConnections<WheelJoint2DComponent>(registry, entity, id);
 
+		if (entity.HasComponent<ScriptComponent>()) {
+			ScriptComponent& sc = entity.GetComponent<ScriptComponent>();
+
+			if (sc.ScriptID)
+				m_ScriptStorage.ShutdownEntityStorage(sc.ScriptID, id);
+		}
+
 		m_EntityMap.erase(id);
 		m_Registry.DestroyEntity(entity);
 
@@ -190,7 +197,9 @@ namespace SW {
 		for (auto&& [handle, id, sc] : m_Registry.GetEntitiesWith<IDComponent, ScriptComponent>().each()) {
 			Entity entity = { handle, this };
 
-			m_ScriptStorage.InitializeEntityStorage(sc.ScriptID, (u64)id.ID);
+			if (!sc.ScriptID)
+				continue;
+
 			sc.Instance = ScriptingCore::Get().Instantiate<u64>(id.ID, m_ScriptStorage, (u64)id.ID);
 			sc.Instance.Invoke("OnCreate");
 		}
@@ -201,11 +210,11 @@ namespace SW {
 		for (auto&& [handle, id, sc] : m_Registry.GetEntitiesWith<IDComponent, ScriptComponent>().each()) {
 			Entity entity = { handle, this };
 
+			if (!sc.ScriptID)
+				continue;
+
 			sc.Instance.Invoke("OnDestroy");
-
 			ScriptingCore::Get().DestroyInstance(id.ID, m_ScriptStorage);
-
-			m_ScriptStorage.ShutdownEntityStorage(sc.ScriptID, (u64)id.ID);
 		}
 
 		delete m_PhysicsWorld2D;

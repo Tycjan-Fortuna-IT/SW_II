@@ -130,8 +130,8 @@ namespace SW {
 				if (!s_DataTypeLookup.contains(typeName))
 					continue;
 
-				if (fieldInfo.GetAccessibility() != Coral::TypeAccessibility::Public)
-					continue;
+				//if (fieldInfo.GetAccessibility() != Coral::TypeAccessibility::Public)
+				//	continue;
 
 				// Entity.ID bleeds through to the inheriting scripts
 				if (fieldNameStr == "ID")
@@ -181,8 +181,6 @@ namespace SW {
 						break;
 				}
 			}
-
-			m_ScriptMetadata[scriptID] = metadata;
 
 			temp.Destroy();
 		}

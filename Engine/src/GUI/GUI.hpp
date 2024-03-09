@@ -1332,7 +1332,7 @@ namespace SW::GUI {
 	 *
 	 * @tparam T The type of the property value.
 	 * @param value The reference to the property value.
-	 * @param options The list of selectable options.
+	 * @param options The vector of selectable options.
 	 * @param label The label for the property.
 	 * @param tooltip The tooltip for the property (optional).
 	 * 
@@ -1340,7 +1340,7 @@ namespace SW::GUI {
 	 */
 	template <typename T>
 	static bool DrawSelectableProperty(
-		T& value, std::initializer_list<SelectOption<T>> options, const char* label, const char* tooltip = nullptr
+		T& value, std::vector<SelectOption<T>> options, const char* label, const char* tooltip = nullptr
 	) {
 		BeginPropertyGrid(label, tooltip);
 
