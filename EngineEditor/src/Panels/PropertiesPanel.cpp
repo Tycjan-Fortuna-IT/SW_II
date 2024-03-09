@@ -9,6 +9,8 @@
 #include "Core/AssetManager.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Scene/SceneCamera.hpp"
+#include "Core/Scripting/ScriptingCore.hpp"
+#include "Core/Scripting/ScriptStorage.hpp"
 
 namespace SW {
 
@@ -24,14 +26,14 @@ namespace SW {
 		
 		AddComponentName<CameraComponent>(SW_ICON_CAMERA "  Camera");
 
-		AddComponentName<ScriptComponent>(SW_ICON_SCRIPT " Script");
+		AddComponentName<ScriptComponent>(SW_ICON_LANGUAGE_CSHARP " Script");
 
 		AddComponentName<RigidBody2DComponent>(SW_ICON_SOCCER "  Rigid Body 2D");
 		AddComponentName<BoxCollider2DComponent>(SW_ICON_CHECKBOX_BLANK_OUTLINE "  Box Collider 2D");
 		AddComponentName<CircleCollider2DComponent>(SW_ICON_CHECKBOX_BLANK_CIRCLE_OUTLINE "  Circle Collider 2D");
 		AddComponentName<PolygonCollider2DComponent>(SW_ICON_VECTOR_POLYGON " Polygon Collider 2D");
 		AddComponentName<BuoyancyEffector2DComponent>(SW_ICON_WATER "  Buoyancy Effector 2D");
-		
+
 		AddComponentName<DistanceJoint2DComponent>(SW_ICON_VECTOR_LINE "  Distance Joint 2D");
 		AddComponentName<RevolutionJoint2DComponent>(SW_ICON_ANGLE_ACUTE "  Revolution Joint 2D");
 		AddComponentName<PrismaticJoint2DComponent>(SW_ICON_VIEW_AGENDA "  Prismatic Joint 2D");
@@ -67,17 +69,15 @@ namespace SW {
 				ImGui::OpenPopup("AddComponent_Popup");
 			}
 
-			{
-				ImGui::SameLine();
+			ImGui::SameLine();
 
-				IDComponent& id = entity.GetComponent<IDComponent>();
+			IDComponent& id = entity.GetComponent<IDComponent>();
 
-				ImGui::Text(SW_ICON_KEY "  ID");
+			ImGui::Text(SW_ICON_KEY "  ID");
 
-				ImGui::SameLine();
+			ImGui::SameLine();
 
-				ImGui::TextDisabled(std::to_string(id.ID).c_str());
-			}
+			ImGui::TextDisabled(std::to_string(id.ID).c_str());
 
 			if (ImGui::BeginPopup("AddComponent_Popup")) {
 				DrawAddComponentMenu(entity);
@@ -86,7 +86,7 @@ namespace SW {
 			}
 
 			ImGui::BeginChild("PropertiesBody");
-					
+
 			DrawComponent<TagComponent>(entity, [](TagComponent& component) {
 				GUI::BeginProperties("##tag_property");
 				GUI::DrawSingleLineTextInputProperty<256>(component.Tag, "Tag ");
@@ -96,7 +96,7 @@ namespace SW {
 			DrawComponent<TransformComponent>(entity, [](TransformComponent& component) {
 				GUI::BeginProperties("##transform_property");
 				GUI::DrawVector3ControlProperty(component.Position, "Position ", "Position of the entity");
-				
+
 				glm::vec3 rotation = glm::degrees(component.Rotation);
 				GUI::DrawVector3ControlProperty(rotation, "Rotation ", "Rotation of the entity in degrees");
 				component.Rotation = glm::radians(rotation);
@@ -143,8 +143,8 @@ namespace SW {
 					GUI::DrawSelectableProperty(type, {
 						GUI::SelectOption<ProjectionType>{ "Orthographic", ProjectionType::Orthographic },
 						GUI::SelectOption<ProjectionType>{ "Perspective", ProjectionType::Perspective },
-					}, "Projection Type")
-				) {
+						}, "Projection Type")
+						) {
 					component.Camera.SetProjectionType(type);
 				}
 
@@ -181,8 +181,91 @@ namespace SW {
 				GUI::EndProperties();
 			}, true);
 
-			DrawComponent<ScriptComponent>(entity, [](ScriptComponent& component) {
+			DrawComponent<ScriptComponent>(entity, [=](ScriptComponent& component) {
 				GUI::BeginProperties("##script_property");
+				ScriptingCore& scriptingCore = ScriptingCore::Get();
+
+				const std::unordered_map<u64, ScriptMetadata>& allScripts = scriptingCore.GetAllScripts();
+
+				std::vector<GUI::SelectOption<u64>> scripts;
+
+				scripts.push_back({ "Invalid or no script", 0 });
+
+				for (auto& [scriptId, scriptMetaData] : allScripts) {
+					scripts.push_back({ scriptMetaData.FullName, scriptId });
+				}
+
+				ScriptStorage& storage = m_SceneViewportPanel->GetCurrentScene()->GetScriptStorage();
+
+				u64 currentId = component.ScriptID;
+
+				if (GUI::DrawSelectableProperty(component.ScriptID, scripts, "Scripts")) {
+					if (scriptingCore.IsValidScript(component.ScriptID)) {
+						if (currentId != component.ScriptID) {
+							storage.InitializeEntityStorage(component.ScriptID, id.ID);
+						}
+					} else {
+						storage.ShutdownEntityStorage(currentId, id.ID);
+						component.ScriptID = 0;
+					}
+				}
+
+				if (component.ScriptID) {
+					std::unordered_map<u32, FieldStorage> fieldStorages = storage.EntityStorage.at(id.ID).Fields;
+					const ScriptMetadata& scriptMetadata = scriptingCore.GetScriptMetadata(component.ScriptID);
+
+					Coral::Type& serializeAttr = scriptingCore.GetCoreAssembly()->Assembly->GetType("SW.SerializeFieldAttribute");
+
+					for (auto& [fieldId, fieldStorage] : fieldStorages) {
+						const FieldMetadata& fieldMetadata = scriptMetadata.Fields.at(fieldId);
+
+						bool isSerializable = fieldMetadata.ManagedType->HasAttribute(serializeAttr);
+
+						if (!isSerializable)
+							continue;
+
+						if (fieldStorage.IsArray()) {
+
+						} else {
+							DataType fieldType = fieldStorage.GetType();
+
+							switch (fieldType) {
+								case SW::DataType::Byte: ASSERT(false, "Byte not yet supported!");
+									break;
+								case SW::DataType::Short: ASSERT(false, "Short not yet supported!");
+									break;
+								case SW::DataType::UShort: ASSERT(false, "UShort not yet supported!");
+									break;
+								case SW::DataType::Int: ASSERT(false, "Int not yet supported!");
+									break;
+								case SW::DataType::UInt: ASSERT(false, "UInt not yet supported!");
+									break;
+								case SW::DataType::Long: ASSERT(false, "Long not yet supported!");
+									break;
+								case SW::DataType::ULong: ASSERT(false, "ULong not yet supported!");
+									break;
+								case SW::DataType::Float:
+								{
+									f32 value = fieldStorage.GetValue<f32>();
+									
+									if (GUI::DrawFloatingPointProperty(value, fieldStorage.GetName().data())) {
+										fieldStorage.SetValue(value);
+									}
+
+									break;
+								}
+								case SW::DataType::Double: ASSERT(false, "Double not yet supported!");
+									break;
+								case SW::DataType::Bool: ASSERT(false, "Bool not yet supported!");
+									break;
+								case SW::DataType::Entity: ASSERT(false, "Entity not yet supported!");
+									break;
+								default:
+									break;
+							}
+						}
+					}
+				}
 
 				GUI::EndProperties();
 			}, true);
@@ -482,7 +565,7 @@ namespace SW {
 
 
 		if (!entity.HasComponent<ScriptComponent>()) {
-			if (ImGui::MenuItemEx("Script", SW_ICON_SCRIPT)) {
+			if (ImGui::MenuItemEx("Script", SW_ICON_LANGUAGE_CSHARP)) {
 				entity.AddComponent<ScriptComponent>();
 
 				ImGui::CloseCurrentPopup();

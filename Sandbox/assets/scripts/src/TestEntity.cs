@@ -6,6 +6,7 @@ namespace Sandbox
 {
 	internal class TestEntity : Entity
 	{
+		[SerializeField]
 		private float Velocity = 20.0f;
 
 		protected override void OnCreate()

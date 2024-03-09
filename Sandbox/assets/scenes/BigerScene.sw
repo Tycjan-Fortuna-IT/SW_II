@@ -267,6 +267,8 @@ Entities:
       RelationshipComponent:
         ParentID: 18156684293390743624
         ChildrenCount: 0
+      ScriptComponent:
+        ScriptID: 983274863
       RigidBody2DComponent:
         Type: 2
         AutoMass: true
