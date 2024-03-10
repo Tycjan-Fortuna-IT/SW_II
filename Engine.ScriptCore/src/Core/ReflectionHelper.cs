@@ -41,18 +41,20 @@ namespace SW
 		{
 			Assembly asm = Assembly.Load(assembly);
 
-			Type type = asm.GetType(className);
+			Type? type = asm.GetType(className);
 
 			if (type != null) {
-				FieldInfo fieldInfo = type.GetField(fieldName, InstanceAll);
+				FieldInfo? fieldInfo = type.GetField(fieldName, InstanceAll);
 
-				foreach (var attr in fieldInfo.CustomAttributes) {
-					if (string.Equals(attr.AttributeType.Name, attrName)) return true;
+				if (fieldInfo != null) {
+					foreach (var attr in fieldInfo.CustomAttributes) {
+						if (string.Equals(attr.AttributeType.Name, attrName)) return true;
+					}
+				} else {
+					Console.WriteLine(fieldName + " field not found");
 				}
 			} else {
 				Console.WriteLine(className + " type not found");
-
-				return false;
 			}
 
 			return false;
