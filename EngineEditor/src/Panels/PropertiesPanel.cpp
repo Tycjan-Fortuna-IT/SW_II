@@ -11,6 +11,7 @@
 #include "Core/Scene/SceneCamera.hpp"
 #include "Core/Scripting/ScriptingCore.hpp"
 #include "Core/Scripting/ScriptStorage.hpp"
+#include "Coral/Attribute.hpp"
 
 namespace SW {
 
@@ -185,6 +186,8 @@ namespace SW {
 				GUI::BeginProperties("##script_property");
 				ScriptingCore& scriptingCore = ScriptingCore::Get();
 
+				static bool once = false;
+
 				const std::unordered_map<u64, ScriptMetadata>& allScripts = scriptingCore.GetAllScripts();
 
 				std::vector<GUI::SelectOption<u64>> scripts;
@@ -214,12 +217,19 @@ namespace SW {
 					std::unordered_map<u32, FieldStorage> fieldStorages = storage.EntityStorage.at(id.ID).Fields;
 					const ScriptMetadata& scriptMetadata = scriptingCore.GetScriptMetadata(component.ScriptID);
 
-					Coral::Type& serializeAttr = scriptingCore.GetCoreAssembly()->Assembly->GetType("SW.SerializeFieldAttribute");
+					Coral::Type& reflectionHelper = scriptingCore.GetCoreAssembly()->Assembly->GetType("SW.ReflectionHelper");
+
+					Coral::String assemblyName = Coral::String::New(scriptingCore.GetAppAssembly()->Assembly->GetName());
+					Coral::String className = Coral::String::New(scriptMetadata.FullName);
+					Coral::String serializeAttrName = Coral::String::New("SerializeFieldAttribute");
 
 					for (auto& [fieldId, fieldStorage] : fieldStorages) {
 						const FieldMetadata& fieldMetadata = scriptMetadata.Fields.at(fieldId);
+						Coral::String fieldName = Coral::String::New(fieldMetadata.Name);
 
-						bool isSerializable = fieldMetadata.ManagedType->HasAttribute(serializeAttr);
+						bool isSerializable = reflectionHelper.InvokeStaticMethod<Coral::Bool32>(
+							"HasFieldAttribute", assemblyName, className, fieldName, serializeAttrName
+						);
 
 						if (!isSerializable)
 							continue;

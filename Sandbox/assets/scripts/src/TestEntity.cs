@@ -9,6 +9,8 @@ namespace Sandbox
 		[SerializeField]
 		private float Velocity = 20.0f;
 
+		public float Damping = 1.0f;
+
 		protected override void OnCreate()
 		{
 			Console.WriteLine("OnCreate");
