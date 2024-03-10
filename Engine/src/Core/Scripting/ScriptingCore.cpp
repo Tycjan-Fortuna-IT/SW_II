@@ -125,6 +125,10 @@ namespace SW {
 
 				Coral::Type* fieldType = &fieldInfo.GetType();
 
+				if (fieldType->IsSZArray()) {
+					fieldType = &fieldType->GetElementType();
+				}
+
 				Coral::ScopedString typeName = fieldType->GetFullName();
 
 				if (!s_DataTypeLookup.contains(typeName))

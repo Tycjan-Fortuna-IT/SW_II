@@ -71,7 +71,7 @@ namespace SW {
 		 * @param args The arguments to the message to be formatted.
 		 */
 		template <typename... Args>
-		static void PrintMessage(LogType type, LogLevel level, std::string_view tag, std::string_view format, Args&&... args)
+		static void PrintMessage(LogType type, LogLevel level, std::string_view tag, std::string_view format = "", Args&&... args)
 		{
 			const std::shared_ptr<spdlog::logger>& logger = type == LogType::ENGINE ? s_EngineLogger : s_AppLogger;
 
@@ -125,15 +125,15 @@ namespace SW {
 	 * @param x The expression to assert.
 	 * @param msg The message to print if the assertion fails.
 	 */
-	#define ASSERT(x, ...)																									\
-    {																														\
-        if (!(x))																											\
-        {																													\
-            ::SW::LogSystem::PrintMessage(																					\
-				::SW::LogType::ENGINE, ::SW::LogLevel::LOG_LEVEL_FATAL, "Assertion failed:  " __VA_OPT__(, ) ##__VA_ARGS__  \
-			);																												\
-            DEBUG_BREAK();																									\
-        }																													\
+	#define ASSERT(x, ...)																													\
+    {																																		\
+        if (!(x))																															\
+        {																																	\
+            ::SW::LogSystem::PrintMessage(																									\
+				::SW::LogType::ENGINE, ::SW::LogLevel::LOG_LEVEL_FATAL, "Assertion failed: " #x " info --> " __VA_OPT__(, ) ##__VA_ARGS__	\
+			);																																\
+            DEBUG_BREAK();																													\
+        }																																	\
     }
 
 #else

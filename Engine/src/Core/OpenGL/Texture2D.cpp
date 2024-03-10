@@ -94,9 +94,7 @@ namespace SW {
 		stbi_set_flip_vertically_on_load(flipped);
 		stbi_uc* data = stbi_load(filepath, &m_Width, &m_Height, &m_Channels, 0);
 
-		std::string filePath = filepath;
-		std::string error = "Failed to load the image: ";
-		ASSERT(data, (filePath + error).c_str());
+		ASSERT(data, "Failed to load the image: {}", filepath);
 
 		GLenum internalFormat = 0, dataFormat = 0;
 

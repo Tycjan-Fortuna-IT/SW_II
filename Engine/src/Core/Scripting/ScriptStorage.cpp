@@ -57,7 +57,7 @@ namespace SW {
 
 		for (const auto& [entityID, entityStorage] : EntityStorage) {
 			if (!scriptEngine.IsValidScript(entityStorage.ScriptID)) {
-				ASSERT(false, "Cannot copy script data for script. The script is no longer valid");
+				ASSERT(false, "Cannot copy script data for script ID {}. The script is no longer valid", entityStorage.ScriptID);
 				continue;
 			}
 
@@ -69,7 +69,7 @@ namespace SW {
 
 			for (const auto& [fieldID, fieldStorage] : entityStorage.Fields) {
 				if (!scriptMetadata.Fields.contains(fieldID)) {
-					ASSERT("false", "Cannot copy script data for field. The field is no longer contained in the script.");
+					ASSERT(false, "Cannot copy script data for field {}. The field is no longer contained in the script.", fieldStorage.GetName());
 					continue;
 				}
 
@@ -86,7 +86,7 @@ namespace SW {
 	void ScriptStorage::CopyEntityStorage(u64 entityID, u64 targetEntityID, ScriptStorage& targetStorage) const
 	{
 		if (!targetStorage.EntityStorage.contains(targetEntityID)) {
-			ASSERT(false , "Cannot copy script storage to entity because InitializeScriptStorage hasn't been called for it.");
+			ASSERT(false, "Cannot copy script storage to entity {} because InitializeScriptStorage hasn't been called for it.", targetEntityID);
 			return;
 		}
 
@@ -94,14 +94,14 @@ namespace SW {
 		const auto& srcStorage = EntityStorage.at(entityID);
 
 		if (!scriptEngine.IsValidScript(srcStorage.ScriptID)) {
-			ASSERT(false, "Cannot copy script data for script ID. The script is no longer valid");
+			ASSERT(false, "Cannot copy script data for script ID {}. The script is no longer valid", srcStorage.ScriptID);
 			return;
 		}
 
 		auto& dstStorage = targetStorage.EntityStorage.at(targetEntityID);
 
 		if (dstStorage.ScriptID != srcStorage.ScriptID) {
-			ASSERT(false, "Cannot copy script storage, because they have different scritps!");
+			ASSERT(false, "Cannot copy script storage from entity {} to entity {} because they have different scritps!", entityID, targetEntityID);
 			return;
 		}
 
@@ -111,7 +111,7 @@ namespace SW {
 
 		for (const auto& [fieldID, fieldStorage] : srcStorage.Fields) {
 			if (!scriptMetadata.Fields.contains(fieldID)) {
-				ASSERT(false, "Cannot copy script data. The field is no longer contained in the script.");
+				ASSERT(false, "Cannot copy script data for field {}. The field is no longer contained in the script.", fieldStorage.GetName());
 				continue;
 			}
 

@@ -20,10 +20,8 @@ namespace SW {
 		ASSERT(ft, "MSDFGEN failed to initialize");
 
 		msdfgen::FontHandle* font = msdfgen::loadFont(ft, path.c_str());
-
-		std::string filePath = path;
-		std::string error = "Failed to load the font: ";
-		ASSERT(font, (filePath + error).c_str());
+		
+		ASSERT(font, "Failed to load the font: {}", path);
 	
 		msdf_atlas::Charset charset;
 		for (i32 i = 0x0020; i <= 0x00FF; i++) // range [0x0020, 0x00FF]

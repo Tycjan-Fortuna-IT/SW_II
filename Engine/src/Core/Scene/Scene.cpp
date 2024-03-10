@@ -417,7 +417,7 @@ namespace SW {
 		if (m_EntityMap.find(id) != m_EntityMap.end())
 			return { m_EntityMap.at(id), this };
 
-		ASSERT(false, "Entity not found!"); // TODO: allow in ASSERTS to format strings
+		ASSERT(false, "Entity with ID: {} does not exist!", id);
 
 		return {};
 	}

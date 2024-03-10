@@ -13,6 +13,7 @@
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Project/Project.hpp"
 #include "Core/OpenGL/Font.hpp"
+#include "Core/Scripting/ScriptingCore.hpp"
 
 namespace SW {
 
@@ -449,6 +450,7 @@ namespace SW {
 					
 					newScene->SortEntities();
 
+					ScriptingCore::Get().SetCurrentScene(newScene);
 				}
 				ImGui::EndDragDropTarget();
 			}
@@ -676,6 +678,7 @@ namespace SW {
 						m_SceneCopy = m_ActiveScene->DeepCopy();
 
 						m_ActiveScene->SetNewState(SceneState::Play);
+						m_ActiveScene->OnViewportResize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
 						m_ActiveScene->OnRuntimeStart();
 					}
 				}

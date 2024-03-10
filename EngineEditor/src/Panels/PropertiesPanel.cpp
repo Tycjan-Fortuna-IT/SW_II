@@ -57,6 +57,8 @@ namespace SW {
 
 	void PropertiesPanel::OnRender()
 	{
+		PROFILE_SCOPE();
+
 		constexpr f32 MaxFloatValue = FLT_MAX / 2.f;
 
 		if (OnBegin()) {
@@ -235,7 +237,7 @@ namespace SW {
 							continue;
 
 						if (fieldStorage.IsArray()) {
-
+							ASSERT(false, "Arrays not yet supported!");
 						} else {
 							DataType fieldType = fieldStorage.GetType();
 
@@ -271,6 +273,7 @@ namespace SW {
 								case SW::DataType::Entity: ASSERT(false, "Entity not yet supported!");
 									break;
 								default:
+									SW_WARN("{}", (int)fieldType);
 									break;
 							}
 						}
