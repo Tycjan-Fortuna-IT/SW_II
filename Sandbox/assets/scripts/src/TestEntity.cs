@@ -1,6 +1,5 @@
 ﻿using SW;
 using System;
-using System.Xml;
 
 namespace Sandbox
 {
@@ -9,26 +8,22 @@ namespace Sandbox
 		[SerializeField]
 		private float Velocity = 20.0f;
 
-		public float Damping = 1.0f;
-
 		protected override void OnCreate()
 		{
 			Console.WriteLine("OnCreate");
+			Console.WriteLine(Game.GetVieportWidth());
+			Console.WriteLine(Game.GetVieportHeight());
 
-			//using (XmlWriter writer = XmlWriter.Create("books.xml")) {
-			//	writer.WriteStartElement("book");
-			//	writer.WriteElementString("title", "Graphics Programming using GDI+");
-			//	writer.WriteElementString("author", "Mahesh Chand");
-			//	writer.WriteElementString("publisher", "Addison-Wesley");
-			//	writer.WriteElementString("price", "64.95");
-			//	writer.WriteEndElement();
-			//	writer.Flush();
-			//}
+			Console.WriteLine(HasComponent<TransformComponent>());
 		}
 
 		protected override void OnUpdate(float ts)
 		{
-			//Velocity += 1.0f;
+			Velocity += 1.0f;
+
+			//if (Velocity > 500.0f) {
+			//	Game.ShutDown();
+			//}
 		}
 
 		protected override void OnLateUpdate(float ts)
