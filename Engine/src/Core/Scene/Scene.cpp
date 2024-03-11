@@ -39,7 +39,7 @@ namespace SW {
 		entity.AddComponent<TransformComponent>();
 		entity.AddComponent<RelationshipComponent>();
 
-		m_EntityMap[id] = (entt::entity)entity;
+		m_EntityMap[id] = entity;
 
 		return entity;
 	}
@@ -158,6 +158,16 @@ namespace SW {
 		m_PhysicsContactListener2D = new Physics2DContactListener(this);
 		m_PhysicsWorld2D->SetContactListener(m_PhysicsContactListener2D);
 
+		for (auto&& [handle, id, sc] : m_Registry.GetEntitiesWith<IDComponent, ScriptComponent>().each()) {
+			Entity entity = { handle, this };
+
+			if (!sc.ScriptID)
+				continue;
+
+			sc.Instance = ScriptingCore::Get().Instantiate<u64>(id.ID, m_ScriptStorage, (u64)id.ID);
+			sc.Instance.Invoke("OnCreate");
+		}
+
 		for (auto&& [handle, rbc] : m_Registry.GetEntitiesWith<RigidBody2DComponent>().each()) {
 			Entity entity = { handle, this };
 
@@ -192,16 +202,6 @@ namespace SW {
 			Entity entity = { handle, this };
 
 			CreateWheelJoint2D(entity, rbc, wjc);
-		}
-
-		for (auto&& [handle, id, sc] : m_Registry.GetEntitiesWith<IDComponent, ScriptComponent>().each()) {
-			Entity entity = { handle, this };
-
-			if (!sc.ScriptID)
-				continue;
-
-			sc.Instance = ScriptingCore::Get().Instantiate<u64>(id.ID, m_ScriptStorage, (u64)id.ID);
-			sc.Instance.Invoke("OnCreate");
 		}
 	}
 
@@ -415,7 +415,7 @@ namespace SW {
 	Entity Scene::GetEntityByID(u64 id)
 	{
 		if (m_EntityMap.find(id) != m_EntityMap.end())
-			return { m_EntityMap.at(id), this };
+			return m_EntityMap.at(id);
 
 		ASSERT(false, "Entity with ID: {} does not exist!", id);
 
@@ -424,8 +424,8 @@ namespace SW {
 
 	Entity Scene::TryGetEntityByID(u64 id)
 	{
-		if (m_EntityMap.find(id) != m_EntityMap.end())
-			return { m_EntityMap.at(id), this };
+		if (const auto iter = m_EntityMap.find(id); iter != m_EntityMap.end())
+			return iter->second;
 
 		return {};
 	}

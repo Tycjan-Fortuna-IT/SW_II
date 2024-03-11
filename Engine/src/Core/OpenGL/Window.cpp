@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Core/Events/Event.hpp"
+#include "Core/Utils/Input.hpp"
 
 namespace SW {
 
@@ -79,8 +80,25 @@ namespace SW {
         });
 
         glfwSetKeyCallback(m_Handle, [](GLFWwindow* window, i32 key, i32 scancode, i32 action, i32 mods) {
-            switch (action) {
-				case GLFW_PRESS: {
+            switch (action)
+			{
+				case GLFW_RELEASE:
+				{
+					Input::UpdateKeyState((KeyCode)key, ClickableState::Released);
+
+					EventSystem::Emit({
+						.Code = EVENT_CODE_KEY_RELEASED,
+						.Payload = {
+							.u16 = { (u16)key }
+						}
+					}, nullptr);
+
+					break;
+				}
+				case GLFW_PRESS:
+				{
+					Input::UpdateKeyState((KeyCode)key, ClickableState::Pressed);
+
 					EventSystem::Emit({
 						.Code = EVENT_CODE_KEY_PRESSED,
 						.Payload = {
@@ -90,27 +108,55 @@ namespace SW {
 
 					break;
 				}          
-                case GLFW_RELEASE:
                 case GLFW_REPEAT:
-                default:
-                    SW_WARN("Unsupported mouse action: {}", action);
+				{
+					Input::UpdateKeyState((KeyCode)key, ClickableState::Repeated);
+
+					EventSystem::Emit({
+						.Code = EVENT_CODE_KEY_REPEAT,
+						.Payload = {
+							.u16 = { (u16)key }
+						}
+					}, nullptr);
+
+					break;
+				}
+				default:
+					SW_WARN("Unsupported key event action: {}");
             }
         });
 
 		glfwSetMouseButtonCallback(m_Handle, [](GLFWwindow* window, int button, int action, int mods) {
-			switch (action) {
-				case GLFW_PRESS: {
+			switch (action)
+			{
+				case GLFW_RELEASE:
+				{
+					Input::UpdateMouseState((MouseCode)button, ClickableState::Released);
+
+					EventSystem::Emit({
+						.Code = EVENT_CODE_MOUSE_BUTTON_RELEASED,
+						.Payload = {
+							.u16 = { (u16)button }
+						}
+					}, nullptr);
+
+					break;
+				}
+				case GLFW_PRESS:
+				{
+					Input::UpdateMouseState((MouseCode)button, ClickableState::Pressed);
+
 					EventSystem::Emit({
 						.Code = EVENT_CODE_MOUSE_BUTTON_PRESSED,
 						.Payload = {
 							.u16 = { (u16)button }
 						}
 					}, nullptr);
+				
 					break;
 				}
-				case GLFW_RELEASE:
 				default:
-					SW_WARN("Unsupported mouse action: {}", action);
+					SW_WARN("Unsupported mouse event action: {}");
 			}
 		});
 
@@ -150,6 +196,7 @@ namespace SW {
     void Window::OnUpdate() const
 	{
         glfwPollEvents();
+
         glfwSwapBuffers(m_Handle);
     }
 

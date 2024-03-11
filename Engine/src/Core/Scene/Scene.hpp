@@ -177,6 +177,22 @@ namespace SW {
 		void SetNewState(SceneState state) { m_SceneState = state; }
 
 		/**
+		 * @brief Set the position of the viewport.
+		 * 
+		 * @param position The new position of the viewport.
+		 */
+		void SetViewportPosition(glm::vec2 position) { m_ViewportPosition = position; }
+
+		/**
+		 * @brief Retrieves the position of the viewport.
+		 * 
+		 * @warning This is only the initial position of the viewport. Does not change during runtime.
+		 * 
+		 * @return glm::vec2 The position of the viewport.
+		 */
+		const glm::vec2& GetViewportPosition() const { return m_ViewportPosition; }
+
+		/**
 		 * @brief Copies the scene. (deep copy with all components and entities)
 		 * 
 		 * @return Scene* The copy of the scene.
@@ -263,10 +279,12 @@ namespace SW {
 		std::string m_FilePath;		/**< The filepath to the serialized scene file. */
 		std::string m_Name;			/**< The filename of the serialized scene file. */
 
-		std::unordered_map<u64, entt::entity> m_EntityMap = {}; /**< Map of entity IDs to entt::entity handles. (cache) */
+		std::unordered_map<u64, Entity> m_EntityMap = {}; /**< Map of entity IDs to entt::entity handles. (cache) */
 
 		u32 m_ViewportWidth = 0; /**< The width of the viewport. */
 		u32 m_ViewportHeight = 0; /**< The height of the viewport. */
+
+		glm::vec2 m_ViewportPosition = glm::vec2(0.f); /**< The initial position of the viewport. */
 
 		SceneState m_SceneState = SceneState::Edit;	/**< The current state of the scene. */
 

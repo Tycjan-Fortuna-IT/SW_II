@@ -8,6 +8,7 @@
 #include "AssetManager.hpp"
 #include "Renderer/RendererAPI.hpp"
 #include "Scripting/ScriptingCore.hpp"
+#include "Utils/Input.hpp"
 
 namespace SW {
 
@@ -86,6 +87,8 @@ namespace SW {
 			const Timestep dt = time - m_LastFrameTime;
 			m_LastFrameTime = time;
 
+			Input::UpdateKeysStateIfNecessary();
+
 			m_Window->OnUpdate();
 
 			{
@@ -105,6 +108,8 @@ namespace SW {
 				}
 				m_GuiLayer->End();
 			}
+
+			Input::ClearReleasedKeys();
 		}
 
 		if (!this->OnShutdown())

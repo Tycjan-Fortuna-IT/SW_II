@@ -24,11 +24,17 @@ namespace SW {
          */
         EVENT_CODE_KEY_PRESSED = 0x02,
 
-        /** @brief Not implemented */
-        EVENT_CODE_KEY_RELEASED = 0x03,
+		/**
+		 * @brief Keyboard key released.
+		 * @warning Context usage: u16 keyCode = event.Payload.u16[0];
+		 */
+		EVENT_CODE_KEY_RELEASED = 0x03,
 
-        /** @brief Not implemented */
-        EVENT_CODE_KEY_REPEAT = 0x04,
+		/**
+		 * @brief Keyboard key repeat.
+		 * @warning Context usage: u16 keyCode = event.Payload.u16[0];
+		 */
+		EVENT_CODE_KEY_REPEAT = 0x04,
 
 		/**
 		 * @brief Mouse wheel scrolled.
@@ -49,10 +55,16 @@ namespace SW {
 		EVENT_CODE_MOUSE_BUTTON_PRESSED = 0x07,
 
 		/**
+		 * @brief Mouse button released.
+		 * @warning Context usage: u16 mouseCode = event.Payload.u16[0];
+		 */
+		EVENT_CODE_MOUSE_BUTTON_RELEASED = 0x08,
+
+		/**
 		 * @brief Engine project loaded.
 		 * @warning Event without payload!
 		 */
-		EVENT_CODE_PROJECT_LOADED = 0x08,
+		EVENT_CODE_PROJECT_LOADED = 0x09,
     };
 
 	/**
