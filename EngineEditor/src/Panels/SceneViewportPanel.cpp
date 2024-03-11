@@ -449,8 +449,6 @@ namespace SW {
 					SetCurrentScene(newScene);
 					
 					newScene->SortEntities();
-
-					ScriptingCore::Get().SetCurrentScene(newScene);
 				}
 				ImGui::EndDragDropTarget();
 			}
@@ -677,8 +675,14 @@ namespace SW {
 					} else {
 						m_SceneCopy = m_ActiveScene->DeepCopy();
 
+						ScriptingCore::Get().SetCurrentScene(m_ActiveScene);
+
 						m_ActiveScene->SetNewState(SceneState::Play);
 						m_ActiveScene->OnViewportResize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
+						
+						ImVec2 viewportPos = ImGui::GetWindowPos();
+						m_ActiveScene->SetViewportPosition({viewportPos.x, viewportPos.y});
+
 						m_ActiveScene->OnRuntimeStart();
 					}
 				}
@@ -704,6 +708,8 @@ namespace SW {
 					m_ActiveScene = nullptr;
 
 					m_ActiveScene = m_SceneCopy->DeepCopy();
+
+					ScriptingCore::Get().SetCurrentScene(m_ActiveScene);
 
 					delete m_SceneCopy;
 					m_SceneCopy = nullptr;

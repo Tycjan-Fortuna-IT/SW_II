@@ -67,5 +67,7 @@ namespace SW
 		/// <param name="other">The vector to compare with this vector.</param>
 		/// <returns><c>true</c> if the vectors are equal; otherwise, <c>false</c>.</returns>
 		public bool Equals(Vector3 other) => X == other.X && Y == other.Y && Z == other.Z;
+
+		public static Vector3 operator+(in Vector3 left, in Vector3 right) => new Vector3(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
 	}
 }

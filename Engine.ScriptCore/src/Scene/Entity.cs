@@ -38,6 +38,8 @@ namespace SW
 		/// </summary>
 		protected virtual void OnDestroy() { }
 
+		public ulong GetID() { return ID; }
+
 		/// <summary>
 		///		Checks if the entity has a component of the specified type.
 		/// </summary>
@@ -49,14 +51,66 @@ namespace SW
 			unsafe { return InternalCalls.Entity_HasComponent(ID, typeof(T)); }
 		}
 
-		//public T? GetComponent<T>()
-		//	where T : Component
-		//{
-
-		//}
-
-		public bool Equals(Entity other)
+		public T? GetComponent<T>()
+			where T : Component, new()
 		{
+			Type type = typeof(T);
+
+			if (!HasComponent<T>()) {
+				m_ComponentCache.Remove(type);
+
+				return null;
+			}
+
+			if (!m_ComponentCache.ContainsKey(type)) {
+				T comp = new T { Entity = this };
+
+				m_ComponentCache[type] = comp;
+
+				return comp;
+			}
+
+			return m_ComponentCache[type] as T; ;
+		}
+
+		public T? AddComponent<T>()
+			where T : Component, new()
+		{
+			if (HasComponent<T>())
+				return GetComponent<T>();
+
+			unsafe {
+				InternalCalls.Entity_AddComponent(ID, typeof(T));
+			}
+
+			T comp = new T { Entity = this };
+
+			m_ComponentCache[typeof(T)] = comp;
+
+			return comp;
+		}
+
+		public void RemoveComponent<T>()
+			where T : Component
+		{
+			Type type = typeof(T);
+
+			m_ComponentCache.Remove(type);
+			
+			if (!HasComponent<T>()) {
+				return;
+			}
+
+			unsafe {
+				InternalCalls.Entity_RemoveComponent(ID, typeof(T));
+			}
+		}
+
+		public bool Equals(Entity? other)
+		{
+			if (other == null)
+				return false;
+
 			if (ReferenceEquals(this, other))
 				return true;
 
