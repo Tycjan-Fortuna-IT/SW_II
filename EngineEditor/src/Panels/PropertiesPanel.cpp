@@ -207,6 +207,9 @@ namespace SW {
 				if (GUI::DrawSelectableProperty(component.ScriptID, scripts, "Scripts")) {
 					if (scriptingCore.IsValidScript(component.ScriptID)) {
 						if (currentId != component.ScriptID) {
+							if (currentId != 0) {
+								storage.ShutdownEntityStorage(currentId, id.ID);
+							}
 							storage.InitializeEntityStorage(component.ScriptID, id.ID);
 						}
 					} else {

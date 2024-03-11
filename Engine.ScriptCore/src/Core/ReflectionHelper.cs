@@ -51,10 +51,10 @@ namespace SW
 						if (string.Equals(attr.AttributeType.Name, attrName)) return true;
 					}
 				} else {
-					Console.WriteLine(fieldName + " field not found");
+					Log.Error(fieldName + " field not found");
 				}
 			} else {
-				Console.WriteLine(className + " type not found");
+				Log.Error(className + " type not found");
 			}
 
 			return false;

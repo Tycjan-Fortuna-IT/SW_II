@@ -206,11 +206,57 @@ namespace SW {
 		};
 	}
 
+	void Log_TraceMessage(Coral::String msg)
+	{
+		std::string message = msg;
+
+		APP_TRACE(message);
+
+		Coral::String::Free(msg);
+	}
+
+	void Log_InfoMessage(Coral::String msg)
+	{
+		std::string message = msg;
+
+		APP_INFO(message);
+
+		Coral::String::Free(msg);
+	}
+
+	void Log_DebugMessage(Coral::String msg)
+	{
+		std::string message = msg;
+
+		APP_DEBUG(message);
+
+		Coral::String::Free(msg);
+	}
+
+	void Log_WarnMessage(Coral::String msg)
+	{
+		std::string message = msg;
+
+		APP_WARN(message);
+
+		Coral::String::Free(msg);
+	}
+
+	void Log_ErrorMessage(Coral::String msg)
+	{
+		std::string message = msg;
+
+		APP_ERROR(message);
+
+		Coral::String::Free(msg);
+	}
+
 	void InternalCallManager::RegisterInternalCalls(Coral::ManagedAssembly* coreAssembly)
 	{
 		ADD_INTERNAL_CALL(Application_GetVieportWidth);
 		ADD_INTERNAL_CALL(Application_GetVieportHeight);
 		ADD_INTERNAL_CALL(Application_Shutdown);
+
 
 		ADD_INTERNAL_CALL_FN(Input_IsKeyPressed, Input::IsKeyPressed);
 		ADD_INTERNAL_CALL_FN(Input_IsKeyHeld, Input::IsKeyHeld);
@@ -223,9 +269,16 @@ namespace SW {
 		ADD_INTERNAL_CALL(Input_GetWindowMousePosition);
 		ADD_INTERNAL_CALL(Input_GetViewportMousePosition);
 
+		ADD_INTERNAL_CALL(Log_TraceMessage);
+		ADD_INTERNAL_CALL(Log_InfoMessage);
+		ADD_INTERNAL_CALL(Log_DebugMessage);
+		ADD_INTERNAL_CALL(Log_WarnMessage);
+		ADD_INTERNAL_CALL(Log_ErrorMessage);
+
 		ADD_INTERNAL_CALL(Entity_HasComponent);
 		ADD_INTERNAL_CALL(Entity_AddComponent);
 		ADD_INTERNAL_CALL(Entity_RemoveComponent);
+
 
 		ADD_INTERNAL_CALL(TransformComponent_GetPosition);
 		ADD_INTERNAL_CALL(TransformComponent_SetPosition);
