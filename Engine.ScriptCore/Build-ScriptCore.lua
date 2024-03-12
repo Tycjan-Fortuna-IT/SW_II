@@ -3,12 +3,13 @@ project "Engine.ScriptCore"
 	language "C#"
 	dotnetframework "net8.0"
 	clr "Unsafe"
+	dependson { "EngineEditor" }
 
-	targetdir ("../EngineEditor/assets/scripts")
-	objdir ("../EngineEditor/assets/scripts/intermediates")
+	targetdir ("../EngineEditor/assets/dotnet")
+	objdir ("../EngineEditor/assets/dotnet/intermediates")
 
     links {
-        "../EngineEditor/assets/dotnet/Coral.Managed.dll"
+		"../EngineEditor/assets/dotnet/Coral.Managed.dll",
     }
 
 	propertytags {
@@ -19,3 +20,15 @@ project "Engine.ScriptCore"
 	files {
 		"src/**.cs",
 	}
+
+	filter "configurations:Debug"
+		optimize "Off"
+		symbols "Default"
+
+	filter "configurations:Release"
+		optimize "On"
+		symbols "Default"
+
+	filter "configurations:Dist"
+		optimize "Full"
+		symbols "Off"

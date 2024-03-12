@@ -415,5 +415,5 @@ Makefile
 **.json
 **.recipe
 **.csproj
-EngineEditor/assets/scripts/intermediates
-Sandbox/assets/scripts/src/intermediates
+EngineEditor/assets/dotnet/intermediates
+Sandbox/assets/build

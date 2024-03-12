@@ -74,7 +74,7 @@ namespace SW {
 		m_AssemblyContext = new Coral::AssemblyLoadContext(std::move(m_Host->CreateAssemblyLoadContext("MainLoadContext")));
 
 		// TODO: Improve this
-		std::string scriptCorePath = (ProjectContext::Get()->GetAssetDirectory() / "assets" / "scripts" / "src" / "binaries" / "net8.0" / "Engine.ScriptCore.dll").string();
+		std::string scriptCorePath = (std::filesystem::current_path() / "assets" / "dotnet" / "Engine.ScriptCore.dll").string();
 		m_CoreAssemblyData = new AssemblyData();
 
 		m_CoreAssemblyData->Assembly = &m_AssemblyContext->LoadAssembly(scriptCorePath);
@@ -209,15 +209,16 @@ namespace SW {
 	{
 		m_AppAssemblyData = new AssemblyData();
 
-		std::string scriptAppPath = (ProjectContext::Get()->GetAssetDirectory() / "assets" / "scripts" / "src" / "binaries" / "net8.0" / "Sandbox.dll").string();
+		Project* currentProject = ProjectContext::Get();
+
+		std::string library = currentProject->GetName() + ".dll";
+
+		std::string scriptAppPath = (currentProject->GetAssetDirectory() / "assets" / "build" / library).string();
 
 		m_AppAssemblyData->Assembly = &m_AssemblyContext->LoadAssembly(scriptAppPath);
 	
-		if (m_AppAssemblyData->Assembly->GetLoadStatus() != Coral::AssemblyLoadStatus::Success) {
-			SW_ERROR("Failed to load project's c# assembly dll!");
-			return;
-		}
-
+		ASSERT(m_AppAssemblyData->Assembly->GetLoadStatus() == Coral::AssemblyLoadStatus::Success, "Failed to load project's c# assembly dll!");
+		
 		BuildAssemblyCache(m_AppAssemblyData);
 	}
 

@@ -1,8 +1,8 @@
 /**
  * @file Project.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.0
- * @date 2024-02-20
+ * @version 0.1.1
+ * @date 2024-03-12
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -51,7 +51,13 @@ namespace SW {
 		 * @brief Retrieves the asset directory of the project.
 		 * @return The asset directory of the project.
 		 */
-		const std::filesystem::path& GetAssetDirectory() { return m_Config.AssetsDirectory; }
+		const std::filesystem::path& GetAssetDirectory() const { return m_Config.AssetsDirectory; }
+
+		/**
+		 * @brief Retrieves the name of the project.
+		 * @return The name of the project.
+		 */
+		const std::string& GetName() const { return m_Config.Name; }
 
 	private:
 		ProjectConfig m_Config;

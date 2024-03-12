@@ -61,5 +61,3 @@ group "Engine"
 group ""
 
 include "EngineEditor/Build-EngineEditor.lua"
-
-include "Sandbox/Build-Sandbox.lua"
