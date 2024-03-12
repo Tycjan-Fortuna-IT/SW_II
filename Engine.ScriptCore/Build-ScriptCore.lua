@@ -3,7 +3,7 @@ project "Engine.ScriptCore"
 	language "C#"
 	dotnetframework "net8.0"
 	clr "Unsafe"
-	dependson { "EngineEditor" }
+	dependson { "Coral.Managed" }
 
 	targetdir ("../EngineEditor/assets/dotnet")
 	objdir ("../EngineEditor/assets/dotnet/intermediates")
