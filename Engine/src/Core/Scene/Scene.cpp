@@ -119,13 +119,21 @@ namespace SW {
 				glm::mat4 cameraTransform;
 				SceneCamera* mainCamera = nullptr;
 
-				for (auto&& [handle, tc, cc] : m_Registry.GetEntitiesWith<TransformComponent, CameraComponent>().each()) {
+				for (auto&& [handle, cc] : m_Registry.GetEntitiesWith<CameraComponent>().each()) {
 					Entity entity = { handle, this };
 
 					if (cc.Primary) {
 						mainCamera = &cc.Camera;
-						cameraTransform = glm::translate(glm::mat4(1.0f), tc.Position) // do not apply scale to the camera
-							* glm::toMat4(glm::quat(tc.Rotation));
+						
+						glm::mat4 worldTransform = entity.GetWorldSpaceTransformMatrix();
+						
+						glm::vec3 position;
+						glm::vec3 rotation;
+
+						Math::DecomposeTransformForTranslationAndRotation(worldTransform, position, rotation);
+
+						cameraTransform = glm::translate(glm::mat4(1.0f), position) // do not apply scale to the camera
+							* glm::toMat4(glm::quat(rotation));
 
 						break;
 					}
@@ -426,6 +434,30 @@ namespace SW {
 	{
 		if (const auto iter = m_EntityMap.find(id); iter != m_EntityMap.end())
 			return iter->second;
+
+		return {};
+	}
+
+    Entity Scene::GetEntityByTag(const std::string& tag)
+    {
+		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TagComponent>().each()) {
+			if (tc.Tag == tag) {
+				return { handle, this };
+			}
+		}
+
+		ASSERT(false, "Entity with tag: {} does not exist!", tag);
+
+		return {};
+    }
+
+	Entity Scene::TryGetEntityByTag(const std::string& tag)
+	{
+		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TagComponent>().each()) {
+			if (tc.Tag == tag) {
+				return { handle, this };
+			}
+		}
 
 		return {};
 	}

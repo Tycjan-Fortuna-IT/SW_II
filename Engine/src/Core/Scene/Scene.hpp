@@ -150,6 +150,26 @@ namespace SW {
 		Entity TryGetEntityByID(u64 id);
 
 		/**
+		 * @brief Retrieves the entity with the specified tag.
+		 * @param tag The tag of the entity.
+		 * @return The entity with the specified tag.
+		 *
+		 * @warning Entity is expected to exist (runtime error if it doesn't)!
+					If multiple entities have the same tag - the first found is returned.
+		 */
+		Entity GetEntityByTag(const std::string& tag);
+
+		/**
+		 * @brief Retrieves the entity with the specified tag.
+		 * @param tag The tag of the entity.
+		 * @return The entity with the specified tag.
+		 *
+		 * @warning Entity is not expected to exist (empty returned if it doesn't) - caller must check!
+		 *			If multiple entities have the same tag - the first found is returned.
+		 */
+		Entity TryGetEntityByTag(const std::string& tag);
+
+		/**
 		 * @brief Retrieves the filepath to the serialized scene.
 		 * @return The filepath to the serialized scene.
 		 */

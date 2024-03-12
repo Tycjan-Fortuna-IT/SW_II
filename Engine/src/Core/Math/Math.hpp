@@ -1,8 +1,8 @@
 /**
  * @file Math.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.2
- * @date 2024-01-07
+ * @version 0.1.3
+ * @date 2024-03-12
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -285,6 +285,15 @@ namespace SW {
 			return result;
 		}
 
+		/**
+		 * @brief Decomposes a transformation matrix into its translation, rotation and scale components.
+		 * 
+		 * @param transform The transformation matrix to decompose.
+		 * @param translation Output parameter for the translation component.
+		 * @param rotation Output parameter for the rotation component.
+		 * @param scale Output parameter for the scale component.
+		 * @return True if the decomposition was successful, false otherwise.
+		 */
 		static bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale)
 		{
 			// From glm::decompose in matrix_decompose.inl
@@ -339,6 +348,13 @@ namespace SW {
 			return true;
 		}
 
+		/**
+		 * @brief Decomposes a transformation matrix into its translation.
+		 * 
+		 * @param transform The transformation matrix to decompose.
+		 * @param translation Output parameter for the translation component.
+		 * @return True if the decomposition was successful, false otherwise.
+		 */
 		static bool DecomposeTransformForTranslation(const glm::mat4& transform, glm::vec3& translation)
 		{
 			// From glm::decompose in matrix_decompose.inl
@@ -363,6 +379,60 @@ namespace SW {
 
 			// Next take care of translation (easy).
 			translation = vec3(LocalMatrix[3]);
+
+			return true;
+		}
+
+		/**
+		 * @brief Decomposes a transformation matrix into its translation and rotation components.
+		 * 
+		 * @param transform The transformation matrix to decompose.
+		 * @param translation Output parameter for the translation component.
+		 * @param rotation Output parameter for the rotation component.
+		 * @return True if the decomposition was successful, false otherwise.
+		 */
+		static bool DecomposeTransformForTranslationAndRotation(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation)
+		{
+			// From glm::decompose in matrix_decompose.inl
+			using namespace glm;
+			using T = f32;
+
+			mat4 LocalMatrix(transform);
+
+			// Normalize the matrix.
+			if (epsilonEqual(LocalMatrix[3][3], 0.0f, epsilon<T>()))
+				return false;
+
+			// First, isolate perspective.  This is the messiest.
+			if (
+				epsilonNotEqual(LocalMatrix[0][3], static_cast<T>(0), epsilon<T>()) ||
+				epsilonNotEqual(LocalMatrix[1][3], static_cast<T>(0), epsilon<T>()) ||
+				epsilonNotEqual(LocalMatrix[2][3], static_cast<T>(0), epsilon<T>())) {
+				// Clear the perspective partition
+				LocalMatrix[0][3] = LocalMatrix[1][3] = LocalMatrix[2][3] = static_cast<T>(0);
+				LocalMatrix[3][3] = static_cast<T>(1);
+			}
+
+			// Next take care of translation (easy).
+			translation = vec3(LocalMatrix[3]);
+			LocalMatrix[3] = vec4(0, 0, 0, LocalMatrix[3].w);
+
+			vec3 Row[3];
+
+			// Now get scale and shear.
+			for (length_t i = 0; i < 3; ++i)
+				for (length_t j = 0; j < 3; ++j)
+					Row[i][j] = LocalMatrix[i][j];
+
+			rotation.y = asin(-Row[0][2]);
+			if (cos(rotation.y) != 0.0f) {
+				rotation.x = atan2(Row[1][2], Row[2][2]);
+				rotation.z = atan2(Row[0][1], Row[0][0]);
+			}
+			else {
+				rotation.x = atan2(-Row[2][0], Row[1][1]);
+				rotation.z = 0;
+			}
 
 			return true;
 		}

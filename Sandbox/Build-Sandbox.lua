@@ -6,7 +6,7 @@ project "Sandbox"
 	targetdir ("assets/scripts/src/binaries")
 	objdir ("assets/scripts/src/intermediates")
 
-	property_tags {
+	propertytags {
         { "AppendTargetFrameworkToOutputPath", "false" },
         { "Nullable", "enable" },
     }

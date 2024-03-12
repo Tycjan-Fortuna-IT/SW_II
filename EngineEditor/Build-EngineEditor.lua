@@ -41,7 +41,11 @@ project "EngineEditor"
     
     filter "system:windows"
 	    linkoptions { "/NODEFAULTLIB:LIBCMT" }
-	
+        buildoptions {
+            -- This option enables the compiler to generate code that's compliant with the C++20 for char8_t literals.
+            "/Zc:char8_t-"
+        }
+
     filter "system:linux"
         pic "On"
         systemversion "latest"

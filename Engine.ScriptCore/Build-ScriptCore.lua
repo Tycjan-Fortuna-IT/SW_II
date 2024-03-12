@@ -11,7 +11,7 @@ project "Engine.ScriptCore"
         "../EngineEditor/assets/dotnet/Coral.Managed.dll"
     }
 
-	property_tags {
+	propertytags {
         { "AppendTargetFrameworkToOutputPath", "false" },
         { "Nullable", "enable" },
     }

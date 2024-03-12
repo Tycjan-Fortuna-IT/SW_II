@@ -1,5 +1,4 @@
 include "SolutionItems.lua"
-include "PropertyTags.lua"
 include "Dependencies.lua"
 
 workspace "SW_II"
@@ -41,9 +40,6 @@ workspace "SW_II"
             -- This option enables the __cplusplus macro to report an accurate value for the C++
             -- language standard supported by the compiler.
             "/Zc:__cplusplus",
-
-            -- This option enables the compiler to generate code that's compliant with the C++20 for char8_t literals.
-            "/Zc:char8_t-"
         }
 
     filter "system:linux"

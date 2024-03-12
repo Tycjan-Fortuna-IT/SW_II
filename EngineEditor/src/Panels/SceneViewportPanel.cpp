@@ -512,7 +512,7 @@ namespace SW {
 				glm::mat4 transform = selectedEntity.GetWorldSpaceTransformMatrix();
 
 				// Snapping
-				const bool snap = Input::IsKeyPressed(KeyCode::LeftControl);
+				const bool snap = Input::IsKeyDown(KeyCode::LeftControl);
 				f32 snapValue = 0.5f; // Snap to 0.5m for translation/scale
 				
 				// Snap to 45 degrees for rotation
