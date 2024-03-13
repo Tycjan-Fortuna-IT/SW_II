@@ -5,11 +5,11 @@ namespace Sandbox
 {
 	internal class TestEntity : Entity
 	{
-		private TransformComponent Transform;
+		private TransformComponent Transform = default!;
 
 		protected override void OnCreate()
 		{
-			Transform = GetComponent<TransformComponent>();
+			Transform = GetComponent<TransformComponent>()!;
 		}
 
 		protected override void OnUpdate(float ts)

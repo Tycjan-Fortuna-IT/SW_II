@@ -283,22 +283,8 @@ namespace SW {
 			}
 
 			if (ImGui::BeginMenu("Scripting")) {
-				if (ImGui::MenuItem("Reload C# Assemblies")) {
-					ScriptingCore& core = ScriptingCore::Get();
-
-					ScriptStorage tempStorage;
-
-					auto& scriptStorage = m_Viewport->GetCurrentScene()->GetScriptStorage();
-					scriptStorage.CopyTo(tempStorage);
-					scriptStorage.Clear();
-
-					core.Shutdown();
-					core.Initialize();
-
-					tempStorage.CopyTo(scriptStorage);
-					tempStorage.Clear();
-
-					scriptStorage.SynchronizeStorage();
+				if (ImGui::MenuItem("Reload C# Assemblies", "Ctrl+B")) {
+					ReloadCSharpScripts();
 				}
 
 				ImGui::EndMenu();
@@ -431,6 +417,8 @@ namespace SW {
 				if (ctrl) OpenProject(); break;
 			case KeyCode::N:
 				if (ctrl && ProjectContext::HasContext()) CreateNewScene(); break;
+			case KeyCode::B:
+				if (ctrl) ReloadCSharpScripts(); break;
 			default:
 				break;
 		}
@@ -489,6 +477,33 @@ namespace SW {
 			Scene* currentScene = m_Viewport->GetCurrentScene();
 			SceneSerializer::Serialize(currentScene, currentScene->GetFilePath());
 		}
+	}
+
+	void EditorLayer::ReloadCSharpScripts()
+	{
+		if (!ProjectContext::HasContext())
+			return;
+
+		if (m_Viewport->GetCurrentScene()->GetCurrentState() != SceneState::Edit)
+			return;
+
+		SW_INFO("Reloading C# Scripts ...");
+
+		ScriptingCore& core = ScriptingCore::Get();
+
+		ScriptStorage tempStorage;
+
+		auto& scriptStorage = m_Viewport->GetCurrentScene()->GetScriptStorage();
+		scriptStorage.CopyTo(tempStorage);
+		scriptStorage.Clear();
+
+		core.Shutdown();
+		core.Initialize();
+
+		tempStorage.CopyTo(scriptStorage);
+		tempStorage.Clear();
+
+		scriptStorage.SynchronizeStorage();
 	}
 
 }

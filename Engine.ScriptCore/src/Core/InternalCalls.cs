@@ -36,7 +36,9 @@ namespace SW
 		internal static delegate* unmanaged<ulong, ReflectionType, void> Entity_AddComponent;
 		internal static delegate* unmanaged<ulong, ReflectionType, void> Entity_RemoveComponent;
 
-		internal static delegate* unmanaged<ulong, ulong> Scene_GetEntityByID;
+
+		internal static delegate* unmanaged<ulong, ulong> Scene_TryGetEntityByID;
+		internal static delegate* unmanaged<NativeString, ulong> Scene_TryGetEntityByTag;
 
 
 		internal static delegate* unmanaged<ulong, Vector3*, void> TransformComponent_GetPosition;

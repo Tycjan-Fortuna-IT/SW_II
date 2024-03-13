@@ -70,7 +70,7 @@ namespace SW
 				return comp;
 			}
 
-			return m_ComponentCache[type] as T; ;
+			return m_ComponentCache[type] as T;
 		}
 
 		public T? AddComponent<T>()

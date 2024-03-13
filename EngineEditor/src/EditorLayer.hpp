@@ -41,6 +41,8 @@ namespace SW {
 
 		void OpenProject();
 		void SaveProjectAs();
+
+		void ReloadCSharpScripts();
 	};
 
 }

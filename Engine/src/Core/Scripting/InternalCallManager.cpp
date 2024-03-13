@@ -47,13 +47,22 @@ namespace SW {
 		}
 	}
 
-	static inline Entity GetEntity(u64 entityID)
+	static inline Entity GetEntityById(u64 entityID)
 	{
 		Scene* scene = ScriptingCore::Get().GetCurrentScene();
 
 		ASSERT(scene, "No active scene!");
 
 		return scene->TryGetEntityByID(entityID);
+	};
+
+	static inline Entity GetEntityByTag(std::string tag)
+	{
+		Scene* scene = ScriptingCore::Get().GetCurrentScene();
+
+		ASSERT(scene, "No active scene!");
+
+		return scene->TryGetEntityByTag(tag);
 	};
 
 	void InternalCallManager::Initialize(Coral::ManagedAssembly* coreAssembly)
@@ -79,132 +88,6 @@ namespace SW {
 	
 	void Application_Shutdown() { return Application::Get()->Close(); }
 
-	bool Entity_HasComponent(u64 entityID, Coral::ReflectionType componentType)
-	{
-		Entity entity = GetEntity(entityID);
-		Coral::Type& type = componentType;
-
-		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
-
-		if (!entity || !type)
-			return false;
-
-		if (!s_HasComponentFuncs.contains(type.GetTypeId())) {
-			ASSERT(
-				false, 
-				"Cannot check if entity '{}' has a component of type '{}'. That component hasn't been registered with the engine.", 
-				entity.GetID(),
-				type.GetFullName().Data()
-			);
-			
-			return false;
-		}
-
-		return s_HasComponentFuncs.at(type.GetTypeId())(entity);
-	}
-
-	void Entity_AddComponent(u64 entityID, Coral::ReflectionType componentType)
-	{
-		Entity entity = GetEntity(entityID);
-		Coral::Type& type = componentType;
-
-		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
-
-		if (!entity || !type)
-			return;
-
-		if (!s_AddComponentFuncs.contains(type.GetTypeId())) {
-			ASSERT(
-				false,
-				"Cannot add to entity '{}' a component of type '{}'. That component doesn't have create handler registered with the engine.",
-				entity.GetID(),
-				type.GetFullName().Data()
-			);
-
-			return;
-		}
-
-		s_AddComponentFuncs.at(type.GetTypeId())(entity);
-	}
-
-	void Entity_RemoveComponent(u64 entityID, Coral::ReflectionType componentType)
-	{
-		Entity entity = GetEntity(entityID);
-		Coral::Type& type = componentType;
-
-		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
-
-		if (!entity || !type)
-			return;
-
-		if (!s_RemoveComponentFuncs.contains(type.GetTypeId())) {
-			ASSERT(
-				false,
-				"Cannot remove from entity '{}' a component of type '{}'. That component doesn't have remove handler registered with the engine.",
-				entity.GetID(),
-				type.GetFullName().Data()
-			);
-
-			return;
-		}
-
-		s_RemoveComponentFuncs.at(type.GetTypeId())(entity);
-	}
-
-	void TransformComponent_GetPosition(u64 entityID, glm::vec3* outPosition)
-	{
-		Entity entity = GetEntity(entityID);
-
-		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
-
-		*outPosition = entity.GetComponent<TransformComponent>().Position;
-	}
-
-	void TransformComponent_SetPosition(u64 entityID, glm::vec3* inPosition)
-	{
-		Entity entity = GetEntity(entityID);
-
-		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
-
-		if (inPosition == nullptr) {
-			ASSERT(false, "Attempting to set null translation for entity '{}'", entity.GetID());
-
-			return;
-		}
-
-		if (entity.HasComponent<RigidBody2DComponent>()) {
-			RigidBody2DComponent& rbc = entity.GetComponent<RigidBody2DComponent>();
-
-			if (rbc.Type != PhysicBodyType::Static) {
-				SW_WARN("[SCRIPT]: Trying to set translation for non-static RigidBody2D for entity {}. This isn't allowed, and would result in unstable physics behavior.", entityID);
-				return;
-			}
-
-			b2Body* body = static_cast<b2Body*>(rbc.Handle);
-			body->SetTransform({ inPosition->x, inPosition->y }, body->GetAngle());
-		}
-
-		entity.GetComponent<TransformComponent>().Position = *inPosition;
-	}
-
-	void Input_GetWindowMousePosition(glm::vec2* outMousePosition)
-	{
-		*outMousePosition = Input::GetMousePosition();
-	}
-
-	void Input_GetViewportMousePosition(glm::vec2* outMousePosition)
-	{
-		Scene* scene = ScriptingCore::Get().GetCurrentScene();
-
-		glm::vec2 viewportPosition = scene->GetViewportPosition();
-
-		glm::vec2 mousePos = Input::GetMousePosition();
-
-		*outMousePosition = {
-			mousePos.x - viewportPosition.x - 5.f, // substracting imgui window padding
-			mousePos.y - viewportPosition.y - 35.f
-		};
-	}
 
 	void Log_TraceMessage(Coral::String msg)
 	{
@@ -251,6 +134,151 @@ namespace SW {
 		Coral::String::Free(msg);
 	}
 
+	bool Entity_HasComponent(u64 entityID, Coral::ReflectionType componentType)
+	{
+		Entity entity = GetEntityById(entityID);
+		Coral::Type& type = componentType;
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		if (!entity || !type)
+			return false;
+
+		if (!s_HasComponentFuncs.contains(type.GetTypeId())) {
+			ASSERT(
+				false,
+				"Cannot check if entity '{}' has a component of type '{}'. That component hasn't been registered with the engine.",
+				entity.GetID(),
+				type.GetFullName().Data()
+			);
+
+			return false;
+		}
+
+		return s_HasComponentFuncs.at(type.GetTypeId())(entity);
+	}
+
+	void Entity_AddComponent(u64 entityID, Coral::ReflectionType componentType)
+	{
+		Entity entity = GetEntityById(entityID);
+		Coral::Type& type = componentType;
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		if (!entity || !type)
+			return;
+
+		if (!s_AddComponentFuncs.contains(type.GetTypeId())) {
+			ASSERT(
+				false,
+				"Cannot add to entity '{}' a component of type '{}'. That component doesn't have create handler registered with the engine.",
+				entity.GetID(),
+				type.GetFullName().Data()
+			);
+
+			return;
+		}
+
+		s_AddComponentFuncs.at(type.GetTypeId())(entity);
+	}
+
+	void Entity_RemoveComponent(u64 entityID, Coral::ReflectionType componentType)
+	{
+		Entity entity = GetEntityById(entityID);
+		Coral::Type& type = componentType;
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		if (!entity || !type)
+			return;
+
+		if (!s_RemoveComponentFuncs.contains(type.GetTypeId())) {
+			ASSERT(
+				false,
+				"Cannot remove from entity '{}' a component of type '{}'. That component doesn't have remove handler registered with the engine.",
+				entity.GetID(),
+				type.GetFullName().Data()
+			);
+
+			return;
+		}
+
+		s_RemoveComponentFuncs.at(type.GetTypeId())(entity);
+	}
+
+	u64 Scene_TryGetEntityByID(u64 id)
+	{
+		Entity entity = GetEntityById(id);
+
+		return entity ? id : 0;
+	}
+
+	u64 Scene_TryGetEntityByTag(Coral::String tag)
+	{
+		std::string nativeTag = tag;
+
+		Entity entity = GetEntityByTag(nativeTag);
+
+		Coral::String::Free(tag);
+
+		return entity ? entity.GetID() : 0;
+	}
+
+	void TransformComponent_GetPosition(u64 entityID, glm::vec3* outPosition)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		*outPosition = entity.GetComponent<TransformComponent>().Position;
+	}
+
+	void TransformComponent_SetPosition(u64 entityID, glm::vec3* inPosition)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		if (inPosition == nullptr) {
+			ASSERT(false, "Attempting to set null translation for entity '{}'", entity.GetID());
+
+			return;
+		}
+
+		if (entity.HasComponent<RigidBody2DComponent>()) {
+			RigidBody2DComponent& rbc = entity.GetComponent<RigidBody2DComponent>();
+
+			if (rbc.Type != PhysicBodyType::Static) {
+				SW_WARN("[SCRIPT]: Trying to set translation for non-static RigidBody2D for entity {}. This isn't allowed, and would result in unstable physics behavior.", entityID);
+				return;
+			}
+
+			b2Body* body = static_cast<b2Body*>(rbc.Handle);
+			body->SetTransform({ inPosition->x, inPosition->y }, body->GetAngle());
+		}
+
+		entity.GetComponent<TransformComponent>().Position = *inPosition;
+	}
+
+	void Input_GetWindowMousePosition(glm::vec2* outMousePosition)
+	{
+		*outMousePosition = Input::GetMousePosition();
+	}
+
+	void Input_GetViewportMousePosition(glm::vec2* outMousePosition)
+	{
+		Scene* scene = ScriptingCore::Get().GetCurrentScene();
+
+		glm::vec2 viewportPosition = scene->GetViewportPosition();
+
+		glm::vec2 mousePos = Input::GetMousePosition();
+
+		*outMousePosition = {
+			mousePos.x - viewportPosition.x - 5.f, // substracting imgui window padding
+			mousePos.y - viewportPosition.y - 35.f
+		};
+	}
+
 	void InternalCallManager::RegisterInternalCalls(Coral::ManagedAssembly* coreAssembly)
 	{
 		ADD_INTERNAL_CALL(Application_GetVieportWidth);
@@ -262,12 +290,15 @@ namespace SW {
 		ADD_INTERNAL_CALL_FN(Input_IsKeyHeld, Input::IsKeyHeld);
 		ADD_INTERNAL_CALL_FN(Input_IsKeyDown, Input::IsKeyDown);
 		ADD_INTERNAL_CALL_FN(Input_IsKeyReleased, Input::IsKeyReleased);
+
 		ADD_INTERNAL_CALL_FN(Input_IsMouseButtonPressed, Input::IsMouseButtonPressed);
 		ADD_INTERNAL_CALL_FN(Input_IsMouseButtonHeld, Input::IsMouseButtonHeld);
 		ADD_INTERNAL_CALL_FN(Input_IsMouseButtonDown, Input::IsMouseButtonDown);
 		ADD_INTERNAL_CALL_FN(Input_IsMouseButtonReleased, Input::IsMouseButtonReleased);
+
 		ADD_INTERNAL_CALL(Input_GetWindowMousePosition);
 		ADD_INTERNAL_CALL(Input_GetViewportMousePosition);
+
 
 		ADD_INTERNAL_CALL(Log_TraceMessage);
 		ADD_INTERNAL_CALL(Log_InfoMessage);
@@ -275,9 +306,14 @@ namespace SW {
 		ADD_INTERNAL_CALL(Log_WarnMessage);
 		ADD_INTERNAL_CALL(Log_ErrorMessage);
 
+
 		ADD_INTERNAL_CALL(Entity_HasComponent);
 		ADD_INTERNAL_CALL(Entity_AddComponent);
 		ADD_INTERNAL_CALL(Entity_RemoveComponent);
+
+
+		ADD_INTERNAL_CALL(Scene_TryGetEntityByID);
+		ADD_INTERNAL_CALL(Scene_TryGetEntityByTag);
 
 
 		ADD_INTERNAL_CALL(TransformComponent_GetPosition);
