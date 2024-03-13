@@ -1,20 +1,14 @@
-include "../PropertyTags.lua"
+include "../Engine/vendor/Coral/Premake/CSExtensions.lua"
 
 workspace "Sandbox"
 	startproject "Sandbox"
 	configurations { "Debug", "Release", "Dist" }
 
-group "Engine"
-
-include "../Engine.ScriptCore/Build-ScriptCore.lua"
-
-group ""
-
 project "Sandbox"
 	kind "SharedLib"
 	language "C#"
 	dotnetframework "net8.0"
-	dependson { "Engine.ScriptCore" }
+	dependson { "Engine.ScriptCore", "Coral.Managed" }
 
 	targetdir ("assets/build")
 	objdir ("obj")
@@ -29,8 +23,8 @@ project "Sandbox"
 	}
 
 	links {
-		"../EngineEditor/assets/dotnet/Coral.Managed.dll",
-        "../EngineEditor/assets/dotnet/Engine.ScriptCore.dll",
+		"Coral.Managed",
+        "Engine.ScriptCore",
 	}
 
 	postbuildcommands {
@@ -48,3 +42,7 @@ project "Sandbox"
 	filter "configurations:Dist"
 		optimize "Full"
 		symbols "Off"
+
+	group "Engine"
+		include "../Engine.ScriptCore/Build-ScriptCore.lua"
+	group ""

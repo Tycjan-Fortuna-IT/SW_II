@@ -1,3 +1,5 @@
+include "../Engine/vendor/Coral/Premake/CSExtensions.lua"
+
 project "Engine.ScriptCore"
 	kind "SharedLib"
 	language "C#"
@@ -9,7 +11,7 @@ project "Engine.ScriptCore"
 	objdir ("../EngineEditor/assets/dotnet/intermediates")
 
     links {
-		"../EngineEditor/assets/dotnet/Coral.Managed.dll",
+		"Coral.Managed",
     }
 
 	propertytags {
@@ -32,3 +34,7 @@ project "Engine.ScriptCore"
 	filter "configurations:Dist"
 		optimize "Full"
 		symbols "Off"
+
+	group "Engine/Dependencies"
+		include "../Engine/vendor/Coral/Coral.Managed"
+	group ""

@@ -81,7 +81,6 @@ project "Engine"
         include "Engine/vendor/msdf-atlas-gen"
         include "Engine/vendor/tracy"
         include "Engine/vendor/Coral/Coral.Native"
-        include "Engine/vendor/Coral/Coral.Managed"
     group ""
     
     group "Engine"
