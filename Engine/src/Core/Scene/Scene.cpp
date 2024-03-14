@@ -109,55 +109,6 @@ namespace SW {
 		});
 	}
 
-	bool Scene::BeginRendering(EditorCamera* camera)
-	{
-		switch (m_SceneState) {
-			case SW::SceneState::Edit:
-				Renderer2D::BeginScene(camera); break;
-			case SW::SceneState::Play:
-			case SW::SceneState::Pause: {
-				glm::mat4 cameraTransform;
-				SceneCamera* mainCamera = nullptr;
-
-				for (auto&& [handle, cc] : m_Registry.GetEntitiesWith<CameraComponent>().each()) {
-					Entity entity = { handle, this };
-
-					if (cc.Primary) {
-						mainCamera = &cc.Camera;
-						
-						glm::mat4 worldTransform = entity.GetWorldSpaceTransformMatrix();
-						
-						glm::vec3 position;
-						glm::vec3 rotation;
-
-						Math::DecomposeTransformForTranslationAndRotation(worldTransform, position, rotation);
-
-						cameraTransform = glm::translate(glm::mat4(1.0f), position) // do not apply scale to the camera
-							* glm::toMat4(glm::quat(rotation));
-
-						break;
-					}
-				}
-
-				if (!mainCamera)
-					return false;
-
-				Renderer2D::BeginScene(*mainCamera, cameraTransform);
-
-				break;
-			}
-			case SW::SceneState::Simulate:
-				SW_FATAL("Not yet implemented!"); break;
-		}
-
-		return true;
-	}
-
-	void Scene::EndRendering()
-	{
-		Renderer2D::EndScene();
-	}
-
 	void Scene::OnRuntimeStart()
 	{
 		m_PhysicsFrameAccumulator = 0.0f;
@@ -229,17 +180,11 @@ namespace SW {
 		delete m_PhysicsContactListener2D;
 	}
 
-	void Scene::OnUpdate(Timestep dt)
-	{
-		if (m_SceneState == SceneState::Play)
-			this->OnUpdateRuntime(dt);
-		else
-			this->OnUpdateEditor(dt);
-	}
-
-    void Scene::OnUpdateEditor(Timestep dt)
+    void Scene::OnUpdateEditor(Timestep dt, EditorCamera* camera)
     {
 		PROFILE_FUNCTION();
+
+		Renderer2D::BeginScene(camera);
 
 		for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<SpriteComponent>().each()) {
 			Entity entity = { handle, this };
@@ -387,6 +332,34 @@ namespace SW {
 				sc.Instance.Invoke<f32>("OnLateUpdate", dt);
 			}
 		}
+
+		glm::mat4 cameraTransform;
+		SceneCamera* mainCamera = nullptr;
+
+		for (auto&& [handle, cc] : m_Registry.GetEntitiesWith<CameraComponent>().each()) {
+			Entity entity = { handle, this };
+
+			if (cc.Primary) {
+				mainCamera = &cc.Camera;
+
+				glm::mat4 worldTransform = entity.GetWorldSpaceTransformMatrix();
+
+				glm::vec3 position;
+				glm::vec3 rotation;
+
+				Math::DecomposeTransformForTranslationAndRotation(worldTransform, position, rotation);
+
+				cameraTransform = glm::translate(glm::mat4(1.0f), position) // do not apply scale to the camera
+					* glm::toMat4(glm::quat(rotation));
+
+				break;
+			}
+		}
+
+		if (!mainCamera)
+			return;
+
+		Renderer2D::BeginScene(*mainCamera, cameraTransform);
 
 		for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<SpriteComponent>().each()) {
 			Entity entity = { handle, this };

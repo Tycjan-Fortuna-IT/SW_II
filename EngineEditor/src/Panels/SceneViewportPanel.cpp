@@ -140,8 +140,22 @@ namespace SW {
 
 		m_Framebuffer->ClearAttachment(1, -1);
 
-		if (IsSceneLoaded() && m_ActiveScene->BeginRendering(m_EditorCamera)) {
-			m_ActiveScene->OnUpdate(dt);
+		if (IsSceneLoaded()) {
+			switch (m_ActiveScene->GetCurrentState())
+			{
+				case SceneState::Edit:
+				{
+					m_ActiveScene->OnUpdateEditor(dt, m_EditorCamera);
+
+					break;
+				}
+				case SceneState::Play:
+				{
+					m_ActiveScene->OnUpdateRuntime(dt);
+
+					break;
+				}
+			}
 
 			if (EditorSettings::Get().ShowPhysicsColliders) {
 				PROFILE_SCOPE("SceneViewportPanel::OnUpdate() - PhysicColliderRendering");
@@ -164,7 +178,7 @@ namespace SW {
 								for (f32 y = 0.0f; y < 2.0f; y += 1.0f) {
 									for (f32 z = 0.0f; z < 2.0f; z += 1.0f) {
 										const glm::vec4 pt = inv * glm::vec4(2.0f * x - 1.0f, 2.0f * y - 1.0f, 2.0f * z - 1.0f, 1.0f);
-										
+
 										frustumCorners[i++] = glm::vec3(pt) / pt.w;
 									}
 								}
@@ -195,7 +209,7 @@ namespace SW {
 
 						glm::mat4 transform = entity.GetWorldSpaceTransformMatrix();
 
-						transform *= glm::translate(glm::mat4(1.0f), glm::vec3(bcc.Offset, 0.0f)) 
+						transform *= glm::translate(glm::mat4(1.0f), glm::vec3(bcc.Offset, 0.0f))
 							* glm::scale(glm::mat4(1.0f), glm::vec3(2.0f * bcc.Size, 1.0f));
 
 						Renderer2D::DrawRect(transform, glm::vec4(1, 1, 0, 1));
@@ -236,7 +250,8 @@ namespace SW {
 
 						if (m_ActiveScene->GetCurrentState() == SceneState::Play) { // TODO: Investigate this visualization offset difference between play/edit state
 							transform *= glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, 0.001f));
-						} else {
+						}
+						else {
 							transform *= glm::translate(glm::mat4(1.0f), glm::vec3(pcc.Offset.x, pcc.Offset.y, 0.001f));
 						}
 
@@ -406,7 +421,7 @@ namespace SW {
 				}
 			}
 
-			m_ActiveScene->EndRendering();
+			Renderer2D::EndScene();
 		}
 
 		m_Framebuffer->Unbind();
