@@ -534,6 +534,10 @@ namespace SW {
 
 		std::vector<u64> childIds = entity.GetRelations().ChildrenIDs;
 
+		if (Entity parent = entity.GetParent()) {
+			newEntity.SetParent(parent);
+		}
+
 		for (u64 childId : childIds) {
 			Entity childDuplicate = DuplicateEntity(GetEntityByID(childId), duplicatedEntities);
 			
