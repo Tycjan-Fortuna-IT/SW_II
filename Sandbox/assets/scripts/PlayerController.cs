@@ -5,31 +5,29 @@ namespace Sandbox
 	internal class PlayerController : Entity
 	{
 		[SerializeField]
-		private float Velocity = 0.02f;
+		private float Speed = 12.0f;
 
-		private TransformComponent Transform;
+		private TransformComponent Transform = default!;
+		private RigidBody2DComponent Body = default!;
 
 		protected override void OnCreate()
 		{
-			Transform = GetComponent<TransformComponent>();
+			Transform = GetComponent<TransformComponent>()!;
+			Body = GetComponent<RigidBody2DComponent>()!;
 		}
 
 		protected override void OnUpdate(float ts)
 		{
 			if (Input.IsKeyDown(KeyCode.A)) {
-				Transform.Position += new Vector3(-Velocity, 0.0f, 0.0f);
+				Body.ApplyForce(new Vector2(-Speed, 0.0f));
 			}
 
 			if (Input.IsKeyDown(KeyCode.D)) {
-				Transform.Position += new Vector3(Velocity, 0.0f, 0.0f);
+				Body.ApplyForce(new Vector2(Speed, 0.0f));
 			}
 
-			if (Input.IsKeyDown(KeyCode.W)) {
-				Transform.Position += new Vector3(0.0f, Velocity, 0.0f);
-			}
-
-			if (Input.IsKeyDown(KeyCode.S)) {
-				Transform.Position += new Vector3(0.0f, -Velocity, 0.0f);
+			if (Input.IsKeyPressed(KeyCode.Space)) {
+				Body.ApplyForce(new Vector2(0.0f, 250.0f));
 			}
 		}
 

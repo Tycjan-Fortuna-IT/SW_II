@@ -60,5 +60,10 @@ namespace SW
 		/// <param name="other">The vector to compare with this vector.</param>
 		/// <returns><c>true</c> if the vectors are equal; otherwise, <c>false</c>.</returns>
 		public bool Equals(Vector2 other) => X == other.X && Y == other.Y;
+
+		public static Vector2 operator+(in Vector2 left, in Vector2 right) => new Vector2(left.X + right.X, left.Y + right.Y);
+		public static Vector2 operator-(in Vector2 left, in Vector2 right) => new Vector2(left.X - right.X, left.Y - right.Y);
+		public static Vector2 operator*(in Vector2 left, in float scalar) => new Vector2(left.X * scalar, left.Y * scalar);
+		public static Vector2 operator/(in Vector2 left, in float scalar) => new Vector2(left.X / scalar, left.Y / scalar);
 	}
 }

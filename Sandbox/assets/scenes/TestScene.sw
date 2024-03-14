@@ -40,11 +40,9 @@ Entities:
       TransformComponent:
         Transform: [-0.699999928, -0.100000024, 0]
         Rotation: [0, 0, 0]
-        Scale: [1, 1, 1]
-      CircleComponent:
-        Color: [1, 1, 1, 1]
-        Thickness: 1
-        Fade: 0.00499999989
+        Scale: [3.1500001, 1, 1]
+      SpriteComponent:
+        Color: [0.236209229, 0.383997858, 0.631016016, 1]
       RelationshipComponent:
         ParentID: 0
         ChildrenCount: 1

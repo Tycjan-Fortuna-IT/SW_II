@@ -78,8 +78,10 @@ namespace SW {
     }
 
     void InternalCallManager::RegisterTypes(Coral::ManagedAssembly* coreAssembly)
-    {
+	{
+		RegisterManagedComponent<TagComponent>(coreAssembly);
 		RegisterManagedComponent<TransformComponent>(coreAssembly);
+		RegisterManagedComponent<RigidBody2DComponent>(coreAssembly);
     }
 
 	u32 Application_GetVieportWidth() { return ScriptingCore::Get().GetCurrentScene()->GetViewportWidth(); }
@@ -224,6 +226,26 @@ namespace SW {
 		return entity ? entity.GetID() : 0;
 	}
 
+	Coral::String TagComponent_GetTag(u64 entityID)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		const TagComponent& tagComponent = entity.GetComponent<TagComponent>();
+
+		return Coral::String::New(tagComponent.Tag);
+	}
+
+	void TagComponent_SetTag(u64 entityID, Coral::String inTag)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		entity.GetComponent<TagComponent>().Tag = inTag;
+	}
+
 	void TransformComponent_GetPosition(u64 entityID, glm::vec3* outPosition)
 	{
 		Entity entity = GetEntityById(entityID);
@@ -258,6 +280,92 @@ namespace SW {
 		}
 
 		entity.GetComponent<TransformComponent>().Position = *inPosition;
+	}
+
+	void TransformComponent_GetRotation(u64 entityID, glm::vec3* outRotation)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		*outRotation = entity.GetComponent<TransformComponent>().Rotation;
+	}
+
+	void TransformComponent_SetRotation(u64 entityID, glm::vec3* inRotation)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		entity.GetComponent<TransformComponent>().Rotation = *inRotation;
+	}
+
+	void TransformComponent_GetScale(u64 entityID, glm::vec3* outScale)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		*outScale = entity.GetComponent<TransformComponent>().Scale;
+	}
+
+	void TransformComponent_SetScale(u64 entityID, glm::vec3* inScale)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		entity.GetComponent<TransformComponent>().Scale = *inScale;
+	}
+	
+	void Rigidbody2DComponent_GetVelocity(u64 entityID, glm::vec2* outVelocity)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		RigidBody2DComponent& rbc = entity.GetComponent<RigidBody2DComponent>();
+
+		ASSERT(rbc.Handle);
+
+		b2Body* body = (b2Body*)rbc.Handle;
+		const b2Vec2 velocity = body->GetLinearVelocity();
+
+		outVelocity->x = velocity.x;
+		outVelocity->y = velocity.y;
+	}
+
+	void Rigidbody2DComponent_SetVelocity(u64 entityID, glm::vec2* inVelocity)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		RigidBody2DComponent& rbc = entity.GetComponent<RigidBody2DComponent>();
+
+		ASSERT(rbc.Handle);
+
+		b2Body* body = (b2Body*)rbc.Handle;
+		body->SetLinearVelocity({ inVelocity->x, inVelocity->y });
+	}
+
+	void RigidBody2DComponent_ApplyForce(u64 entityID, glm::vec2* inForce, glm::vec2* inOffset, bool wake)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		RigidBody2DComponent& rbc = entity.GetComponent<RigidBody2DComponent>();
+		
+		ASSERT(rbc.Handle);
+
+		if (rbc.Type != PhysicBodyType::Dynamic) {
+			SW_WARN("[SCRIPT]: Trying to apply force for non-dynamic RigidBody2D for entity with ID: {}.", entityID);
+			return;
+		}
+
+		b2Body* body = (b2Body*)rbc.Handle;
+		body->ApplyForce(*(const b2Vec2*)inForce, body->GetWorldCenter() + *(const b2Vec2*)inOffset, wake);
 	}
 
 	void Input_GetWindowMousePosition(glm::vec2* outMousePosition)
@@ -315,8 +423,24 @@ namespace SW {
 		ADD_INTERNAL_CALL(Scene_TryGetEntityByID);
 		ADD_INTERNAL_CALL(Scene_TryGetEntityByTag);
 
+		
+		ADD_INTERNAL_CALL(TagComponent_GetTag);
+		ADD_INTERNAL_CALL(TagComponent_SetTag);
+
 
 		ADD_INTERNAL_CALL(TransformComponent_GetPosition);
 		ADD_INTERNAL_CALL(TransformComponent_SetPosition);
+
+		ADD_INTERNAL_CALL(TransformComponent_GetRotation);
+		ADD_INTERNAL_CALL(TransformComponent_SetRotation);
+
+		ADD_INTERNAL_CALL(TransformComponent_GetScale);
+		ADD_INTERNAL_CALL(TransformComponent_SetScale);
+		
+
+		ADD_INTERNAL_CALL(Rigidbody2DComponent_GetVelocity);
+		ADD_INTERNAL_CALL(Rigidbody2DComponent_SetVelocity);
+
+		ADD_INTERNAL_CALL(RigidBody2DComponent_ApplyForce);
     }
 }

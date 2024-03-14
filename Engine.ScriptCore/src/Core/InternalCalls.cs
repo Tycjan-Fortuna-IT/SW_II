@@ -39,10 +39,26 @@ namespace SW
 
 		internal static delegate* unmanaged<ulong, ulong> Scene_TryGetEntityByID;
 		internal static delegate* unmanaged<NativeString, ulong> Scene_TryGetEntityByTag;
+		
+
+		internal static delegate* unmanaged<ulong, NativeString> TagComponent_GetTag;
+		internal static delegate* unmanaged<ulong, NativeString, void> TagComponent_SetTag;
 
 
 		internal static delegate* unmanaged<ulong, Vector3*, void> TransformComponent_GetPosition;
 		internal static delegate* unmanaged<ulong, Vector3*, void> TransformComponent_SetPosition;
+
+		internal static delegate* unmanaged<ulong, Vector3*, void> TransformComponent_GetRotation;
+		internal static delegate* unmanaged<ulong, Vector3*, void> TransformComponent_SetRotation;
+
+		internal static delegate* unmanaged<ulong, Vector3*, void> TransformComponent_GetScale;
+		internal static delegate* unmanaged<ulong, Vector3*, void> TransformComponent_SetScale;
+
+
+		internal static delegate* unmanaged<ulong, Vector2*, void> Rigidbody2DComponent_GetVelocity;
+		internal static delegate* unmanaged<ulong, Vector2*, void> Rigidbody2DComponent_SetVelocity;
+
+		internal static delegate* unmanaged<ulong, Vector2*, Vector2*, bool, void> RigidBody2DComponent_ApplyForce;
 	}
 
 #pragma warning restore CS0649
