@@ -38,7 +38,9 @@ namespace SW {
 		AssetManager::Initialize();
 		EventSystem::Initialize();
 		RendererAPI::Initialize();
-		ScriptingCore::Get().InitializeHost();
+
+		if (m_Specification.EnableCSharpSupport)
+			ScriptingCore::Get().InitializeHost();
 
 		EventSystem::Register(EventCode::EVENT_CODE_APPLICATION_QUIT, nullptr, [this](Event event, void* sender, void* listener) -> bool {
 			Application::Close();
@@ -68,7 +70,9 @@ namespace SW {
 		AssetManager::Shutdown();
 		EventSystem::Shutdown();
 		RendererAPI::Shutdown();
-		ScriptingCore::Get().ShutdownHost();
+		
+		if (m_Specification.EnableCSharpSupport)
+			ScriptingCore::Get().ShutdownHost();
 
 		m_GuiLayer->OnDetach();
 

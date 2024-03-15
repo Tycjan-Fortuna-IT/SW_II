@@ -61,3 +61,4 @@ group "Engine"
 group ""
 
 include "EngineEditor/Build-EngineEditor.lua"
+include "Testbed/Build-Testbed.lua"
