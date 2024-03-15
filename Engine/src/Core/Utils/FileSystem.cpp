@@ -3,6 +3,9 @@
 #include <nfd.hpp>
 
 #ifdef SW_WINDOWS
+	#include <ShlObj_core.h>
+	#include <comdef.h>
+	#include <commdlg.h>
 	#include <shellapi.h>
 #endif
 
@@ -63,5 +66,15 @@ namespace SW {
 		ShellExecuteA(nullptr, "open", path, nullptr, nullptr, SW_SHOWDEFAULT);
 #endif
 	}
+
+    void FileSystem::OpenFolderAndSelectItem(const std::filesystem::path& path)
+    {
+		const _bstr_t widePath(path.c_str());
+
+		if (const LPITEMIDLIST pidl = ILCreateFromPath(widePath)) {
+			SHOpenFolderAndSelectItems(pidl, 0, nullptr, 0);
+			ILFree(pidl);
+		}
+    }
 
 }

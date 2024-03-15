@@ -152,16 +152,7 @@ namespace SW {
 						ImGui::Image(whiteTexId, { backgroundThumbnailSize.x - padding * 2.0f, backgroundThumbnailSize.y - padding * 2.0f },
 							{ 0, 0 }, { 1, 1 }, backgroundColor, borderColor);
 
-						if (ImGui::BeginPopupContextItem("1")) {
-							if (ImGui::MenuItemEx("Show in explorer", SW_ICON_MAGNIFY)) {
-								std::filesystem::path pathToFile = entry.FilePath;
-								std::filesystem::path toOpen = ProjectContext::Get()->GetAssetDirectory() / pathToFile.parent_path();
-
-								FileSystem::RevealFolderInFileExplorer(toOpen);
-							}
-
-							ImGui::EndPopup();
-						}
+						DrawItemPopupMenu(entry);
 
 						if (ImGui::IsItemHovered()) {
 							ImGui::BeginTooltip();
@@ -218,7 +209,6 @@ namespace SW {
 
 						ImGui::PopID(); ++i;
 					}
-
 
 					ImGui::EndTable();
 				}
@@ -304,6 +294,29 @@ namespace SW {
 			};
 
 			m_DirectoryEntries.emplace_back(file);
+		}
+	}
+
+	void AssetPanel::DrawItemPopupMenu(const File& entry)
+	{
+		if (ImGui::BeginPopupContextItem("ItemPopupMenu")) {
+			if (ImGui::MenuItemEx("Show in explorer", SW_ICON_MAGNIFY)) {
+				std::filesystem::path pathToFile = entry.FilePath;
+				std::filesystem::path toOpen = ProjectContext::Get()->GetAssetDirectory() / pathToFile;
+
+				if (entry.Type == FileType::Directory)
+					FileSystem::RevealFolderInFileExplorer(toOpen);
+				else
+					FileSystem::OpenFolderAndSelectItem(toOpen);
+			}
+
+			if (ImGui::MenuItemEx("Delete", SW_ICON_DELETE)) {
+				std::filesystem::path pathToFile = entry.FilePath;
+
+				std::filesystem::remove(pathToFile);
+			}
+
+			ImGui::EndPopup();
 		}
 	}
 

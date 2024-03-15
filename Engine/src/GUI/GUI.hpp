@@ -259,6 +259,50 @@ namespace SW::GUI {
 	}
 
 	/**
+	 * @brief Creates a dockspace with the specified name and options.
+	 *
+	 * This function creates a dockspace using the Dear ImGui library. The dockspace is created at the position of the main viewport,
+	 * and its size is set to the size of the main viewport. The window flags for the dockspace can be customized.
+	 *
+	 * @param name The name of the dockspace. This is also used as the ID for the dockspace.
+	 * @param fn The function to call to draw the contents of the dockspace. This function should return the height of the top of the dockspace.
+	 * @param flags The window flags for the dockspace. These determine the behavior and appearance of the dockspace. Default is a combination of flags that result in a dockspace with no title bar, no collapse button, no resize handles, and no move functionality.
+	 */
+	template <typename T>
+	static void CreateDockspace(
+		const char* name, T fn, ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse
+	|	ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus
+	) {
+		ImGuiIO& io = ImGui::GetIO();
+
+		io.ConfigWindowsResizeFromEdges = io.BackendFlags & ImGuiBackendFlags_HasMouseCursors;
+
+		const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+		ImGui::SetNextWindowPos(viewport->Pos);
+		ImGui::SetNextWindowSize(viewport->Size);
+
+		ImGui::SetNextWindowViewport(viewport->ID);
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(6.0f, 6.0f));
+		ImGui::Begin("DockSpace Demo", nullptr, flags | ImGuiWindowFlags_NoDocking);
+		ImGui::PopStyleVar(3);
+
+		f32 topOffset = 0.0f;
+
+		if constexpr (std::is_invocable_v<T>)
+			topOffset = fn();
+
+		ImGui::SetCursorPosY(topOffset + ImGui::GetCurrentWindow()->WindowPadding.y);
+
+		ImGui::DockSpace(ImGui::GetID("MyDockspace"));
+
+		ImGui::End();
+	}
+
+	/**
 	 * @brief Draws a border around the specified rectangle.
 	 *
 	 * @param rect The rectangle to draw a border around.

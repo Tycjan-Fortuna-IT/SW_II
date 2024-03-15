@@ -91,6 +91,8 @@ namespace SW {
 		 * @brief Loads the directory entries.
 		 */
 		void LoadDirectoryEntries();
+
+		void DrawItemPopupMenu(const File& entry);
 	};
 
 }

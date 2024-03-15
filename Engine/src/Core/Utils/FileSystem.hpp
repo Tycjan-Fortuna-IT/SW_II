@@ -65,6 +65,8 @@ namespace SW {
 		 * @param path The path of the folder to be revealed.
 		 */
 		static void RevealFolderInFileExplorer(const char* path);
+
+		static void OpenFolderAndSelectItem(const std::filesystem::path& path);
 	};
 
 }
