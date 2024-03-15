@@ -300,7 +300,10 @@ namespace SW {
 	{
 		PROFILE_FUNCTION();
 
-		Application::Get()->GetWindow()->RegisterOverTitlebar(false);
+		Window* window = Application::Get()->GetWindow();
+
+		window->RegisterOverTitlebar(false);
+		m_WindowMaximized = window->IsCurrentlyMaximized();
 
 		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -318,9 +321,7 @@ namespace SW {
 		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-		m_WindowMaximized = Application::Get()->GetWindow()->IsCurrentlyMaximized();
-
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, m_WindowMaximized ? ImVec2(6.0f, 6.0f) : ImVec2(1.0f, 1.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(6.0f, 6.0f));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
 
 		ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4{ 0.0f, 0.0f, 0.0f, 0.0f });
