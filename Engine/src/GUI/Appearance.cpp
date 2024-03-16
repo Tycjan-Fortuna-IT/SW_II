@@ -66,74 +66,75 @@ namespace SW::GUI {
 
 		s_Colors = colors;
 
-		c[ImGuiCol_Text] = colors.Text;
-		c[ImGuiCol_TextDisabled] = colors.TextDisabled;
+		// Headers
+		c[ImGuiCol_Header] = s_Colors.Header;
+		c[ImGuiCol_HeaderHovered] = s_Colors.HeaderHovered;
+		c[ImGuiCol_HeaderActive] = s_Colors.HeaderActive;
 
-		c[ImGuiCol_WindowBg] = colors.WindowBackground;
-		c[ImGuiCol_ChildBg] = colors.ChildBackground;
-		c[ImGuiCol_PopupBg] = colors.PopupBackground;
+		// Buttons
+		c[ImGuiCol_Button] = s_Colors.Button;
+		c[ImGuiCol_ButtonHovered] = s_Colors.ButtonHovered;
+		c[ImGuiCol_ButtonActive] = s_Colors.ButtonActive;
 
-		c[ImGuiCol_Border] = colors.Border;
-		
-		c[ImGuiCol_FrameBg] = colors.FrameBackground;
-		c[ImGuiCol_FrameBgHovered] = colors.FrameBackgroundHovered;
-		c[ImGuiCol_FrameBgActive] = colors.FrameBackgroundActive;
+		// Frame BG
+		c[ImGuiCol_FrameBg] = s_Colors.FrameBackground;
+		c[ImGuiCol_FrameBgHovered] = s_Colors.FrameBackgroundHovered;
+		c[ImGuiCol_FrameBgActive] = s_Colors.FrameBackgroundActive;
 
-		c[ImGuiCol_TitleBg] = colors.TitleBackground;
-		c[ImGuiCol_TitleBgActive] = colors.TitleBackgroundActive;
-		c[ImGuiCol_TitleBgCollapsed] = colors.TitleBackgroundCollapsed;
+		// Tabs
+		c[ImGuiCol_Tab] = s_Colors.Tab;
+		c[ImGuiCol_TabHovered] = s_Colors.TabHovered;
+		c[ImGuiCol_TabActive] = s_Colors.TabActive;
+		c[ImGuiCol_TabUnfocused] = s_Colors.TabUnfocused;
+		c[ImGuiCol_TabUnfocusedActive] = s_Colors.TabUnfocusedActive;
 
-		c[ImGuiCol_MenuBarBg] = colors.MenuBarBackground;
+		// Title
+		c[ImGuiCol_TitleBg] = s_Colors.TitleBackground;
+		c[ImGuiCol_TitleBgActive] = s_Colors.TitleBackgroundActive;
+		c[ImGuiCol_TitleBgCollapsed] = s_Colors.TitleBackgroundCollapsed;
 
-		c[ImGuiCol_ScrollbarBg] = colors.ScrollbarBackground;
-		c[ImGuiCol_ScrollbarGrab] = colors.ScrollbarGrab;
-		c[ImGuiCol_ScrollbarGrabHovered] = colors.ScrollbarGrabHovered;
-		c[ImGuiCol_ScrollbarGrabActive] = colors.ScrollbarGrabActive;
+		// Resize Grip
+		c[ImGuiCol_ResizeGrip] = s_Colors.ResizeGrip;
+		c[ImGuiCol_ResizeGripHovered] = s_Colors.ResizeGripHovered;
+		c[ImGuiCol_ResizeGripActive] = s_Colors.ResizeGripActive;
 
-		c[ImGuiCol_CheckMark] = colors.CheckMark;
+		// Scrollbar
+		c[ImGuiCol_ScrollbarBg] = s_Colors.ScrollbarBackground;
+		c[ImGuiCol_ScrollbarGrab] = s_Colors.ScrollbarGrab;
+		c[ImGuiCol_ScrollbarGrabHovered] = s_Colors.ScrollbarGrabHovered;
+		c[ImGuiCol_ScrollbarGrabActive] = s_Colors.ScrollbarGrabActive;
 
-		c[ImGuiCol_SliderGrab] = colors.SliderGrab;
-		c[ImGuiCol_SliderGrabActive] = colors.SliderGrabActive;
+		// Check Mark
+		c[ImGuiCol_CheckMark] = s_Colors.CheckMark;
 
-		c[ImGuiCol_Button] = colors.Button;
-		c[ImGuiCol_ButtonHovered] = colors.ButtonHovered;
-		c[ImGuiCol_ButtonActive] = colors.ButtonActive;
+		// Slider
+		c[ImGuiCol_SliderGrab] = s_Colors.SliderGrab;
+		c[ImGuiCol_SliderGrabActive] = s_Colors.SliderGrabActive;
 
-		c[ImGuiCol_Header] = colors.Header;
-		c[ImGuiCol_HeaderHovered] = colors.HeaderHovered;
-		c[ImGuiCol_HeaderActive] = colors.HeaderActive;
+		// Text
+		c[ImGuiCol_Text] = s_Colors.Text;
+		c[ImGuiCol_TextDisabled] = s_Colors.TextDisabled;
 
-		c[ImGuiCol_Separator] = colors.Separator;
-		c[ImGuiCol_SeparatorHovered] = colors.SeparatorHovered;
-		c[ImGuiCol_SeparatorActive] = colors.SeparatorActive;
+		// Checkbox
+		c[ImGuiCol_CheckMark] = s_Colors.CheckMark;
 
-		c[ImGuiCol_ResizeGrip] = colors.ResizeGrip;
-		c[ImGuiCol_ResizeGripHovered] = colors.ResizeGripHovered;
-		c[ImGuiCol_ResizeGripActive] = colors.ResizeGripActive;
+		// Separator
+		c[ImGuiCol_Separator] = s_Colors.Separator;
+		c[ImGuiCol_SeparatorActive] = s_Colors.SeparatorActive;
+		c[ImGuiCol_SeparatorHovered] = s_Colors.SeparatorHovered;
 
-		c[ImGuiCol_Tab] = colors.Tab;
-		c[ImGuiCol_TabHovered] = colors.TabHovered;
-		c[ImGuiCol_TabActive] = colors.TabActive;
-		c[ImGuiCol_TabUnfocused] = colors.TabUnfocused;
-		c[ImGuiCol_TabUnfocusedActive] = colors.TabUnfocusedActive;
+		// Window Background
+		c[ImGuiCol_WindowBg] = s_Colors.WindowBackground;
+		c[ImGuiCol_ChildBg] = s_Colors.ChildBackground;
+		c[ImGuiCol_PopupBg] = s_Colors.PopupBackground;
+		c[ImGuiCol_Border] = s_Colors.Border;
 
-		c[ImGuiCol_PlotLines] = colors.PlotLines;
-		c[ImGuiCol_PlotLinesHovered] = colors.PlotLinesHovered;
-		c[ImGuiCol_PlotHistogram] = colors.PlotHistogram;
-		c[ImGuiCol_PlotHistogramHovered] = colors.PlotHistogramHovered;
+		// Tables
+		c[ImGuiCol_TableHeaderBg] = s_Colors.TableHeaderBackground;
+		c[ImGuiCol_TableBorderLight] = s_Colors.TableBorderLight;
 
-		c[ImGuiCol_TableHeaderBg] = colors.TableHeaderBackground;
-		c[ImGuiCol_TableBorderStrong] = colors.TableBorderStrong;
-
-		c[ImGuiCol_TextSelectedBg] = colors.TextSelectedBackground;
-
-		c[ImGuiCol_DragDropTarget] = colors.DragDropTarget;
-
-		c[ImGuiCol_NavHighlight] = colors.NavHighlight;
-		c[ImGuiCol_NavWindowingHighlight] = colors.NavWindowingHighlight;
-		c[ImGuiCol_NavWindowingDimBg] = colors.NavWindowingDimBackground;
-
-		c[ImGuiCol_ModalWindowDimBg] = colors.ModalWindowDimBackground;
+		// Menubar
+		c[ImGuiCol_MenuBarBg] = s_Colors.MenuBarBackground;
 
 		ImGuizmo::Style* imguizmoStyle = &ImGuizmo::GetStyle();
 		ImVec4* gc = imguizmoStyle->Colors;

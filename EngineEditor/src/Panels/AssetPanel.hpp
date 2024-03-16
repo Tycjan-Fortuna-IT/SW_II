@@ -1,8 +1,8 @@
 /**
  * @file AssetPanel.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.3
- * @date 2024-02-20
+ * @version 0.2.0
+ * @date 2024-03-16
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -26,6 +26,8 @@ namespace SW {
 		Directory,		///< Directory file type.
 		Scene,			///< Scene file type
 		Font,			///< Font file type.
+		Prefab,			///< Prefab file type.
+		Script,			///< Script file type.
 	};
 
 	/**
@@ -92,7 +94,17 @@ namespace SW {
 		 */
 		void LoadDirectoryEntries();
 
-		void DrawItemPopupMenu(const File& entry);
+		void DrawHeader();
+
+		void DrawDirectoryTreeViewRecursive(const std::filesystem::path& path);
+
+		void DrawSideView();
+
+		void DrawBody();
+
+		void DrawDirectoryEntryPopup(const std::filesystem::path& entry);
+
+		void DrawAssetPanelPopup();
 	};
 
 }

@@ -417,3 +417,4 @@ Makefile
 **.csproj
 EngineEditor/assets/dotnet/intermediates
 Sandbox/assets/build
+Testbed/assets
