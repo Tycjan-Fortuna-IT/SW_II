@@ -150,6 +150,27 @@ namespace SW {
 
 			viewRect = canvas.ViewRect();
 
+			float gridStep = scale * viewScale;
+
+			float startX = floor((viewRect.Min.x + viewOrigin.x / viewScale) / gridStep) * gridStep;
+			float startY = floor((viewRect.Min.y + viewOrigin.y / viewScale) / gridStep) * gridStep;
+
+			ImDrawList* drawList = ImGui::GetWindowDrawList();
+			for (float x = startX; x < viewRect.Max.x; x += gridStep) {
+				drawList->AddLine(
+					canvas.ToLocalV(ImVec2(x, viewRect.Min.y)),
+					canvas.ToLocalV(ImVec2(x, viewRect.Max.y)),
+					GUI::Theme::Selection
+				);
+			}
+			for (float y = startY; y < viewRect.Max.y; y += gridStep) {
+				drawList->AddLine(
+					canvas.ToLocalV(ImVec2(viewRect.Min.x, y)),
+					canvas.ToLocalV(ImVec2(viewRect.Max.x, y)),
+					GUI::Theme::Selection
+				);
+			}
+
 			if (viewRect.Max.x > 0.0f)
 				DrawScale(ImVec2(0.0f, 0.0f), ImVec2(viewRect.Max.x, 0.0f), scale, 10.0f, 0.6f);
 			if (viewRect.Min.x < 0.0f)
