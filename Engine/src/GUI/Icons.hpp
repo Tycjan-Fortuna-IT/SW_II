@@ -74,3 +74,4 @@
 #define SW_ICON_FILE_IMPORT u8"\uF220"
 #define SW_ICON_FILE_VIDEO u8"\uF22B"
 #define SW_ICON_NEW_BOX u8"\uF394"
+#define SW_ICON_COGS u8"\uF8D5"

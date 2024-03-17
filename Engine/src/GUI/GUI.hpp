@@ -681,32 +681,52 @@ namespace SW::GUI {
 	/**
 	 * @brief Draws a single line text input property in the GUI.
 	 *
-	 * This function is used to draw a single line text input property in the GUI.
-	 * It takes a reference to a string, a label, and an optional tooltip as parameters.
-	 * The text input field is displayed with the specified label and tooltip.
-	 * The text entered by the user is stored in the provided string reference.
+	 * @tparam N The size of the buffer used to store the text input.
+	 * @param text The reference to the string where the entered text will be stored.
+	 * @param flags Additional ImGui input flags.
+	 * 
+	 * @return bool Whether something has changed
+	 */
+	template <int N = 256>
+	static bool DrawSingleLineTextInput(
+		std::string& text, ImGuiInputTextFlags flags = ImGuiInputTextFlags_None
+	) {
+		char buffer[N];
+
+		memcpy(buffer, text.c_str(), std::min(sizeof(buffer), text.size() + 1));
+
+		if (ImGui::InputText("##Tag", buffer, sizeof(buffer), flags)) {
+			text = buffer;
+
+			return true;
+		}
+			
+		return false;
+	}
+
+	/**
+	 * @brief Draws a single line text input property in the GUI.
 	 *
 	 * @tparam N The size of the buffer used to store the text input.
 	 * @param text The reference to the string where the entered text will be stored.
 	 * @param label The label to display for the text input field.
 	 * @param tooltip The optional tooltip to display for the text input field.
+	 * 
+	 * @return bool Whether something has changed
 	 */
-	template <int N>
-	static void DrawSingleLineTextInputProperty(
-		std::string& text, const char* label, const char* tooltip = nullptr
+	template <int N = 256>
+	static bool DrawSingleLineTextInputProperty(
+		std::string& text, const char* label, const char* tooltip = nullptr, ImGuiInputTextFlags flags = ImGuiInputTextFlags_None
 	) {
+		bool changed = false;
+
 		BeginPropertyGrid(label, tooltip, false);
 
-		char buffer[N];
-
-		memcpy(buffer, text.c_str(), std::min(sizeof(buffer), text.size() + 1));
-
-		ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 1.5f);
-
-		if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
-			text = buffer;
+		changed = DrawSingleLineTextInput(text, flags);
 
 		EndPropertyGrid();
+
+		return changed;
 	}
 
 	/**
@@ -1369,25 +1389,22 @@ namespace SW::GUI {
 	};
 
 	/**
-	 * @brief Draws a selectable property in the GUI.
+	 * @brief Draws a selectable widget in the GUI.
 	 *
-	 * This function displays a selectable property in the GUI, allowing the user to choose from a list of options.
+	 * This function displays a selectable widget in the GUI, allowing the user to choose from a list of options.
 	 * The selected value is stored in the provided reference variable.
 	 *
-	 * @tparam T The type of the property value.
-	 * @param value The reference to the property value.
+	 * @tparam T The type of the value.
+	 * @param value The reference to the value.
 	 * @param options The vector of selectable options.
-	 * @param label The label for the property.
-	 * @param tooltip The tooltip for the property (optional).
-	 * 
+	 * @param flags Additional ImGui flags (optional).
+	 *
 	 * @return bool Whether something has changed
 	 */
 	template <typename T>
-	static bool DrawSelectableProperty(
-		T& value, std::vector<SelectOption<T>> options, const char* label, const char* tooltip = nullptr
+	static bool DrawSelectable(
+		T& value, const std::vector<SelectOption<T>>& options, ImGuiComboFlags flags = ImGuiComboFlags_None
 	) {
-		BeginPropertyGrid(label, tooltip);
-
 		bool changed = false;
 
 		std::string chosenName = "";
@@ -1414,6 +1431,35 @@ namespace SW::GUI {
 
 			ImGui::EndCombo();
 		}
+
+		return changed;
+	}
+
+	/**
+	 * @brief Draws a selectable property in the GUI.
+	 *
+	 * This function displays a selectable property in the GUI, allowing the user to choose from a list of options.
+	 * The selected value is stored in the provided reference variable.
+	 *
+	 * @tparam T The type of the property value.
+	 * @param value The reference to the property value.
+	 * @param options The vector of selectable options.
+	 * @param label The label for the property.
+	 * @param tooltip The tooltip for the property (optional).
+	 * @param flags Additional ImGui flags (optional).
+	 * 
+	 * @return bool Whether something has changed
+	 */
+	template <typename T>
+	static bool DrawSelectableProperty(
+		T& value, const std::vector<SelectOption<T>>& options, const char* label,
+		const char* tooltip = nullptr, ImGuiComboFlags flags = ImGuiComboFlags_None
+	) {
+		bool changed = false;
+
+		BeginPropertyGrid(label, tooltip);
+
+		changed = DrawSelectable(value, options, flags);
 
 		EndPropertyGrid();
 

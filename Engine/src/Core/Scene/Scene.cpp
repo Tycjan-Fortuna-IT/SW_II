@@ -356,8 +356,10 @@ namespace SW {
 			}
 		}
 
-		if (!mainCamera)
+		if (!mainCamera) {
+			Renderer2D::StartBatch(); // fix to a bug where camera is not present, but leftovers from edit state were present.
 			return;
+		}
 
 		Renderer2D::BeginScene(*mainCamera, cameraTransform);
 

@@ -1,8 +1,8 @@
 /**
  * @file FileSystem.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.1
- * @date 2024-02-21
+ * @version 0.1.2
+ * @date 2024-03-17
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -35,6 +35,25 @@ namespace SW {
 		 * @warning Must be called before application exit.
 		 */
 		static void Shutdown();
+
+		/**
+		 * @brief Creates a new file in a given path to it.
+		 *
+		 * @param path Path to file. e.g. C:/dev/file.txt
+		 * @param content Content that will be put inside this newly created file.
+		 * @return Whether the operation was successful.
+		 */
+		static bool CreateFileWithContent(const std::filesystem::path& path, const std::string& content);
+
+		/**
+		 * @brief Renames the file to chosen filename.
+		 * @warning This method doesn't preserve the file extension so be sure to pass it with newName!
+		 *
+		 * @param path Path to file. e.g. C:/dev/file.txt
+		 * @param newName Name of the file to be used while renaming. e.g. renamed.txt
+		 * @return Whether the operation was successful.
+		 */
+		static bool RenameFile(const std::filesystem::path& path, const std::string& newName);
 
 		/**
 		 * @brief Checks if file exists.

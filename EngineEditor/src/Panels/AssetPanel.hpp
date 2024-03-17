@@ -89,6 +89,15 @@ namespace SW {
 		std::filesystem::path m_CurrentDirectory;	/** @brief The path to the current directory fetched by the panel. */
 		std::vector<File> m_DirectoryEntries = {};	/** @brief The directory entries. */
 
+		bool m_OpenDeleteWarningModal = false;
+		bool m_OpenNewFileModal = false;
+		bool m_RenameEntryModal = false;
+
+		int m_ThumbnailSize = 150;
+
+		std::filesystem::path m_FilesystemEntryToDelete = "";
+		std::filesystem::path m_FilesystemEntryToRename = "";
+
 		/**
 		 * @brief Loads the directory entries.
 		 */

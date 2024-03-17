@@ -22,6 +22,29 @@ namespace SW {
 		NFD::Quit();
 	}
 
+    bool FileSystem::CreateFileWithContent(const std::filesystem::path& path, const std::string& content)
+    {
+		std::ofstream outputFile(path);
+
+		if (!outputFile.is_open())
+			return false;
+
+		outputFile << content;
+		outputFile.close();
+
+		return true;
+    }
+
+	bool FileSystem::RenameFile(const std::filesystem::path& path, const std::string& newName)
+	{
+		std::filesystem::path oldFilename = path.filename();
+		std::filesystem::path oldPath = path.parent_path();
+
+		std::filesystem::rename(path, oldPath / newName);
+		
+		return true;
+	}
+
 	std::filesystem::path FileSystem::OpenFileDialog(const std::initializer_list<FileDialogFilterItem> filters)
 	{
 		NFD::UniquePath filePath;
