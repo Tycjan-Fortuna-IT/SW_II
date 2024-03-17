@@ -4,6 +4,9 @@
 #include "gui.hpp"
 #include "AssetPanels/AssetEditorPanelManager.hpp"
 #include "Core/Asset/Asset.hpp"
+#include "Core/Project/ProjectSerializer.hpp"
+#include "Core/Project/Project.hpp"
+#include "Core/Project/ProjectContext.hpp"
 
 namespace SW {
 
@@ -27,6 +30,9 @@ namespace SW {
 		Renderer2D::Initialize();
 
 		AssetEditorPanelManager::Initialize();
+
+		Project* newProject = ProjectSerializer::Deserialize("C:\\Users\\tycja\\Desktop\\SW_II\\Testbed\\Testbed.swproj");
+		ProjectContext::Set(newProject); // TODO: Make projects switchable
 	}
 
 	void TestbedLayer::OnDetach()

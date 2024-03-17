@@ -34,3 +34,6 @@
 [submodule "Engine/vendor/Coral"]
 	path = Engine/vendor/Coral
 	url = https://github.com/StudioCherno/Coral.git
+[submodule "Engine/vendor/imgui-node-editor"]
+	path = Engine/vendor/imgui-node-editor
+	url = https://github.com/thedmd/imgui-node-editor.git
