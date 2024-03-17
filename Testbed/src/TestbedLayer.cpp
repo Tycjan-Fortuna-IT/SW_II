@@ -2,8 +2,17 @@
 
 #include "Core/Renderer/RendererAPI.hpp"
 #include "gui.hpp"
+#include "AssetPanels/AssetEditorPanelManager.hpp"
+#include "Core/Asset/Asset.hpp"
 
 namespace SW {
+
+	class Spritesheet final : public Asset
+	{
+		AssetType GetAssetType() const override { return AssetType::Spritesheet; }
+	};
+
+	static Spritesheet* sp = new Spritesheet();
 
 	void TestbedLayer::OnAttach()
 	{
@@ -16,25 +25,51 @@ namespace SW {
 		Application::Get()->GetWindow()->SetVSync(true);
 
 		Renderer2D::Initialize();
+
+		AssetEditorPanelManager::Initialize();
 	}
 
 	void TestbedLayer::OnDetach()
 	{
 		Renderer2D::Shutdown();
+		AssetEditorPanelManager::Shutdown();
 	}
 
 	void TestbedLayer::OnUpdate(Timestep dt)
 	{
 		RendererAPI::Clear();
+		AssetEditorPanelManager::OnUpdate(dt);
+	}
+
+	static void OpenPanel()
+	{
+		AssetEditorPanelManager::OpenEditor(sp);
+	}
+
+	static void ClosePanel()
+	{
+
 	}
 
 	void TestbedLayer::OnRender()
 	{
 		GUI::CreateDockspace("Main Dockspace", nullptr);
 
+		AssetEditorPanelManager::OnRender();
+
 		ImGui::Begin("Panel");
 
+		if (ImGui::Button("Open panel")) {
+			OpenPanel();
+		}
+		
+		if (ImGui::Button("Close panel")) {
+			ClosePanel();
+		}
+
 		ImGui::End();
+
+		ImGui::ShowDemoWindow();
 	}
 
 }
