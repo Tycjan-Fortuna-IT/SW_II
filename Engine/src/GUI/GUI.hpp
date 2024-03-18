@@ -695,6 +695,8 @@ namespace SW::GUI {
 
 		memcpy(buffer, text.c_str(), std::min(sizeof(buffer), text.size() + 1));
 
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+
 		if (ImGui::InputText("##Tag", buffer, sizeof(buffer), flags)) {
 			text = buffer;
 
@@ -722,7 +724,7 @@ namespace SW::GUI {
 
 		BeginPropertyGrid(label, tooltip, false);
 
-		changed = DrawSingleLineTextInput(text, flags);
+		changed = DrawSingleLineTextInput<N>(text, flags);
 
 		EndPropertyGrid();
 
@@ -1568,4 +1570,62 @@ namespace SW::GUI {
 		ImGuiWindow* window = GImGui->CurrentWindow;
 		return window->ContentRegionRect.GetWidth();
 	}
+
+	static void DrawScale(const ImVec2& from, const ImVec2& to, f32 majorUnit, f32 minorUnit, f32 labelAlignment, f32 sign = 1.0f)
+	{
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+		ImVec2 direction = (to - from) * ImInvLength(to - from, 0.0f);
+		ImVec2 normal = ImVec2(-direction.y, direction.x);
+		f32 distance = sqrtf(ImLengthSqr(to - from));
+
+		if (ImDot(direction, direction) < FLT_EPSILON)
+			return;
+
+		f32 minorSize = 5.0f;
+		f32 majorSize = 10.0f;
+		f32 labelDistance = 8.0f;
+
+		drawList->AddLine(from, to, IM_COL32(255, 255, 255, 255));
+
+		ImVec2 p = from;
+
+		for (f32 d = 0.0f; d <= distance; d += minorUnit, p += direction * minorUnit)
+			drawList->AddLine(p - normal * minorSize, p + normal * minorSize, IM_COL32(255, 255, 255, 255));
+
+		for (f32 d = 0.0f; d <= distance + majorUnit; d += majorUnit) {
+			p = from + direction * d;
+
+			drawList->AddLine(p - normal * majorSize, p + normal * majorSize, IM_COL32(255, 255, 255, 255));
+
+			if (d == 0.0f)
+				continue;
+
+			char label[16];
+			snprintf(label, 15, "%g", d * sign);
+			ImVec2 labelSize = ImGui::CalcTextSize(label);
+
+			ImVec2 labelPosition = p + ImVec2(fabsf(normal.x), fabsf(normal.y)) * labelDistance;
+			f32 labelAlignedSize = ImDot(labelSize, direction);
+			labelPosition += direction * (-labelAlignedSize + labelAlignment * labelAlignedSize * 2.0f);
+			labelPosition = ImFloor(labelPosition + ImVec2(0.5f, 0.5f));
+
+			drawList->AddText(labelPosition, IM_COL32(255, 255, 255, 255), label);
+		}
+	}
+
+	static bool Splitter(bool split_vertically, f32 thickness, f32* size1, f32* size2, f32 min_size1, f32 min_size2, f32 splitter_long_axis_size = -1.0f)
+	{
+		using namespace ImGui;
+
+		ImGuiContext& g = *GImGui;
+		ImGuiWindow* window = g.CurrentWindow;
+		ImGuiID id = window->GetID("##Splitter");
+		ImRect bb;
+
+		bb.Min = window->DC.CursorPos + (split_vertically ? ImVec2(*size1, 0.0f) : ImVec2(0.0f, *size1));
+		bb.Max = bb.Min + CalcItemSize(split_vertically ? ImVec2(thickness, splitter_long_axis_size) : ImVec2(splitter_long_axis_size, thickness), 0.0f, 0.0f);
+
+		return SplitterBehavior(bb, id, split_vertically ? ImGuiAxis_X : ImGuiAxis_Y, size1, size2, min_size1, min_size2, 0.0f);
+	}
+
 }

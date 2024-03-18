@@ -7,15 +7,11 @@
 #include "Core/Project/ProjectSerializer.hpp"
 #include "Core/Project/Project.hpp"
 #include "Core/Project/ProjectContext.hpp"
+#include "AssetPanels/SpritesheetEditor.hpp"
 
 namespace SW {
 
-	class Spritesheet final : public Asset
-	{
-		AssetType GetAssetType() const override { return AssetType::Spritesheet; }
-	};
-
-	static Spritesheet* sp = new Spritesheet();
+	static Spritesheet* sp = nullptr;
 
 	void TestbedLayer::OnAttach()
 	{
@@ -33,6 +29,8 @@ namespace SW {
 
 		Project* newProject = ProjectSerializer::Deserialize("C:\\Users\\tycja\\Desktop\\SW_II\\Testbed\\Testbed.swproj");
 		ProjectContext::Set(newProject); // TODO: Make projects switchable
+
+		sp = new Spritesheet(AssetManager::GetTexture2D("assets\\spritesheets\\spritesheet_test.png"));
 	}
 
 	void TestbedLayer::OnDetach()

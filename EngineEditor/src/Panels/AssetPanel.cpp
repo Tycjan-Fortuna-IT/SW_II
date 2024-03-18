@@ -481,8 +481,7 @@ namespace SW {
 				nodeFlags |= ImGuiTreeNodeFlags_Selected;
 				ImGui::PushStyleColor(ImGuiCol_Header, GUI::Theme::SelectionMuted);
 				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI::Theme::SelectionMuted);
-			}
-			else {
+			} else {
 				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI::Theme::Background);
 			}
 

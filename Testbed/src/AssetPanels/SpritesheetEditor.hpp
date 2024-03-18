@@ -12,6 +12,27 @@
 
 namespace SW {
 
+	class Spritesheet final : public Asset {
+	public:
+		Spritesheet(Texture2D* spritesheetTexture)
+			: m_SpritesheetTexture(spritesheetTexture) {}
+
+		AssetType GetAssetType() const override { return AssetType::Spritesheet; }
+
+		Texture2D* GetSpritesheetTexture() const { return m_SpritesheetTexture; }
+
+	private:
+		Texture2D* m_SpritesheetTexture = nullptr;
+	};
+
+	struct SpriteData final
+	{
+		std::string Name;
+		glm::vec2 Position = glm::vec2(0.0f);
+		glm::vec2 Scale = glm::vec2(1.0f);
+		glm::vec4 Tint = glm::vec4(1.0f);
+	};
+
 	class SpritesheetEditor final : public AssetEditorPanel
 	{
 	public:
@@ -30,6 +51,15 @@ namespace SW {
 		void Render() override final;
 
 		void SetAsset(Asset* asset) override;
+
+	private:
+		std::vector<SpriteData> m_Sprites;
+
+		Spritesheet* m_Spritesheet = nullptr;
+
+		SpriteData m_SpriteDataToRemove;
+
+		void RenderSpriteCards();
 	};
 
 }

@@ -2,63 +2,6 @@
 
 #include <imgui_canvas.h>
 
-static void DrawScale(const ImVec2& from, const ImVec2& to, f32 majorUnit, f32 minorUnit, f32 labelAlignment, f32 sign = 1.0f)
-{
-	ImDrawList* drawList = ImGui::GetWindowDrawList();
-	ImVec2 direction = (to - from) * ImInvLength(to - from, 0.0f);
-	ImVec2 normal = ImVec2(-direction.y, direction.x);
-	f32 distance = sqrtf(ImLengthSqr(to - from));
-
-	if (ImDot(direction, direction) < FLT_EPSILON)
-		return;
-
-	f32 minorSize = 5.0f;
-	f32 majorSize = 10.0f;
-	f32 labelDistance = 8.0f;
-
-	drawList->AddLine(from, to, IM_COL32(255, 255, 255, 255));
-
-	ImVec2 p = from;
-
-	for (f32 d = 0.0f; d <= distance; d += minorUnit, p += direction * minorUnit)
-		drawList->AddLine(p - normal * minorSize, p + normal * minorSize, IM_COL32(255, 255, 255, 255));
-
-	for (f32 d = 0.0f; d <= distance + majorUnit; d += majorUnit) {
-		p = from + direction * d;
-
-		drawList->AddLine(p - normal * majorSize, p + normal * majorSize, IM_COL32(255, 255, 255, 255));
-
-		if (d == 0.0f)
-			continue;
-
-		char label[16];
-		snprintf(label, 15, "%g", d * sign);
-		ImVec2 labelSize = ImGui::CalcTextSize(label);
-
-		ImVec2 labelPosition = p + ImVec2(fabsf(normal.x), fabsf(normal.y)) * labelDistance;
-		f32 labelAlignedSize = ImDot(labelSize, direction);
-		labelPosition += direction * (-labelAlignedSize + labelAlignment * labelAlignedSize * 2.0f);
-		labelPosition = ImFloor(labelPosition + ImVec2(0.5f, 0.5f));
-
-		drawList->AddText(labelPosition, IM_COL32(255, 255, 255, 255), label);
-	}
-}
-
-static bool Splitter(bool split_vertically, f32 thickness, f32* size1, f32* size2, f32 min_size1, f32 min_size2, f32 splitter_long_axis_size = -1.0f)
-{
-	using namespace ImGui;
-
-	ImGuiContext& g = *GImGui;
-	ImGuiWindow* window = g.CurrentWindow;
-	ImGuiID id = window->GetID("##Splitter");
-	ImRect bb;
-
-	bb.Min = window->DC.CursorPos + (split_vertically ? ImVec2(*size1, 0.0f) : ImVec2(0.0f, *size1));
-	bb.Max = bb.Min + CalcItemSize(split_vertically ? ImVec2(thickness, splitter_long_axis_size) : ImVec2(splitter_long_axis_size, thickness), 0.0f, 0.0f);
-	
-	return SplitterBehavior(bb, id, split_vertically ? ImGuiAxis_X : ImGuiAxis_Y, size1, size2, min_size1, min_size2, 0.0f);
-}
-
 namespace SW {
 
 	SpritesheetEditor::SpritesheetEditor(const char* name, const char* icon)
@@ -79,11 +22,11 @@ namespace SW {
 
 	}
 
-	static Texture2D* spritesheet = nullptr;
-
 	void SpritesheetEditor::OnOpen()
 	{
-		spritesheet = AssetManager::GetTexture2D("assets\\spritesheets\\spritesheet_test.png");
+		m_Sprites.emplace_back(SpriteData{ "Sprite1" });
+		m_Sprites.emplace_back(SpriteData{ "Sprite2" });
+		m_Sprites.emplace_back(SpriteData{ "Sprite3" });
 	}
 
 	void SpritesheetEditor::OnClose()
@@ -125,6 +68,8 @@ namespace SW {
 
 			GUI::EndProperties();
 
+			RenderSpriteCards();
+
 			ImGui::TableNextColumn();
 
 			if (canvas.Begin("##mycanvas", ImGui::GetContentRegionAvail())) {
@@ -157,16 +102,18 @@ namespace SW {
 					drawList->AddLine(ImVec2(0.0f - sOffset.x, y - sOffset.y) + viewPos, ImVec2(viewSize.x - sOffset.x, y - sOffset.y) + viewPos, GUI::Theme::Selection);
 
 				if (viewRect.Max.x > 0.0f)
-					DrawScale(ImVec2(0.0f, 0.0f), ImVec2(viewRect.Max.x, 0.0f), scale, 16.0f, 0.6f);
+					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(viewRect.Max.x, 0.0f), scale, 16.0f, 0.6f);
 				if (viewRect.Min.x < 0.0f)
-					DrawScale(ImVec2(0.0f, 0.0f), ImVec2(viewRect.Min.x, 0.0f), scale, 16.0f, 0.6f, -1.0f);
+					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(viewRect.Min.x, 0.0f), scale, 16.0f, 0.6f, -1.0f);
 				if (viewRect.Max.y > 0.0f)
-					DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Max.y), scale, 16.0f, 0.6f);
+					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Max.y), scale, 16.0f, 0.6f);
 				if (viewRect.Min.y < 0.0f)
-					DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Min.y), scale, 16.0f, 0.6f, -1.0f);
+					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Min.y), scale, 16.0f, 0.6f, -1.0f);
+
+				Texture2D* spritesheetTexture = m_Spritesheet->GetSpritesheetTexture();
 
 				ImGui::Image(
-					GUI::GetTextureID(spritesheet->GetHandle()), { (f32)spritesheet->GetWidth(), (f32)spritesheet->GetHeight() }, { 0, 1 }, { 1, 0 }
+					GUI::GetTextureID(spritesheetTexture->GetHandle()), { (f32)spritesheetTexture->GetWidth(), (f32)spritesheetTexture->GetHeight() }, { 0, 1 }, { 1, 0 }
 				);
 
 				canvas.End();
@@ -178,7 +125,106 @@ namespace SW {
 
 	void SpritesheetEditor::SetAsset(Asset* asset)
 	{
+		m_Spritesheet = (Spritesheet*)asset;
+	}
 
+	// offset from left right corner
+	static void DrawImagePartProperty(
+		Texture2D* wholeImage, const char* label, const char* tooltip = nullptr,
+		glm::vec2 offset = glm::vec2(0.0f), glm::vec2 size = glm::vec2(0.0f), glm::vec4 tint = glm::vec4(1.0f)
+	) {
+		f32 width = (f32)wholeImage->GetWidth();
+		f32 height = (f32)wholeImage->GetHeight();
+
+		GUI::BeginPropertyGrid(label, tooltip, false);
+
+		ImGui::Image(
+			GUI::GetTextureID(wholeImage->GetHandle()), { 400.f, 400.f }, { 0, 1 }, { 1, 0 }, { tint.r, tint.g, tint.b, tint.a }
+		);
+
+		GUI::EndPropertyGrid();
+	}
+
+	static void DrawLateSubmitSingleLineTextInputProperty(
+
+	) {
+		// a button edit / submit, submit uploads the changed value
+	}
+
+	void SpritesheetEditor::RenderSpriteCards()
+	{
+		constexpr ImGuiTableFlags flags = ImGuiTableFlags_NoPadInnerX
+			| ImGuiTableFlags_NoPadOuterX
+			| ImGuiTableFlags_Resizable
+			| ImGuiTableFlags_BordersInnerH
+			| ImGuiTableFlags_ContextMenuInBody
+			| ImGuiTableFlags_ScrollY;
+
+		constexpr ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen
+			| ImGuiTreeNodeFlags_SpanAvailWidth
+			| ImGuiTreeNodeFlags_AllowItemOverlap
+			| ImGuiTreeNodeFlags_Framed
+			| ImGuiTreeNodeFlags_FramePadding;
+
+		ImGui::Button("Add new sprite");
+
+		if (ImGui::BeginTable("SideViewTable", 1, flags, ImGui::GetContentRegionAvail())) {
+			ImGui::TableNextRow();
+			ImGui::TableNextColumn();
+
+			int indexToRemove = -1;
+
+			for (int i = 0; i < m_Sprites.size(); i++) {
+				SpriteData& spriteData = m_Sprites[i];
+
+				ImGui::TableNextRow();
+				ImGui::TableNextColumn();
+
+				const char* spriteName = spriteData.Name.c_str();
+
+				bool opened = ImGui::TreeNodeEx(spriteName, treeFlags, "");
+
+				ImGui::SameLine();
+				ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::Selection);
+				ImGui::TextUnformatted(SW_ICON_TEXTURE);
+				ImGui::PopStyleColor();
+				ImGui::SameLine();
+				ImGui::TextUnformatted(spriteName);
+
+				const f32 frameHeight = ImGui::GetFrameHeight();
+
+				ImGui::SameLine(ImGui::GetContentRegionMax().x - frameHeight * 1.2f);
+
+				if (ImGui::Button(SW_ICON_SETTINGS, ImVec2{ frameHeight * 1.2f, frameHeight }))
+					ImGui::OpenPopup("RemoveSprite");
+
+				if (ImGui::BeginPopup("RemoveSprite")) {
+					if (ImGui::MenuItemEx("Remove", SW_ICON_DELETE)) {
+						indexToRemove = i;
+					}
+
+					ImGui::EndPopup();
+				}
+
+				if (opened) {
+					GUI::BeginProperties(spriteName);
+					GUI::DrawSingleLineTextInputProperty(spriteData.Name, "Sprite name");
+					GUI::DrawVector2ControlProperty(spriteData.Position, "Position");
+					GUI::DrawVector2ControlProperty(spriteData.Scale, "Scale");
+					GUI::DrawVector4ColorPickerProperty(spriteData.Tint, "Tint");
+					DrawImagePartProperty(m_Spritesheet->GetSpritesheetTexture(), "Sprite", nullptr, spriteData.Position, spriteData.Scale, spriteData.Tint);
+					GUI::EndProperties();
+
+					ImGui::TreePop();
+				}
+			}
+			
+			if (indexToRemove != -1) {
+				m_Sprites.erase(m_Sprites.begin() + indexToRemove);
+			}
+
+			ImGui::EndTable();
+		}
 	}
 
 }
