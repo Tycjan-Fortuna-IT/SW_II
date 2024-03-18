@@ -2,27 +2,28 @@
 
 #include <imgui_canvas.h>
 
-static void DrawScale(const ImVec2& from, const ImVec2& to, float majorUnit, float minorUnit, float labelAlignment, float sign = 1.0f)
+static void DrawScale(const ImVec2& from, const ImVec2& to, f32 majorUnit, f32 minorUnit, f32 labelAlignment, f32 sign = 1.0f)
 {
-	auto drawList = ImGui::GetWindowDrawList();
-	auto direction = (to - from) * ImInvLength(to - from, 0.0f);
-	auto normal = ImVec2(-direction.y, direction.x);
-	auto distance = sqrtf(ImLengthSqr(to - from));
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+	ImVec2 direction = (to - from) * ImInvLength(to - from, 0.0f);
+	ImVec2 normal = ImVec2(-direction.y, direction.x);
+	f32 distance = sqrtf(ImLengthSqr(to - from));
 
 	if (ImDot(direction, direction) < FLT_EPSILON)
 		return;
 
-	auto minorSize = 5.0f;
-	auto majorSize = 10.0f;
-	auto labelDistance = 8.0f;
+	f32 minorSize = 5.0f;
+	f32 majorSize = 10.0f;
+	f32 labelDistance = 8.0f;
 
 	drawList->AddLine(from, to, IM_COL32(255, 255, 255, 255));
 
-	auto p = from;
-	for (auto d = 0.0f; d <= distance; d += minorUnit, p += direction * minorUnit)
+	ImVec2 p = from;
+
+	for (f32 d = 0.0f; d <= distance; d += minorUnit, p += direction * minorUnit)
 		drawList->AddLine(p - normal * minorSize, p + normal * minorSize, IM_COL32(255, 255, 255, 255));
 
-	for (auto d = 0.0f; d <= distance + majorUnit; d += majorUnit) {
+	for (f32 d = 0.0f; d <= distance + majorUnit; d += majorUnit) {
 		p = from + direction * d;
 
 		drawList->AddLine(p - normal * majorSize, p + normal * majorSize, IM_COL32(255, 255, 255, 255));
@@ -32,10 +33,10 @@ static void DrawScale(const ImVec2& from, const ImVec2& to, float majorUnit, flo
 
 		char label[16];
 		snprintf(label, 15, "%g", d * sign);
-		auto labelSize = ImGui::CalcTextSize(label);
+		ImVec2 labelSize = ImGui::CalcTextSize(label);
 
-		auto labelPosition = p + ImVec2(fabsf(normal.x), fabsf(normal.y)) * labelDistance;
-		auto labelAlignedSize = ImDot(labelSize, direction);
+		ImVec2 labelPosition = p + ImVec2(fabsf(normal.x), fabsf(normal.y)) * labelDistance;
+		f32 labelAlignedSize = ImDot(labelSize, direction);
 		labelPosition += direction * (-labelAlignedSize + labelAlignment * labelAlignedSize * 2.0f);
 		labelPosition = ImFloor(labelPosition + ImVec2(0.5f, 0.5f));
 
@@ -43,15 +44,18 @@ static void DrawScale(const ImVec2& from, const ImVec2& to, float majorUnit, flo
 	}
 }
 
-static bool Splitter(bool split_vertically, float thickness, float* size1, float* size2, float min_size1, float min_size2, float splitter_long_axis_size = -1.0f)
+static bool Splitter(bool split_vertically, f32 thickness, f32* size1, f32* size2, f32 min_size1, f32 min_size2, f32 splitter_long_axis_size = -1.0f)
 {
 	using namespace ImGui;
+
 	ImGuiContext& g = *GImGui;
 	ImGuiWindow* window = g.CurrentWindow;
 	ImGuiID id = window->GetID("##Splitter");
 	ImRect bb;
+
 	bb.Min = window->DC.CursorPos + (split_vertically ? ImVec2(*size1, 0.0f) : ImVec2(0.0f, *size1));
 	bb.Max = bb.Min + CalcItemSize(split_vertically ? ImVec2(thickness, splitter_long_axis_size) : ImVec2(splitter_long_axis_size, thickness), 0.0f, 0.0f);
+	
 	return SplitterBehavior(bb, id, split_vertically ? ImGuiAxis_X : ImGuiAxis_Y, size1, size2, min_size1, min_size2, 0.0f);
 }
 
@@ -93,10 +97,10 @@ namespace SW {
 
 		auto availableRegion = ImGui::GetContentRegionAvail();
 
-		static float s_SplitterSize = 6.0f;
-		static float s_SplitterArea = 0.0f;
-		static float s_LeftPaneSize = 0.0f;
-		static float s_RightPaneSize = 0.0f;
+		static f32 s_SplitterSize = 6.0f;
+		static f32 s_SplitterArea = 0.0f;
+		static f32 s_LeftPaneSize = 0.0f;
+		static f32 s_RightPaneSize = 0.0f;
 
 		if (s_SplitterArea != availableRegion.x) {
 			if (s_SplitterArea == 0.0f) {
@@ -127,11 +131,13 @@ namespace SW {
 		ImGui::BeginChild("##top", ImVec2(s_LeftPaneSize, -1), false, ImGuiWindowFlags_NoScrollWithMouse);
 
 		GUI::BeginProperties("##spritesheet_editor_properties");
-		if (GUI::DrawFloatingPointProperty(viewScale, "View Zoom", nullptr, 0.01f, 15.0f)) {
+		if (GUI::DrawFloatingPointProperty(viewScale, "View Zoom", nullptr, 0.5f, 15.0f)) {
 			canvas.SetView(viewOrigin, viewScale);
 		}
 		static f32 scale = 100.f;
 		GUI::DrawFloatingPointProperty(scale, "Scale", nullptr, 16.f, 1000.f);
+		static glm::vec2 sOffset = glm::vec2(0.f);
+		GUI::DrawVector2ControlProperty(sOffset, "Offset from center");
 		GUI::EndProperties();
 
 		ImGui::EndChild();
@@ -150,26 +156,17 @@ namespace SW {
 
 			viewRect = canvas.ViewRect();
 
-			float gridStep = scale * viewScale;
-
-			float startX = floor((viewRect.Min.x + viewOrigin.x / viewScale) / gridStep) * gridStep;
-			float startY = floor((viewRect.Min.y + viewOrigin.y / viewScale) / gridStep) * gridStep;
-
+			ImVec2 offset = canvas.ViewOrigin() * (1.0f / canvas.ViewScale());
+			ImVec2 viewPos = canvas.ViewRect().Min;
+			ImVec2 viewSize = canvas.ViewRect().GetSize();
 			ImDrawList* drawList = ImGui::GetWindowDrawList();
-			for (float x = startX; x < viewRect.Max.x; x += gridStep) {
-				drawList->AddLine(
-					canvas.ToLocalV(ImVec2(x, viewRect.Min.y)),
-					canvas.ToLocalV(ImVec2(x, viewRect.Max.y)),
-					GUI::Theme::Selection
-				);
-			}
-			for (float y = startY; y < viewRect.Max.y; y += gridStep) {
-				drawList->AddLine(
-					canvas.ToLocalV(ImVec2(viewRect.Min.x, y)),
-					canvas.ToLocalV(ImVec2(viewRect.Max.x, y)),
-					GUI::Theme::Selection
-				);
-			}
+
+			drawList->AddRectFilled(viewPos, viewPos + viewSize, GUI::Theme::Background);
+
+			for (f32 x = fmodf(offset.x, scale); x < viewSize.x; x += scale)
+				drawList->AddLine(ImVec2(x + sOffset.x, 0.0f + sOffset.y) + viewPos, ImVec2(x + sOffset.x, viewSize.y + sOffset.y) + viewPos, GUI::Theme::Selection);
+			for (f32 y = fmodf(offset.y, scale); y < viewSize.y; y += scale)
+				drawList->AddLine(ImVec2(0.0f + sOffset.x, y + sOffset.y) + viewPos, ImVec2(viewSize.x + sOffset.x, y + sOffset.y) + viewPos, GUI::Theme::Selection);
 
 			if (viewRect.Max.x > 0.0f)
 				DrawScale(ImVec2(0.0f, 0.0f), ImVec2(viewRect.Max.x, 0.0f), scale, 10.0f, 0.6f);
