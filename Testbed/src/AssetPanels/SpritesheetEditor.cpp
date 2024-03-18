@@ -93,98 +93,86 @@ namespace SW {
 
 	void SpritesheetEditor::Render()
 	{
-		auto& io = ImGui::GetIO();
+		ImGuiIO& io = ImGui::GetIO();
 
-		auto availableRegion = ImGui::GetContentRegionAvail();
-
-		static f32 s_SplitterSize = 6.0f;
-		static f32 s_SplitterArea = 0.0f;
-		static f32 s_LeftPaneSize = 0.0f;
-		static f32 s_RightPaneSize = 0.0f;
-
-		if (s_SplitterArea != availableRegion.x) {
-			if (s_SplitterArea == 0.0f) {
-				s_SplitterArea = availableRegion.x;
-				s_LeftPaneSize = ImFloor(availableRegion.x * 0.25f);
-				s_RightPaneSize = availableRegion.x - s_LeftPaneSize - s_SplitterSize;
-			}
-			else {
-				auto ratio = availableRegion.x / s_SplitterArea;
-				s_SplitterArea = availableRegion.x;
-				s_LeftPaneSize = s_LeftPaneSize * ratio;
-				s_RightPaneSize = availableRegion.x - s_LeftPaneSize - s_SplitterSize;
-			}
-		}
+		ImVec2 availableRegion = ImGui::GetContentRegionAvail();
 
 		static ImGuiEx::Canvas canvas;
 		static ImVec2 drawStartPoint;
 		static bool isDragging = false;
-		static ImRect panelRect;
 
-		Splitter(true, s_SplitterSize, &s_LeftPaneSize, &s_RightPaneSize, 100.0f, 100.0f);
+		ImVec2 viewOrigin = canvas.ViewOrigin();
+		f32 viewScale = canvas.ViewScale();
 
-		auto canvasRect = canvas.Rect();
-		auto viewRect = canvas.ViewRect();
-		auto viewOrigin = canvas.ViewOrigin();
-		auto viewScale = canvas.ViewScale();
+		constexpr ImGuiTableFlags flags = ImGuiTableFlags_NoPadInnerX
+			| ImGuiTableFlags_NoPadOuterX
+			| ImGuiTableFlags_Resizable
+			| ImGuiTableFlags_BordersInnerH
+			| ImGuiTableFlags_ScrollY;
 
-		ImGui::BeginChild("##top", ImVec2(s_LeftPaneSize, -1), false, ImGuiWindowFlags_NoScrollWithMouse);
+		if (ImGui::BeginTable("MainViewTable", 2, flags, ImGui::GetContentRegionAvail())) {
+			ImGui::TableNextRow();
+			ImGui::TableNextColumn();
 
-		GUI::BeginProperties("##spritesheet_editor_properties");
-		if (GUI::DrawFloatingPointProperty(viewScale, "View Zoom", nullptr, 0.5f, 15.0f)) {
-			canvas.SetView(viewOrigin, viewScale);
-		}
-		static f32 scale = 100.f;
-		GUI::DrawFloatingPointProperty(scale, "Scale", nullptr, 16.f, 1000.f);
-		static glm::vec2 sOffset = glm::vec2(0.f);
-		GUI::DrawVector2ControlProperty(sOffset, "Offset from center");
-		GUI::EndProperties();
+			GUI::BeginProperties("##spritesheet_editor_properties");
+			if (GUI::DrawFloatingPointProperty(viewScale, "View Zoom", nullptr, 0.5f, 15.0f)) {
+				canvas.SetView(viewOrigin, viewScale);
+			}
+			static f32 scale = 100.f;
+			GUI::DrawFloatingPointProperty(scale, "Scale", nullptr, 16.f, 1000.f);
+			static glm::vec2 sOffset = glm::vec2(0.f);
+			GUI::DrawVector2ControlProperty(sOffset, "Offset from center");
 
-		ImGui::EndChild();
-		ImGui::SameLine(0.0f, s_SplitterSize);
+			GUI::EndProperties();
 
-		if (canvas.Begin("##mycanvas", ImVec2(s_RightPaneSize, 0.0f))) {
-			if ((isDragging || ImGui::IsItemHovered()) && ImGui::IsMouseDragging(1, 0.0f)) {
-				if (!isDragging) {
-					isDragging = true;
-					drawStartPoint = viewOrigin;
+			ImGui::TableNextColumn();
+
+			if (canvas.Begin("##mycanvas", ImGui::GetContentRegionAvail())) {
+				if ((isDragging || ImGui::IsItemHovered()) && ImGui::IsMouseDragging(ImGuiMouseButton_Right, 0.0f)) {
+					if (!isDragging) {
+						isDragging = true;
+						drawStartPoint = viewOrigin;
+					}
+
+					canvas.SetView(drawStartPoint + ImGui::GetMouseDragDelta(1, 0.0f) * viewScale, viewScale);
+				}
+				else if (isDragging) {
+					isDragging = false;
 				}
 
-				canvas.SetView(drawStartPoint + ImGui::GetMouseDragDelta(1, 0.0f) * viewScale, viewScale);
-			} else if (isDragging)
-				isDragging = false;
+				ImRect viewRect = canvas.ViewRect();
 
-			viewRect = canvas.ViewRect();
+				const ImVec2 lineOffset = { sOffset.x, sOffset.y };
 
-			ImVec2 offset = canvas.ViewOrigin() * (1.0f / canvas.ViewScale());
-			ImVec2 viewPos = canvas.ViewRect().Min;
-			ImVec2 viewSize = canvas.ViewRect().GetSize();
-			ImDrawList* drawList = ImGui::GetWindowDrawList();
+				ImVec2 offset = canvas.ViewOrigin() * (1.0f / canvas.ViewScale()) - lineOffset;
+				ImVec2 viewPos = canvas.ViewRect().Min + lineOffset;
+				ImVec2 viewSize = canvas.ViewRect().GetSize();
+				ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-			drawList->AddRectFilled(viewPos, viewPos + viewSize, GUI::Theme::Background);
+				drawList->AddRectFilled(viewPos, viewPos + viewSize, GUI::Theme::Background);
 
-			for (f32 x = fmodf(offset.x, scale); x < viewSize.x; x += scale)
-				drawList->AddLine(ImVec2(x + sOffset.x, 0.0f + sOffset.y) + viewPos, ImVec2(x + sOffset.x, viewSize.y + sOffset.y) + viewPos, GUI::Theme::Selection);
-			for (f32 y = fmodf(offset.y, scale); y < viewSize.y; y += scale)
-				drawList->AddLine(ImVec2(0.0f + sOffset.x, y + sOffset.y) + viewPos, ImVec2(viewSize.x + sOffset.x, y + sOffset.y) + viewPos, GUI::Theme::Selection);
+				for (f32 x = fmodf(offset.x, scale); x < viewSize.x; x += scale)
+					drawList->AddLine(ImVec2(x - sOffset.x, 0.0f - sOffset.y) + viewPos, ImVec2(x - sOffset.x, viewSize.y - sOffset.y) + viewPos, GUI::Theme::Selection);
+				for (f32 y = fmodf(offset.y, scale); y < viewSize.y; y += scale)
+					drawList->AddLine(ImVec2(0.0f - sOffset.x, y - sOffset.y) + viewPos, ImVec2(viewSize.x - sOffset.x, y - sOffset.y) + viewPos, GUI::Theme::Selection);
 
-			if (viewRect.Max.x > 0.0f)
-				DrawScale(ImVec2(0.0f, 0.0f), ImVec2(viewRect.Max.x, 0.0f), scale, 10.0f, 0.6f);
-			if (viewRect.Min.x < 0.0f)
-				DrawScale(ImVec2(0.0f, 0.0f), ImVec2(viewRect.Min.x, 0.0f), scale, 10.0f, 0.6f, -1.0f);
-			if (viewRect.Max.y > 0.0f)
-				DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Max.y), scale, 10.0f, 0.6f);
-			if (viewRect.Min.y < 0.0f)
-				DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Min.y), scale, 10.0f, 0.6f, -1.0f);
+				if (viewRect.Max.x > 0.0f)
+					DrawScale(ImVec2(0.0f, 0.0f), ImVec2(viewRect.Max.x, 0.0f), scale, 16.0f, 0.6f);
+				if (viewRect.Min.x < 0.0f)
+					DrawScale(ImVec2(0.0f, 0.0f), ImVec2(viewRect.Min.x, 0.0f), scale, 16.0f, 0.6f, -1.0f);
+				if (viewRect.Max.y > 0.0f)
+					DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Max.y), scale, 16.0f, 0.6f);
+				if (viewRect.Min.y < 0.0f)
+					DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Min.y), scale, 16.0f, 0.6f, -1.0f);
 
-			ImGui::Image(
-				GUI::GetTextureID(spritesheet->GetHandle()), { (f32)spritesheet->GetWidth(), (f32)spritesheet->GetHeight() }, { 0, 1 }, { 1, 0 }
-			);
+				ImGui::Image(
+					GUI::GetTextureID(spritesheet->GetHandle()), { (f32)spritesheet->GetWidth(), (f32)spritesheet->GetHeight() }, { 0, 1 }, { 1, 0 }
+				);
 
-			panelRect.Min = ImGui::GetItemRectMin();
-			panelRect.Max = ImGui::GetItemRectMax();
+				canvas.End();
+			}
 
-			canvas.End();
+			ImGui::EndTable();
 		}
 	}
 

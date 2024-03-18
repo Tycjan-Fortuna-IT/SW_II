@@ -744,17 +744,20 @@ namespace SW::GUI {
 		glm::vec2& vector, f32 resetValue = 0.f,
 		f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
 	) {
-		ImGuiIO& io = ImGui::GetIO();
+		const ImGuiIO& io = ImGui::GetIO();
 
 		ImFont* boldFont = GUI::Appearance::GetFonts().DefaultBoldFont;
 
-		ImGui::PushMultiItemsWidths(2, ImGui::CalcItemWidth() + ImGui::GetStyle().ItemSpacing.x * 2.f + 1.f);
+		constexpr f32 spacingX = 8.0f;
+		const ImVec2 size = ImGui::GetContentRegionAvail();
 
-		f32 frameHeight = ImGui::GetFrameHeight();
-		ImVec2 buttonSize = { frameHeight + 3.0f, frameHeight };
+		GUI::ScopedStyle itemSpacing(ImGuiStyleVar_ItemSpacing, ImVec2{ spacingX, 0.0f });
+		GUI::ScopedStyle padding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 2.0f });
 
-		ImVec2 innerItemSpacing = ImGui::GetStyle().ItemInnerSpacing;
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, innerItemSpacing);
+		constexpr f32 framePadding = 2.0f;
+		const f32 lineHeight = GImGui->Font->FontSize + framePadding * 2.0f;
+		const ImVec2 buttonSize = { lineHeight + 7.0f, ImGui::GetFrameHeight() };
+		const f32 inputItemWidth = size.x / 2.0f - buttonSize.x - 4.0f;
 
 		// X
 		{
@@ -770,8 +773,8 @@ namespace SW::GUI {
 			ImGui::PopStyleColor(4);
 
 			ImGui::SameLine();
+			ImGui::SetNextItemWidth(inputItemWidth);
 			ImGui::DragFloat("##X", &vector.x, 0.05f, min, max, format.c_str());
-			ImGui::PopItemWidth();
 			ImGui::PopStyleVar();
 		}
 
@@ -791,12 +794,10 @@ namespace SW::GUI {
 			ImGui::PopStyleColor(4);
 
 			ImGui::SameLine();
+			ImGui::SetNextItemWidth(inputItemWidth);
 			ImGui::DragFloat("##Y", &vector.y, 0.05f, min, max, format.c_str());
-			ImGui::PopItemWidth();
 			ImGui::PopStyleVar();
 		}
-
-		ImGui::PopStyleVar();
 	}
 
 	/**
@@ -826,37 +827,36 @@ namespace SW::GUI {
 	}
 
 	/**
-	 * @brief Draws a control property for a Vector3.
+	 * @brief Draws a control for a Vector3.
 	 *
-	 * This function is used to draw a control property for a Vector3, allowing the user to modify its values.
-	 * The control property consists of three input fields for the X, Y, and Z components of the vector.
+	 * This function is used to draw a control for a Vector3, allowing the user to modify its values.
+	 * The control consists of three input fields for the X, Y, and Z components of the vector.
 	 * Additionally, buttons are provided to reset each component to a specified value.
 	 *
-	 * @param vector The Vector3 to be modified by the control property.
-	 * @param label The label to be displayed for the control property.
-	 * @param tooltip An optional tooltip to be displayed when hovering over the control property.
+	 * @param vector The Vector3 to be modified by the control.
 	 * @param resetValue The value to which each component of the vector will be reset when the corresponding reset button is pressed.
 	 * @param min The minimum value allowed for each component of the vector.
 	 * @param max The maximum value allowed for each component of the vector.
 	 * @param format The format string used to display the values of the vector components.
 	 */
-	static void DrawVector3ControlProperty(
-		glm::vec3& vector, const char* label, const char* tooltip = nullptr, f32 resetValue = 0.f,
+	static void DrawVector3Control(
+		glm::vec3& vector, f32 resetValue = 0.f,
 		f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
 	) {
-		BeginPropertyGrid(label, tooltip, false);
-
-		ImGuiIO& io = ImGui::GetIO();
+		const ImGuiIO& io = ImGui::GetIO();
 
 		ImFont* boldFont = GUI::Appearance::GetFonts().DefaultBoldFont;
 
-		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth() + ImGui::GetStyle().ItemSpacing.x - 4.f);
+		constexpr f32 spacingX = 8.0f;
+		const ImVec2 size = ImGui::GetContentRegionAvail();
 
-		f32 frameHeight = ImGui::GetFrameHeight();
-		ImVec2 buttonSize = { frameHeight + 3.0f, frameHeight };
+		GUI::ScopedStyle itemSpacing(ImGuiStyleVar_ItemSpacing, ImVec2{ spacingX, 0.0f });
+		GUI::ScopedStyle padding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 2.0f });
 
-		ImVec2 innerItemSpacing = ImGui::GetStyle().ItemInnerSpacing;
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, innerItemSpacing);
+		constexpr f32 framePadding = 2.0f;
+		const f32 lineHeight = GImGui->Font->FontSize + framePadding * 2.0f;
+		const ImVec2 buttonSize = { lineHeight + 7.0f, ImGui::GetFrameHeight() };
+		const f32 inputItemWidth = size.x / 3.0f - buttonSize.x - 5.0f;
 
 		// X
 		{
@@ -872,8 +872,8 @@ namespace SW::GUI {
 			ImGui::PopStyleColor(4);
 
 			ImGui::SameLine();
+			ImGui::SetNextItemWidth(inputItemWidth);
 			ImGui::DragFloat("##X", &vector.x, 0.05f, min, max, format.c_str());
-			ImGui::PopItemWidth();
 			ImGui::PopStyleVar();
 		}
 
@@ -893,8 +893,8 @@ namespace SW::GUI {
 			ImGui::PopStyleColor(4);
 
 			ImGui::SameLine();
+			ImGui::SetNextItemWidth(inputItemWidth);
 			ImGui::DragFloat("##Y", &vector.y, 0.05f, min, max, format.c_str());
-			ImGui::PopItemWidth();
 			ImGui::PopStyleVar();
 		}
 
@@ -914,12 +914,34 @@ namespace SW::GUI {
 			ImGui::PopStyleColor(4);
 
 			ImGui::SameLine();
+			ImGui::SetNextItemWidth(inputItemWidth);
 			ImGui::DragFloat("##Z", &vector.z, 0.05f, min, max, format.c_str());
-			ImGui::PopItemWidth();
 			ImGui::PopStyleVar();
 		}
+	}
 
-		ImGui::PopStyleVar();
+	/**
+	 * @brief Draws a control property for a Vector3.
+	 *
+	 * This function is used to draw a control property for a Vector3, allowing the user to modify its values.
+	 * The control property consists of three input fields for the X, Y and Z components of the vector.
+	 * Additionally, buttons are provided to reset each component to a specified value.
+	 *
+	 * @param vector The Vector3 to be modified by the control property.
+	 * @param label The label to be displayed for the control property.
+	 * @param tooltip An optional tooltip to be displayed when hovering over the control property.
+	 * @param resetValue The value to which each component of the vector will be reset when the corresponding reset button is pressed.
+	 * @param min The minimum value allowed for each component of the vector.
+	 * @param max The maximum value allowed for each component of the vector.
+	 * @param format The format string used to display the values of the vector components.
+	 */
+	static void DrawVector3ControlProperty(
+		glm::vec3& vector, const char* label, const char* tooltip = nullptr, f32 resetValue = 0.f,
+		f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
+	) {
+		BeginPropertyGrid(label, tooltip, false);
+
+		DrawVector3Control(vector, resetValue, min, max, format);
 
 		EndPropertyGrid();
 	}
