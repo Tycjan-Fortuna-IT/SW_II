@@ -25,13 +25,27 @@ namespace SW {
 	void SpritesheetEditor::OnOpen()
 	{
 		m_Sprites.emplace_back(SpriteData{ "Sprite1" });
-		m_Sprites.emplace_back(SpriteData{ "Sprite2" });
-		m_Sprites.emplace_back(SpriteData{ "Sprite3" });
+		//m_Sprites.emplace_back(SpriteData{ "Sprite2" });
+		//m_Sprites.emplace_back(SpriteData{ "Sprite3" });
 	}
 
 	void SpritesheetEditor::OnClose()
 	{
 
+	}
+
+	static void DrawRectOnCanvas(
+		ImDrawList* drawList, const glm::vec2& position, const glm::vec2& scale
+	) {
+		ImVec2 topLeft = ImVec2(position.x, position.y);
+		ImVec2 topRight = ImVec2(position.x + scale.x, position.y);
+		ImVec2 bottomRight = ImVec2(position.x + scale.x, position.y + scale.y);
+		ImVec2 bottomLeft = ImVec2(position.x, position.y + scale.y);
+
+		drawList->AddLine(topLeft, topRight, GUI::Theme::NiceBlue);
+		drawList->AddLine(topRight, bottomRight, GUI::Theme::NiceBlue);
+		drawList->AddLine(bottomRight, bottomLeft, GUI::Theme::NiceBlue);
+		drawList->AddLine(bottomLeft, topLeft, GUI::Theme::NiceBlue);
 	}
 
 	void SpritesheetEditor::Render()
@@ -80,8 +94,7 @@ namespace SW {
 					}
 
 					canvas.SetView(drawStartPoint + ImGui::GetMouseDragDelta(1, 0.0f) * viewScale, viewScale);
-				}
-				else if (isDragging) {
+				} else if (isDragging) {
 					isDragging = false;
 				}
 
@@ -115,6 +128,10 @@ namespace SW {
 				ImGui::Image(
 					GUI::GetTextureID(spritesheetTexture->GetHandle()), { (f32)spritesheetTexture->GetWidth(), (f32)spritesheetTexture->GetHeight() }, { 0, 1 }, { 1, 0 }
 				);
+
+				for (SpriteData& spriteData : m_Sprites) {
+					DrawRectOnCanvas(drawList, spriteData.Position, spriteData.Scale * scale);
+				}
 
 				canvas.End();
 			}

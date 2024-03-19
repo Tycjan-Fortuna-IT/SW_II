@@ -57,8 +57,6 @@ namespace SW {
 
 		Spritesheet* m_Spritesheet = nullptr;
 
-		SpriteData m_SpriteDataToRemove;
-
 		void RenderSpriteCards();
 	};
 
