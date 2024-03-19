@@ -57,7 +57,7 @@ namespace SW {
 
 		Spritesheet* m_Spritesheet = nullptr;
 
-		void RenderSpriteCards();
+		void RenderSpriteCards(f32 scale);
 	};
 
 }
