@@ -1270,6 +1270,50 @@ namespace SW::GUI {
 	}
 
 	/**
+	 * @brief Draws a part of an image with customizable properties.
+	 *
+	 * @param wholeImage Pointer to the Texture2D object representing the whole image.
+	 * @param label The label for the property grid.
+	 * @param tooltip Optional tooltip for the property grid.
+	 * @param offset The offset of the image part within the whole image.
+	 * @param size The size of the image part.
+	 * @param tint The tint color of the image part.
+	 * @param additionalScale Additional scale factor for the image part.
+	 */
+	static void DrawImagePartProperty(
+		Texture2D* wholeImage, const char* label, const char* tooltip = nullptr,
+		glm::vec2 offset = glm::vec2(0.0f), glm::vec2 size = glm::vec2(0.0f), glm::vec4 tint = glm::vec4(1.0f),
+		f32 additionalScale = 1.f
+	) {
+		f32 width = (f32)wholeImage->GetWidth();
+		f32 height = (f32)wholeImage->GetHeight();
+
+		GUI::BeginPropertyGrid(label, tooltip, false);
+
+		ImVec2 uv0 = ImVec2(offset.x / width, (height - offset.y) / height);
+		ImVec2 uv1 = ImVec2((offset.x + size.x * additionalScale) / width, (height - offset.y - (size.y * additionalScale)) / height);
+
+		ImVec2 imageSize = ImGui::GetContentRegionAvail();
+
+		f32 originalImageWidth = size.x * additionalScale;
+		f32 originalImageHeight = size.y * additionalScale;
+
+		f32 imageAspectRatio = originalImageWidth / originalImageHeight;
+		f32 availableAspectRatio = imageSize.x / imageSize.y;
+
+		if (imageAspectRatio > availableAspectRatio)
+			imageSize.y = imageSize.x / imageAspectRatio;
+		else
+			imageSize.x = imageSize.y * imageAspectRatio;
+
+		ImGui::Image(
+			GUI::GetTextureID(wholeImage->GetHandle()), imageSize, uv0, uv1, { tint.r, tint.g, tint.b, tint.a }
+		);
+
+		GUI::EndPropertyGrid();
+	}
+
+	/**
 	 * @brief Draws a boolean property in the GUI.
 	 *
 	 * @param value The boolean value to represent with the checkbox.

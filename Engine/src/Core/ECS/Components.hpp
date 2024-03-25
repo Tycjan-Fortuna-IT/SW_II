@@ -27,7 +27,7 @@ namespace SW {
         u64 ID = 0;
 
         IDComponent()
-            : ID(CreateID()) {}
+            : ID(Random::CreateID()) {}
         IDComponent(u64 id)
             : ID(id) {}
 

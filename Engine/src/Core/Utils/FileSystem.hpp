@@ -1,8 +1,8 @@
 /**
  * @file FileSystem.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.2
- * @date 2024-03-17
+ * @version 0.1.3
+ * @date 2024-03-21
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -70,6 +70,14 @@ namespace SW {
 		 * @return File path to chosen file or empty path if no file was chosen.
 		 */
 		static std::filesystem::path SaveFileDialog(const std::initializer_list<FileDialogFilterItem> filters);
+
+		/**
+		 * @brief Opens file dialog for folder picking.
+		 *
+		 * @param initialFolder Initial folder that will be opened.
+		 * @return File path to chosen folder or empty path if no folder was chosen.
+		 */
+		static std::filesystem::path OpenFolderDialog(const char* initialFolder = nullptr);
 
 		/**
 		 * @brief Reveals the specified folder in the file explorer.

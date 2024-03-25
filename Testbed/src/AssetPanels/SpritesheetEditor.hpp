@@ -12,10 +12,11 @@
 
 namespace SW {
 
-	class Spritesheet final : public Asset {
+	class Spritesheet final : public Asset
+	{
 	public:
 		Spritesheet(Texture2D* spritesheetTexture)
-			: m_SpritesheetTexture(spritesheetTexture) {}
+			: Asset(spritesheetTexture->GetPath()), m_SpritesheetTexture(spritesheetTexture) {}
 
 		AssetType GetAssetType() const override { return AssetType::Spritesheet; }
 

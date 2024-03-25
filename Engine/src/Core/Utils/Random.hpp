@@ -10,19 +10,19 @@
 
 #include <random>
 
-namespace SW {
+namespace SW::Random {
 
     static std::mt19937 s_Generator(std::random_device{}());
     static std::uniform_int_distribution<u64> s_IDDistribution;
 
 	/**
 	 * @brief Creates a random ID.
-	 * 
-	 * @return u64 The random ID. 
+	 *
+	 * @return u64 The random ID.
 	 */
-    static u64 CreateID()
+	static u64 CreateID()
 	{
-        return s_IDDistribution(s_Generator);
-    }
+		return s_IDDistribution(s_Generator);
+	}
 
 }

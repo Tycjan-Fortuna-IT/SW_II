@@ -78,6 +78,24 @@ namespace SW {
 		return "";
 	}
 
+    std::filesystem::path FileSystem::OpenFolderDialog(const char* initialFolder)
+    {
+		NFD::UniquePath filePath;
+		nfdresult_t result = NFD::PickFolder(filePath, initialFolder);
+
+		switch (result) {
+			case NFD_OKAY: return filePath.get();
+			case NFD_CANCEL: return "";
+			case NFD_ERROR:
+			{
+				ASSERT(false, "NFD-Extended threw an error: {}", NFD::GetError());
+				return "";
+			}
+		}
+
+		return "";
+    }
+
     void FileSystem::RevealFolderInFileExplorer(const std::filesystem::path& path)
     {
 		RevealFolderInFileExplorer(path.string().c_str());

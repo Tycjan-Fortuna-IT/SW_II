@@ -27,7 +27,7 @@ namespace SW {
 
 	Entity Scene::CreateEntity(const std::string& tag /*= "Entity"*/)
 	{
-		return CreateEntityWithID(CreateID(), tag);
+		return CreateEntityWithID(Random::CreateID(), tag);
 	}
 
 	Entity Scene::CreateEntityWithID(u64 id, const std::string& tag /*= "Entity"*/)
