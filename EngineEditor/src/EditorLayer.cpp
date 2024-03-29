@@ -421,13 +421,6 @@ namespace SW {
 			ProjectContext::Set(newProject); // TODO: Make projects switchable
 
 			ScriptingCore::Get().Initialize();
-
-			EventSystem::Emit({
-				.Code = EVENT_CODE_PROJECT_LOADED,
-				.Payload = {
-					.f32 = { (f32)0, (f32)0 }
-				}
-			}, nullptr);
 		}
 	}
 

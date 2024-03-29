@@ -1,8 +1,8 @@
 /**
  * @file AssetPanel.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.2.0
- * @date 2024-03-16
+ * @version 0.2.1
+ * @date 2024-03-29
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -11,24 +11,11 @@
 #include <filesystem>
 
 #include "GUI/Panel.hpp"
+#include "Core/Asset/Asset.hpp"
 
 namespace SW {
 
 	class Texture2D;
-
-	/**
-	 * @brief The FileType enum class represents the type of a file.
-	 */
-	enum class FileType : int
-	{
-		Unknown = 0,	///< Unknown file type.
-		Texture,		///< Texture file type.
-		Directory,		///< Directory file type.
-		Scene,			///< Scene file type
-		Font,			///< Font file type.
-		Prefab,			///< Prefab file type.
-		Script,			///< Script file type.
-	};
 
 	/**
 	 * @brief The File struct represents a file.
@@ -75,14 +62,12 @@ namespace SW {
 		 * @brief Called every frame to update the panel.
 		 * @param dt The time since the last frame.
 		 */
-		void OnUpdate(Timestep dt) final override;
+		void OnUpdate(Timestep dt) override;
 
 		/**
 		 * @brief Called every frame to render the panel.
 		 */
-		void OnRender() final override;
-
-		void InvalidateAssetDirectory();
+		void OnRender() override;
 	
 	private:
 		std::filesystem::path m_AssetsDirectory;	/** @brief The path to the assets directory. */
@@ -99,20 +84,47 @@ namespace SW {
 		std::filesystem::path m_FilesystemEntryToRename = "";
 
 		/**
+		 * @brief Refreshes current directory to show entries inside the body.
+		 */
+		void InvalidateAssetDirectory();
+		
+		/**
 		 * @brief Loads the directory entries.
 		 */
 		void LoadDirectoryEntries();
 
+		/**
+		 * @brief Draws the header of the asset panel.
+		 */
 		void DrawHeader();
 
+		/**
+		 * @brief Draws the directory tree view recursively.
+		 * 
+		 * @param path The path of the directory to draw.
+		 */
 		void DrawDirectoryTreeViewRecursive(const std::filesystem::path& path);
 
+		/**
+		 * @brief Draws the side view of the asset panel.
+		 */
 		void DrawSideView();
 
+		/**
+		 * @brief Draws the body of the asset panel.
+		 */
 		void DrawBody();
 
+		/**
+		 * @brief Draws the popup for a directory entry.
+		 * 
+		 * @param entry The path of the directory entry.
+		 */
 		void DrawDirectoryEntryPopup(const std::filesystem::path& entry);
 
+		/**
+		 * @brief Draws the popup for the asset panel.
+		 */
 		void DrawAssetPanelPopup();
 	};
 

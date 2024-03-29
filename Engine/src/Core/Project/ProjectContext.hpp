@@ -8,6 +8,8 @@
  */
 #pragma once
 
+#include "Core/Events/Event.hpp"
+
 namespace SW {
 
 	class Project;
@@ -28,7 +30,11 @@ namespace SW {
 		 * @brief Sets the current project.
 		 * @param project A pointer to the project to set as the current project.
 		 */
-		static void Set(Project* project) { s_CurrentProject = project; }
+		static void Set(Project* project) {
+			s_CurrentProject = project;
+		
+			EventSystem::Emit(EVENT_CODE_PROJECT_LOADED);
+		}
 
 		/**
 		 * @brief Gets the current project.

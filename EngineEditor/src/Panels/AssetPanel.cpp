@@ -11,6 +11,7 @@
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Project/Project.hpp"
 #include "Core/Utils/FileSystem.hpp"
+#include "GUI/Popups.hpp"
 
 namespace SW {
 
@@ -99,140 +100,14 @@ namespace SW {
 				ImGui::Text("No project selected...");
 			}
 
-			if (m_OpenDeleteWarningModal)
-				ImGui::OpenPopup("Delete?");
+			if (GUI::Popups::DrawDeleteFilePopup(m_FilesystemEntryToDelete, &m_OpenDeleteWarningModal))
+				LoadDirectoryEntries();
 
-			if (ImGui::BeginPopupModal("Delete?", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-				std::string toDelete = m_FilesystemEntryToDelete.filename().string();
+			if (GUI::Popups::DrawAddNewFilePopup(m_CurrentDirectory, &m_OpenNewFileModal))
+				LoadDirectoryEntries();
 
-				ImGui::Text("This file fill be deleted!  [%s]", toDelete.c_str());
-				ImGui::Separator();
-
-				if (ImGui::Button("OK", ImVec2(120, 0))) {
-					std::filesystem::remove(ProjectContext::Get()->GetAssetDirectory() / m_FilesystemEntryToDelete);
-
-					m_OpenDeleteWarningModal = false;
-
-					LoadDirectoryEntries();
-
-					ImGui::CloseCurrentPopup();
-				}
-
-				ImGui::SetItemDefaultFocus();
-
-				ImGui::SameLine();
-
-				if (ImGui::Button("Cancel", ImVec2(120, 0))) {
-					m_OpenDeleteWarningModal = false;
-
-					ImGui::CloseCurrentPopup();
-				}
-
-				ImGui::EndPopup();
-			}
-
-			if (m_OpenNewFileModal)
-				ImGui::OpenPopup("Add new file");
-
-			if (ImGui::BeginPopupModal("Add new file", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-				ImGui::Text("Create new file modal.");
-				ImGui::Separator();
-
-				static FileType filetype = FileType::Unknown;
-
-				ImGui::AlignTextToFramePadding();
-				ImGui::TextUnformatted("Choose file type to create: ");
-				ImGui::SameLine();
-
-				GUI::DrawSelectable(filetype, {
-					GUI::SelectOption<FileType>{ "Scene", FileType::Scene },
-				});
-
-				static std::string filename = "";
-
-				if (filetype != FileType::Unknown) {
-					ImGui::AlignTextToFramePadding();
-					ImGui::TextUnformatted("Type the file name:              ");
-					ImGui::SameLine();
-
-					GUI::DrawSingleLineTextInput(filename);
-					ImGui::SameLine();
-
-					ImGui::TextUnformatted(".sw");
-				}
-
-				if (ImGui::Button("OK", ImVec2(120, 0))) {
-					std::string name = filename + ".sw";
-					std::filesystem::path newFilePath = m_CurrentDirectory / name;
-
-					if (!FileSystem::CreateFileWithContent(newFilePath, "Entities:\n"))
-						SW_ERROR("Failed to create new file: {}", name);
-
-					LoadDirectoryEntries();
-
-					filetype = FileType::Unknown;
-					filename.clear();
-					m_OpenNewFileModal = false;
-
-					ImGui::CloseCurrentPopup();
-				}
-
-				ImGui::SameLine();
-
-				if (ImGui::Button("Cancel", ImVec2(120, 0))) {
-					filetype = FileType::Unknown;
-					filename.clear();
-					m_OpenNewFileModal = false;
-
-					ImGui::CloseCurrentPopup();
-				}
-
-				ImGui::EndPopup();
-			}
-
-			if (m_RenameEntryModal)
-				ImGui::OpenPopup("Rename file");
-
-			if (ImGui::BeginPopupModal("Rename file", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-				ImGui::Text("Rename file modal. Remember about the extension!");
-				ImGui::Separator();
-
-				std::string currentName = m_FilesystemEntryToRename.filename().string();
-
-				ImGui::TextUnformatted("Current name: ");
-				ImGui::SameLine();
-				ImGui::TextUnformatted(currentName.c_str());
-
-				ImGui::TextUnformatted("Type the new name:");
-				ImGui::SameLine();
-
-				static std::string filename = "";
-
-				GUI::DrawSingleLineTextInput(filename);
-
-				if (ImGui::Button("OK", ImVec2(120, 0))) {
-					if (!FileSystem::RenameFile(m_CurrentDirectory / m_FilesystemEntryToRename.filename(), filename))
-						SW_ERROR("Failed to rename the file: {}", m_FilesystemEntryToRename.string());
-
-					LoadDirectoryEntries();
-
-					m_RenameEntryModal = false;
-					filename.clear();
-
-					ImGui::CloseCurrentPopup();
-				}
-
-				ImGui::SameLine();
-
-				if (ImGui::Button("Cancel", ImVec2(120, 0))) {
-					m_RenameEntryModal = false;
-					filename.clear();
-
-					ImGui::CloseCurrentPopup();
-				}
-				
-				ImGui::EndPopup();
-			}
+			if (GUI::Popups::DrawDeleteFileToRenamePopup(m_FilesystemEntryToRename, &m_RenameEntryModal))
+				LoadDirectoryEntries();
 
 			OnEnd();
 		}
@@ -411,6 +286,13 @@ namespace SW {
 
 			ImGui::PopStyleColor(selected ? 2 : 1);
 
+			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+				if (std::filesystem::is_directory(entryPath))
+					FileSystem::RevealFolderInFileExplorer(entryPath);
+				else
+					FileSystem::OpenFolderAndSelectItem(entryPath);
+			}
+
 			if (!entryIsFile && ImGui::IsItemClicked()) {
 				m_CurrentDirectory = entryPath;
 				LoadDirectoryEntries();
@@ -461,7 +343,6 @@ namespace SW {
 			| ImGuiTableFlags_NoPadOuterX
 			| ImGuiTableFlags_Resizable
 			| ImGuiTableFlags_BordersInnerH
-			| ImGuiTableFlags_ContextMenuInBody
 			| ImGuiTableFlags_ScrollY;
 
 		constexpr ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_OpenOnArrow
@@ -479,8 +360,8 @@ namespace SW {
 
 			if (selected) {
 				nodeFlags |= ImGuiTreeNodeFlags_Selected;
-				ImGui::PushStyleColor(ImGuiCol_Header, GUI::Theme::SelectionMuted);
-				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI::Theme::SelectionMuted);
+				ImGui::PushStyleColor(ImGuiCol_Header, GUI::Theme::SelectionHalfMuted);
+				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI::Theme::SelectionHalfMuted);
 			} else {
 				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI::Theme::Background);
 			}
@@ -491,6 +372,7 @@ namespace SW {
 				m_CurrentDirectory = m_AssetsDirectory;
 				LoadDirectoryEntries();
 			}
+
 
 			ImGui::PopStyleColor(selected ? 2 : 1);
 
@@ -665,7 +547,7 @@ namespace SW {
 		if (ImGui::BeginPopupContextItem("DirectoryEntryPopupMenu")) {
 			if (ImGui::MenuItemEx("Rename", SW_ICON_RENAME_BOX)) {
 				m_RenameEntryModal = true;
-				m_FilesystemEntryToRename = entry;
+				m_FilesystemEntryToRename = ProjectContext::Get()->GetAssetDirectory() / entry;
 			}
 
 			if (ImGui::MenuItemEx("Show in explorer", SW_ICON_MAGNIFY)) {
@@ -679,7 +561,7 @@ namespace SW {
 
 			if (ImGui::MenuItemEx("Delete", SW_ICON_DELETE)) {
 				m_OpenDeleteWarningModal = true;
-				m_FilesystemEntryToDelete = entry;
+				m_FilesystemEntryToDelete = ProjectContext::Get()->GetAssetDirectory() / entry;
 			}
 
 			ImGui::EndPopup();
@@ -689,11 +571,8 @@ namespace SW {
 	void AssetPanel::DrawAssetPanelPopup()
 	{
 		if (ImGui::BeginPopupContextItem("AssetPanelPopupMenu")) {
-			if (ImGui::MenuItemEx("New file", SW_ICON_NEW_BOX)) {
+			if (ImGui::MenuItemEx("New file", SW_ICON_NEW_BOX))
 				m_OpenNewFileModal = true;
-
-
-			}
 
 			ImGui::EndPopup();
 		}

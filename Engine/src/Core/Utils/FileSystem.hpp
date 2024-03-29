@@ -46,6 +46,14 @@ namespace SW {
 		static bool CreateFileWithContent(const std::filesystem::path& path, const std::string& content);
 
 		/**
+		 * @brief Creates a new directory in a given path to it.
+		 *
+		 * @param path Path to directory. e.g. C:/dev/newdir
+		 * @return Whether the operation was successful.
+		 */
+		static bool CreateEmptyDirectory(const std::filesystem::path& path);
+
+		/**
 		 * @brief Renames the file to chosen filename.
 		 * @warning This method doesn't preserve the file extension so be sure to pass it with newName!
 		 *

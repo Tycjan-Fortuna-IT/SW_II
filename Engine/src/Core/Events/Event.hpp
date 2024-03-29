@@ -170,7 +170,16 @@ namespace SW {
 		 * @param sender The sender of the event. Can be nullptr.
 		 * @return bool True if the event was emitted successfully, false otherwise.
 		 */
-        static bool Emit(Event event, void* sender);
+        static bool Emit(Event event, void* sender = nullptr);
+
+		/**
+		 * @brief Emits an empty event based on passed event code.
+		 * @note Especially useful for treating certain event just as an impulse, without any data.
+		 *
+		 * @param code The event to emit.
+		 * @return bool True if the event was emitted successfully, false otherwise.
+		 */
+		static bool Emit(EventCode code);
     };
 
 }

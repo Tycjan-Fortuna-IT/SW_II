@@ -35,7 +35,12 @@ namespace SW {
 		return true;
     }
 
-	bool FileSystem::RenameFile(const std::filesystem::path& path, const std::string& newName)
+    bool FileSystem::CreateEmptyDirectory(const std::filesystem::path& path)
+    {
+		return std::filesystem::create_directory(path);
+    }
+
+    bool FileSystem::RenameFile(const std::filesystem::path& path, const std::string& newName)
 	{
 		std::filesystem::path oldFilename = path.filename();
 		std::filesystem::path oldPath = path.parent_path();

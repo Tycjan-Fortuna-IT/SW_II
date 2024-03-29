@@ -695,8 +695,6 @@ namespace SW::GUI {
 
 		memcpy(buffer, text.c_str(), std::min(sizeof(buffer), text.size() + 1));
 
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-
 		if (ImGui::InputText("##Tag", buffer, sizeof(buffer), flags)) {
 			text = buffer;
 
@@ -723,6 +721,8 @@ namespace SW::GUI {
 		bool changed = false;
 
 		BeginPropertyGrid(label, tooltip, false);
+
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 
 		changed = DrawSingleLineTextInput<N>(text, flags);
 

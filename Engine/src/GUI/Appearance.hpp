@@ -34,6 +34,7 @@ namespace SW {
 			constexpr u32 GroupHeader = IM_COL32(47, 47, 47, 255);
 			constexpr u32 Selection = IM_COL32(237, 192, 119, 255);
 			constexpr u32 SelectionMuted = IM_COL32(237, 201, 142, 23);
+			constexpr u32 SelectionHalfMuted = IM_COL32(237, 201, 142, 127);
 			constexpr u32 BackgroundPopup = IM_COL32(50, 50, 50, 255);
 			constexpr u32 ValidPrefab = IM_COL32(82, 179, 222, 255);
 			constexpr u32 InvalidPrefab = IM_COL32(222, 43, 43, 255);
