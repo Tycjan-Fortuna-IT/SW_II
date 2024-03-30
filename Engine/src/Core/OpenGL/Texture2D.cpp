@@ -37,7 +37,7 @@ namespace SW {
 
 	Texture2D::Texture2D(const std::filesystem::path& filepath, bool flipped /*= true*/)
 	{
-		std::filesystem::path texturePath = ProjectContext::Get()->GetAssetDirectory() / filepath;
+		std::filesystem::path texturePath = filepath;
 		m_Path = filepath.string();
 
 		LoadTextureData(texturePath.string().c_str(), flipped);

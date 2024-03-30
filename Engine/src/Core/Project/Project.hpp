@@ -8,6 +8,8 @@
  */
 #pragma once
 
+#include "Core/Asset/AssetManagerBase.hpp"
+
 namespace SW {
 
 	/**
@@ -39,7 +41,9 @@ namespace SW {
 		/**
 		 * @brief Default destructor.
 		 */
-		~Project() = default;
+		~Project();
+
+		void Initialize();
 
 		/**
 		 * @brief Retrieves the configuration of the project.
@@ -59,8 +63,11 @@ namespace SW {
 		 */
 		const std::string& GetName() const { return m_Config.Name; }
 
+		AssetManagerBase* GetAssetManager() const { return m_AssetManager; }
+
 	private:
 		ProjectConfig m_Config;
+		AssetManagerBase* m_AssetManager = nullptr;
 	};
 
 }

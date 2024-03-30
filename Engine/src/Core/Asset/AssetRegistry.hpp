@@ -8,17 +8,10 @@ namespace SW {
 	class AssetRegistry
 	{
 	public:
-		/**
-		 * @brief Initializes asset registry.
-		 * @warning Must be called before any other asset manager system operation.
-		 */
-		void Initialize();
+		AssetRegistry();		
+		~AssetRegistry();
 
-		/**
-		 * @brief Shuts down asset registry.
-		 * @warning Must be called before application exit.
-		 */
-		void Shutdown();
+		void FetchAvailableAssets();
 
 		// If asset didn't exist previously creates a new entry
 		Asset* operator[](AssetHandle handle);
@@ -34,7 +27,7 @@ namespace SW {
 	private:
 		std::unordered_map<AssetHandle, Asset*> m_AssetRegistry; // contains all loaded assets
 
-		//std::unordered_map<AssetHandle, AssetMetaData> m_AvailableAssets;
+		std::unordered_map<AssetHandle, std::filesystem::path> m_AvailableAssets;
 	};
 
 }

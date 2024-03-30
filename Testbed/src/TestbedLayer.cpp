@@ -7,11 +7,12 @@
 #include "Core/Project/Project.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "AssetPanels/SpritesheetEditor.hpp"
-#include "Core/Asset/AssetManager_v2.hpp"
+#include "Core/Asset/AssetManager.hpp"
 
 #include "../../EngineEditor/src/Panels/AssetPanel.cpp"
 #include "../../EngineEditor/src/Panels/AssetPanel.hpp"
-
+#include <future>
+#include "GUI/Editor/EditorResources.hpp"
 namespace SW {
 
 	static Asset* sp = nullptr;
@@ -29,9 +30,10 @@ namespace SW {
 		Application::Get()->GetWindow()->SetVSync(true);
 
 		Renderer2D::Initialize();
+		EditorResources::Initialize();
 
 		AssetEditorPanelManager::Initialize();
-		AssetManager_v2::Initialize();
+		AssetManager::Initialize();
 		//auto temp = std::filesystem::last_write_time("C:\\Users\\tycja\\Desktop\\SW_II\\Testbed\\Testbed.swproj");
 		//u64 val = temp.time_since_epoch().count();
 
@@ -44,17 +46,24 @@ namespace SW {
 		Project* newProject = ProjectSerializer::Deserialize("C:\\Users\\tycja\\Desktop\\SW_II\\Testbed\\Testbed.swproj");
 		ProjectContext::Set(newProject); // TODO: Make projects switchable
 
-		sp = new Spritesheet(Random::CreateID(), AssetManager::GetTexture2D("assets\\spritesheets\\spritesheet_test.png"));
+		// sp = new Spritesheet(Random::CreateID(), AssetManager::GetTexture2D("assets\\spritesheets\\spritesheet_test.png"));
 
-		Spritesheet* test = sp->As<Spritesheet>();
-		SW_TRACE("{}", test->GetSpritesheetTexture()->GetHeight());
+		// Spritesheet* test = sp->As<Spritesheet>();
+		// SW_TRACE("{}", test->GetSpritesheetTexture()->GetHeight());
+
+		const Spritesheet* test = AssetManager::GetAsset<Spritesheet>(121);
+
+		SW_TRACE("1");
 	}
 
 	void TestbedLayer::OnDetach()
 	{
 		Renderer2D::Shutdown();
+		EditorResources::Shutdown();
+
 		AssetEditorPanelManager::Shutdown();
-		AssetManager_v2::Shutdown();
+		AssetManager::Shutdown();
+
 		delete assetPanel;
 	}
 

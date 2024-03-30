@@ -4,7 +4,7 @@
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
-#include "Core/AssetManager.hpp"
+#include "Core/Asset/AssetManager.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "../Scripting/ScriptingCore.hpp"
 
@@ -469,7 +469,7 @@ namespace SW {
 				if (spriteComponent["TexturePath"]) {
 					std::string path = spriteComponent["TexturePath"].as<std::string>();
 
-					sc.Texture = AssetManager::GetTexture2D(path.c_str());
+					// sc.Texture = AssetManager::GetTexture2D(path.c_str());
 				}
 			}
 
@@ -492,7 +492,7 @@ namespace SW {
 				if (textComponent["FontPath"]) {
 					std::string path = textComponent["FontPath"].as<std::string>();
 
-					cc.Font = AssetManager::GetFont(path.c_str());
+					// cc.Font = AssetManager::GetFont(path.c_str());
 				}
 			}
 

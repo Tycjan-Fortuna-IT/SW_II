@@ -5,15 +5,24 @@
 
 namespace SW {
 
-	void AssetRegistry::Initialize()
+	AssetRegistry::AssetRegistry()
 	{
-
+		FetchAvailableAssets();
 	}
 
-	void AssetRegistry::Shutdown()
+	AssetRegistry::~AssetRegistry()
 	{
 		for (std::pair<AssetHandle, Asset*> pair : m_AssetRegistry) {
 			delete pair.second;
+		}
+	}
+
+	void AssetRegistry::FetchAvailableAssets()
+	{
+		const std::filesystem::path& assetsDir = ProjectContext::Get()->GetAssetDirectory();
+
+		for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(assetsDir)) {
+
 		}
 	}
 
