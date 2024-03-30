@@ -1,18 +1,22 @@
 #include "TestbedLayer.hpp"
 
 #include "Core/Renderer/RendererAPI.hpp"
-#include "gui.hpp"
 #include "AssetPanels/AssetEditorPanelManager.hpp"
 #include "Core/Asset/Asset.hpp"
 #include "Core/Project/ProjectSerializer.hpp"
 #include "Core/Project/Project.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "AssetPanels/SpritesheetEditor.hpp"
-#include "Core/Asset/AssetLoader.hpp"
+#include "Core/Asset/AssetManager_v2.hpp"
+
+#include "../../EngineEditor/src/Panels/AssetPanel.cpp"
+#include "../../EngineEditor/src/Panels/AssetPanel.hpp"
 
 namespace SW {
 
 	static Asset* sp = nullptr;
+
+	static AssetPanel* assetPanel = nullptr;
 
 	void TestbedLayer::OnAttach()
 	{
@@ -27,8 +31,7 @@ namespace SW {
 		Renderer2D::Initialize();
 
 		AssetEditorPanelManager::Initialize();
-		AssetLoader::Initialize();
-
+		AssetManager_v2::Initialize();
 		//auto temp = std::filesystem::last_write_time("C:\\Users\\tycja\\Desktop\\SW_II\\Testbed\\Testbed.swproj");
 		//u64 val = temp.time_since_epoch().count();
 
@@ -36,10 +39,12 @@ namespace SW {
 		///File write time is 2024-03-17 20:04:54.9173268
 		//SW_ERROR("{}", val);
 
+		assetPanel = new AssetPanel();
+
 		Project* newProject = ProjectSerializer::Deserialize("C:\\Users\\tycja\\Desktop\\SW_II\\Testbed\\Testbed.swproj");
 		ProjectContext::Set(newProject); // TODO: Make projects switchable
 
-		sp = new Spritesheet(AssetManager::GetTexture2D("assets\\spritesheets\\spritesheet_test.png"));
+		sp = new Spritesheet(Random::CreateID(), AssetManager::GetTexture2D("assets\\spritesheets\\spritesheet_test.png"));
 
 		Spritesheet* test = sp->As<Spritesheet>();
 		SW_TRACE("{}", test->GetSpritesheetTexture()->GetHeight());
@@ -49,13 +54,15 @@ namespace SW {
 	{
 		Renderer2D::Shutdown();
 		AssetEditorPanelManager::Shutdown();
-		AssetLoader::Shutdown();
+		AssetManager_v2::Shutdown();
+		delete assetPanel;
 	}
 
 	void TestbedLayer::OnUpdate(Timestep dt)
 	{
 		RendererAPI::Clear();
 		AssetEditorPanelManager::OnUpdate(dt);
+		assetPanel->OnUpdate(dt);
 	}
 
 	static void OpenPanel()
@@ -83,6 +90,8 @@ namespace SW {
 		if (ImGui::Button("Close panel")) {
 			ClosePanel();
 		}
+
+		assetPanel->OnRender();
 
 		ImGui::End();
 

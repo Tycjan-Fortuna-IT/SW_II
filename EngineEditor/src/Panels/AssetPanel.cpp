@@ -12,58 +12,31 @@
 #include "Core/Project/Project.hpp"
 #include "Core/Utils/FileSystem.hpp"
 #include "GUI/Popups.hpp"
+#include "Core/Asset/AssetManager_v2.hpp"
+#include "Core/Asset/AssetDirectoryTree.hpp"
 
 namespace SW {
-
-	static std::unordered_map<std::string, FileType> s_FileTypes = {
-		{ ".png",	    FileType::Texture	 },
-		{ ".jpg",	    FileType::Texture	 },
-		{ ".jpeg",	    FileType::Texture	 },
-		{ ".bmp",	    FileType::Texture	 },
-		{ ".sw",		FileType::Scene		 },
-		{ ".ttf",		FileType::Font		 },
-		{ ".swprefab",	FileType::Prefab	 },
-		{ ".cs",		FileType::Script	 },
-	};
-
-	static const std::unordered_map<FileType, ImVec4> s_FileTypeColors = {
-		{ FileType::Unknown,   { 0.80f, 0.52f, 0.00f, 1.00f } },
-		{ FileType::Texture,   { 0.80f, 0.40f, 0.40f, 1.00f } },
-		{ FileType::Directory, { 0.80f, 0.80f, 0.70f, 1.00f } },
-		{ FileType::Scene,     { 0.48f, 0.64f, 0.80f, 1.00f } },
-		{ FileType::Font,      { 0.53f, 0.53f, 0.53f, 1.00f } },
-		{ FileType::Prefab,    { 0.72f, 0.40f, 0.72f, 1.00f } },
-		{ FileType::Script,    { 0.45f, 0.74f, 0.45f, 1.00f } },
-	};
-
-	static const std::unordered_map<FileType, std::string> s_FileTypeString = {
-		{ FileType::Unknown,	"Unknown"       },
-		{ FileType::Texture,	"Texture"		},
-		{ FileType::Directory,	"Directory"		},
-		{ FileType::Scene,		"Scene"			},
-		{ FileType::Font,		"Font"			},
-		{ FileType::Prefab,		"Prefab"		},
-		{ FileType::Script,		"Script"		},
-	};
-
-	static const std::unordered_map <FileType, const char*> s_FileTypesToIcon =
-	{
-		{ FileType::Unknown,	SW_ICON_FILE			},
-		{ FileType::Texture,	SW_ICON_FILE_IMAGE		},
-		{ FileType::Scene,		SW_ICON_FILE_VIDEO		},
-		{ FileType::Font,		SW_ICON_FORMAT_TEXT		},
-		{ FileType::Prefab,		SW_ICON_FILE_IMPORT		},
-		{ FileType::Script,		SW_ICON_LANGUAGE_CSHARP },
-	};
 
 	AssetPanel::AssetPanel(const char* name)
 		: Panel(name, SW_ICON_FOLDER_STAR, true)
 	{
+		m_AssetTree = new AssetDirectoryTree();
+
 		EventSystem::Register(EVENT_CODE_PROJECT_LOADED, nullptr, [this](Event event, void* sender, void* listener) -> bool {		
-			InvalidateAssetDirectory();
+			m_AssetsDirectory = ProjectContext::Get()->GetAssetDirectory() / "assets";
+
+			// to do make project own the asset manager
+			m_AssetTree->TraverseDirectoryAndMapAssets(m_AssetsDirectory);
+
+			m_SelectedItem = m_AssetTree->GetRootItem();
 
 			return false;
 		});
+	}
+
+	AssetPanel::~AssetPanel()
+	{
+		delete m_AssetTree;
 	}
 
 	void AssetPanel::OnUpdate(Timestep dt)
@@ -103,7 +76,7 @@ namespace SW {
 			if (GUI::Popups::DrawDeleteFilePopup(m_FilesystemEntryToDelete, &m_OpenDeleteWarningModal))
 				LoadDirectoryEntries();
 
-			if (GUI::Popups::DrawAddNewFilePopup(m_CurrentDirectory, &m_OpenNewFileModal))
+			if (GUI::Popups::DrawAddNewFilePopup(m_SelectedItem->Path, &m_OpenNewFileModal))
 				LoadDirectoryEntries();
 
 			if (GUI::Popups::DrawDeleteFileToRenamePopup(m_FilesystemEntryToRename, &m_RenameEntryModal))
@@ -113,76 +86,9 @@ namespace SW {
 		}
 	}
 
-	void AssetPanel::InvalidateAssetDirectory()
-	{
-        m_AssetsDirectory = ProjectContext::Get()->GetAssetDirectory() / "assets";
-
-#ifdef SW_DEBUG_BUILD
-		m_CurrentDirectory = m_AssetsDirectory / "scenes";
-#else 
-		m_CurrentDirectory = m_AssetsDirectory;
-#endif
-
-		LoadDirectoryEntries();
-	}
-
 	void AssetPanel::LoadDirectoryEntries()
 	{
-		m_DirectoryEntries.clear();
-
-		for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(m_CurrentDirectory)) {
-			FileType fileType = FileType::Unknown;
-
-			// todo, introduce separate thumbnail system with lower resolution textures (like 128 x 128)
-			Texture2D* thumbnail = AssetManager::GetBlackTexture();
-
-			ImVec4 colorIndicator = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-
-			std::filesystem::path filepath = std::filesystem::relative(entry.path(), m_AssetsDirectory.parent_path());
-
-			if (!entry.is_directory()) {
-				auto it = s_FileTypes.find(filepath.extension().string());
-
-				if (it != s_FileTypes.end())
-					fileType = it->second;
-
-				if (fileType == FileType::Texture) {
-					thumbnail = AssetManager::GetTexture2D(filepath.string().c_str());
-				} else if (fileType == FileType::Scene) {
-					thumbnail = AssetManager::GetEditorTexture2D("assets/icons/editor/FileIcons/Scene_FileIcon.png");
-				} else if (fileType == FileType::Font) {
-					thumbnail = AssetManager::GetEditorTexture2D("assets/icons/editor/FileIcons/Scene_FontIcon.png");
-				} else {
-					thumbnail = AssetManager::GetEditorTexture2D("assets/icons/editor/TextFile.png");
-				}
-			} else {
-				fileType = FileType::Directory;
-				thumbnail = AssetManager::GetEditorTexture2D("assets/icons/editor/DirectoryIcon.png");
-			}
-
-			auto colorIt = s_FileTypeColors.find(fileType);
-
-			if (colorIt != s_FileTypeColors.end())
-				colorIndicator = colorIt->second;
-
-			std::string typeString = "Unknown";
-
-			auto nameIt = s_FileTypeString.find(fileType);
-
-			if (nameIt != s_FileTypeString.end())
-				typeString = nameIt->second;
-
-			File file = { 
-				.Name = filepath.filename().string(),
-				.FilePath = filepath.string(),
-				.Thumbnail = thumbnail, 
-				.Type = fileType,
-				.TypeString = typeString,
-				.ColorIndicator = colorIndicator,
-			};
-
-			m_DirectoryEntries.emplace_back(file);
-		}
+		m_AssetTree->RefetchChanges();
 	}
 
 	void AssetPanel::DrawHeader()
@@ -205,7 +111,7 @@ namespace SW {
 
 		ImGui::SameLine();
 
-		bool atAssetsDir = m_CurrentDirectory == m_AssetsDirectory;
+		bool atAssetsDir = m_SelectedItem == m_AssetTree->GetRootItem();
 
 		if (atAssetsDir) {
 			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
@@ -215,7 +121,7 @@ namespace SW {
 		ImGui::SameLine();
 
 		if (ImGui::Button(SW_ICON_ARROW_LEFT_BOLD)) {
-			m_CurrentDirectory = m_CurrentDirectory.parent_path();
+			m_SelectedItem = m_SelectedItem->Parent;
 			LoadDirectoryEntries();
 		}
 
@@ -226,7 +132,7 @@ namespace SW {
 
 		ImGui::SameLine();
 
-		std::filesystem::path currentDirCopy = m_CurrentDirectory;
+		std::filesystem::path currentDirCopy = ProjectContext::Get()->GetAssetDirectory() / m_SelectedItem->Path;
 		std::vector<std::filesystem::path> paths;
 
 		while (currentDirCopy != m_AssetsDirectory.parent_path()) {
@@ -240,10 +146,7 @@ namespace SW {
 				ImGui::TextUnformatted(SW_ICON_FOLDER);
 				ImGui::SameLine();
 
-				if (ImGui::Button(it->filename().string().c_str())) {
-					m_CurrentDirectory = *it;
-					LoadDirectoryEntries();
-				}
+				ImGui::TextUnformatted(it->filename().string().c_str());
 
 				if (it + 1 != paths.rend()) {
 					ImGui::SameLine();
@@ -253,18 +156,18 @@ namespace SW {
 		}
 	}
 
-	void AssetPanel::DrawDirectoryTreeViewRecursive(const std::filesystem::path& path)
+	void AssetPanel::DrawDirectoryTreeViewRecursive(AssetSourceItem* item)
 	{
 		constexpr ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_OpenOnArrow
 			| ImGuiTreeNodeFlags_FramePadding
 			| ImGuiTreeNodeFlags_SpanFullWidth;
 
-		for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(path)) {
+		for (AssetSourceItem* child : item->Children) {
 			ImGuiTreeNodeFlags nodeFlags = treeNodeFlags;
 
-			const std::filesystem::path& entryPath = entry.path();
+			const std::filesystem::path& entryPath = child->Path;
 
-			const bool entryIsFile = !std::filesystem::is_directory(entryPath);
+			const bool entryIsFile = child->IsFile();
 
 			if (entryIsFile)
 				nodeFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
@@ -272,12 +175,12 @@ namespace SW {
 			ImGui::TableNextRow();
 			ImGui::TableNextColumn();
 
-			const bool selected = m_CurrentDirectory == entryPath;
+			const bool selected = m_SelectedItem == child;
 
 			if (selected) {
 				nodeFlags |= ImGuiTreeNodeFlags_Selected;
-				ImGui::PushStyleColor(ImGuiCol_Header, GUI::Theme::SelectionMuted);
-				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI::Theme::SelectionMuted);
+				ImGui::PushStyleColor(ImGuiCol_Header, GUI::Theme::SelectionHalfMuted);
+				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI::Theme::SelectionHalfMuted);
 			} else {
 				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI::Theme::Background);
 			}
@@ -287,49 +190,26 @@ namespace SW {
 			ImGui::PopStyleColor(selected ? 2 : 1);
 
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-				if (std::filesystem::is_directory(entryPath))
+				if (child->IsDirectory())
 					FileSystem::RevealFolderInFileExplorer(entryPath);
 				else
 					FileSystem::OpenFolderAndSelectItem(entryPath);
 			}
 
 			if (!entryIsFile && ImGui::IsItemClicked()) {
-				m_CurrentDirectory = entryPath;
-				LoadDirectoryEntries();
-			}
-
-			std::string filename = entryPath.filename().string();
-
-			const char* folderIcon = SW_ICON_FILE;
-
-			if (entryIsFile) {
-				FileType fileType = FileType::Unknown;
-
-				std::string entryPathStr = entryPath.extension().string();
-
-				const auto& fileTypeIt = s_FileTypes.find(entryPathStr.c_str());
-
-				if (fileTypeIt != s_FileTypes.end())
-					fileType = fileTypeIt->second;
-
-				const auto& fileTypeIconIt = s_FileTypesToIcon.find(fileType);
-
-				if (fileTypeIconIt != s_FileTypesToIcon.end())
-					folderIcon = fileTypeIconIt->second;
-			} else {
-				folderIcon = opened ? SW_ICON_FOLDER_OPEN : SW_ICON_FOLDER;
+				m_SelectedItem = child;
 			}
 
 			ImGui::SameLine();
 			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::TextBrighter);
-			ImGui::TextUnformatted(folderIcon);
+			ImGui::TextUnformatted(child->Icon);
 			ImGui::PopStyleColor();
 			ImGui::SameLine();
-			ImGui::TextUnformatted(filename.c_str());
+			ImGui::TextUnformatted(entryPath.filename().string().c_str());
 
 			if (!entryIsFile) {
 				if (opened) {
-					DrawDirectoryTreeViewRecursive(entryPath);
+					DrawDirectoryTreeViewRecursive(child);
 
 					ImGui::TreePop();
 				}
@@ -356,7 +236,7 @@ namespace SW {
 
 			ImGuiTreeNodeFlags nodeFlags = treeNodeFlags;
 
-			const bool selected = m_CurrentDirectory == m_AssetsDirectory;
+			const bool selected = m_SelectedItem == m_AssetTree->GetRootItem();
 
 			if (selected) {
 				nodeFlags |= ImGuiTreeNodeFlags_Selected;
@@ -369,10 +249,8 @@ namespace SW {
 			const bool opened = ImGui::TreeNodeEx("AssetsDir", nodeFlags, "");
 
 			if (ImGui::IsItemClicked()) {
-				m_CurrentDirectory = m_AssetsDirectory;
-				LoadDirectoryEntries();
+				m_SelectedItem = m_AssetTree->GetRootItem();
 			}
-
 
 			ImGui::PopStyleColor(selected ? 2 : 1);
 
@@ -381,10 +259,10 @@ namespace SW {
 			ImGui::TextUnformatted(opened ? SW_ICON_FOLDER_OPEN : SW_ICON_FOLDER);
 			ImGui::PopStyleColor();
 			ImGui::SameLine();
-			ImGui::TextUnformatted("Assets");
+			ImGui::TextUnformatted("assets");
 
 			if (opened) {
-				DrawDirectoryTreeViewRecursive(m_AssetsDirectory);
+				DrawDirectoryTreeViewRecursive(m_AssetTree->GetRootItem());
 
 				ImGui::TreePop();
 			}
@@ -424,22 +302,19 @@ namespace SW {
 		if (ImGui::BeginTable("BodyTable", columnCount, flags)) {
 			int i = 0;
 
-			for (const File& entry : m_DirectoryEntries) {
+			for (AssetSourceItem* child : m_SelectedItem->Children) {
 				ImGui::PushID(i);
 
-				bool isDirectory = entry.Type == FileType::Directory;
+				std::string filename = child->Path.filename().string();
 
-				std::string filename = "Error";
-
-				if (entry.Name.size() > 20) {
-					filename = entry.Name.substr(0, std::min<u64>(20, entry.Name.size())) + "...";
-				} else {
-					filename = entry.Name;
+				if (ImGui::CalcTextSize(filename.c_str()).x > m_ThumbnailSize - 20.f) {
+					filename = filename.substr(0, std::min<u64>(20, filename.size())) + "...";
 				}
 
 				const char* filenameEnd = filename.data() + filename.size();
 
-				const ImTextureID textureId = GUI::GetTextureID(entry.Thumbnail);
+				// TODO THUMBNAILS
+				const ImTextureID textureId = child->Thumbnail ? GUI::GetTextureID(child->Thumbnail) : 0;
 
 				ImGui::TableNextColumn();
 
@@ -461,7 +336,7 @@ namespace SW {
 
 				ImGui::Image(whiteTexId, imageSize, { 0, 0 }, { 1, 1 }, backgroundColor, borderColor);
 
-				DrawDirectoryEntryPopup(entry.FilePath);
+				DrawDirectoryEntryPopup(child->Path);
 
 				if (ImGui::IsItemHovered())
 					isAnyItemHovered = true;
@@ -469,34 +344,26 @@ namespace SW {
 				if (ImGui::IsItemHovered()) {
 					ImGui::BeginTooltip();
 
-					if (entry.Type == FileType::Texture) {
-						ImGui::Text("Name: %s \nThumbnail mem: %s", entry.Name.c_str(), String::BytesToString(entry.Thumbnail->GetEstimatedSize()).c_str());
-					} else {
-						ImGui::Text("Name: %s", entry.Name.c_str());
-					}
+					ImGui::Text("Name: %s", child->Path.string().c_str());
 
 					ImGui::EndTooltip();
 
-					if (ImGui::IsMouseDoubleClicked(0) && isDirectory) {
-						m_CurrentDirectory = m_CurrentDirectory / entry.Name;
-						refreshDirectory = true;
+					if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+						if (child->IsDirectory()) {
+							m_SelectedItem = child;
+							refreshDirectory = true;
+						} else {
+							FileSystem::OpenExternally(child->Path);
+						}
 					}
 				}
 
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-					const char* type = "CONTENT_BROWSER_ITEM";
+					const char* type = child->GetStringifiedAssetSourceType();
 
-					if (entry.Type == FileType::Font)
-						type = "Font";
-					else if (entry.Type == FileType::Scene)
-						type = "Scene";
-					else if (entry.Type == FileType::Texture)
-						type = "Texture";
-					else if (entry.Type == FileType::Prefab)
-						type = "Prefab";
+					ImGui::SetDragDropPayload(type, &child->Handle, sizeof(child->Handle));
 
-					ImGui::SetDragDropPayload(type, entry.FilePath.data(), entry.FilePath.size() + 1);
-					ImGui::TextUnformatted(entry.FilePath.c_str());
+					ImGui::TextUnformatted(child->Path.string().c_str());
 					ImGui::Spacing();
 
 					const f32 tooltipSize = ImGui::GetFrameHeight() * 11.0f;
@@ -505,14 +372,14 @@ namespace SW {
 				}
 
 				// Thumbnail Image
-				ImGui::SetCursorPos({ cursorPos.x + thumbnailPadding * 0.75f, cursorPos.y + thumbnailPadding });
+				ImGui::SetCursorPos({ cursorPos.x + thumbnailPadding * 0.9f, cursorPos.y + thumbnailPadding * 0.8f });
 				ImGui::SetItemAllowOverlap();
 				ImGui::Image(textureId, { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
 
 				// Type Color frame
 				const ImVec2 typeColorFrameSize = { scaledThumbnailSizeX, scaledThumbnailSizeX * 0.03f };
 				ImGui::SetCursorPosX(cursorPos.x + padding);
-				ImGui::Image(whiteTexId, typeColorFrameSize, { 0, 0 }, { 1, 1 }, entry.ColorIndicator);
+				ImGui::Image(whiteTexId, typeColorFrameSize, { 0, 0 }, { 1, 1 }, ImGui::ColorConvertU32ToFloat4(child->Color));
 
 				const ImVec2 rectMin = ImGui::GetItemRectMin();
 				const ImVec2 rectSize = ImGui::GetItemRectSize();
@@ -523,7 +390,7 @@ namespace SW {
 				ImGui::SetCursorPos({ cursorPos.x + padding * 2.0f, cursorPos.y + backgroundThumbnailSize.y - GUI::Appearance::GetFonts().DefaultBoldFont->FontSize - padding * 2.0f });
 				ImGui::BeginDisabled();
 				ImGui::PushFont(GUI::Appearance::GetFonts().DefaultBoldFont);
-				ImGui::TextUnformatted(entry.TypeString.c_str());
+				ImGui::TextUnformatted(child->GetStringifiedAssetSourceType());
 				ImGui::PopFont();
 				ImGui::EndDisabled();
 

@@ -15,8 +15,8 @@ namespace SW {
 	class Spritesheet final : public Asset
 	{
 	public:
-		Spritesheet(Texture2D* spritesheetTexture)
-			: Asset(spritesheetTexture->GetPath()), m_SpritesheetTexture(spritesheetTexture) {}
+		Spritesheet(AssetHandle handle, Texture2D* spritesheetTexture)
+			: Asset(handle, spritesheetTexture->GetPath()), m_SpritesheetTexture(spritesheetTexture) {}
 
 		AssetType GetAssetType() const override { return AssetType::Spritesheet; }
 

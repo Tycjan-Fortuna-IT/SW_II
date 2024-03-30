@@ -16,6 +16,8 @@
 namespace SW {
 
 	class Texture2D;
+	class AssetDirectoryTree;
+	struct AssetSourceItem;
 
 	/**
 	 * @brief The File struct represents a file.
@@ -47,7 +49,7 @@ namespace SW {
 		/**
 		 * @brief Default destructor for the AssetPanel class.
 		 */
-		~AssetPanel() override = default;
+		~AssetPanel() override;
 
 		/** @brief Copy constructor (deleted). */
 		AssetPanel(const AssetPanel& other) = delete;
@@ -71,8 +73,6 @@ namespace SW {
 	
 	private:
 		std::filesystem::path m_AssetsDirectory;	/** @brief The path to the assets directory. */
-		std::filesystem::path m_CurrentDirectory;	/** @brief The path to the current directory fetched by the panel. */
-		std::vector<File> m_DirectoryEntries = {};	/** @brief The directory entries. */
 
 		bool m_OpenDeleteWarningModal = false;
 		bool m_OpenNewFileModal = false;
@@ -83,11 +83,9 @@ namespace SW {
 		std::filesystem::path m_FilesystemEntryToDelete = "";
 		std::filesystem::path m_FilesystemEntryToRename = "";
 
-		/**
-		 * @brief Refreshes current directory to show entries inside the body.
-		 */
-		void InvalidateAssetDirectory();
-		
+		AssetDirectoryTree* m_AssetTree = nullptr;
+		AssetSourceItem* m_SelectedItem = nullptr;
+
 		/**
 		 * @brief Loads the directory entries.
 		 */
@@ -103,7 +101,7 @@ namespace SW {
 		 * 
 		 * @param path The path of the directory to draw.
 		 */
-		void DrawDirectoryTreeViewRecursive(const std::filesystem::path& path);
+		void DrawDirectoryTreeViewRecursive(AssetSourceItem* item);
 
 		/**
 		 * @brief Draws the side view of the asset panel.
