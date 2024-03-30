@@ -108,9 +108,7 @@ namespace SW {
 
 	void FileSystem::RevealFolderInFileExplorer(const char* path)
 	{
-#ifdef SW_WINDOWS
 		ShellExecuteA(nullptr, "open", path, nullptr, nullptr, SW_SHOWDEFAULT);
-#endif
 	}
 
     void FileSystem::OpenFolderAndSelectItem(const std::filesystem::path& path)
@@ -122,5 +120,17 @@ namespace SW {
 			ILFree(pidl);
 		}
     }
+
+	bool FileSystem::OpenExternally(const std::filesystem::path& path)
+	{
+		const std::filesystem::path absolutePath = std::filesystem::canonical(path);
+		
+		if (!std::filesystem::exists(absolutePath))
+			return false;
+
+		ShellExecute(NULL, L"open", absolutePath.c_str(), NULL, NULL, SW_SHOWNORMAL);
+		
+		return true;
+	}
 
 }

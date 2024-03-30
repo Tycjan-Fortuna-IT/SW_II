@@ -4,7 +4,7 @@
 
 namespace SW {
 
-	Asset::Asset(const std::filesystem::path& path)
-		: m_Path(path), m_Handle(Random::CreateID()) {}
+	Asset::Asset(AssetHandle handle, const std::filesystem::path& path)
+		: m_Path(path), m_Handle(handle) {}
 
 }

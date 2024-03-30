@@ -149,7 +149,7 @@ namespace SW::GUI::Popups {
 			ImGui::TextUnformatted("Type the new name:");
 			ImGui::SameLine();
 
-			static std::string filename = "";
+			static std::string filename = currentName;
 
 			GUI::DrawSingleLineTextInput(filename);
 

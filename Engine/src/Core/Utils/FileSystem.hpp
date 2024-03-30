@@ -13,7 +13,8 @@ namespace SW {
 	/**
 	 * @brief Struct representing single item in file dialog filter.
 	 */
-	struct FileDialogFilterItem {
+	struct FileDialogFilterItem
+	{
 		const char* Label;			///< Label of the filter.
 		const char* Filter;			///< File filter.
 	};
@@ -101,7 +102,19 @@ namespace SW {
 		 */
 		static void RevealFolderInFileExplorer(const char* path);
 
+		/**
+		 * @brief Opens the specified file folder in the file explorer and selects this file.
+		 *
+		 * @param path The path of the file to be revealed.
+		 */
 		static void OpenFolderAndSelectItem(const std::filesystem::path& path);
+
+		/**
+		 * @brief Opens prompt to open the file in an external program.
+		 *
+		 * @param path The path of the file to be opened externally.
+		 */
+		static bool OpenExternally(const std::filesystem::path& path);
 	};
 
 }
