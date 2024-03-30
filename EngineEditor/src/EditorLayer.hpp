@@ -12,12 +12,6 @@ namespace SW {
 
 		std::vector<Panel*> m_Panels;
 
-		Texture2D* m_IconTexture = nullptr;
-		Texture2D* m_CloseIconTexture = nullptr;
-		Texture2D* m_MaximizeIconTexture = nullptr;
-		Texture2D* m_MinimizeIconTexture = nullptr;
-		Texture2D* m_RestoreIconTexture = nullptr;
-
 		SceneViewportPanel* m_Viewport = nullptr;
 
 		bool m_WindowMaximized = true;

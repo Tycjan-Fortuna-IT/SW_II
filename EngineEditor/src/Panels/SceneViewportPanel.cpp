@@ -5,7 +5,6 @@
 
 #include "Core/Utils/Utils.hpp"
 #include "GUI/Icons.hpp"
-#include "Core/AssetManager.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Editor/EditorSettings.hpp"
 #include "Managers/SelectionManager.hpp"

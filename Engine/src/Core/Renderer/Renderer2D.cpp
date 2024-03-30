@@ -7,7 +7,7 @@
 #include "Core/OpenGL/IndexBuffer.hpp"
 #include "Core/OpenGL/Shader.hpp"
 #include "Core/Math/Math.hpp"
-#include "Core/AssetManager.hpp"
+#include "Core/Asset/AssetManager.hpp"
 #include "RendererAPI.hpp"
 #include "Core/Editor/EditorCamera.hpp"
 
@@ -112,8 +112,19 @@ namespace SW {
 
 	static Renderer2DData s_Data;
 
+	Texture2D* Renderer2D::WhiteTexture = nullptr;
+	Texture2D* Renderer2D::BlackTexture = nullptr;
+
 	void Renderer2D::Initialize()
 	{
+		WhiteTexture = new Texture2D(1, 1);
+		u32 whiteTextureData = 0xffffffff;
+		WhiteTexture->SetData(&whiteTextureData, sizeof(u32));
+
+		BlackTexture = new Texture2D(1, 1);
+		u32 blackTextureData = 0x000000ff;
+		BlackTexture->SetData(&blackTextureData, sizeof(u32));
+
 		s_Data.SpriteShader = new Shader("assets/shaders/Builtin.2D.Sprite.vert.glsl", "assets/shaders/Builtin.2D.Sprite.frag.glsl");
 		s_Data.LineShader = new Shader("assets/shaders/Builtin.2D.Line.vert.glsl", "assets/shaders/Builtin.2D.Line.frag.glsl");
 		s_Data.CircleShader = new Shader("assets/shaders/Builtin.2D.Circle.vert.glsl", "assets/shaders/Builtin.2D.Circle.frag.glsl");
@@ -208,7 +219,7 @@ namespace SW {
 		s_Data.TextShader->Bind();
 		s_Data.TextShader->UploadUniformIntArray("u_FontAtlasTextures", samplers, s_Data.MaxTextureSlots);
 
-		s_Data.TextureSlots[0] = AssetManager::GetWhiteTexture();
+		s_Data.TextureSlots[0] = WhiteTexture;
 
 		s_Data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
@@ -218,6 +229,9 @@ namespace SW {
 
 	void Renderer2D::Shutdown()
 	{
+		delete WhiteTexture;
+		delete BlackTexture;
+
 		delete[] s_Data.QuadVertexBufferBase;
 		delete s_Data.QuadVertexArray;
 

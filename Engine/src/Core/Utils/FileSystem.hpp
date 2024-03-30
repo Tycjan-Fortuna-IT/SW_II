@@ -55,6 +55,22 @@ namespace SW {
 		static bool CreateEmptyDirectory(const std::filesystem::path& path);
 
 		/**
+		 * @brief Obtain last time when the filesystem entry was modified.
+		 *
+		 * @param entry Directory entry.
+		 * @return Last time when the filesystem entry was modified.
+		 */
+		static u64 GetLastWriteTime(const std::filesystem::directory_entry& entry);
+
+		/**
+		 * @brief Obtain last time when the filesystem entry was modified.
+		 *
+		 * @param path Filesystem path.
+		 * @return Last time when the filesystem entry was modified.
+		 */
+		static u64 GetLastWriteTime(const std::filesystem::path& path);
+
+		/**
 		 * @brief Renames the file to chosen filename.
 		 * @warning This method doesn't preserve the file extension so be sure to pass it with newName!
 		 *

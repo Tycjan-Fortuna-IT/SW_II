@@ -1,10 +1,12 @@
 #include "AssetDirectoryTree.hpp"
 
 #include "Core/Utils/Random.hpp"
-#include "AssetManager_v2.hpp"
+#include "Core/Asset/AssetManager.hpp"
 #include "GUI/Icons.hpp"
 #include "Core/Project/Project.hpp"
 #include "Core/Project/ProjectContext.hpp"
+#include "Core/Utils/FileSystem.hpp"
+#include "GUI/Editor/EditorResources.hpp"
 
 namespace SW {
 
@@ -83,9 +85,9 @@ namespace SW {
 	{
 		switch (type) {
 			case AssetSourceType::Unknown:	   
-				return AssetManager_v2::GetEditorTexture2D("assets/icons/editor/asset_icons/unknown_icon.png"); break;
+				return EditorResources::UnknownAssetIcon; break;
 			case AssetSourceType::Directory:   
-				return AssetManager_v2::GetEditorTexture2D("assets/icons/editor/DirectoryIcon.png"); break;
+				return EditorResources::DirectoryAssetIcon; break;
 			case AssetSourceType::Texture:	   
 				return nullptr; break;		// Thumbnail will be loaded individually request based. (Dont need to load all at the beginning).
 			case AssetSourceType::Sprite:	   
@@ -93,15 +95,15 @@ namespace SW {
 			case AssetSourceType::Spritesheet:
 				return nullptr; break;		// same
 			case AssetSourceType::Font:	
-				return AssetManager_v2::GetEditorTexture2D("assets/icons/editor/asset_icons/font_icon.png"); break;
+				return EditorResources::FontAssetIcon; break;
 			case AssetSourceType::Scene:
-				return AssetManager_v2::GetEditorTexture2D("assets/icons/editor/asset_icons/scene_icon.png"); break;
+				return EditorResources::SceneAssetIcon; break;
 			case AssetSourceType::Prefab:
-				return AssetManager_v2::GetEditorTexture2D("assets/icons/editor/asset_icons/prefab_icon.png"); break;
+				return EditorResources::PrefabAssetIcon; break;
 			case AssetSourceType::Script:
-				return AssetManager_v2::GetEditorTexture2D("assets/icons/editor/asset_icons/script_icon.png"); break;
+				return EditorResources::ScriptAssetIcon; break;
 			case AssetSourceType::Shader:
-				return AssetManager_v2::GetEditorTexture2D("assets/icons/editor/asset_icons/shader_icon.png"); break;
+				return EditorResources::ShaderAssetIcon; break;
 		}
 
 		return nullptr;
@@ -121,6 +123,11 @@ namespace SW {
 		delete item;
 	}
 
+	void AssetDirectoryTree::RefetchChanges()
+	{
+		AssetManager::GetRegistryRaw().FetchAvailableAssets();
+	}
+
 	void AssetDirectoryTree::TraverseDirectoryAndMapAssets(const std::filesystem::path& dir)
 	{
 		if (m_Root)
@@ -129,17 +136,12 @@ namespace SW {
 		m_Root = new AssetSourceItem();
 		m_Root->Handle = Random::CreateID();
 		m_Root->Type = AssetSourceType::Directory;
-		m_Root->Thumbnail = AssetManager_v2::GetEditorTexture2D("assets/icons/editor/DirectoryIcon.png"); // TODO switch to new asset manager
+		m_Root->Thumbnail = EditorResources::DirectoryAssetIcon;
 		m_Root->Icon = SW_ICON_FILE;
 		m_Root->Color = IM_COL32(204, 204, 178, 255);
 		m_Root->Path = dir;
 
 		TraverseAndEmplace(m_Root->Path, m_Root);
-	}
-
-	void AssetDirectoryTree::RefetchChanges()
-	{
-
 	}
 
 	void AssetDirectoryTree::TraverseAndEmplace(const std::filesystem::path& dir, AssetSourceItem* item)
@@ -153,7 +155,8 @@ namespace SW {
 			newItem->Icon = GetIconFromFileType(newItem->Type);
 			newItem->Color = GetColorFromFileType(newItem->Type);
 			newItem->Parent = item;
-			newItem->Path = std::filesystem::relative(entry.path(), ProjectContext::Get()->GetAssetDirectory());
+			newItem->Path = entry.path();
+			newItem->ModificationTime = FileSystem::GetLastWriteTime(entry.path());
 
 			item->Children.emplace_back(newItem);
 

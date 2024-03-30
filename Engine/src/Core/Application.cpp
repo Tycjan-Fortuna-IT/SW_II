@@ -5,7 +5,7 @@
 #include "Events/Event.hpp"
 #include "GUI/GuiLayer.hpp"
 #include "Utils/FileSystem.hpp"
-#include "AssetManager.hpp"
+#include "Core/Asset/AssetManager.hpp"
 #include "Renderer/RendererAPI.hpp"
 #include "Scripting/ScriptingCore.hpp"
 #include "Utils/Input.hpp"

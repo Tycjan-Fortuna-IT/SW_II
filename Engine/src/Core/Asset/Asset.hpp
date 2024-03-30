@@ -69,12 +69,22 @@ namespace SW {
 		}
 
 		template <typename T>
-		inline T* As()
+			requires std::is_base_of_v<Asset, T>
+		inline const T* As() const
+		{
+			return dynamic_cast<const T*>(this);
+		}
+
+		template <typename T>
+			requires std::is_base_of_v<Asset, T>
+		inline T* AsRaw() const
 		{
 			return dynamic_cast<T*>(this);
 		}
 
 		AssetState GetCurrentState() const { return m_State; }
+
+		bool IsValid() const { return m_State == AssetState::Loaded; }
 
 	protected:
 		void SetCurrentState(AssetState state) { m_State = state; }

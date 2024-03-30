@@ -13,9 +13,10 @@
 #include "Core/Utils/Utils.hpp"
 #include "GUI/Icons.hpp"
 #include "Appearance.hpp"
-#include "Core/AssetManager.hpp"
+#include "Core/Asset/AssetManager.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/OpenGL/Font.hpp"
+#include "Core/Renderer/Renderer2D.hpp"
 
 namespace SW::GUI {
 
@@ -1136,7 +1137,7 @@ namespace SW::GUI {
 
 		if (ImGui::BeginDragDropTarget()) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Font")) {
-				*font = AssetManager::GetFont(static_cast<char*>(payload->Data));
+				// *font = AssetManager::GetFont(static_cast<char*>(payload->Data));
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -1231,7 +1232,7 @@ namespace SW::GUI {
 		Texture2D* textureCopy = *texture;
 
 		if (!textureCopy)
-			textureCopy = AssetManager::GetBlackTexture();
+			textureCopy = Renderer2D::BlackTexture;
 
 		u32 textureId = textureCopy->GetHandle();
 
@@ -1247,7 +1248,7 @@ namespace SW::GUI {
 
 		if (ImGui::BeginDragDropTarget()) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Texture")) {
-				*texture = AssetManager::GetTexture2D(static_cast<char*>(payload->Data));
+				// *texture = AssetManager::GetTexture2D(static_cast<char*>(payload->Data));
 			}
 			ImGui::EndDragDropTarget();
 		}

@@ -6,7 +6,6 @@
 #include "GUI/GUI.hpp"
 #include "Core/ECS/Components.hpp"
 #include "GUI/Icons.hpp"
-#include "Core/AssetManager.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Scene/SceneCamera.hpp"
 #include "Core/Scripting/ScriptingCore.hpp"

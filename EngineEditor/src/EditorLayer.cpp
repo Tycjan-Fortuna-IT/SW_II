@@ -8,22 +8,18 @@
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Core/Utils/FileSystem.hpp"
 #include "Managers/SelectionManager.hpp"
-#include "Core/AssetManager.hpp"
 #include "Panels/SceneViewportPanel.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Project/Project.hpp"
 #include "Core/Project/ProjectSerializer.hpp"
 #include "Core/Scripting/ScriptingCore.hpp"
+#include "GUI/Editor/EditorResources.hpp"
 
 namespace SW {
 
 	void EditorLayer::OnAttach()
 	{
-		m_IconTexture = AssetManager::GetEditorTexture2D("assets/icons/SW_Icon.png");
-		m_CloseIconTexture = AssetManager::GetEditorTexture2D("assets/icons/editor/windows/Close.png");
-		m_MaximizeIconTexture = AssetManager::GetEditorTexture2D("assets/icons/editor/windows/Maximize.png");
-		m_MinimizeIconTexture = AssetManager::GetEditorTexture2D("assets/icons/editor/windows/Minimize.png");
-		m_RestoreIconTexture = AssetManager::GetEditorTexture2D("assets/icons/editor/windows/Restore.png");
+		EditorResources::Initialize();
 
 		const GUI::FontSpecification fontSpec("assets/fonts/Roboto/Roboto-Regular.ttf", "assets/fonts/Roboto/Roboto-Bold.ttf");
 
@@ -61,6 +57,8 @@ namespace SW {
 		for (Panel* panel : m_Panels) {
 			delete panel;
 		}
+
+		EditorResources::Shutdown();
 
 		Renderer2D::Shutdown();
 	}
@@ -112,13 +110,13 @@ namespace SW {
 		drawList->AddRectFilledMultiColor(titlebarMin, ImVec2(titlebarMin.x + 600.0f, titlebarMax.y), gradientColor, Color::TitleBar, Color::TitleBar, gradientColor);
 
 		{
-			const f32 logoWidth = (f32)m_IconTexture->GetWidth() / 3.f;
-			const f32 logoHeight = (f32)m_IconTexture->GetHeight() / 3.f;
+			const f32 logoWidth = (f32)EditorResources::SW_Icon->GetWidth() / 3.f;
+			const f32 logoHeight = (f32)EditorResources::SW_Icon->GetHeight() / 3.f;
 			const ImVec2 logoOffset(20.0f + windowPadding.x, windowPadding.y - 1.2f);
 			const ImVec2 logoRectStart = { ImGui::GetItemRectMin().x + logoOffset.x, ImGui::GetItemRectMin().y + logoOffset.y };
 			const ImVec2 logoRectMax = { logoRectStart.x + logoWidth, logoRectStart.y + logoHeight };
 
-			drawList->AddImage(GUI::GetTextureID(m_IconTexture), logoRectStart, logoRectMax, { 0, 1 }, { 1, 0 });
+			drawList->AddImage(GUI::GetTextureID(EditorResources::SW_Icon), logoRectStart, logoRectMax, { 0, 1 }, { 1, 0 });
 		}
 
 		const f32 w = ImGui::GetContentRegionAvail().x;
@@ -195,7 +193,7 @@ namespace SW {
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
 			ImGui::SetItemAllowOverlap();
 
-			if (GUI::ImageButton(*m_MinimizeIconTexture, { 40.f, 40.f })) {
+			if (GUI::ImageButton(*EditorResources::MinimizeIcon, { 40.f, 40.f })) {
 				Application::Get()->GetWindow()->Minimize();
 			}
 		}
@@ -210,11 +208,11 @@ namespace SW {
 			ImGui::SetItemAllowOverlap();
 
 			if (m_WindowMaximized) {
-				if (GUI::ImageButton(*m_RestoreIconTexture, { 40.f, 40.f })) {
+				if (GUI::ImageButton(*EditorResources::RestoreIcon, { 40.f, 40.f })) {
 					Application::Get()->GetWindow()->Restore();
 				}
 			} else {
-				if (GUI::ImageButton(*m_MaximizeIconTexture, { 40.f, 40.f })) {
+				if (GUI::ImageButton(*EditorResources::MaximizeIcon, { 40.f, 40.f })) {
 					Application::Get()->GetWindow()->Maximize();
 				}
 			}
@@ -228,7 +226,7 @@ namespace SW {
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
 			ImGui::SetItemAllowOverlap();
 
-			if (GUI::ImageButton(*m_CloseIconTexture, { 40.f, 40.f })) {
+			if (GUI::ImageButton(*EditorResources::CloseIcon, { 40.f, 40.f })) {
 				Application::Get()->Close();
 			}
 		}

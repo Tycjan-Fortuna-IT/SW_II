@@ -38,6 +38,10 @@ namespace SW {
 	class Renderer2D final
 	{
 	public:
+		static Texture2D* WhiteTexture;
+		static Texture2D* BlackTexture;
+
+	public:
 		/**
 		 * @brief Initializes the Renderer2D with the specified shader.
 		 */

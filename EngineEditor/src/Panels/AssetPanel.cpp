@@ -4,7 +4,6 @@
 #include "GUI/Icons.hpp"
 #include "Core/Debug/LogSystem.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
-#include "Core/AssetManager.hpp"
 #include "GUI/GUI.hpp"
 #include "GUI/Colors.hpp"
 #include "GUI/Appearance.hpp"
@@ -12,8 +11,9 @@
 #include "Core/Project/Project.hpp"
 #include "Core/Utils/FileSystem.hpp"
 #include "GUI/Popups.hpp"
-#include "Core/Asset/AssetManager_v2.hpp"
+#include "Core/Asset/AssetManager.hpp"
 #include "Core/Asset/AssetDirectoryTree.hpp"
+#include "Core/Renderer/Renderer2D.hpp"
 
 namespace SW {
 
@@ -295,7 +295,7 @@ namespace SW {
 		ImGuiTableFlags flags = ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_ScrollY
 			| ImGuiTableFlags_PadOuterX | ImGuiTableFlags_SizingFixedFit;
 
-		ImTextureID whiteTexId = GUI::GetTextureID(AssetManager::GetWhiteTexture()->GetHandle());
+		ImTextureID whiteTexId = GUI::GetTextureID(Renderer2D::WhiteTexture->GetHandle());
 
 		bool isAnyItemHovered = false;
 

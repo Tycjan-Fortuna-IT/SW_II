@@ -40,7 +40,19 @@ namespace SW {
 		return std::filesystem::create_directory(path);
     }
 
-    bool FileSystem::RenameFile(const std::filesystem::path& path, const std::string& newName)
+	u64 FileSystem::GetLastWriteTime(const std::filesystem::directory_entry& entry)
+	{
+		return GetLastWriteTime(entry.path());
+	}
+
+	u64 FileSystem::GetLastWriteTime(const std::filesystem::path& path)
+	{
+		auto temp = std::filesystem::last_write_time(path);
+
+		return temp.time_since_epoch().count();
+	}
+
+	bool FileSystem::RenameFile(const std::filesystem::path& path, const std::string& newName)
 	{
 		std::filesystem::path oldFilename = path.filename();
 		std::filesystem::path oldPath = path.parent_path();
