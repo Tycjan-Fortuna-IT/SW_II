@@ -62,6 +62,11 @@ namespace SW {
 		return true;
 	}
 
+	bool FileSystem::Exists(const std::filesystem::path& path)
+	{
+		return std::filesystem::exists(path);
+	}
+
 	std::filesystem::path FileSystem::OpenFileDialog(const std::initializer_list<FileDialogFilterItem> filters)
 	{
 		NFD::UniquePath filePath;

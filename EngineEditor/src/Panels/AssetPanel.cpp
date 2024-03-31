@@ -23,11 +23,9 @@ namespace SW {
 		m_AssetTree = new AssetDirectoryTree();
 
 		EventSystem::Register(EVENT_CODE_PROJECT_LOADED, nullptr, [this](Event event, void* sender, void* listener) -> bool {		
-			m_AssetsDirectory = ProjectContext::Get()->GetAssetDirectory() / "assets";
+			m_AssetsDirectory = ProjectContext::Get()->GetAssetDirectory();
 
-			// to do make project own the asset manager
 			m_AssetTree->TraverseDirectoryAndMapAssets(m_AssetsDirectory);
-
 			m_SelectedItem = m_AssetTree->GetRootItem();
 
 			return false;
@@ -76,7 +74,7 @@ namespace SW {
 			if (GUI::Popups::DrawDeleteFilePopup(m_FilesystemEntryToDelete, &m_OpenDeleteWarningModal))
 				LoadDirectoryEntries();
 
-			if (GUI::Popups::DrawAddNewFilePopup(m_SelectedItem->Path, &m_OpenNewFileModal))
+			if (GUI::Popups::DrawAddNewFilePopup(m_AssetsDirectory / m_SelectedItem->Path, &m_OpenNewFileModal))
 				LoadDirectoryEntries();
 
 			if (GUI::Popups::DrawDeleteFileToRenamePopup(m_FilesystemEntryToRename, &m_RenameEntryModal))
@@ -88,7 +86,16 @@ namespace SW {
 
 	void AssetPanel::LoadDirectoryEntries()
 	{
-		m_AssetTree->RefetchChanges();
+		const std::filesystem::path oldSelectedPath = m_SelectedItem->Path;
+
+		m_AssetTree->RefetchChanges(m_AssetsDirectory);
+
+		AssetSourceItem* newSelectedItem = m_AssetTree->FindChildItemByPath(m_AssetTree->GetRootItem(), oldSelectedPath);
+
+		if (newSelectedItem)
+			m_SelectedItem = newSelectedItem;
+		else
+			m_SelectedItem = m_AssetTree->GetRootItem();
 	}
 
 	void AssetPanel::DrawHeader()
@@ -165,7 +172,7 @@ namespace SW {
 		for (AssetSourceItem* child : item->Children) {
 			ImGuiTreeNodeFlags nodeFlags = treeNodeFlags;
 
-			const std::filesystem::path& entryPath = child->Path;
+			const std::filesystem::path& entryPath = m_AssetsDirectory / child->Path;
 
 			const bool entryIsFile = child->IsFile();
 
@@ -344,7 +351,10 @@ namespace SW {
 				if (ImGui::IsItemHovered()) {
 					ImGui::BeginTooltip();
 
-					ImGui::Text("Name: %s", child->Path.string().c_str());
+					ImGui::Text("Handle: %llu", child->Handle);
+					ImGui::Text("Last Modified: %llu", child->ModificationTime);
+					ImGui::Text("Type: %s", child->GetStringifiedAssetSourceType());
+					ImGui::Text("Path: %s", child->Path.string().c_str());
 
 					ImGui::EndTooltip();
 
@@ -353,7 +363,7 @@ namespace SW {
 							m_SelectedItem = child;
 							refreshDirectory = true;
 						} else {
-							FileSystem::OpenExternally(child->Path);
+							FileSystem::OpenExternally(m_AssetsDirectory / child->Path);
 						}
 					}
 				}
@@ -362,8 +372,11 @@ namespace SW {
 					const char* type = child->GetStringifiedAssetSourceType();
 
 					ImGui::SetDragDropPayload(type, &child->Handle, sizeof(child->Handle));
-
-					ImGui::TextUnformatted(child->Path.string().c_str());
+					
+					ImGui::Text("Handle: %llu", child->Handle);
+					ImGui::Text("Last Modified: %llu", child->ModificationTime);
+					ImGui::Text("Type: %s", child->GetStringifiedAssetSourceType());
+					ImGui::Text("Path: %s", child->Path.string().c_str());
 					ImGui::Spacing();
 
 					const f32 tooltipSize = ImGui::GetFrameHeight() * 11.0f;
@@ -414,11 +427,11 @@ namespace SW {
 		if (ImGui::BeginPopupContextItem("DirectoryEntryPopupMenu")) {
 			if (ImGui::MenuItemEx("Rename", SW_ICON_RENAME_BOX)) {
 				m_RenameEntryModal = true;
-				m_FilesystemEntryToRename = ProjectContext::Get()->GetAssetDirectory() / entry;
+				m_FilesystemEntryToRename = m_AssetsDirectory / entry;
 			}
 
 			if (ImGui::MenuItemEx("Show in explorer", SW_ICON_MAGNIFY)) {
-				std::filesystem::path toOpen = ProjectContext::Get()->GetAssetDirectory() / entry;
+				std::filesystem::path toOpen = m_AssetsDirectory / entry;
 
 				if (std::filesystem::is_directory(toOpen))
 					FileSystem::RevealFolderInFileExplorer(toOpen);
@@ -428,7 +441,7 @@ namespace SW {
 
 			if (ImGui::MenuItemEx("Delete", SW_ICON_DELETE)) {
 				m_OpenDeleteWarningModal = true;
-				m_FilesystemEntryToDelete = ProjectContext::Get()->GetAssetDirectory() / entry;
+				m_FilesystemEntryToDelete = m_AssetsDirectory / entry;
 			}
 
 			ImGui::EndPopup();

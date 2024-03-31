@@ -18,6 +18,7 @@ namespace SW {
 	static Asset* sp = nullptr;
 
 	static AssetPanel* assetPanel = nullptr;
+	static Project* newProject = nullptr;
 
 	void TestbedLayer::OnAttach()
 	{
@@ -43,7 +44,7 @@ namespace SW {
 
 		assetPanel = new AssetPanel();
 
-		Project* newProject = ProjectSerializer::Deserialize("C:\\Users\\tycja\\Desktop\\SW_II\\Testbed\\Testbed.swproj");
+		newProject = ProjectSerializer::Deserialize("C:\\Users\\tycja\\Desktop\\SW_II\\Testbed\\Testbed.swproj");
 		ProjectContext::Set(newProject); // TODO: Make projects switchable
 
 		// sp = new Spritesheet(Random::CreateID(), AssetManager::GetTexture2D("assets\\spritesheets\\spritesheet_test.png"));
@@ -65,6 +66,7 @@ namespace SW {
 		AssetManager::Shutdown();
 
 		delete assetPanel;
+		delete newProject;
 	}
 
 	void TestbedLayer::OnUpdate(Timestep dt)

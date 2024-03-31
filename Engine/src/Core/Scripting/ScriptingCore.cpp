@@ -213,7 +213,7 @@ namespace SW {
 
 		std::string library = currentProject->GetName() + ".dll";
 
-		std::string scriptAppPath = (currentProject->GetAssetDirectory() / "assets" / "build" / library).string();
+		std::string scriptAppPath = (currentProject->GetAssetDirectory() / "build" / library).string();
 
 		m_AppAssemblyData->Assembly = &m_AssemblyContext->LoadAssembly(scriptAppPath);
 	

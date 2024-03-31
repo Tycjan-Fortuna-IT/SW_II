@@ -1,0 +1,106 @@
+Assets:
+  - Handle: 473621781062183
+    Path: scenes\Physics_WheelJoints.sw_scene
+    ModificationTime: 133542237526930458
+  - Handle: 689917505177261
+    Path: textures\Triangle.png
+    ModificationTime: 133537736852765247
+  - Handle: 346032045787917826
+    Path: scenes\Physics_RevolutionJoints.sw_scene
+    ModificationTime: 133542237499291812
+  - Handle: 1050037696089330659
+    Path: scenes\Physics_DistanceJoints.sw_scene
+    ModificationTime: 133542237469120760
+  - Handle: 1672442154322892562
+    Path: scripts\TestEntity.cs
+    ModificationTime: 133548083800959161
+  - Handle: 2100663363023931800
+    Path: scenes\Physics_SpringJoints.sw_scene
+    ModificationTime: 133542237512809963
+  - Handle: 2327904613786809199
+    Path: build\Sandbox.dll
+    ModificationTime: 133549188709094718
+  - Handle: 4315281734152151102
+    Path: assets.sw_registry
+    ModificationTime: 133563809776559335
+  - Handle: 5047830445328925716
+    Path: fonts\CascadiaCode.ttf
+    ModificationTime: 133250476020000000
+  - Handle: 5585626364032343951
+    Path: scenes
+    ModificationTime: 133563810396124979
+  - Handle: 5801628314885606599
+    Path: scripts
+    ModificationTime: 133549188692773309
+  - Handle: 5824448065109272576
+    Path: fonts
+    ModificationTime: 133546353185238241
+  - Handle: 5933223753573368813
+    Path: scenes\Platformer.sw_scene
+    ModificationTime: 133553352414035690
+  - Handle: 6720902847742172576
+    Path: scenes\TestScene.sw_scene
+    ModificationTime: 133551609291838099
+  - Handle: 8634064882100868509
+    Path: build\Coral.Managed.pdb
+    ModificationTime: 133548080720391261
+  - Handle: 8776684117225458142
+    Path: scenes\Physics_PrismaticJoints.sw_scene
+    ModificationTime: 133542237484060776
+  - Handle: 9591975419680229259
+    Path: fonts\OpenSans-Regular.ttf
+    ModificationTime: 133470633820000000
+  - Handle: 10139021107136103985
+    Path: build\Coral.Managed.dll
+    ModificationTime: 133548080720431248
+  - Handle: 10570308581870576885
+    Path: build\Sandbox.pdb
+    ModificationTime: 133549188709074721
+  - Handle: 10715468386266112970
+    Path: textures\Wall.jpg
+    ModificationTime: 133486970269216985
+  - Handle: 10767490904689670378
+    Path: scenes\Physics_BoxCirclePolygonCollision.sw_scene
+    ModificationTime: 133542237248435524
+  - Handle: 11538904240394192786
+    Path: build\Sandbox.deps.json
+    ModificationTime: 133548080728236076
+  - Handle: 11846661796531941289
+    Path: textures\Metal.jpg
+    ModificationTime: 133507673787817965
+  - Handle: 12449605133071949773
+    Path: textures\Container.jpg
+    ModificationTime: 133486970269206991
+  - Handle: 12483196473463701091
+    Path: scenes\BigerScene.sw_scene
+    ModificationTime: 133551609198381944
+  - Handle: 12762148702352565380
+    Path: textures\AwesomeFace.png
+    ModificationTime: 133486970269196981
+  - Handle: 13674443126027096193
+    Path: textures
+    ModificationTime: 133537736852725256
+  - Handle: 13724325088570669485
+    Path: textures\SW_Engine_Icon.png
+    ModificationTime: 133486906142652995
+  - Handle: 14333504962434576322
+    Path: build\Engine.ScriptCore.pdb
+    ModificationTime: 133549187848071538
+  - Handle: 14457641402759904771
+    Path: scripts\PlayerController.cs
+    ModificationTime: 133549188692733325
+  - Handle: 14575390567787600126
+    Path: prefabs
+    ModificationTime: 133551602556286285
+  - Handle: 14632088218576250143
+    Path: scenes\asd.sw_scene
+    ModificationTime: 133547492171768520
+  - Handle: 14888706407946827590
+    Path: build
+    ModificationTime: 133550851993334466
+  - Handle: 14928009201460077442
+    Path: build\Engine.ScriptCore.dll
+    ModificationTime: 133549187848101545
+  - Handle: 16827338635821269890
+    Path: fonts\CascadiaMono.ttf
+    ModificationTime: 133250476020000000

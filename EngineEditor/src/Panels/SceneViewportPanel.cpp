@@ -13,6 +13,7 @@
 #include "Core/Project/Project.hpp"
 #include "Core/OpenGL/Font.hpp"
 #include "Core/Scripting/ScriptingCore.hpp"
+#include "Core/Asset/AssetManager.hpp"
 
 namespace SW {
 
@@ -451,14 +452,16 @@ namespace SW {
 				ImGui::BeginDragDropTarget()
 			) {
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Scene")) {
-					std::filesystem::path path = ProjectContext::Get()->GetAssetDirectory() / static_cast<char*>(payload->Data);
+					u64* handle = static_cast<u64*>(payload->Data);
 
+					const AssetMetaData& metadata = AssetManager::GetAssetMetaData(*handle);
+					
 					if (SelectionManager::IsSelected())
 						SelectionManager::Deselect();
 
 					delete GetCurrentScene();
 
-					Scene* newScene = SceneSerializer::Deserialize(path.string());
+					Scene* newScene = SceneSerializer::Deserialize(ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
 
 					SetCurrentScene(newScene);
 					

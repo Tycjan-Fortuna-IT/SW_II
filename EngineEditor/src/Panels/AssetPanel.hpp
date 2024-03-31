@@ -78,7 +78,7 @@ namespace SW {
 		bool m_OpenNewFileModal = false;
 		bool m_RenameEntryModal = false;
 
-		int m_ThumbnailSize = 150;
+		int m_ThumbnailSize = 256;
 
 		std::filesystem::path m_FilesystemEntryToDelete = "";
 		std::filesystem::path m_FilesystemEntryToRename = "";

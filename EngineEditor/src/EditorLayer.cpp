@@ -61,6 +61,9 @@ namespace SW {
 		EditorResources::Shutdown();
 
 		Renderer2D::Shutdown();
+
+		if (ProjectContext::HasContext())
+			delete ProjectContext::Get();
 	}
 
 	void EditorLayer::OnUpdate(Timestep dt)
@@ -330,16 +333,16 @@ namespace SW {
 			GUI::DrawSingleLineTextInputProperty<256>(newProjectName, "Name");
 			GUI::EndProperties();
 
-			if (newProjectName != "") {
+			if (newProjectName != "") { // TODO fixme
 				if (ImGui::Button("Create", ImVec2(100.f, 0))) {
 					if (SelectionManager::IsSelected())
 						SelectionManager::Deselect();
 
-					std::filesystem::path newScenePath = ProjectContext::Get()->GetAssetDirectory() / "assets" / "scenes" / newProjectName;
+					std::filesystem::path newScenePath = ProjectContext::Get()->GetAssetDirectory() / "scenes" / newProjectName;
 
 					Scene* newScene = new Scene(newScenePath.string());
 
-					SceneSerializer::Serialize(newScene, newScenePath.string());
+					SceneSerializer::Serialize(newScene, newScenePath);
 
 					delete m_Viewport->GetCurrentScene();
 					m_Viewport->SetCurrentScene(newScene);

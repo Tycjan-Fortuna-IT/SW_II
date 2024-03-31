@@ -81,6 +81,14 @@ namespace SW {
 		static bool RenameFile(const std::filesystem::path& path, const std::string& newName);
 
 		/**
+		 * @brief Check whether a certain filesystem entry exists.
+		 * @param path Path to file or directory. e.g. C:/dev/file.txt
+		 *
+		 * @return Whether the filesystem entry exists.
+		 */
+		static bool Exists(const std::filesystem::path& path);
+
+		/**
 		 * @brief Checks if file exists.
 		 *
 		 * @param path Path to file.

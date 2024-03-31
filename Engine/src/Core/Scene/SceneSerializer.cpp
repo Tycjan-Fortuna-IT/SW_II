@@ -104,7 +104,7 @@ namespace YAML {
 
 namespace SW {
 
-	void SceneSerializer::Serialize(Scene* scene, const std::string& path)
+	void SceneSerializer::Serialize(Scene* scene, const std::filesystem::path& path)
 	{
 		YAML::Emitter output;
 
@@ -428,14 +428,14 @@ namespace SW {
 		fout << output.c_str();
 	}
 
-	Scene* SceneSerializer::Deserialize(const std::string& path)
+	Scene* SceneSerializer::Deserialize(const std::filesystem::path& path)
 	{
-		Scene* scene = new Scene(path);
+		Scene* scene = new Scene(path.string());
 
-		YAML::Node data = YAML::LoadFile(path);
+		YAML::Node data = YAML::LoadFile(path.string());
 
 		if (!data["Entities"]) {
-			SW_ERROR("Error while deserializing the scene: {}, no entities section found!", path);
+			SW_ERROR("Error while deserializing the scene: {}, no entities section found!", path.string());
 			return scene;
 		}
 
