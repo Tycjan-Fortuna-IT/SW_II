@@ -123,45 +123,72 @@ namespace SW {
 		delete item;
 	}
 
-	void AssetDirectoryTree::RefetchChanges()
+	AssetSourceItem* AssetDirectoryTree::FindChildItemByPath(AssetSourceItem* parent, const std::filesystem::path& dir) const
 	{
-		AssetManager::GetRegistryRaw().FetchAvailableAssets();
+		if (parent->Path == dir) return parent;
+
+		for (AssetSourceItem* child : parent->Children) {
+			AssetSourceItem* result = FindChildItemByPath(child, dir);
+
+			if (result != nullptr) return result;
+		}
+
+		return nullptr;
+	}
+
+	void AssetDirectoryTree::RefetchChanges(const std::filesystem::path& dir)
+	{
+		AssetManager::GetRegistryRaw().RefetchAvailableAssets();
+
+		TraverseDirectoryAndMapAssets(dir);
 	}
 
 	void AssetDirectoryTree::TraverseDirectoryAndMapAssets(const std::filesystem::path& dir)
 	{
+		const AssetRegistry& reg = AssetManager::GetRegistry();
+		const std::map<AssetHandle, AssetMetaData>& availableAssets = reg.GetAvailableAssets();
+
+		std::unordered_map<std::filesystem::path, AssetHandle> pathToIdMap;
+		for (auto&& [handle, metadata] : availableAssets) {
+			pathToIdMap[metadata.Path] = handle;
+		}
+
 		if (m_Root)
 			CleanUp(m_Root);
 
 		m_Root = new AssetSourceItem();
-		m_Root->Handle = Random::CreateID();
+		//m_Root->Handle = pathToIdMap.find(dir)->second; // no need for handle for not-draggable item
 		m_Root->Type = AssetSourceType::Directory;
 		m_Root->Thumbnail = EditorResources::DirectoryAssetIcon;
 		m_Root->Icon = SW_ICON_FILE;
 		m_Root->Color = IM_COL32(204, 204, 178, 255);
 		m_Root->Path = dir;
 
-		TraverseAndEmplace(m_Root->Path, m_Root);
+		TraverseAndEmplace(pathToIdMap, m_Root->Path, m_Root);
 	}
 
-	void AssetDirectoryTree::TraverseAndEmplace(const std::filesystem::path& dir, AssetSourceItem* item)
-	{
+	void AssetDirectoryTree::TraverseAndEmplace(
+		const std::unordered_map<std::filesystem::path, AssetHandle>& pathToIdMap,
+		const std::filesystem::path& dir, AssetSourceItem* item
+	) {
 		for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(dir)) {
 			AssetSourceItem* newItem = new AssetSourceItem();
 
-			newItem->Handle = Random::CreateID();
-			newItem->Type = std::filesystem::is_directory(entry) ? AssetSourceType::Directory : GetTypeFromExtension(entry.path());
+			const std::filesystem::path itemPath = std::filesystem::relative(entry.path(), ProjectContext::Get()->GetAssetDirectory());;
+
+			newItem->Handle = pathToIdMap.at(itemPath);
+			newItem->Type = std::filesystem::is_directory(entry) ? AssetSourceType::Directory : GetTypeFromExtension(itemPath);
 			newItem->Thumbnail = GetThumbnailFromFileType(newItem->Type);
 			newItem->Icon = GetIconFromFileType(newItem->Type);
 			newItem->Color = GetColorFromFileType(newItem->Type);
 			newItem->Parent = item;
-			newItem->Path = entry.path();
+			newItem->Path = itemPath;
 			newItem->ModificationTime = FileSystem::GetLastWriteTime(entry.path());
 
 			item->Children.emplace_back(newItem);
 
 			if (newItem->Type == AssetSourceType::Directory)
-				TraverseAndEmplace(newItem->Path, newItem);
+				TraverseAndEmplace(pathToIdMap, entry.path(), newItem);
 		}
 	}
 

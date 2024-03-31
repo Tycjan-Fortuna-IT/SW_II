@@ -12,4 +12,14 @@ namespace SW {
         return nullptr;
     }
 
+    bool EditorAssetManager::ForceUnload(AssetHandle handle)
+    {
+		return true;
+    }
+
+    bool EditorAssetManager::ForceReload(AssetHandle handle)
+    {
+		return true;
+    }
+
 }

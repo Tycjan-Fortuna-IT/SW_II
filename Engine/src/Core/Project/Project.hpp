@@ -53,10 +53,16 @@ namespace SW {
 
 		/**
 		 * @brief Retrieves the asset directory of the project.
-		 * @return The asset directory of the project.
+		 * @return The asset directory of the project. e.g. C:\Users\x\Desktop\Testbed\assets
 		 */
 		const std::filesystem::path& GetAssetDirectory() const { return m_Config.AssetsDirectory; }
 
+		/**
+		 * @brief Retrieves the asset parent directory of the project.
+		 * @return The asset directory of the project. e.g. C:\Users\x\Desktop\Testbed
+		 */
+		const std::filesystem::path& GetAssetParentDirectory() const { return m_Config.AssetsDirectory.parent_path(); }
+		
 		/**
 		 * @brief Retrieves the name of the project.
 		 * @return The name of the project.

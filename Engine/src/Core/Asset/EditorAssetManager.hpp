@@ -10,6 +10,10 @@ namespace SW {
 		const Asset* GetAsset(AssetHandle handle) override;
 
 		Asset* GetAssetRaw(AssetHandle handle) override;
+
+		bool ForceUnload(AssetHandle handle) override;
+
+		bool ForceReload(AssetHandle handle) override;
 	};
 
 }

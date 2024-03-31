@@ -12,6 +12,8 @@ namespace SW {
 		static void Initialize();
 		static void Shutdown();
 
+		static const AssetMetaData& GetAssetMetaData(AssetHandle handle) { return GetRegistry().GetAssetMetaData(handle); }
+
 		template <typename T>
 		static const T* GetAsset(AssetHandle handle)
 		{
@@ -22,6 +24,16 @@ namespace SW {
 		static T* GetAssetRaw(AssetHandle handle)
 		{
 			return ProjectContext::Get()->GetAssetManager()->GetAssetRaw(handle)->AsRaw<T>();
+		}
+
+		static bool ForceUnload(AssetHandle handle)
+		{
+			return ProjectContext::Get()->GetAssetManager()->ForceUnload(handle);
+		}
+
+		static bool ForceReload(AssetHandle handle)
+		{
+			return ProjectContext::Get()->GetAssetManager()->ForceReload(handle);
 		}
 
 		static const AssetRegistry& GetRegistry() { return ProjectContext::Get()->GetAssetManager()->GetRegistry(); }

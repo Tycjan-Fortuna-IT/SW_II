@@ -14,6 +14,9 @@ namespace SW {
 		virtual const Asset* GetAsset(AssetHandle handle) = 0;
 		virtual Asset* GetAssetRaw(AssetHandle handle) = 0;
 
+		virtual bool ForceUnload(AssetHandle handle) = 0;
+		virtual bool ForceReload(AssetHandle handle) = 0;
+
 		const AssetRegistry& GetRegistry() { return m_Registry; }
 		AssetRegistry& GetRegistryRaw() { return m_Registry; }
 

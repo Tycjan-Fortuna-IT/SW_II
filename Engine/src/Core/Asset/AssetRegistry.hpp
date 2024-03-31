@@ -4,14 +4,27 @@
 #include "Asset.hpp"
 
 namespace SW {
+	
+	using Timestamp = u64;
 
+	struct AssetMetaData
+	{
+		AssetHandle Handle;
+		std::filesystem::path Path;
+		Timestamp ModificationTime;
+	};
+	
 	class AssetRegistry
 	{
 	public:
 		AssetRegistry();		
 		~AssetRegistry();
 
-		void FetchAvailableAssets();
+		void FetchDirectory(std::map<std::filesystem::path, AssetMetaData>& registered, const std::filesystem::path& dir, bool reload);
+		void RefetchAvailableAssets();
+
+		const AssetMetaData& GetAssetMetaData(AssetHandle handle) const;
+		const std::map<AssetHandle, AssetMetaData>& GetAvailableAssets() const { return m_AvailableAssets; }
 
 		// If asset didn't exist previously creates a new entry
 		Asset* operator[](AssetHandle handle);
@@ -27,7 +40,10 @@ namespace SW {
 	private:
 		std::unordered_map<AssetHandle, Asset*> m_AssetRegistry; // contains all loaded assets
 
-		std::unordered_map<AssetHandle, std::filesystem::path> m_AvailableAssets;
+		std::map<AssetHandle, AssetMetaData> m_AvailableAssets;
+
+	private:
+		void FetchAvailableAssets();
 	};
 
 }
