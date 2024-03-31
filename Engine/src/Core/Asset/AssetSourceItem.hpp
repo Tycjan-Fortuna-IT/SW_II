@@ -12,7 +12,7 @@ namespace SW {
 	{
 		Unknown = 0,
 		Directory,
-		Texture,
+		Texture2D,
 		Sprite,
 		Spritesheet,
 		Font,
@@ -38,11 +38,15 @@ namespace SW {
 		AssetSourceItem* Parent = nullptr;
 		std::vector<AssetSourceItem*> Children;
 
-		const char* GetStringifiedAssetSourceType() const;
-
 		bool IsDirectory() const { return Type == AssetSourceType::Directory; }
-
 		bool IsFile() const { return Type != AssetSourceType::Directory; }
+
+		static const char* GetStringifiedAssetSourceType(AssetSourceType type);
+		static AssetSourceType GetAssetSourceTypeFromStringified(const std::string& type);
+		static AssetSourceType GetTypeFromExtension(const std::string& extension);
+		static const char* GetIconFromFileType(AssetSourceType type);
+		static u32 GetColorFromFileType(AssetSourceType type);
+		static Texture2D* GetThumbnailFromFileType(AssetSourceType type);
 	};
 
 }

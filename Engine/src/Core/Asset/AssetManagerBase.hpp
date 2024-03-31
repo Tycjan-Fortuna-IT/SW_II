@@ -20,7 +20,9 @@ namespace SW {
 		const AssetRegistry& GetRegistry() { return m_Registry; }
 		AssetRegistry& GetRegistryRaw() { return m_Registry; }
 
-	private:
+		const AssetMetaData& GetAssetMetaData(AssetHandle handle) { return m_Registry.GetAssetMetaData(handle); }
+
+	protected:
 		AssetRegistry m_Registry; // All asset pointers are owned by the AssetRegistry!
 	};
 

@@ -29,11 +29,6 @@ namespace SW {
 	private:
 		void CleanUp(AssetSourceItem* item);
 
-		AssetSourceType GetTypeFromExtension(const std::filesystem::path& path);
-		const char* GetIconFromFileType(AssetSourceType type);
-		u32 GetColorFromFileType(AssetSourceType type);
-		Texture2D* GetThumbnailFromFileType(AssetSourceType type);
-
 		void TraverseAndEmplace(const std::unordered_map<std::filesystem::path, AssetHandle>& pathToIdMap,
 			const std::filesystem::path& dir, AssetSourceItem* item);
 	};

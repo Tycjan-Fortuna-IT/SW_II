@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Asset.hpp"
+#include "AssetRegistry.hpp"
 
 namespace SW {
 
@@ -12,11 +12,11 @@ namespace SW {
 		static void Initialize();
 		static void Shutdown();
 
-		static void Serialize(const Asset* asset);
-		static Asset* TryLoadAsset(const std::filesystem::path& path);
+		static void Serialize(const Asset* asset, const AssetMetaData& metadata);
+		[[nodiscard]] static Asset* TryLoadAsset(const AssetMetaData& metadata);
 
 	private:
-		static std::unordered_map<AssetType, AssetSerializer*> s_Serializers;
+		static std::unordered_map<AssetSourceType, AssetSerializer*> s_Serializers;
 	};
 
 }

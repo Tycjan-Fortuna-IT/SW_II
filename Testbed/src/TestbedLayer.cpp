@@ -13,6 +13,7 @@
 #include "../../EngineEditor/src/Panels/AssetPanel.hpp"
 #include <future>
 #include "GUI/Editor/EditorResources.hpp"
+#include "Core/OpenGL/Texture2D.hpp"
 namespace SW {
 
 	static Asset* sp = nullptr;
@@ -52,7 +53,9 @@ namespace SW {
 		// Spritesheet* test = sp->As<Spritesheet>();
 		// SW_TRACE("{}", test->GetSpritesheetTexture()->GetHeight());
 
-		const Spritesheet* test = AssetManager::GetAsset<Spritesheet>(121);
+		const Texture2D* triangle = AssetManager::GetAsset<Texture2D>(2560501347489892845);
+
+		//const Spritesheet* test = AssetManager::GetAsset<Spritesheet>(121);
 
 		SW_TRACE("1");
 	}

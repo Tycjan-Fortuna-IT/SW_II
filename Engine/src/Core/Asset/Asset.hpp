@@ -18,7 +18,7 @@ namespace SW {
 	enum class FileType : u8
 	{
 		Unknown = 0,	///< Unknown file type.
-		Texture,		///< Texture file type.
+		Texture2D,		///< Texture file type.
 		Directory,		///< Directory file type.
 		Scene,			///< Scene file type
 		Font,			///< Font file type.
@@ -29,7 +29,7 @@ namespace SW {
 	enum class AssetType : u8
 	{
 		None = 0,
-		Texture,
+		Texture2D,
 		Directory,
 		Spritesheet,
 		Font,
@@ -49,11 +49,8 @@ namespace SW {
 	class Asset
 	{
 	public:
-		Asset(AssetHandle handle, const std::filesystem::path& path);
-		virtual ~Asset() {}
-
-		AssetHandle GetHandle() const { return m_Handle; }
-		const std::filesystem::path& GetPath() { return m_Path; }
+		Asset() = default;
+		virtual ~Asset() = default;
 
 		static AssetType GetStaticType() { return AssetType::None; }
 		virtual AssetType GetAssetType() const { return AssetType::None; }
@@ -91,10 +88,7 @@ namespace SW {
 
 	private:
 		AssetHandle m_Handle = 0u;
-		
 		AssetState m_State = AssetState::None;
-
-		std::filesystem::path m_Path = "";
 	};
 
 }

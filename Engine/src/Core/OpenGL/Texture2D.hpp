@@ -8,6 +8,8 @@
  */
 #pragma once
 
+#include "Core/Asset/Asset.hpp"
+
 namespace SW {
 
 	/**
@@ -33,7 +35,7 @@ namespace SW {
 	/**
 	 * @brief 2D texture class
 	 */
-    class Texture2D final
+	class Texture2D final : public Asset
     {
     public:
 		/**
