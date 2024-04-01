@@ -26,7 +26,7 @@ namespace SW {
 
 	void SpritesheetEditor::OnOpen()
 	{
-		m_Sprites.emplace_back(SpriteData{ "Sprite1" });
+
 	}
 
 	void SpritesheetEditor::OnClose()
@@ -82,9 +82,8 @@ namespace SW {
 
 			GUI::EndProperties();
 
-			if (m_Spritesheet->GetSpritesheetTexture())
-				RenderSpriteCards(scale);
-
+			RenderSpriteCards(scale);
+			
 			ImGui::TableNextColumn();
 
 			if (canvas.Begin("##mycanvas", ImGui::GetContentRegionAvail())) {
@@ -95,7 +94,8 @@ namespace SW {
 					}
 
 					canvas.SetView(drawStartPoint + ImGui::GetMouseDragDelta(1, 0.0f) * viewScale, viewScale);
-				} else if (isDragging) {
+				}
+				else if (isDragging) {
 					isDragging = false;
 				}
 
@@ -132,8 +132,8 @@ namespace SW {
 					GUI::GetTextureID(spritesheetTexture->GetHandle()), { (f32)spritesheetTexture->GetWidth(), (f32)spritesheetTexture->GetHeight() }, { 0, 1 }, { 1, 0 }
 				);
 
-				for (SpriteData& spriteData : m_Sprites) {
-					DrawRectOnCanvas(drawList, spriteData.Position, spriteData.Scale * scale);
+				for (const Sprite* sprite : m_Spritesheet->GetSprites()) {
+					DrawSpriteRectOnCanvas(drawList, sprite);
 				}
 
 				canvas.End();
@@ -146,7 +146,24 @@ namespace SW {
 	void SpritesheetEditor::SetAsset(Asset* asset)
 	{
 		m_Spritesheet = asset->AsRaw<Spritesheet>();
-	}	
+	}
+
+	void SpritesheetEditor::DrawSpriteRectOnCanvas(ImDrawList* drawList, const Sprite* sprite) const
+	{
+		const glm::vec2 position = sprite->Position;
+		const glm::vec2 scale = sprite->Scale * m_Spritesheet->GetViewZoom();
+		const glm::vec2 offset = m_Spritesheet->GetCenterOffset();
+
+		ImVec2 topLeft = ImVec2(position.x + offset.x, position.y + offset.y);
+		ImVec2 topRight = ImVec2(position.x + scale.x + offset.x, position.y + offset.y);
+		ImVec2 bottomRight = ImVec2(position.x + scale.x + offset.x, position.y + scale.y + offset.y);
+		ImVec2 bottomLeft = ImVec2(position.x + offset.x, position.y + scale.y + offset.y);
+
+		drawList->AddLine(topLeft, topRight, GUI::Theme::SelectionHalfMuted);
+		drawList->AddLine(topRight, bottomRight, GUI::Theme::SelectionHalfMuted);
+		drawList->AddLine(bottomRight, bottomLeft, GUI::Theme::SelectionHalfMuted);
+		drawList->AddLine(bottomLeft, topLeft, GUI::Theme::SelectionHalfMuted);
+	}
 
 	void SpritesheetEditor::RenderSpriteCards(f32 scale)
 	{
@@ -168,9 +185,7 @@ namespace SW {
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Add new sprite")) {
-			m_Sprites.emplace_back(SpriteData{
-				std::to_string(Random::CreateID())
-			});
+
 		}
 		static GUI::TextFilter spriteFilter;
 
@@ -186,16 +201,23 @@ namespace SW {
 
 			int indexToRemove = -1;
 
-			for (int i = 0; i < m_Sprites.size(); i++) {
-				SpriteData& spriteData = m_Sprites[i];
+			if (!m_Spritesheet->GetSpritesheetTexture()) {
+				ImGui::EndTable();
+				return;
+			}
+
+			const std::vector<Sprite*> sprites = m_Spritesheet->GetSprites();
+
+			for (int i = 0; i < sprites.size(); i++) {
+				Sprite* sprite = sprites[i];
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
 
-				if (!spriteFilter.FilterPass(spriteData.Name))
+				if (!spriteFilter.FilterPass(sprite->Name))
 					continue;
 
-				const char* spriteName = spriteData.Name.c_str();
+				const char* spriteName = sprite->Name.c_str();
 				const std::string uid = std::to_string(i);
 				const char* uidc = uid.c_str();
 				
@@ -225,12 +247,12 @@ namespace SW {
 
 				if (opened) {
 					GUI::BeginProperties(uidc);
-					GUI::DrawSingleLineTextInputProperty(spriteData.Name, "Sprite name");
-					GUI::DrawVector2ControlProperty(spriteData.Position, "Position");
-					GUI::DrawVector2ControlProperty(spriteData.Scale, "Scale", nullptr, 1.f, 1.f, 20.f);
-					GUI::DrawVector4ColorPickerProperty(spriteData.Tint, "Tint");
+					GUI::DrawSingleLineTextInputProperty(sprite->Name, "Sprite name");
+					GUI::DrawVector2ControlProperty(sprite->Position, "Position");
+					GUI::DrawVector2ControlProperty(sprite->Scale, "Scale", nullptr, 1.f, 1.f, 20.f);
+					GUI::DrawVector4ColorPickerProperty(sprite->Tint, "Tint");
 					GUI::DrawImagePartProperty(
-						m_Spritesheet->GetSpritesheetTexture(), "Sprite", nullptr, spriteData.Position, spriteData.Scale, spriteData.Tint, scale
+						m_Spritesheet->GetSpritesheetTexture(), "Sprite", nullptr, sprite->Position, sprite->Scale, sprite->Tint, scale
 					);
 					GUI::EndProperties();
 
@@ -239,7 +261,7 @@ namespace SW {
 			}
 			
 			if (indexToRemove != -1) {
-				m_Sprites.erase(m_Sprites.begin() + indexToRemove);
+				//m_Sprites.erase(m_Sprites.begin() + indexToRemove);
 			}
 
 			ImGui::EndTable();

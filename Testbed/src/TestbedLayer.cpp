@@ -20,8 +20,6 @@
 
 namespace SW {
 
-	static Asset* sp = nullptr;
-
 	static AssetPanel* assetPanel = nullptr;
 	static Project* newProject = nullptr;
 
@@ -59,8 +57,6 @@ namespace SW {
 
 		//const Texture2D* triangle = AssetManager::GetAsset<Texture2D>(2560501347489892845);
 
-		sp = AssetManager::GetAssetRaw(16067828130367013933);
-
 		SW_TRACE("1");
 	}
 
@@ -83,35 +79,13 @@ namespace SW {
 		assetPanel->OnUpdate(dt);
 	}
 
-	static void OpenPanel()
-	{
-		AssetEditorPanelManager::OpenEditor(sp);
-	}
-
-	static void ClosePanel()
-	{
-
-	}
-
 	void TestbedLayer::OnRender()
 	{
 		GUI::CreateDockspace("Main Dockspace", nullptr);
 
 		AssetEditorPanelManager::OnRender();
 
-		ImGui::Begin("Panel");
-
-		if (ImGui::Button("Open panel")) {
-			OpenPanel();
-		}
-		
-		if (ImGui::Button("Close panel")) {
-			ClosePanel();
-		}
-
 		assetPanel->OnRender();
-
-		ImGui::End();
 
 		ImGui::ShowDemoWindow();
 	}

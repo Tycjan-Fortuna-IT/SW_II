@@ -10,16 +10,9 @@
 
 #include "Core/Asset/Panels/AssetEditorPanel.hpp"
 #include "Core/Asset/Spritesheet.hpp"
+#include "Core/Asset/Sprite.hpp"
 
 namespace SW {
-
-	struct SpriteData final
-	{
-		std::string Name;
-		glm::vec2 Position = glm::vec2(0.0f);
-		glm::vec2 Scale = glm::vec2(1.0f);
-		glm::vec4 Tint = glm::vec4(1.0f);
-	};
 
 	class SpritesheetEditor final : public AssetEditorPanel
 	{
@@ -41,10 +34,10 @@ namespace SW {
 		void SetAsset(Asset* asset) override;
 
 	private:
-		std::vector<SpriteData> m_Sprites;
-
 		Spritesheet* m_Spritesheet = nullptr;
 
+	private:
+		void DrawSpriteRectOnCanvas(ImDrawList* drawList, const Sprite* sprite) const;
 		void RenderSpriteCards(f32 scale);
 	};
 

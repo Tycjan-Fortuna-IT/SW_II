@@ -14,6 +14,7 @@
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/Asset/AssetDirectoryTree.hpp"
 #include "Core/Renderer/Renderer2D.hpp"
+#include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.hpp" // FIXME
 
 namespace SW {
 
@@ -300,7 +301,7 @@ namespace SW {
 		constexpr f32 thumbnailPadding = overlayPaddingY * 0.5f;
 		const f32 thumbnailSize = scaledThumbnailSizeX - thumbnailPadding;
 
-		const ImVec2 backgroundThumbnailSize = { scaledThumbnailSizeX + padding * 2, scaledThumbnailSize + padding * 2 };
+		const ImVec2 backgroundThumbnailSize = { scaledThumbnailSizeX + padding * 2, scaledThumbnailSize - 20.f };
 
 		const f32 panelWidth = ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ScrollbarSize;
 		int columnCount = static_cast<int>(panelWidth / cellSize);
@@ -323,8 +324,8 @@ namespace SW {
 
 				std::string filename = child->Path.filename().string();
 
-				if (ImGui::CalcTextSize(filename.c_str()).x > m_ThumbnailSize - 20.f) {
-					filename = filename.substr(0, std::min<u64>(20, filename.size())) + "...";
+				if (ImGui::CalcTextSize(filename.c_str()).x > m_ThumbnailSize / 2.f) {
+					filename = filename.substr(0, std::min<u64>(15, filename.size())) + "...";
 				}
 
 				const char* filenameEnd = filename.data() + filename.size();
@@ -472,7 +473,9 @@ namespace SW {
 		}
 
 		if (item->Type == AssetType::Spritesheet) {
-			// TODO
+			Asset* spritesheet = AssetManager::GetAssetRaw(item->Handle);
+
+			AssetEditorPanelManager::OpenEditor(spritesheet);
 		} else {
 			FileSystem::OpenExternally(m_AssetsDirectory / item->Path);
 		}	
