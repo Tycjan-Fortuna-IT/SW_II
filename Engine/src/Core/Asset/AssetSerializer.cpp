@@ -2,6 +2,7 @@
 
 #include "Asset.hpp"
 #include "core/Project/ProjectContext.hpp"
+#include "Spritesheet.hpp"
 
 namespace SW {
 
@@ -24,7 +25,9 @@ namespace SW {
 
 	Asset* SpritesheetSerializer::TryLoadAsset(const AssetMetaData& metadata)
 	{
-		throw std::logic_error("The method or operation is not implemented.");
+		Asset* spritesheet = new Spritesheet();
+
+		return spritesheet;
 	}
 
 }

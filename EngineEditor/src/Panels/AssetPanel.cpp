@@ -100,7 +100,7 @@ namespace SW {
 
 	void AssetPanel::DrawHeader()
 	{
-		if (ImGui::Button(SW_ICON_COGS))
+		if (ImGui::Button(SW_ICON_COGS, { 34.f, 34.f }))
 			ImGui::OpenPopup("SettingsPopup");
 
 		ImGui::SameLine();
@@ -112,7 +112,7 @@ namespace SW {
 			ImGui::EndPopup();
 		}
 
-		if (ImGui::Button(SW_ICON_REFRESH)) {
+		if (ImGui::Button(SW_ICON_REFRESH, { 34.f, 34.f })) {
 			LoadDirectoryEntries();
 		}
 
@@ -127,7 +127,7 @@ namespace SW {
 
 		ImGui::SameLine();
 
-		if (ImGui::Button(SW_ICON_ARROW_LEFT_BOLD)) {
+		if (ImGui::Button(SW_ICON_ARROW_LEFT_BOLD, { 34.f, 34.f })) {
 			m_SelectedItem = m_SelectedItem->Parent;
 			LoadDirectoryEntries();
 		}
@@ -147,17 +147,26 @@ namespace SW {
 			currentDirCopy = currentDirCopy.parent_path();
 		}
 
+		if (m_SelectedItem == m_AssetTree->GetRootItem())
+			paths.erase(paths.begin(), paths.begin() + 1);
+
 		{
 			for (auto it = paths.rbegin(); it != paths.rend(); ++it) {
 				ImGui::SameLine();
-				ImGui::TextUnformatted(SW_ICON_FOLDER);
-				ImGui::SameLine();
 
-				ImGui::TextUnformatted(it->filename().string().c_str());
+				const std::string filename = std::format("{}   {}", SW_ICON_FOLDER, it->filename().string());
+
+				if (ImGui::Button(filename.c_str(), { ImGui::CalcTextSize(filename.c_str()).x * 1.5f, 34.f })) {
+					const std::filesystem::path path = std::filesystem::relative(*it, ProjectContext::Get()->GetAssetDirectory());
+
+					m_QueuedSelectedItem = m_AssetTree->FindChildItemByPath(m_AssetTree->GetRootItem(), path);
+				}
 
 				if (it + 1 != paths.rend()) {
 					ImGui::SameLine();
-					ImGui::TextUnformatted("/");
+					GUI::MoveMousePosY(8.f);
+					ImGui::TextUnformatted(SW_ICON_DOTS_VERTICAL);
+					GUI::MoveMousePosY(-8.f);
 				}
 			}
 		}
@@ -331,7 +340,7 @@ namespace SW {
 				ImGui::SetCursorPos({ cursorPos.x + padding, cursorPos.y + padding });
 				ImGui::SetItemAllowOverlap();
 
-				const ImVec2 imageSize = { backgroundThumbnailSize.x - padding * 2.0f, backgroundThumbnailSize.y - padding * 2.0f };
+				const ImVec2 imageSize = { backgroundThumbnailSize.x - padding * 2.0f - 3.f, backgroundThumbnailSize.y - padding * 2.0f };
 				const ImVec2 imagePos = ImGui::GetCursorScreenPos();
 
 				const ImVec2 min = imagePos;
@@ -343,8 +352,8 @@ namespace SW {
 
 				ImGui::Image(whiteTexId, imageSize, { 0, 0 }, { 1, 1 }, backgroundColor, borderColor);
 
-				DrawDirectoryEntryPopup(child->Path);
-
+				DrawItemOperationsPopup(child);
+				
 				if (ImGui::IsItemHovered())
 					isAnyItemHovered = true;
 
@@ -358,14 +367,8 @@ namespace SW {
 
 					ImGui::EndTooltip();
 
-					if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-						if (child->IsDirectory()) {
-							m_SelectedItem = child;
-							refreshDirectory = true;
-						} else {
-							FileSystem::OpenExternally(m_AssetsDirectory / child->Path);
-						}
-					}
+					if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+						HandleItemOnDoubleClick(child, &refreshDirectory);
 				}
 
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
@@ -385,13 +388,13 @@ namespace SW {
 				}
 
 				// Thumbnail Image
-				ImGui::SetCursorPos({ cursorPos.x + thumbnailPadding * 0.9f, cursorPos.y + thumbnailPadding * 0.8f });
+				ImGui::SetCursorPos({ cursorPos.x + thumbnailPadding * 0.8f, cursorPos.y + thumbnailPadding * 0.8f });
 				ImGui::SetItemAllowOverlap();
 				ImGui::Image(textureId, { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
 
 				// Type Color frame
-				const ImVec2 typeColorFrameSize = { scaledThumbnailSizeX, scaledThumbnailSizeX * 0.03f };
-				ImGui::SetCursorPosX(cursorPos.x + padding);
+				const ImVec2 typeColorFrameSize = { scaledThumbnailSizeX - 7.f, scaledThumbnailSizeX * 0.05f };
+				ImGui::SetCursorPosX(cursorPos.x + padding * 1.5f);
 				ImGui::Image(whiteTexId, typeColorFrameSize, { 0, 0 }, { 1, 1 }, ImGui::ColorConvertU32ToFloat4(child->Color));
 
 				const ImVec2 rectMin = ImGui::GetItemRectMin();
@@ -419,33 +422,60 @@ namespace SW {
 				refreshDirectory = false;
 				LoadDirectoryEntries();
 			}
+
+			if (m_QueuedSelectedItem) {
+				m_SelectedItem = m_QueuedSelectedItem;
+				m_QueuedSelectedItem = nullptr;
+			}
 		}
 	}
 
-	void AssetPanel::DrawDirectoryEntryPopup(const std::filesystem::path& entry)
+	void AssetPanel::DrawItemOperationsPopup(const AssetSourceItem* item)
 	{
 		if (ImGui::BeginPopupContextItem("DirectoryEntryPopupMenu")) {
 			if (ImGui::MenuItemEx("Rename", SW_ICON_RENAME_BOX)) {
 				m_RenameEntryModal = true;
-				m_FilesystemEntryToRename = m_AssetsDirectory / entry;
+				m_FilesystemEntryToRename = m_AssetsDirectory / item->Path;
 			}
 
 			if (ImGui::MenuItemEx("Show in explorer", SW_ICON_MAGNIFY)) {
-				std::filesystem::path toOpen = m_AssetsDirectory / entry;
+				std::filesystem::path toOpen = m_AssetsDirectory / item->Path;
 
-				if (std::filesystem::is_directory(toOpen))
+				if (item->IsDirectory())
 					FileSystem::RevealFolderInFileExplorer(toOpen);
 				else
 					FileSystem::OpenFolderAndSelectItem(toOpen);
 			}
 
+			if (!item->IsDirectory()) {
+				if (ImGui::MenuItemEx("Open externally", SW_ICON_BOOK_OPEN)) {
+					FileSystem::OpenExternally(m_AssetsDirectory / item->Path);
+				}
+			}
+
 			if (ImGui::MenuItemEx("Delete", SW_ICON_DELETE)) {
 				m_OpenDeleteWarningModal = true;
-				m_FilesystemEntryToDelete = m_AssetsDirectory / entry;
+				m_FilesystemEntryToDelete = m_AssetsDirectory / item->Path;
 			}
 
 			ImGui::EndPopup();
 		}
+	}
+
+	void AssetPanel::HandleItemOnDoubleClick(AssetSourceItem* item, bool* refreshDirectory)
+	{
+		if (item->IsDirectory()) {
+			m_SelectedItem = item;
+			*refreshDirectory = true;
+
+			return;
+		}
+
+		if (item->Type == AssetType::Spritesheet) {
+			// TODO
+		} else {
+			FileSystem::OpenExternally(m_AssetsDirectory / item->Path);
+		}	
 	}
 
 	void AssetPanel::DrawAssetPanelPopup()

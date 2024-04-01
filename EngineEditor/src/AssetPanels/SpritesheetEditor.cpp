@@ -2,6 +2,8 @@
 
 #include <imgui_canvas.h>
 
+#include "GUI/Editor/EditorResources.hpp"
+
 namespace SW {
 
 	SpritesheetEditor::SpritesheetEditor(const char* name, const char* icon)
@@ -9,7 +11,7 @@ namespace SW {
 
 	void SpritesheetEditor::OnUpdate(Timestep ts)
 	{
-		
+
 	}
 
 	void SpritesheetEditor::OnWindowStylePush()
@@ -80,7 +82,8 @@ namespace SW {
 
 			GUI::EndProperties();
 
-			RenderSpriteCards(scale);
+			if (m_Spritesheet->GetSpritesheetTexture())
+				RenderSpriteCards(scale);
 
 			ImGui::TableNextColumn();
 
@@ -122,6 +125,8 @@ namespace SW {
 					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Min.y), scale, 16.0f, 0.6f, -1.0f);
 
 				Texture2D* spritesheetTexture = m_Spritesheet->GetSpritesheetTexture();
+				if (spritesheetTexture == nullptr)
+					spritesheetTexture = EditorResources::MissingAssetIcon;
 
 				ImGui::Image(
 					GUI::GetTextureID(spritesheetTexture->GetHandle()), { (f32)spritesheetTexture->GetWidth(), (f32)spritesheetTexture->GetHeight() }, { 0, 1 }, { 1, 0 }
@@ -140,7 +145,7 @@ namespace SW {
 
 	void SpritesheetEditor::SetAsset(Asset* asset)
 	{
-		m_Spritesheet = (Spritesheet*)asset;
+		m_Spritesheet = asset->AsRaw<Spritesheet>();
 	}	
 
 	void SpritesheetEditor::RenderSpriteCards(f32 scale)

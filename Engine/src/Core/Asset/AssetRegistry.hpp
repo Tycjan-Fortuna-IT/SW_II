@@ -11,7 +11,7 @@ namespace SW {
 	struct AssetMetaData
 	{
 		AssetHandle Handle;
-		AssetSourceType Type;
+		AssetType Type;
 		std::filesystem::path Path;
 		Timestamp ModificationTime;
 	};

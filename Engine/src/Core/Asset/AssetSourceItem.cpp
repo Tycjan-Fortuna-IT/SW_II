@@ -4,100 +4,100 @@
 
 namespace SW {
 
-	static std::unordered_map<std::string, AssetSourceType> s_StringifiedSourceTypesMapped =
+	static std::unordered_map<std::string, AssetType> s_StringifiedSourceTypesMapped =
 	{
-		{ "Unknown",		AssetSourceType::Unknown			},
-		{ "Directory",		AssetSourceType::Directory			},
-		{ "Texture2D",		AssetSourceType::Texture2D			},
-		{ "Sprite",			AssetSourceType::Sprite				},
-		{ "Spritesheet",	AssetSourceType::Spritesheet		},
-		{ "Font",			AssetSourceType::Font				},
-		{ "Scene",			AssetSourceType::Scene				},
-		{ "Prefab",			AssetSourceType::Prefab				},
-		{ "Script",			AssetSourceType::Script				},
-		{ "Shader",			AssetSourceType::Shader				},
+		{ "Unknown",		AssetType::Unknown				},
+		{ "Directory",		AssetType::Directory			},
+		{ "Texture2D",		AssetType::Texture2D			},
+		{ "Sprite",			AssetType::Sprite				},
+		{ "Spritesheet",	AssetType::Spritesheet			},
+		{ "Font",			AssetType::Font					},
+		{ "Scene",			AssetType::Scene				},
+		{ "Prefab",			AssetType::Prefab				},
+		{ "Script",			AssetType::Script				},
+		{ "Shader",			AssetType::Shader				},
 	};
 
-	static std::unordered_map<std::string, AssetSourceType> s_AssetSourceTypes =
+	static std::unordered_map<std::string, AssetType> s_AssetSourceTypes =
 	{
-		{ ".png",			AssetSourceType::Texture2D		},
-		{ ".jpg",			AssetSourceType::Texture2D		},
-		{ ".ttf",			AssetSourceType::Font			},
-		{ ".sw_scene",		AssetSourceType::Scene			},
-		{ ".sw_prefab",		AssetSourceType::Prefab			},
-		{ ".cs",			AssetSourceType::Script			},
-		{ ".sw_sprite",		AssetSourceType::Sprite			},
-		{ ".sw_spritesh",	AssetSourceType::Spritesheet	},
-		{ ".glsl",			AssetSourceType::Shader			},
+		{ ".png",			AssetType::Texture2D		},
+		{ ".jpg",			AssetType::Texture2D		},
+		{ ".ttf",			AssetType::Font				},
+		{ ".sw_scene",		AssetType::Scene			},
+		{ ".sw_prefab",		AssetType::Prefab			},
+		{ ".cs",			AssetType::Script			},
+		{ ".sw_sprite",		AssetType::Sprite			},
+		{ ".sw_spritesh",	AssetType::Spritesheet		},
+		{ ".glsl",			AssetType::Shader			},
 	};
 
-	static const std::unordered_map<AssetSourceType, ImU32> s_AssetSourceTypeColors =
+	static const std::unordered_map<AssetType, ImU32> s_AssetSourceTypeColors =
 	{
-		{ AssetSourceType::Unknown,		IM_COL32(204, 133,   0, 255) },
-		{ AssetSourceType::Texture2D,	IM_COL32(204, 102, 102, 255) },
-		{ AssetSourceType::Directory,	IM_COL32(204, 204, 178, 255) },
-		{ AssetSourceType::Scene,		IM_COL32(122, 163, 204, 255) },
-		{ AssetSourceType::Font,		IM_COL32(135, 135, 135, 255) },
-		{ AssetSourceType::Prefab,		IM_COL32(184, 102, 184, 255) },
-		{ AssetSourceType::Script,		IM_COL32(115, 189, 115, 255) },
-		{ AssetSourceType::Sprite,		IM_COL32(115, 189, 189, 255) },
-		{ AssetSourceType::Spritesheet, IM_COL32(189, 115, 115, 255) },
-		{ AssetSourceType::Shader,		IM_COL32(189, 189, 115, 255) },
+		{ AssetType::Unknown,		IM_COL32(204, 133,   0, 255) },
+		{ AssetType::Texture2D,		IM_COL32(204, 102, 102, 255) },
+		{ AssetType::Directory,		IM_COL32(204, 204, 178, 255) },
+		{ AssetType::Scene,			IM_COL32(122, 163, 204, 255) },
+		{ AssetType::Font,			IM_COL32(135, 135, 135, 255) },
+		{ AssetType::Prefab,		IM_COL32(184, 102, 184, 255) },
+		{ AssetType::Script,		IM_COL32(115, 189, 115, 255) },
+		{ AssetType::Sprite,		IM_COL32(115, 189, 189, 255) },
+		{ AssetType::Spritesheet,	IM_COL32(189, 115, 115, 255) },
+		{ AssetType::Shader,		IM_COL32(189, 189, 115, 255) },
 	};
 
-	static const std::unordered_map <AssetSourceType, const char*> s_AssetSourceTypesToIcon =
+	static const std::unordered_map <AssetType, const char*> s_AssetSourceTypesToIcon =
 	{
-		{ AssetSourceType::Unknown,		SW_ICON_FILE			},
-		{ AssetSourceType::Texture2D,	SW_ICON_FILE_IMAGE		},
-		{ AssetSourceType::Directory,	SW_ICON_FOLDER			},
-		{ AssetSourceType::Scene,		SW_ICON_FILE_VIDEO		},
-		{ AssetSourceType::Font,		SW_ICON_FORMAT_TEXT		},
-		{ AssetSourceType::Prefab,		SW_ICON_FILE_IMPORT		},
-		{ AssetSourceType::Script,		SW_ICON_LANGUAGE_CSHARP },
-		{ AssetSourceType::Sprite,		SW_ICON_FILE_IMAGE		},
-		{ AssetSourceType::Spritesheet, SW_ICON_FILE_IMAGE		},
-		{ AssetSourceType::Shader,      SW_ICON_LANGUAGE_C      },
+		{ AssetType::Unknown,		SW_ICON_FILE			},
+		{ AssetType::Texture2D,		SW_ICON_FILE_IMAGE		},
+		{ AssetType::Directory,		SW_ICON_FOLDER			},
+		{ AssetType::Scene,			SW_ICON_FILE_VIDEO		},
+		{ AssetType::Font,			SW_ICON_FORMAT_TEXT		},
+		{ AssetType::Prefab,		SW_ICON_FILE_IMPORT		},
+		{ AssetType::Script,		SW_ICON_LANGUAGE_CSHARP },
+		{ AssetType::Sprite,		SW_ICON_FILE_IMAGE		},
+		{ AssetType::Spritesheet,	SW_ICON_FILE_IMAGE		},
+		{ AssetType::Shader,		SW_ICON_LANGUAGE_C      },
 	};
 
-	const char* AssetSourceItem::GetStringifiedAssetSourceType(AssetSourceType type)
+	const char* AssetSourceItem::GetStringifiedAssetSourceType(AssetType type)
 	{
 		switch (type) {
-			case AssetSourceType::Unknown:		return "Unknown";		break;
-			case AssetSourceType::Directory:	return "Directory";		break;
-			case AssetSourceType::Texture2D:	return "Texture2D";		break;
-			case AssetSourceType::Sprite:		return "Sprite";		break;
-			case AssetSourceType::Spritesheet:  return "Spritesheet";	break;
-			case AssetSourceType::Font:			return "Font";			break;
-			case AssetSourceType::Scene:		return "Scene";			break;
-			case AssetSourceType::Prefab:		return "Prefab";		break;
-			case AssetSourceType::Script:		return "Script";		break;
-			case AssetSourceType::Shader:		return "Shader";		break;
+			case AssetType::Unknown:		return "Unknown";		break;
+			case AssetType::Directory:		return "Directory";		break;
+			case AssetType::Texture2D:		return "Texture2D";		break;
+			case AssetType::Sprite:			return "Sprite";		break;
+			case AssetType::Spritesheet:	return "Spritesheet";	break;
+			case AssetType::Font:			return "Font";			break;
+			case AssetType::Scene:			return "Scene";			break;
+			case AssetType::Prefab:			return "Prefab";		break;
+			case AssetType::Script:			return "Script";		break;
+			case AssetType::Shader:			return "Shader";		break;
 		}
 
 		return "Unknown";
 	}
 
-	AssetSourceType AssetSourceItem::GetAssetSourceTypeFromStringified(const std::string& type)
+	AssetType AssetSourceItem::GetAssetSourceTypeFromStringified(const std::string& type)
 	{
 		const auto it = s_StringifiedSourceTypesMapped.find(type);
 
 		if (it != s_StringifiedSourceTypesMapped.end())
 			return it->second;
 
-		return AssetSourceType::Unknown;
+		return AssetType::Unknown;
 	}
 
-	AssetSourceType AssetSourceItem::GetTypeFromExtension(const std::string& extension)
+	AssetType AssetSourceItem::GetTypeFromExtension(const std::string& extension)
 	{
 		const auto it = s_AssetSourceTypes.find(extension);
 
 		if (it != s_AssetSourceTypes.end())
 			return it->second;
 
-		return AssetSourceType::Unknown;
+		return AssetType::Unknown;
 	}
 
-	const char* AssetSourceItem::GetIconFromFileType(AssetSourceType type)
+	const char* AssetSourceItem::GetIconFromFileType(AssetType type)
 	{
 		const auto it = s_AssetSourceTypesToIcon.find(type);
 
@@ -107,7 +107,7 @@ namespace SW {
 		return SW_ICON_FILE;
 	}
 
-	u32 AssetSourceItem::GetColorFromFileType(AssetSourceType type)
+	u32 AssetSourceItem::GetColorFromFileType(AssetType type)
 	{
 		const auto it = s_AssetSourceTypeColors.find(type);
 
@@ -117,28 +117,28 @@ namespace SW {
 		return IM_COL32(204, 133, 0, 255);
 	}
 
-	Texture2D* AssetSourceItem::GetThumbnailFromFileType(AssetSourceType type)
+	Texture2D* AssetSourceItem::GetThumbnailFromFileType(AssetType type)
 	{
 		switch (type) {
-			case AssetSourceType::Unknown:
+			case AssetType::Unknown:
 				return EditorResources::UnknownAssetIcon; break;
-			case AssetSourceType::Directory:
+			case AssetType::Directory:
 				return EditorResources::DirectoryAssetIcon; break;
-			case AssetSourceType::Texture2D:
-				return nullptr; break;		// Thumbnail will be loaded individually request based. (Dont need to load all at the beginning).
-			case AssetSourceType::Sprite:
+			case AssetType::Texture2D:
+				return nullptr; break;	// Thumbnail will be loaded individually request based. (Dont need to load all at the beginning).
+			case AssetType::Sprite:
 				return nullptr; break;	// same
-			case AssetSourceType::Spritesheet:
-				return nullptr; break;		// same
-			case AssetSourceType::Font:
+			case AssetType::Spritesheet:
+				return nullptr; break;	// same
+			case AssetType::Font:
 				return EditorResources::FontAssetIcon; break;
-			case AssetSourceType::Scene:
+			case AssetType::Scene:
 				return EditorResources::SceneAssetIcon; break;
-			case AssetSourceType::Prefab:
+			case AssetType::Prefab:
 				return EditorResources::PrefabAssetIcon; break;
-			case AssetSourceType::Script:
+			case AssetType::Script:
 				return EditorResources::ScriptAssetIcon; break;
-			case AssetSourceType::Shader:
+			case AssetType::Shader:
 				return EditorResources::ShaderAssetIcon; break;
 		}
 

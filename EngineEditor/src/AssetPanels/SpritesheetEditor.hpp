@@ -9,22 +9,9 @@
 #pragma once
 
 #include "Core/Asset/Panels/AssetEditorPanel.hpp"
+#include "Core/Asset/Spritesheet.hpp"
 
 namespace SW {
-
-	class Spritesheet final : public Asset
-	{
-	public:
-		Spritesheet(AssetHandle handle, Texture2D* spritesheetTexture)
-			: m_SpritesheetTexture(spritesheetTexture) {}
-
-		AssetType GetAssetType() const override { return AssetType::Spritesheet; }
-
-		Texture2D* GetSpritesheetTexture() const { return m_SpritesheetTexture; }
-
-	private:
-		Texture2D* m_SpritesheetTexture = nullptr;
-	};
 
 	struct SpriteData final
 	{

@@ -12,30 +12,18 @@ namespace SW {
 
 	using AssetHandle = u64;
 
-	/**
-	 * @brief The FileType enum class represents the type of a file.
-	 */
-	enum class FileType : u8
-	{
-		Unknown = 0,	///< Unknown file type.
-		Texture2D,		///< Texture file type.
-		Directory,		///< Directory file type.
-		Scene,			///< Scene file type
-		Font,			///< Font file type.
-		Prefab,			///< Prefab file type.
-		Script,			///< Script file type.
-	};
-
 	enum class AssetType : u8
 	{
-		None = 0,
-		Texture2D,
+		Unknown = 0,
 		Directory,
+		Texture2D,
+		Sprite,
 		Spritesheet,
 		Font,
 		Scene,
 		Prefab,
 		Script,
+		Shader,
 	};
 
 	enum class AssetState : u8
@@ -52,8 +40,8 @@ namespace SW {
 		Asset() = default;
 		virtual ~Asset() = default;
 
-		static AssetType GetStaticType() { return AssetType::None; }
-		virtual AssetType GetAssetType() const { return AssetType::None; }
+		static AssetType GetStaticType() { return AssetType::Unknown; }
+		virtual AssetType GetAssetType() const { return AssetType::Unknown; }
 
 		virtual bool operator==(const Asset& other) const
 		{
@@ -74,7 +62,7 @@ namespace SW {
 
 		template <typename T>
 			requires std::is_base_of_v<Asset, T>
-		inline T* AsRaw() const
+		inline T* AsRaw()
 		{
 			return dynamic_cast<T*>(this);
 		}
@@ -89,6 +77,8 @@ namespace SW {
 	private:
 		AssetHandle m_Handle = 0u;
 		AssetState m_State = AssetState::None;
+
+		friend class EditorAssetManager; // Handle is set by the AssetManager!
 	};
 
 }

@@ -15,6 +15,7 @@ namespace SW {
 			MinimizeIcon = new Texture2D(exePath / "assets/icons/editor/windows/Minimize.png", true);
 			RestoreIcon = new Texture2D(exePath / "assets/icons/editor/windows/Restore.png", true);
 
+			MissingAssetIcon = new Texture2D(exePath / "assets/icons/editor/asset_icons/missing.png", true);
 			UnknownAssetIcon = new Texture2D(exePath / "assets/icons/editor/asset_icons/unknown_icon.png", true);
 			DirectoryAssetIcon = new Texture2D(exePath / "assets/icons/editor/asset_icons/directory_icon.png", true);
 			FontAssetIcon = new Texture2D(exePath / "assets/icons/editor/asset_icons/font_icon.png", true);
@@ -32,6 +33,7 @@ namespace SW {
 			delete MinimizeIcon;
 			delete RestoreIcon;
 
+			delete MissingAssetIcon;
 			delete UnknownAssetIcon;
 			delete DirectoryAssetIcon;
 			delete FontAssetIcon;
@@ -49,6 +51,7 @@ namespace SW {
 		inline static Texture2D* RestoreIcon = nullptr;
 
 		// AssetSourceType icons
+		inline static Texture2D* MissingAssetIcon = nullptr;
 		inline static Texture2D* UnknownAssetIcon = nullptr;
 		inline static Texture2D* DirectoryAssetIcon = nullptr;
 		inline static Texture2D* FontAssetIcon = nullptr;

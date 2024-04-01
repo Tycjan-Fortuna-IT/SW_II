@@ -20,19 +20,6 @@ namespace SW {
 	struct AssetSourceItem;
 
 	/**
-	 * @brief The File struct represents a file.
-	 */
-	struct File final
-	{
-		std::string Name = "Invalid";		/** @brief The name of the file. */
-		std::string FilePath = "Invalid";	/** @brief The path to the file. */
-		Texture2D* Thumbnail = nullptr;		/** @brief The thumbnail of the file. */
-		FileType Type = FileType::Unknown;	/** @brief The type of the file. */
-		std::string TypeString = "Unknown";	/** @brief The type of the file as a string. */
-		ImVec4 ColorIndicator;				/** @brief The color indicator of the file. */
-	};
-
-	/**
 	 * @brief The AssetPanel class represents a panel that displays the console window.
 	 *        in a tree-like structure.
 	 */
@@ -85,6 +72,7 @@ namespace SW {
 
 		AssetDirectoryTree* m_AssetTree = nullptr;
 		AssetSourceItem* m_SelectedItem = nullptr;
+		AssetSourceItem* m_QueuedSelectedItem = nullptr;
 
 		/**
 		 * @brief Loads the directory entries.
@@ -113,12 +101,9 @@ namespace SW {
 		 */
 		void DrawBody();
 
-		/**
-		 * @brief Draws the popup for a directory entry.
-		 * 
-		 * @param entry The path of the directory entry.
-		 */
-		void DrawDirectoryEntryPopup(const std::filesystem::path& entry);
+		void DrawItemOperationsPopup(const AssetSourceItem* item);
+
+		void HandleItemOnDoubleClick(AssetSourceItem* item, bool* refreshDirectory);
 
 		/**
 		 * @brief Draws the popup for the asset panel.

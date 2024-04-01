@@ -3,7 +3,7 @@
 
 namespace SW {
 
-	std::unordered_map<SW::AssetType, AssetEditorPanel*> AssetEditorPanelManager::s_Editors;
+	std::unordered_map<AssetType, AssetEditorPanel*> AssetEditorPanelManager::s_Editors;
 
 	SW::Scene* AssetEditorPanelManager::s_SceneContext;
 

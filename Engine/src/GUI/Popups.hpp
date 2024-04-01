@@ -1,8 +1,8 @@
 /**
  * @file Popups.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.0
- * @date 2024-03-29
+ * @version 0.1.1
+ * @date 2024-04-01
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */

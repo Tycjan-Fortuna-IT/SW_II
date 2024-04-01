@@ -76,3 +76,5 @@
 #define SW_ICON_FILE_VIDEO u8"\uF22B"
 #define SW_ICON_NEW_BOX u8"\uF394"
 #define SW_ICON_COGS u8"\uF8D5"
+#define SW_ICON_BOOK_OPEN u8"\uF0BD"
+#define SW_ICON_DOTS_VERTICAL u8"\uF1D9"

@@ -57,11 +57,11 @@ namespace SW {
 
 		m_Root = new AssetSourceItem();
 		//m_Root->Handle = pathToIdMap.find(dir)->second; // no need for handle for not-draggable item
-		m_Root->Type = AssetSourceType::Directory;
+		m_Root->Type = AssetType::Directory;
 		m_Root->Thumbnail = EditorResources::DirectoryAssetIcon;
 		m_Root->Icon = SW_ICON_FILE;
 		m_Root->Color = IM_COL32(204, 204, 178, 255);
-		m_Root->Path = dir;
+		m_Root->Path = ".";
 
 		TraverseAndEmplace(pathToIdMap, m_Root->Path, m_Root);
 	}
@@ -70,23 +70,25 @@ namespace SW {
 		const std::unordered_map<std::filesystem::path, AssetHandle>& pathToIdMap,
 		const std::filesystem::path& dir, AssetSourceItem* item
 	) {
-		for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(dir)) {
+		const std::filesystem::path fullPath = ProjectContext::Get()->GetAssetDirectory() / dir;
+
+		for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(fullPath)) {
 			AssetSourceItem* newItem = new AssetSourceItem();
 
-			const std::filesystem::path itemPath = std::filesystem::relative(entry.path(), ProjectContext::Get()->GetAssetDirectory());;
+			const std::filesystem::path itemPath = std::filesystem::relative(entry.path(), ProjectContext::Get()->GetAssetDirectory());
 
 			newItem->Handle = pathToIdMap.at(itemPath);
-			newItem->Type = std::filesystem::is_directory(entry) ? AssetSourceType::Directory : AssetSourceItem::GetTypeFromExtension(itemPath.extension().string());
+			newItem->Type = std::filesystem::is_directory(entry) ? AssetType::Directory : AssetSourceItem::GetTypeFromExtension(itemPath.extension().string());
 			newItem->Thumbnail = AssetSourceItem::GetThumbnailFromFileType(newItem->Type);
 			newItem->Icon = AssetSourceItem::GetIconFromFileType(newItem->Type);
 			newItem->Color = AssetSourceItem::GetColorFromFileType(newItem->Type);
 			newItem->Parent = item;
 			newItem->Path = itemPath;
-			newItem->ModificationTime = FileSystem::GetLastWriteTime(entry.path());
+			newItem->ModificationTime = FileSystem::GetLastWriteTime(entry);
 
 			item->Children.emplace_back(newItem);
 
-			if (newItem->Type == AssetSourceType::Directory)
+			if (newItem->Type == AssetType::Directory)
 				TraverseAndEmplace(pathToIdMap, entry.path(), newItem);
 		}
 	}

@@ -69,6 +69,8 @@ namespace SW {
 		 */
         ~Texture2D();
 
+		AssetType GetAssetType() const override { return AssetType::Texture2D; }
+
 		/**
 		 * @brief Bind texture to the specified slot
 		 * 

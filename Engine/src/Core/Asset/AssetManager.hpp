@@ -14,10 +14,20 @@ namespace SW {
 
 		static const AssetMetaData& GetAssetMetaData(AssetHandle handle) { return GetRegistry().GetAssetMetaData(handle); }
 
+		static const Asset* GetAsset(AssetHandle handle)
+		{
+			return ProjectContext::Get()->GetAssetManager()->GetAsset(handle);
+		}
+
 		template <typename T>
 		static const T* GetAsset(AssetHandle handle)
 		{
 			return ProjectContext::Get()->GetAssetManager()->GetAsset(handle)->As<T>();
+		}
+
+		static Asset* GetAssetRaw(AssetHandle handle)
+		{
+			return ProjectContext::Get()->GetAssetManager()->GetAssetRaw(handle);
 		}
 
 		template <typename T>

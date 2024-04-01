@@ -1,8 +1,13 @@
 #include "Popups.hpp"
 
-#include "../../EngineEditor/src/Panels/AssetPanel.hpp" // remove
 #include "GUI.hpp"
 #include "Core/Utils/FileSystem.hpp"
+
+#define EMPTY_SCENE_CONTENT \
+"Entities: \n"
+
+#define EMPTY_SPRITESHEET_CONTENT \
+"Spritesheet: \n"
 
 namespace SW::GUI::Popups {
 
@@ -17,56 +22,68 @@ namespace SW::GUI::Popups {
 			ImGui::Text("Create new file modal.");
 			ImGui::Separator();
 
-			static FileType filetype = FileType::Unknown;
+			static AssetType filetype = AssetType::Unknown;
 
 			ImGui::AlignTextToFramePadding();
 			ImGui::TextUnformatted("Choose file type to create: ");
 			ImGui::SameLine();
 
 			GUI::DrawSelectable(filetype, {
-				GUI::SelectOption<FileType>{ "Directory", FileType::Directory },
-				GUI::SelectOption<FileType>{ "Scene", FileType::Scene },
+				GUI::SelectOption<AssetType>{ "Directory", AssetType::Directory },
+				GUI::SelectOption<AssetType>{ "Scene", AssetType::Scene },
+				GUI::SelectOption<AssetType>{ "Spritesheet", AssetType::Spritesheet },
 			});
 
 			static std::string filename = "";
 
-			if (filetype != FileType::Unknown) {
+			if (filetype != AssetType::Unknown) {
 				ImGui::AlignTextToFramePadding();
 				ImGui::TextUnformatted("Type the file name:              ");
 				ImGui::SameLine();
 
 				GUI::DrawSingleLineTextInput(filename);
+				ImGui::SameLine();
 
-				if (filetype == FileType::Scene) {
-					ImGui::SameLine();
-					ImGui::TextUnformatted(".sw");
+				switch (filetype) {
+					case AssetType::Scene:
+					{
+						ImGui::TextUnformatted(".sw_scene");
+					} break;
+					case AssetType::Spritesheet:
+					{
+						ImGui::TextUnformatted(".sw_spritesh");
+					} break;
 				}
 			}
 
 			if (ImGui::Button("OK", ImVec2(120, 0))) {
 				std::string name = filename;
 
-				switch (filetype)
-				{
-					case FileType::Directory:
+				switch (filetype) {
+					case AssetType::Directory:
 					{
 						std::filesystem::path newDirPath = destinationDir / name;
 
 						if (!FileSystem::CreateEmptyDirectory(newDirPath))
 							SW_ERROR("Failed to create new directory: {}", name);
 					} break;
-					case FileType::Scene:
+					case AssetType::Scene:
 					{
-						std::filesystem::path newFilePath = destinationDir / name;
+						std::filesystem::path newFilePath = destinationDir / name += ".sw_scene";
 
-						if (!FileSystem::CreateFileWithContent(newFilePath, "Entities:\n"))
+						if (!FileSystem::CreateFileWithContent(newFilePath, EMPTY_SCENE_CONTENT))
 							SW_ERROR("Failed to create new file: {}", name);
+					} break;
+					case AssetType::Spritesheet:
+					{
+						std::filesystem::path newFilePath = destinationDir / name += ".sw_spritesh";
 
-						name += ".sw";
+						if (!FileSystem::CreateFileWithContent(newFilePath, EMPTY_SPRITESHEET_CONTENT))
+							SW_ERROR("Failed to create new spritesheet: {}", name);
 					} break;
 				}
 
-				filetype = FileType::Unknown;
+				filetype = AssetType::Unknown;
 				filename.clear();
 				*opened = false;
 
@@ -78,7 +95,7 @@ namespace SW::GUI::Popups {
 			ImGui::SameLine();
 
 			if (ImGui::Button("Cancel", ImVec2(120, 0))) {
-				filetype = FileType::Unknown;
+				filetype = AssetType::Unknown;
 				filename.clear();
 				*opened = false;
 

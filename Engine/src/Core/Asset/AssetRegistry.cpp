@@ -73,7 +73,7 @@ namespace SW {
 				AssetMetaData metadata;
 				metadata.Handle = Random::CreateID();
 				metadata.Path = rel;
-				metadata.Type = std::filesystem::is_directory(entry) ? AssetSourceType::Directory : AssetSourceItem::GetTypeFromExtension(rel.extension().string());
+				metadata.Type = std::filesystem::is_directory(entry) ? AssetType::Directory : AssetSourceItem::GetTypeFromExtension(rel.extension().string());
 				metadata.ModificationTime = FileSystem::GetLastWriteTime(entry);
 
 				m_AvailableAssets[metadata.Handle] = metadata;

@@ -4,18 +4,18 @@
 
 namespace SW {
 
-	std::unordered_map<AssetSourceType, AssetSerializer*> AssetLoader::s_Serializers;
+	std::unordered_map<AssetType, AssetSerializer*> AssetLoader::s_Serializers;
 
 	void AssetLoader::Initialize()
 	{
-		s_Serializers[AssetSourceType::Texture2D] = new Texture2DSerializer();
-		s_Serializers[AssetSourceType::Spritesheet] = new SpritesheetSerializer();
+		s_Serializers[AssetType::Texture2D] = new Texture2DSerializer();
+		s_Serializers[AssetType::Spritesheet] = new SpritesheetSerializer();
 	}
 
 	void AssetLoader::Shutdown()
 	{
-		delete s_Serializers[AssetSourceType::Texture2D];
-		delete s_Serializers[AssetSourceType::Spritesheet];
+		delete s_Serializers[AssetType::Texture2D];
+		delete s_Serializers[AssetType::Spritesheet];
 
 		s_Serializers.clear();
 	}

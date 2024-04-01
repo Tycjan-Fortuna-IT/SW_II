@@ -1,31 +1,17 @@
 #pragma once
 
 #include "Asset.hpp"
-#include "Core/OpenGL/Texture2D.hpp"
 #include "GUI/Icons.hpp"
+#include "Core/OpenGL/Texture2D.hpp"
 
 namespace SW {
 
 	using Timestamp = u64;
 
-	enum class AssetSourceType : u8
-	{
-		Unknown = 0,
-		Directory,
-		Texture2D,
-		Sprite,
-		Spritesheet,
-		Font,
-		Scene,
-		Prefab,
-		Script,
-		Shader,
-	};
-
 	struct AssetSourceItem
 	{
 		AssetHandle Handle = 0;
-		AssetSourceType Type = AssetSourceType::Unknown;
+		AssetType Type = AssetType::Unknown;
 
 		Timestamp ModificationTime = 0;
 		Texture2D* Thumbnail = nullptr;
@@ -38,15 +24,15 @@ namespace SW {
 		AssetSourceItem* Parent = nullptr;
 		std::vector<AssetSourceItem*> Children;
 
-		bool IsDirectory() const { return Type == AssetSourceType::Directory; }
-		bool IsFile() const { return Type != AssetSourceType::Directory; }
+		bool IsDirectory() const { return Type == AssetType::Directory; }
+		bool IsFile() const { return Type != AssetType::Directory; }
 
-		static const char* GetStringifiedAssetSourceType(AssetSourceType type);
-		static AssetSourceType GetAssetSourceTypeFromStringified(const std::string& type);
-		static AssetSourceType GetTypeFromExtension(const std::string& extension);
-		static const char* GetIconFromFileType(AssetSourceType type);
-		static u32 GetColorFromFileType(AssetSourceType type);
-		static Texture2D* GetThumbnailFromFileType(AssetSourceType type);
+		static const char* GetStringifiedAssetSourceType(AssetType type);
+		static AssetType GetAssetSourceTypeFromStringified(const std::string& type);
+		static AssetType GetTypeFromExtension(const std::string& extension);
+		static const char* GetIconFromFileType(AssetType type);
+		static u32 GetColorFromFileType(AssetType type);
+		static Texture2D* GetThumbnailFromFileType(AssetType type);
 	};
 
 }

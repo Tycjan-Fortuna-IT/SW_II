@@ -19,6 +19,7 @@ namespace SW {
 		const AssetMetaData& metadata = GetAssetMetaData(handle);
 
 		Asset* newAsset = AssetLoader::TryLoadAsset(metadata);
+		newAsset->m_Handle = handle;
 
 		*m_Registry[handle] = newAsset;
 
@@ -27,14 +28,14 @@ namespace SW {
 
     bool EditorAssetManager::ForceUnload(AssetHandle handle)
     {
-		ASSERT(m_Registry.Contains(handle), "Can not unload asset: {}", handle);
+		//ASSERT(m_Registry.Contains(handle), "Can not unload asset: {}", handle);
 
 		return true;
     }
 
     bool EditorAssetManager::ForceReload(AssetHandle handle)
     {
-		ASSERT(m_Registry.Contains(handle), "Can not reload asset: {}", handle);
+		//ASSERT(m_Registry.Contains(handle), "Can not reload asset: {}", handle);
 
 		return true;
     }

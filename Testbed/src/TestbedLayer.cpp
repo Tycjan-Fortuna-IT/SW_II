@@ -1,19 +1,23 @@
 #include "TestbedLayer.hpp"
 
 #include "Core/Renderer/RendererAPI.hpp"
-#include "AssetPanels/AssetEditorPanelManager.hpp"
 #include "Core/Asset/Asset.hpp"
 #include "Core/Project/ProjectSerializer.hpp"
 #include "Core/Project/Project.hpp"
 #include "Core/Project/ProjectContext.hpp"
-#include "AssetPanels/SpritesheetEditor.hpp"
 #include "Core/Asset/AssetManager.hpp"
+#include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.cpp"
+#include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.hpp"
+#include "../../EngineEditor/src/AssetPanels/SpritesheetEditor.cpp"
+#include "../../EngineEditor/src/AssetPanels/SpritesheetEditor.hpp"
 
 #include "../../EngineEditor/src/Panels/AssetPanel.cpp"
 #include "../../EngineEditor/src/Panels/AssetPanel.hpp"
 #include <future>
 #include "GUI/Editor/EditorResources.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
+#include "Core/Asset/Spritesheet.hpp"
+
 namespace SW {
 
 	static Asset* sp = nullptr;
@@ -53,9 +57,9 @@ namespace SW {
 		// Spritesheet* test = sp->As<Spritesheet>();
 		// SW_TRACE("{}", test->GetSpritesheetTexture()->GetHeight());
 
-		const Texture2D* triangle = AssetManager::GetAsset<Texture2D>(2560501347489892845);
+		//const Texture2D* triangle = AssetManager::GetAsset<Texture2D>(2560501347489892845);
 
-		//const Spritesheet* test = AssetManager::GetAsset<Spritesheet>(121);
+		sp = AssetManager::GetAssetRaw(16067828130367013933);
 
 		SW_TRACE("1");
 	}
