@@ -8,6 +8,8 @@
  */
 #pragma once
 
+#include <imgui_canvas.h>
+
 #include "Core/Asset/Panels/AssetEditorPanel.hpp"
 #include "Core/Asset/Spritesheet.hpp"
 #include "Core/Asset/Sprite.hpp"
@@ -34,6 +36,9 @@ namespace SW {
 		void SetAsset(Asset* asset) override;
 
 	private:
+		ImGuiEx::Canvas m_Canvas;
+
+		AssetHandle m_SpritesheetHandle = 0u;
 		Spritesheet* m_Spritesheet = nullptr;
 
 	private:

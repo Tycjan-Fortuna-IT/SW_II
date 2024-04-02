@@ -4,14 +4,21 @@
 
 namespace SW {
 	
-    const Asset* EditorAssetManager::GetAsset(AssetHandle handle)
+	EditorAssetManager::~EditorAssetManager()
+	{
+		for (std::pair<AssetHandle, Asset*> pair : m_Registry) {
+			delete pair.second;
+		}
+	}
+
+	const Asset* EditorAssetManager::GetAsset(AssetHandle handle)
     {
 		return GetAssetRaw(handle);
     }
 
 	Asset* EditorAssetManager::GetAssetRaw(AssetHandle handle)
     {
-		Asset* element = *m_Registry[handle];
+		Asset* element = m_Registry[handle];
 
 		if (element != nullptr)
 			return element;
@@ -21,12 +28,12 @@ namespace SW {
 		Asset* newAsset = AssetLoader::TryLoadAsset(metadata);
 		newAsset->m_Handle = handle;
 
-		*m_Registry[handle] = newAsset;
+		m_Registry[handle] = newAsset;
 
         return newAsset;
     }
 
-    bool EditorAssetManager::ForceUnload(AssetHandle handle)
+	bool EditorAssetManager::ForceUnload(AssetHandle handle)
     {
 		//ASSERT(m_Registry.Contains(handle), "Can not unload asset: {}", handle);
 
@@ -35,17 +42,19 @@ namespace SW {
 
     bool EditorAssetManager::ForceReload(AssetHandle handle)
     {
-		if (!m_Registry.Contains(handle))
+		if (!Contains(handle))
 			return false;
 
 		const AssetMetaData& metadata = GetAssetMetaData(handle);
 
-		m_Registry.Erase(handle);
+		Asset* oldAsset = m_Registry[handle];
 
 		Asset* reloadedAsset = AssetLoader::TryLoadAsset(metadata);
 		reloadedAsset->m_Handle = handle;
 
-		*m_Registry[handle] = reloadedAsset;
+		m_Registry[handle] = reloadedAsset;
+
+		delete oldAsset;
 
 		return true;
     }

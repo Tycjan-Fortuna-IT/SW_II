@@ -22,10 +22,6 @@ namespace SW {
 
 	AssetRegistry::~AssetRegistry()
 	{
-		for (std::pair<AssetHandle, Asset*> pair : m_AssetRegistry) {
-			delete pair.second;
-		}
-
 		YAML::Emitter output;
 
 		output << YAML::BeginMap;
@@ -134,18 +130,6 @@ namespace SW {
 
 		m_AvailableAssets.clear();
 		FetchDirectory(registeredEntries, assetsDir, false);
-	}
-
-	Asset** AssetRegistry::operator[](AssetHandle handle)
-	{
-		return &m_AssetRegistry[handle];
-	}
-
-	void AssetRegistry::Erase(AssetHandle handle)
-	{
-		delete m_AssetRegistry[handle];
-
-		m_AssetRegistry.erase(handle);
 	}
 
 }

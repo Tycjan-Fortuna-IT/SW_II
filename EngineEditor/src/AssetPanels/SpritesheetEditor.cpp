@@ -1,7 +1,5 @@
 #include "SpritesheetEditor.hpp"
 
-#include <imgui_canvas.h>
-
 #include "GUI/Editor/EditorResources.hpp"
 
 namespace SW {
@@ -112,11 +110,9 @@ namespace SW {
 
 		ImVec2 availableRegion = ImGui::GetContentRegionAvail();
 
-		static ImGuiEx::Canvas canvas;
+		ImVec2 viewOrigin = m_Canvas.ViewOrigin();
 		static ImVec2 drawStartPoint;
 		static bool isDragging = false;
-
-		ImVec2 viewOrigin = canvas.ViewOrigin();
 
 		constexpr ImGuiTableFlags flags = ImGuiTableFlags_NoPadInnerX
 			| ImGuiTableFlags_NoPadOuterX
@@ -133,7 +129,6 @@ namespace SW {
 			f32 viewZoom = m_Spritesheet->GetViewZoom();
 			if (GUI::DrawFloatingPointProperty(viewZoom, "View Zoom", nullptr, 0.5f, 15.0f)) {
 				m_Spritesheet->SetViewZoom(viewZoom);
-				canvas.SetView(viewOrigin, viewZoom);
 			}
 
 			f32 gridScale = m_Spritesheet->GetGridScale();
@@ -146,13 +141,9 @@ namespace SW {
 				m_Spritesheet->SetCenterOffset(offset);
 			}
 
-			AssetHandle handle = m_Spritesheet->GetSpritesheetTextureHandle();
-			Asset* asset = nullptr;
-			if (handle) {
-				asset = AssetManager::GetAssetRaw(handle);
-			}
+			Asset* asset = m_Spritesheet->GetSpritesheetTexture();		
 			if (DrawAssetDropdownProperty<Texture2D>(&asset, "Spritesheet")) {
-				m_Spritesheet->SetSpritesheetTextureHandle(asset->GetHandle());
+				m_Spritesheet->SetSpritesheetTextureHandle(asset ? asset->GetHandle() : 0u);
 			}
 
 			m_Spritesheet->SetViewPos({ viewOrigin.x, viewOrigin.y });
@@ -163,26 +154,26 @@ namespace SW {
 			
 			ImGui::TableNextColumn();
 
-			if (canvas.Begin("##mycanvas", ImGui::GetContentRegionAvail())) {
+			if (m_Canvas.Begin("##mycanvas", ImGui::GetContentRegionAvail())) {
 				if ((isDragging || ImGui::IsItemHovered()) && ImGui::IsMouseDragging(ImGuiMouseButton_Right, 0.0f)) {
 					if (!isDragging) {
 						isDragging = true;
 						drawStartPoint = viewOrigin;
 					}
 
-					canvas.SetView(drawStartPoint + ImGui::GetMouseDragDelta(1, 0.0f) * viewZoom, viewZoom);
+					m_Canvas.SetView(drawStartPoint + ImGui::GetMouseDragDelta(1, 0.0f) * viewZoom, viewZoom);
 				}
 				else if (isDragging) {
 					isDragging = false;
 				}
 
-				ImRect viewRect = canvas.ViewRect();
+				ImRect viewRect = m_Canvas.ViewRect();
 
 				const ImVec2 lineOffset = { offset.x, offset.y };
 
-				ImVec2 loffset = canvas.ViewOrigin() * (1.0f / viewZoom) - lineOffset;
-				ImVec2 viewPos = canvas.ViewRect().Min + lineOffset;
-				ImVec2 viewSize = canvas.ViewRect().GetSize();
+				ImVec2 loffset = m_Canvas.ViewOrigin() * (1.0f / viewZoom) - lineOffset;
+				ImVec2 viewPos = m_Canvas.ViewRect().Min + lineOffset;
+				ImVec2 viewSize = m_Canvas.ViewRect().GetSize();
 				ImDrawList* drawList = ImGui::GetWindowDrawList();
 
 				drawList->AddRectFilled(viewPos, viewPos + viewSize, GUI::Theme::SelectionMuted);
@@ -201,10 +192,8 @@ namespace SW {
 				if (viewRect.Min.y < 0.0f)
 					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Min.y), gridScale, 16.0f, 0.6f, -1.0f);*/
 
-				Texture2D* spritesheetTexture = nullptr;
-				if (m_Spritesheet->GetSpritesheetTextureHandle())
-					spritesheetTexture = AssetManager::GetAssetRaw<Texture2D>(m_Spritesheet->GetSpritesheetTextureHandle());
-				else
+				Texture2D* spritesheetTexture = m_Spritesheet->GetSpritesheetTexture();
+				if (!spritesheetTexture)
 					spritesheetTexture = EditorResources::MissingAssetIcon;
 
 				ImGui::Image(
@@ -215,7 +204,7 @@ namespace SW {
 					DrawSpriteRectOnCanvas(drawList, sprite);
 				}
 
-				canvas.End();
+				m_Canvas.End();
 			}
 
 			ImGui::EndTable();
@@ -224,7 +213,13 @@ namespace SW {
 
 	void SpritesheetEditor::SetAsset(Asset* asset)
 	{
-		m_Spritesheet = asset->AsRaw<Spritesheet>();
+		m_Spritesheet = AssetManager::GetAssetRaw(asset->GetHandle())->AsRaw<Spritesheet>();
+		m_SpritesheetHandle = asset->GetHandle();
+
+		const glm::vec2 vo = m_Spritesheet->GetViewPos();
+
+		ImVec2 viewOrigin = { vo.x, vo.y };
+		m_Canvas.SetView(viewOrigin, m_Spritesheet->GetViewZoom());
 	}
 
 	void SpritesheetEditor::DrawSpriteRectOnCanvas(ImDrawList* drawList, const Sprite* sprite) const
@@ -330,9 +325,8 @@ namespace SW {
 					GUI::DrawVector2ControlProperty(sprite->Position, "Position");
 					GUI::DrawVector2ControlProperty(sprite->Scale, "Scale", nullptr, 1.f, 1.f, 20.f);
 					GUI::DrawVector4ColorPickerProperty(sprite->Tint, "Tint");
-					Texture2D* texture = AssetManager::GetAssetRaw<Texture2D>(m_Spritesheet->GetSpritesheetTextureHandle());
 					GUI::DrawImagePartProperty(
-						texture, "Sprite", nullptr, sprite->Position, sprite->Scale, sprite->Tint, scale
+						m_Spritesheet->GetSpritesheetTexture(), "Sprite", nullptr, sprite->Position, sprite->Scale, sprite->Tint, scale
 					);
 					GUI::EndProperties();
 

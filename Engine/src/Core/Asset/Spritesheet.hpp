@@ -3,6 +3,7 @@
 #include "Asset.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
 #include "Sprite.hpp"
+#include "AssetManager.hpp"
 
 namespace SW {
 
@@ -15,6 +16,10 @@ namespace SW {
 
 		AssetHandle GetSpritesheetTextureHandle() const { return m_SpritesheetTextureHandle; }
 		void SetSpritesheetTextureHandle(AssetHandle handle){ m_SpritesheetTextureHandle = handle; }
+
+		Texture2D* GetSpritesheetTexture() const { 
+			return m_SpritesheetTextureHandle ? AssetManager::GetAssetRaw<Texture2D>(m_SpritesheetTextureHandle) : nullptr;
+		}
 
 		const std::vector<Sprite*>& GetSprites() const { return m_Sprites; }
 
