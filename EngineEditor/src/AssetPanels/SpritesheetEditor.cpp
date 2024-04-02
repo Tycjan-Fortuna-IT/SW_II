@@ -146,9 +146,13 @@ namespace SW {
 				m_Spritesheet->SetCenterOffset(offset);
 			}
 
-			Asset* spritesheetAsset = m_Spritesheet->GetSpritesheetTexture();
-			if (DrawAssetDropdownProperty<Texture2D>(&spritesheetAsset, "Spritesheet")) {
-				m_Spritesheet->SetSpritesheetTexture(spritesheetAsset->AsRaw<Texture2D>());
+			AssetHandle handle = m_Spritesheet->GetSpritesheetTextureHandle();
+			Asset* asset = nullptr;
+			if (handle) {
+				asset = AssetManager::GetAssetRaw(handle);
+			}
+			if (DrawAssetDropdownProperty<Texture2D>(&asset, "Spritesheet")) {
+				m_Spritesheet->SetSpritesheetTextureHandle(asset->GetHandle());
 			}
 
 			m_Spritesheet->SetViewPos({ viewOrigin.x, viewOrigin.y });
@@ -197,8 +201,10 @@ namespace SW {
 				if (viewRect.Min.y < 0.0f)
 					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Min.y), gridScale, 16.0f, 0.6f, -1.0f);*/
 
-				Texture2D* spritesheetTexture = m_Spritesheet->GetSpritesheetTexture();
-				if (spritesheetTexture == nullptr)
+				Texture2D* spritesheetTexture = nullptr;
+				if (m_Spritesheet->GetSpritesheetTextureHandle())
+					spritesheetTexture = AssetManager::GetAssetRaw<Texture2D>(m_Spritesheet->GetSpritesheetTextureHandle());
+				else
 					spritesheetTexture = EditorResources::MissingAssetIcon;
 
 				ImGui::Image(
@@ -274,7 +280,7 @@ namespace SW {
 
 			int indexToRemove = -1;
 
-			if (!m_Spritesheet->GetSpritesheetTexture()) {
+			if (!m_Spritesheet->GetSpritesheetTextureHandle()) {
 				ImGui::EndTable();
 				return;
 			}
@@ -324,8 +330,9 @@ namespace SW {
 					GUI::DrawVector2ControlProperty(sprite->Position, "Position");
 					GUI::DrawVector2ControlProperty(sprite->Scale, "Scale", nullptr, 1.f, 1.f, 20.f);
 					GUI::DrawVector4ColorPickerProperty(sprite->Tint, "Tint");
+					Texture2D* texture = AssetManager::GetAssetRaw<Texture2D>(m_Spritesheet->GetSpritesheetTextureHandle());
 					GUI::DrawImagePartProperty(
-						m_Spritesheet->GetSpritesheetTexture(), "Sprite", nullptr, sprite->Position, sprite->Scale, sprite->Tint, scale
+						texture, "Sprite", nullptr, sprite->Position, sprite->Scale, sprite->Tint, scale
 					);
 					GUI::EndProperties();
 

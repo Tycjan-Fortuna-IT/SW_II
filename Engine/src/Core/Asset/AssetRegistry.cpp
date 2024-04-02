@@ -91,7 +91,7 @@ namespace SW {
 			registeredEntries[metadata.Path] = metadata;
 		}
 
-		m_AvailableAssets.clear(); // not clearing - looking also for file changes for hot reload of assets
+		//m_AvailableAssets.clear(); // not clearing - looking also for file changes for hot reload of assets
 
 		FetchDirectory(registeredEntries, ProjectContext::Get()->GetAssetDirectory(), true); // erases found registered entries
 
@@ -139,6 +139,13 @@ namespace SW {
 	Asset** AssetRegistry::operator[](AssetHandle handle)
 	{
 		return &m_AssetRegistry[handle];
+	}
+
+	void AssetRegistry::Erase(AssetHandle handle)
+	{
+		delete m_AssetRegistry[handle];
+
+		m_AssetRegistry.erase(handle);
 	}
 
 }

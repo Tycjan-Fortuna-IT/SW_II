@@ -35,7 +35,17 @@ namespace SW {
 
     bool EditorAssetManager::ForceReload(AssetHandle handle)
     {
-		//ASSERT(m_Registry.Contains(handle), "Can not reload asset: {}", handle);
+		if (!m_Registry.Contains(handle))
+			return false;
+
+		const AssetMetaData& metadata = GetAssetMetaData(handle);
+
+		m_Registry.Erase(handle);
+
+		Asset* reloadedAsset = AssetLoader::TryLoadAsset(metadata);
+		reloadedAsset->m_Handle = handle;
+
+		*m_Registry[handle] = reloadedAsset;
 
 		return true;
     }
