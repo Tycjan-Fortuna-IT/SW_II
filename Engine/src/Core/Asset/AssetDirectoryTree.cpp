@@ -78,10 +78,10 @@ namespace SW {
 			const std::filesystem::path itemPath = std::filesystem::relative(entry.path(), ProjectContext::Get()->GetAssetDirectory());
 
 			newItem->Handle = pathToIdMap.at(itemPath);
-			newItem->Type = std::filesystem::is_directory(entry) ? AssetType::Directory : AssetSourceItem::GetTypeFromExtension(itemPath.extension().string());
-			newItem->Thumbnail = AssetSourceItem::GetThumbnailFromFileType(newItem->Type);
-			newItem->Icon = AssetSourceItem::GetIconFromFileType(newItem->Type);
-			newItem->Color = AssetSourceItem::GetColorFromFileType(newItem->Type);
+			newItem->Type = std::filesystem::is_directory(entry) ? AssetType::Directory : Asset::GetAssetTypeFromExtension(itemPath.extension().string());
+			newItem->Thumbnail = Asset::GetThumbnailFromAssetType(newItem->Type);
+			newItem->Icon = Asset::GetIconFromAssetType(newItem->Type);
+			newItem->Color = Asset::GetColorFromAssetType(newItem->Type);
 			newItem->Parent = item;
 			newItem->Path = itemPath;
 			newItem->ModificationTime = FileSystem::GetLastWriteTime(entry);

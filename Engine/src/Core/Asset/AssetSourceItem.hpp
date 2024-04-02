@@ -26,13 +26,6 @@ namespace SW {
 
 		bool IsDirectory() const { return Type == AssetType::Directory; }
 		bool IsFile() const { return Type != AssetType::Directory; }
-
-		static const char* GetStringifiedAssetSourceType(AssetType type);
-		static AssetType GetAssetSourceTypeFromStringified(const std::string& type);
-		static AssetType GetTypeFromExtension(const std::string& extension);
-		static const char* GetIconFromFileType(AssetType type);
-		static u32 GetColorFromFileType(AssetType type);
-		static Texture2D* GetThumbnailFromFileType(AssetType type);
 	};
 
 }

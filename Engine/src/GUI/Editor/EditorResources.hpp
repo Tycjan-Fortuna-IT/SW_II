@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/OpenGL/Texture2D.hpp"
+
 namespace SW {
 
 	class EditorResources

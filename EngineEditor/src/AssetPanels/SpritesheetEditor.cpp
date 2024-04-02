@@ -34,8 +34,10 @@ namespace SW {
 
 	}
 
+	template <typename T>
+		requires std::is_base_of_v<Asset, T>
 	static bool DrawAssetDropdownProperty(
-		Asset** asset, const char* payloadName, const char* label, const char* tooltip = nullptr
+		Asset** asset, const char* label, const char* tooltip = nullptr
 	) {
 		bool changed = false;
 
@@ -60,6 +62,8 @@ namespace SW {
 		ImGui::PopStyleColor();
 
 		if (ImGui::BeginDragDropTarget()) {
+			const char* payloadName = Asset::GetStringifiedAssetType(T::GetStaticType());
+
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(payloadName)) {
 				u64* handle = static_cast<u64*>(payload->Data);
 
@@ -143,7 +147,7 @@ namespace SW {
 			}
 
 			Asset* spritesheetAsset = m_Spritesheet->GetSpritesheetTexture();
-			if (DrawAssetDropdownProperty(&spritesheetAsset, STRINGIFY_MACRO(Texture2D), "Spritesheet")) {
+			if (DrawAssetDropdownProperty<Texture2D>(&spritesheetAsset, "Spritesheet")) {
 				m_Spritesheet->SetSpritesheetTexture(spritesheetAsset->AsRaw<Texture2D>());
 			}
 

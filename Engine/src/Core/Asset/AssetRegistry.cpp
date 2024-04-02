@@ -36,7 +36,7 @@ namespace SW {
 
 			output << YAML::Key << "Handle" << YAML::Value << handle;
 			output << YAML::Key << "Path" << YAML::Value << metadata.Path.string();
-			output << YAML::Key << "Type" << YAML::Value << AssetSourceItem::GetStringifiedAssetSourceType(metadata.Type);
+			output << YAML::Key << "Type" << YAML::Value << Asset::GetStringifiedAssetType(metadata.Type);
 			output << YAML::Key << "ModificationTime" << YAML::Value << metadata.ModificationTime;
 
 			output << YAML::EndMap;
@@ -73,7 +73,7 @@ namespace SW {
 				AssetMetaData metadata;
 				metadata.Handle = Random::CreateID();
 				metadata.Path = rel;
-				metadata.Type = std::filesystem::is_directory(entry) ? AssetType::Directory : AssetSourceItem::GetTypeFromExtension(rel.extension().string());
+				metadata.Type = std::filesystem::is_directory(entry) ? AssetType::Directory : Asset::GetAssetTypeFromExtension(rel.extension().string());
 				metadata.ModificationTime = FileSystem::GetLastWriteTime(entry);
 
 				m_AvailableAssets[metadata.Handle] = metadata;
@@ -127,7 +127,7 @@ namespace SW {
 			metadata.Handle = asset["Handle"].as<AssetHandle>();
 			metadata.Path = asset["Path"].as<std::string>();
 			metadata.ModificationTime = asset["ModificationTime"].as<u64>();
-			metadata.Type = AssetSourceItem::GetAssetSourceTypeFromStringified(asset["Type"].as<std::string>());
+			metadata.Type = Asset::GetAssetTypeFromStringified(asset["Type"].as<std::string>());
 
 			registeredEntries[metadata.Path] = metadata;
 		}

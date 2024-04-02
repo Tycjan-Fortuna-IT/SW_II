@@ -69,6 +69,7 @@ namespace SW {
 		 */
         ~Texture2D();
 
+		static AssetType GetStaticType() { return AssetType::Texture2D; }
 		AssetType GetAssetType() const override { return AssetType::Texture2D; }
 
 		/**

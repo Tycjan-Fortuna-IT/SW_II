@@ -10,6 +10,8 @@
 
 namespace SW {
 
+	class Texture2D;
+
 	using AssetHandle = u64;
 
 	enum class AssetType : u8
@@ -42,6 +44,13 @@ namespace SW {
 
 		static AssetType GetStaticType() { return AssetType::Unknown; }
 		virtual AssetType GetAssetType() const { return AssetType::Unknown; }
+
+		static const char* GetStringifiedAssetType(AssetType type);
+		static AssetType GetAssetTypeFromStringified(const std::string& type);
+		static AssetType GetAssetTypeFromExtension(const std::string& extension);
+		static const char* GetIconFromAssetType(AssetType type);
+		static u32 GetColorFromAssetType(AssetType type);
+		static Texture2D* GetThumbnailFromAssetType(AssetType type);
 
 		virtual bool operator==(const Asset& other) const
 		{

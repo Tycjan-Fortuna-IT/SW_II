@@ -363,7 +363,7 @@ namespace SW {
 
 					ImGui::Text("Handle: %llu", child->Handle);
 					ImGui::Text("Last Modified: %llu", child->ModificationTime);
-					ImGui::Text("Type: %s", AssetSourceItem::GetStringifiedAssetSourceType(child->Type));
+					ImGui::Text("Type: %s", Asset::GetStringifiedAssetType(child->Type));
 					ImGui::Text("Path: %s", child->Path.string().c_str());
 
 					ImGui::EndTooltip();
@@ -373,7 +373,7 @@ namespace SW {
 				}
 
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-					const char* type = AssetSourceItem::GetStringifiedAssetSourceType(child->Type);
+					const char* type = Asset::GetStringifiedAssetType(child->Type);
 
 					ImGui::SetDragDropPayload(type, &child->Handle, sizeof(child->Handle));
 					
@@ -407,7 +407,7 @@ namespace SW {
 				ImGui::SetCursorPos({ cursorPos.x + padding * 2.0f, cursorPos.y + backgroundThumbnailSize.y - GUI::Appearance::GetFonts().DefaultBoldFont->FontSize - padding * 2.0f });
 				ImGui::BeginDisabled();
 				ImGui::PushFont(GUI::Appearance::GetFonts().DefaultBoldFont);
-				ImGui::TextUnformatted(AssetSourceItem::GetStringifiedAssetSourceType(child->Type));
+				ImGui::TextUnformatted(Asset::GetStringifiedAssetType(child->Type));
 				ImGui::PopFont();
 				ImGui::EndDisabled();
 
