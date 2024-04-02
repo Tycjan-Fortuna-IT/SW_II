@@ -39,17 +39,17 @@ namespace SW {
 			kv.second->OnRender();
 	}
 
-	void AssetEditorPanelManager::OpenEditor(Asset* asset)
+	void AssetEditorPanelManager::OpenEditor(AssetHandle handle, AssetType type)
 	{
-		if (asset == nullptr)
+		if (!handle)
 			return;
 
-		if (s_Editors.find(asset->GetAssetType()) == s_Editors.end())
+		if (s_Editors.find(type) == s_Editors.end())
 			return;
 
-		AssetEditorPanel* editor = s_Editors[asset->GetAssetType()];
+		AssetEditorPanel* editor = s_Editors[type];
 
-		editor->SetAsset(asset);
+		editor->SetAssetHandle(handle);
 		editor->SetSceneContext(s_SceneContext);
 		editor->Open();
 	}

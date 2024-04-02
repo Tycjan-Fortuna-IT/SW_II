@@ -11,8 +11,8 @@ namespace SW {
 		AssetManagerBase();
 		virtual ~AssetManagerBase();
 
-		virtual const Asset* GetAsset(AssetHandle handle) = 0;
-		virtual Asset* GetAssetRaw(AssetHandle handle) = 0;
+		virtual Asset** GetAssetRaw(AssetHandle handle) = 0;
+		virtual const Asset** GetAsset(AssetHandle handle) = 0;
 
 		virtual bool ForceUnload(AssetHandle handle) = 0;
 		virtual bool ForceReload(AssetHandle handle) = 0;

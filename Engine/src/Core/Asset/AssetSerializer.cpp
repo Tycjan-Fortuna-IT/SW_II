@@ -7,7 +7,7 @@
 
 namespace SW {
 
-	void Texture2DSerializer::Serialize(const Asset* asset)
+	void Texture2DSerializer::Serialize(const AssetMetaData& metadata)
 	{
 		ASSERT(false, "Texture2D serialization is not supported!");
 	}
@@ -19,9 +19,29 @@ namespace SW {
 		return texture;
 	}
 
-	void SpritesheetSerializer::Serialize(const Asset* asset)
+	void SpritesheetSerializer::Serialize(const AssetMetaData& metadata)
 	{
-		throw std::logic_error("The method or operation is not implemented.");
+		const Spritesheet* spritesheet = *AssetManager::GetAsset<Spritesheet>(metadata.Handle);
+		
+		YAML::Emitter output;
+
+		output << YAML::BeginMap;
+		output << YAML::Key << "Spritesheet" << YAML::Value;
+
+		output << YAML::BeginMap;
+		Texture2D* texture = spritesheet->GetSpritesheetTexture();
+		output << YAML::Key << "TextureHandle" << YAML::Value << (texture ? texture->GetHandle() : 0u);
+		output << YAML::Key << "ViewZoom" << YAML::Value << spritesheet->GetViewZoom();
+		output << YAML::Key << "GridScale" << YAML::Value << spritesheet->GetGridScale();
+		output << YAML::Key << "CenterOffset" << YAML::Value << spritesheet->GetCenterOffset();
+		output << YAML::Key << "ViewPos" << YAML::Value << spritesheet->GetViewPos();
+		output << YAML::EndMap;
+
+		output << YAML::EndMap;
+
+
+		std::ofstream fout(ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
+		fout << output.c_str();
 	}
 
 	Asset* SpritesheetSerializer::TryLoadAsset(const AssetMetaData& metadata)
@@ -41,7 +61,8 @@ namespace SW {
 		Spritesheet* spritesheet = new Spritesheet();
 
 		const u64 handle = data["TextureHandle"].as<u64>();
-		spritesheet->SetSpritesheetTextureHandle(handle);
+		Texture2D** texture = handle ? AssetManager::GetAssetRaw<Texture2D>(handle) : nullptr;
+		spritesheet->SetSpritesheetTexture(texture);
 
 		const f32 viewZoom = data["ViewZoom"].as<f32>();
 		spritesheet->SetViewZoom(viewZoom);

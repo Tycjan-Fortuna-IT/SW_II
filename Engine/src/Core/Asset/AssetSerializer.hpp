@@ -9,7 +9,7 @@ namespace SW {
 	class AssetSerializer
 	{
 	public:
-		virtual void Serialize(const Asset* asset) = 0;
+		virtual void Serialize(const AssetMetaData& metadata) = 0;
 	
 		virtual Asset* TryLoadAsset(const AssetMetaData& metadata) = 0;
 	};
@@ -17,15 +17,14 @@ namespace SW {
 	class Texture2DSerializer final : public AssetSerializer
 	{
 	public:
-		void Serialize(const Asset* asset) override;
+		void Serialize(const AssetMetaData& metadata) override;
 
 		Asset* TryLoadAsset(const AssetMetaData& metadata) override;
 	};
 
-	class SpritesheetSerializer final : public AssetSerializer
-	{
+	class SpritesheetSerializer final : public AssetSerializer {
 	public:
-		void Serialize(const Asset* asset) override;
+		void Serialize(const AssetMetaData& metadata) override;
 
 		Asset* TryLoadAsset(const AssetMetaData& metadata) override;
 	};

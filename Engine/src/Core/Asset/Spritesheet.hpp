@@ -14,12 +14,8 @@ namespace SW {
 
 		AssetType GetAssetType() const override { return AssetType::Spritesheet; }
 
-		AssetHandle GetSpritesheetTextureHandle() const { return m_SpritesheetTextureHandle; }
-		void SetSpritesheetTextureHandle(AssetHandle handle){ m_SpritesheetTextureHandle = handle; }
-
-		Texture2D* GetSpritesheetTexture() const { 
-			return m_SpritesheetTextureHandle ? AssetManager::GetAssetRaw<Texture2D>(m_SpritesheetTextureHandle) : nullptr;
-		}
+		Texture2D* GetSpritesheetTexture() const { return m_SpritesheetTexture ? *m_SpritesheetTexture : nullptr; }
+		void SetSpritesheetTexture(Texture2D** texture) { m_SpritesheetTexture = texture; }
 
 		const std::vector<Sprite*>& GetSprites() const { return m_Sprites; }
 
@@ -36,7 +32,7 @@ namespace SW {
 		void SetViewPos(const glm::vec2& val) { ViewPos = val; }
 
 	private:
-		AssetHandle m_SpritesheetTextureHandle = 0u;
+		Texture2D** m_SpritesheetTexture = nullptr;
 		std::vector<Sprite*> m_Sprites;
 
 		f32 m_ViewZoom = 1.0f;

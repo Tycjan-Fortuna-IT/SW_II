@@ -11,16 +11,11 @@ namespace SW {
 		}
 	}
 
-	const Asset* EditorAssetManager::GetAsset(AssetHandle handle)
-    {
-		return GetAssetRaw(handle);
-    }
+	Asset** EditorAssetManager::GetAssetRaw(AssetHandle handle)
+	{
+		Asset** element = &m_Registry[handle];
 
-	Asset* EditorAssetManager::GetAssetRaw(AssetHandle handle)
-    {
-		Asset* element = m_Registry[handle];
-
-		if (element != nullptr)
+		if (*element != nullptr)
 			return element;
 
 		const AssetMetaData& metadata = GetAssetMetaData(handle);
@@ -30,8 +25,13 @@ namespace SW {
 
 		m_Registry[handle] = newAsset;
 
-        return newAsset;
-    }
+		return &m_Registry[handle];
+	}
+
+	const Asset** EditorAssetManager::GetAsset(AssetHandle handle)
+	{
+		return const_cast<const Asset**>(GetAssetRaw(handle));
+	}
 
 	bool EditorAssetManager::ForceUnload(AssetHandle handle)
     {

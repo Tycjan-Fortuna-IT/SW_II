@@ -33,13 +33,12 @@ namespace SW {
 
 		void Render() override;
 
-		void SetAsset(Asset* asset) override;
+		void SetAssetHandle(AssetHandle handle) override;
 
 	private:
 		ImGuiEx::Canvas m_Canvas;
 
-		AssetHandle m_SpritesheetHandle = 0u;
-		Spritesheet* m_Spritesheet = nullptr;
+		Spritesheet** m_Spritesheet = nullptr;
 
 	private:
 		void DrawSpriteRectOnCanvas(ImDrawList* drawList, const Sprite* sprite) const;

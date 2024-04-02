@@ -84,7 +84,7 @@ namespace SW {
 		 *
 		 * @return u32
 		 */
-		u32 GetHandle() const { return m_Handle; }
+		u32 GetTexHandle() const { return m_Handle; }
 
 		/**
 		 * @brief Get the Width of the texture

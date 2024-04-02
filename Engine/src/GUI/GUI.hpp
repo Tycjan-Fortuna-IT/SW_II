@@ -152,7 +152,7 @@ namespace SW::GUI {
 	 */
 	static ImTextureID GetTextureID(const Texture2D& texture)
 	{
-		return reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(texture.GetHandle()));
+		return reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(texture.GetTexHandle()));
 	}
 
 	/**
@@ -164,7 +164,7 @@ namespace SW::GUI {
 	 */
 	static ImTextureID GetTextureID(const Texture2D* texture)
 	{
-		return reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(texture->GetHandle()));
+		return reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(texture->GetTexHandle()));
 	}
 
 	/**
@@ -342,7 +342,7 @@ namespace SW::GUI {
 	{
 		const f32 padding = (size.y - (f32)texture.GetHeight()) / 2.0f;
 
-		if (ImGui::InvisibleButton(std::to_string(texture.GetHandle()).c_str(), ImVec2(size.x, size.y)))
+		if (ImGui::InvisibleButton(std::to_string(texture.GetTexHandle()).c_str(), ImVec2(size.x, size.y)))
 			return true;
 
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
@@ -1249,7 +1249,7 @@ namespace SW::GUI {
 		if (!textureCopy)
 			textureCopy = Renderer2D::BlackTexture;
 
-		u32 textureId = textureCopy->GetHandle();
+		u32 textureId = textureCopy->GetTexHandle();
 
 		ImGui::ImageButton(GUI::GetTextureID(textureId), { buttonSize, buttonSize }, { 0, 1 }, { 1, 0 }, 0);
 
@@ -1283,6 +1283,78 @@ namespace SW::GUI {
 		ImGui::PopStyleVar();
 
 		EndPropertyGrid();
+	}
+
+	template <typename T>
+		requires std::is_base_of_v<Asset, T>
+	static bool DrawAssetDropdownProperty(
+		Asset** asset, const char* label, const char* tooltip = nullptr
+	) {
+		bool changed = false;
+
+		std::string tag = "none";
+
+		if (*asset)
+			tag = AssetManager::GetAssetMetaData((*asset)->GetHandle()).Path.filename().string();
+
+		BeginPropertyGrid(label, tooltip, true);
+
+		ImVec2 region = ImGui::GetContentRegionAvail();
+		region.x -= 20.0f;
+		region.y = ImGui::GetFrameHeight();
+
+		ImVec2 pos = ImGui::GetCursorPos();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyle().Colors[ImGuiCol_Button]);
+
+		ImGui::Button("##font_dropdown_property", region);
+
+		ImGui::PopStyleColor();
+
+		if (ImGui::BeginDragDropTarget()) {
+			const char* payloadName = Asset::GetStringifiedAssetType(T::GetStaticType());
+
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(payloadName)) {
+				u64* handle = static_cast<u64*>(payload->Data);
+
+				*asset = *AssetManager::GetAssetRaw(*handle);
+
+				changed = true;
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		ImGui::SameLine();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.3f, 0.3f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+
+		if (ImGui::Button("x", { 20.0f, region.y })) {
+			*asset = nullptr;
+			changed = true;
+		}
+
+		ImGui::PopStyleColor(3);
+		ImGui::PopStyleVar();
+
+
+		if (*asset) {
+			ImVec4 selectedColor = GUI::Colors::Darken(ImVec4(0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f), 0.05f);
+			ImGui::PushStyleColor(ImGuiCol_Text, selectedColor);
+		}
+
+		ImVec2 padding = ImGui::GetStyle().FramePadding;
+		ImGui::SetCursorPos({ pos.x + padding.x, pos.y + padding.y });
+		ImGui::Text("%s", tag.c_str());
+
+		if (*asset)
+			ImGui::PopStyleColor();
+
+		EndPropertyGrid();
+
+		return changed;
 	}
 
 	/**
@@ -1323,7 +1395,7 @@ namespace SW::GUI {
 			imageSize.x = imageSize.y * imageAspectRatio;
 
 		ImGui::Image(
-			GUI::GetTextureID(wholeImage->GetHandle()), imageSize, uv0, uv1, { tint.r, tint.g, tint.b, tint.a }
+			GUI::GetTextureID(wholeImage->GetTexHandle()), imageSize, uv0, uv1, { tint.r, tint.g, tint.b, tint.a }
 		);
 
 		GUI::EndPropertyGrid();

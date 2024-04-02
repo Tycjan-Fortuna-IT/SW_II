@@ -1,6 +1,7 @@
 #include "SpritesheetEditor.hpp"
 
 #include "GUI/Editor/EditorResources.hpp"
+#include "Core/Asset/AssetLoader.hpp"
 
 namespace SW {
 
@@ -29,88 +30,22 @@ namespace SW {
 
 	void SpritesheetEditor::OnClose()
 	{
-
-	}
-
-	template <typename T>
-		requires std::is_base_of_v<Asset, T>
-	static bool DrawAssetDropdownProperty(
-		Asset** asset, const char* label, const char* tooltip = nullptr
-	) {
-		bool changed = false;
-
-		std::string tag = "none";
-
-		if (*asset)
-			tag = AssetManager::GetAssetMetaData((*asset)->GetHandle()).Path.filename().string();
-
-		GUI::BeginPropertyGrid(label, tooltip, true);
-
-		ImVec2 region = ImGui::GetContentRegionAvail();
-		region.x -= 20.0f;
-		region.y = ImGui::GetFrameHeight();
-
-		ImVec2 pos = ImGui::GetCursorPos();
-
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyle().Colors[ImGuiCol_Button]);
-
-		ImGui::Button("##font_dropdown_property", region);
-
-		ImGui::PopStyleColor();
-
-		if (ImGui::BeginDragDropTarget()) {
-			const char* payloadName = Asset::GetStringifiedAssetType(T::GetStaticType());
-
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(payloadName)) {
-				u64* handle = static_cast<u64*>(payload->Data);
-
-				*asset = AssetManager::GetAssetRaw(*handle);
-
-				changed = true;
-			}
-			ImGui::EndDragDropTarget();
-		}
-
-		ImGui::SameLine();
-
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.3f, 0.3f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
-
-		if (ImGui::Button("x", { 20.0f, region.y })) {
-			*asset = nullptr;
-			changed = true;
-		}
-
-		ImGui::PopStyleColor(3);
-		ImGui::PopStyleVar();
-
-
-		if (*asset) {
-			ImVec4 selectedColor = GUI::Colors::Darken(ImVec4(0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f), 0.05f);
-			ImGui::PushStyleColor(ImGuiCol_Text, selectedColor);
-		}
-
-		ImVec2 padding = ImGui::GetStyle().FramePadding;
-		ImGui::SetCursorPos({ pos.x + padding.x, pos.y + padding.y });
-		ImGui::Text("%s", tag.c_str());
-
-		if (*asset)
-			ImGui::PopStyleColor();
-
-		GUI::EndPropertyGrid();
-
-		return changed;
+		const AssetMetaData& metadata = AssetManager::GetAssetMetaData((*m_Spritesheet)->GetHandle());
+		
+		AssetLoader::Serialize(metadata);
 	}
 
 	void SpritesheetEditor::Render()
 	{
+		const glm::vec2 vo = (*m_Spritesheet)->GetViewPos();
+
+		ImVec2 viewOrigin = { vo.x, vo.y };
+		m_Canvas.SetView(viewOrigin, (*m_Spritesheet)->GetViewZoom());
+
 		ImGuiIO& io = ImGui::GetIO();
 
 		ImVec2 availableRegion = ImGui::GetContentRegionAvail();
 
-		ImVec2 viewOrigin = m_Canvas.ViewOrigin();
 		static ImVec2 drawStartPoint;
 		static bool isDragging = false;
 
@@ -126,27 +61,29 @@ namespace SW {
 
 			GUI::BeginProperties("##spritesheet_editor_properties");
 			
-			f32 viewZoom = m_Spritesheet->GetViewZoom();
+			f32 viewZoom = (*m_Spritesheet)->GetViewZoom();
 			if (GUI::DrawFloatingPointProperty(viewZoom, "View Zoom", nullptr, 0.5f, 15.0f)) {
-				m_Spritesheet->SetViewZoom(viewZoom);
+				(*m_Spritesheet)->SetViewZoom(viewZoom);
 			}
 
-			f32 gridScale = m_Spritesheet->GetGridScale();
+			f32 gridScale = (*m_Spritesheet)->GetGridScale();
 			if (GUI::DrawFloatingPointProperty(gridScale, "Grid Scale", nullptr, 16.f, 1000.f)) {
-				m_Spritesheet->SetGridScale(gridScale);
+				(*m_Spritesheet)->SetGridScale(gridScale);
 			}
 
-			glm::vec2 offset = m_Spritesheet->GetCenterOffset();
+			glm::vec2 offset = (*m_Spritesheet)->GetCenterOffset();
 			if (GUI::DrawVector2ControlProperty(offset, "Center Offset")) {
-				m_Spritesheet->SetCenterOffset(offset);
+				(*m_Spritesheet)->SetCenterOffset(offset);
 			}
 
-			Asset* asset = m_Spritesheet->GetSpritesheetTexture();		
-			if (DrawAssetDropdownProperty<Texture2D>(&asset, "Spritesheet")) {
-				m_Spritesheet->SetSpritesheetTextureHandle(asset ? asset->GetHandle() : 0u);
+			Asset* asset = (*m_Spritesheet)->GetSpritesheetTexture();
+			if (GUI::DrawAssetDropdownProperty<Texture2D>(&asset, "Spritesheet")) {
+				Texture2D** texture = asset ? AssetManager::GetAssetRaw<Texture2D>(asset->GetHandle()) : nullptr;
+
+				(*m_Spritesheet)->SetSpritesheetTexture(texture);
 			}
 
-			m_Spritesheet->SetViewPos({ viewOrigin.x, viewOrigin.y });
+			(*m_Spritesheet)->SetViewPos({ viewOrigin.x, viewOrigin.y });
 
 			GUI::EndProperties();
 
@@ -161,9 +98,10 @@ namespace SW {
 						drawStartPoint = viewOrigin;
 					}
 
-					m_Canvas.SetView(drawStartPoint + ImGui::GetMouseDragDelta(1, 0.0f) * viewZoom, viewZoom);
-				}
-				else if (isDragging) {
+					const ImVec2 nvp = drawStartPoint + ImGui::GetMouseDragDelta(1, 0.0f) * viewZoom;
+
+					(*m_Spritesheet)->SetViewPos({nvp.x, nvp.y});
+				} else if (isDragging) {
 					isDragging = false;
 				}
 
@@ -192,15 +130,15 @@ namespace SW {
 				if (viewRect.Min.y < 0.0f)
 					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Min.y), gridScale, 16.0f, 0.6f, -1.0f);*/
 
-				Texture2D* spritesheetTexture = m_Spritesheet->GetSpritesheetTexture();
+				Texture2D* spritesheetTexture = (*m_Spritesheet)->GetSpritesheetTexture();
 				if (!spritesheetTexture)
 					spritesheetTexture = EditorResources::MissingAssetIcon;
 
 				ImGui::Image(
-					GUI::GetTextureID(spritesheetTexture->GetHandle()), { (f32)spritesheetTexture->GetWidth(), (f32)spritesheetTexture->GetHeight() }, { 0, 1 }, { 1, 0 }
+					GUI::GetTextureID(spritesheetTexture->GetTexHandle()), { (f32)spritesheetTexture->GetWidth(), (f32)spritesheetTexture->GetHeight() }, { 0, 1 }, { 1, 0 }
 				);
 
-				for (const Sprite* sprite : m_Spritesheet->GetSprites()) {
+				for (const Sprite* sprite : (*m_Spritesheet)->GetSprites()) {
 					DrawSpriteRectOnCanvas(drawList, sprite);
 				}
 
@@ -211,22 +149,16 @@ namespace SW {
 		}
 	}
 
-	void SpritesheetEditor::SetAsset(Asset* asset)
+	void SpritesheetEditor::SetAssetHandle(AssetHandle handle)
 	{
-		m_Spritesheet = AssetManager::GetAssetRaw(asset->GetHandle())->AsRaw<Spritesheet>();
-		m_SpritesheetHandle = asset->GetHandle();
-
-		const glm::vec2 vo = m_Spritesheet->GetViewPos();
-
-		ImVec2 viewOrigin = { vo.x, vo.y };
-		m_Canvas.SetView(viewOrigin, m_Spritesheet->GetViewZoom());
+		m_Spritesheet = AssetManager::GetAssetRaw<Spritesheet>(handle);
 	}
 
 	void SpritesheetEditor::DrawSpriteRectOnCanvas(ImDrawList* drawList, const Sprite* sprite) const
 	{
 		const glm::vec2 position = sprite->Position;
-		const glm::vec2 scale = sprite->Scale * m_Spritesheet->GetViewZoom();
-		const glm::vec2 offset = m_Spritesheet->GetCenterOffset();
+		const glm::vec2 scale = sprite->Scale * (*m_Spritesheet)->GetViewZoom();
+		const glm::vec2 offset = (*m_Spritesheet)->GetCenterOffset();
 
 		ImVec2 topLeft = ImVec2(position.x + offset.x, position.y + offset.y);
 		ImVec2 topRight = ImVec2(position.x + scale.x + offset.x, position.y + offset.y);
@@ -275,12 +207,12 @@ namespace SW {
 
 			int indexToRemove = -1;
 
-			if (!m_Spritesheet->GetSpritesheetTextureHandle()) {
+			if (!(*m_Spritesheet)->GetSpritesheetTexture()) {
 				ImGui::EndTable();
 				return;
 			}
 
-			const std::vector<Sprite*> sprites = m_Spritesheet->GetSprites();
+			const std::vector<Sprite*> sprites = (*m_Spritesheet)->GetSprites();
 
 			for (int i = 0; i < sprites.size(); i++) {
 				Sprite* sprite = sprites[i];
@@ -326,7 +258,7 @@ namespace SW {
 					GUI::DrawVector2ControlProperty(sprite->Scale, "Scale", nullptr, 1.f, 1.f, 20.f);
 					GUI::DrawVector4ColorPickerProperty(sprite->Tint, "Tint");
 					GUI::DrawImagePartProperty(
-						m_Spritesheet->GetSpritesheetTexture(), "Sprite", nullptr, sprite->Position, sprite->Scale, sprite->Tint, scale
+						(*m_Spritesheet)->GetSpritesheetTexture(), "Sprite", nullptr, sprite->Position, sprite->Scale, sprite->Tint, scale
 					);
 					GUI::EndProperties();
 

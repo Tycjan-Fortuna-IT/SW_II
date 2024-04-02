@@ -20,11 +20,11 @@ namespace SW {
 		s_Serializers.clear();
 	}
 
-	void AssetLoader::Serialize(const Asset* asset, const AssetMetaData& metadata)
+	void AssetLoader::Serialize(const AssetMetaData& metadata)
 	{
 		ASSERT(s_Serializers.find(metadata.Type) != s_Serializers.end(), "Asset serializer not available for this file: {} !", metadata.Path.string());
 
-		s_Serializers.at(metadata.Type)->Serialize(asset);
+		s_Serializers.at(metadata.Type)->Serialize(metadata);
 	}
 
 	Asset* AssetLoader::TryLoadAsset(const AssetMetaData& metadata)

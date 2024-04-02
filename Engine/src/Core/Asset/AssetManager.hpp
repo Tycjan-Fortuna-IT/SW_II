@@ -14,26 +14,26 @@ namespace SW {
 
 		static const AssetMetaData& GetAssetMetaData(AssetHandle handle) { return GetRegistry().GetAssetMetaData(handle); }
 
-		static const Asset* GetAsset(AssetHandle handle)
-		{
-			return ProjectContext::Get()->GetAssetManager()->GetAsset(handle);
-		}
-
-		template <typename T>
-		static const T* GetAsset(AssetHandle handle)
-		{
-			return ProjectContext::Get()->GetAssetManager()->GetAsset(handle)->As<T>();
-		}
-
-		static Asset* GetAssetRaw(AssetHandle handle)
+		static Asset** GetAssetRaw(AssetHandle handle)
 		{
 			return ProjectContext::Get()->GetAssetManager()->GetAssetRaw(handle);
 		}
 
 		template <typename T>
-		static T* GetAssetRaw(AssetHandle handle)
+		static T** GetAssetRaw(AssetHandle handle)
 		{
-			return ProjectContext::Get()->GetAssetManager()->GetAssetRaw(handle)->AsRaw<T>();
+			return (T**)ProjectContext::Get()->GetAssetManager()->GetAssetRaw(handle);
+		}
+
+		static const Asset** GetAsset(AssetHandle handle)
+		{
+			return ProjectContext::Get()->GetAssetManager()->GetAsset(handle);
+		}
+
+		template <typename T>
+		static const T** GetAsset(AssetHandle handle)
+		{
+			return (const T**)ProjectContext::Get()->GetAssetManager()->GetAsset(handle);
 		}
 
 		static bool ForceUnload(AssetHandle handle)

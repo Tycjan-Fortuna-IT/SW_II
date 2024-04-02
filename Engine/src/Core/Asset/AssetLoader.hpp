@@ -12,7 +12,7 @@ namespace SW {
 		static void Initialize();
 		static void Shutdown();
 
-		static void Serialize(const Asset* asset, const AssetMetaData& metadata);
+		static void Serialize(const AssetMetaData& metadata);
 		[[nodiscard]] static Asset* TryLoadAsset(const AssetMetaData& metadata);
 
 	private:

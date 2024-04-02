@@ -13,6 +13,8 @@ namespace SW {
 		if (!m_IsOpen)
 			return;
 
+		const bool wasOpen = m_IsOpen;
+
 		ImGui::SetNextWindowSizeConstraints(m_MinSize, m_MaxSize);
 
 		OnWindowStylePush();
@@ -22,6 +24,9 @@ namespace SW {
 		Render();
 
 		ImGui::End();
+
+		if (wasOpen && !m_IsOpen)
+			OnClose();
 	}
 
 	void AssetEditorPanel::Open()

@@ -7,7 +7,12 @@
 "Entities: \n"
 
 #define EMPTY_SPRITESHEET_CONTENT \
-"Spritesheet: \n"
+R"(Spritesheet:
+  TextureHandle: 0
+  ViewZoom: 1
+  GridScale: 64
+  CenterOffset: [0, 0]
+  ViewPos: [0, 0])"
 
 namespace SW::GUI::Popups {
 

@@ -312,7 +312,7 @@ namespace SW {
 		ImGuiTableFlags flags = ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_ScrollY
 			| ImGuiTableFlags_PadOuterX | ImGuiTableFlags_SizingFixedFit;
 
-		ImTextureID whiteTexId = GUI::GetTextureID(Renderer2D::WhiteTexture->GetHandle());
+		ImTextureID whiteTexId = GUI::GetTextureID(Renderer2D::WhiteTexture->GetTexHandle());
 
 		bool isAnyItemHovered = false;
 
@@ -473,9 +473,7 @@ namespace SW {
 		}
 
 		if (item->Type == AssetType::Spritesheet) {
-			Asset* spritesheet = AssetManager::GetAssetRaw(item->Handle);
-
-			AssetEditorPanelManager::OpenEditor(spritesheet);
+			AssetEditorPanelManager::OpenEditor(item->Handle, item->Type);
 		} else {
 			FileSystem::OpenExternally(m_AssetsDirectory / item->Path);
 		}	

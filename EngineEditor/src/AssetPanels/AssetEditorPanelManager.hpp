@@ -25,7 +25,7 @@ namespace SW {
 
 		static void OnRender();
 
-		static void OpenEditor(Asset* asset);
+		static void OpenEditor(AssetHandle handle, AssetType type);
 
 	private:
 		static std::unordered_map<AssetType, AssetEditorPanel*> s_Editors;

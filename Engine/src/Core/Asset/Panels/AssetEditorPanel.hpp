@@ -28,9 +28,11 @@ namespace SW {
 		void Open();
 		void Close();
 
+		bool IsOpen() const { return m_IsOpen; }
+
 		void SetSceneContext(Scene* scene) { m_Scene = scene; }
 		
-		virtual void SetAsset(Asset* asset) = 0;
+		virtual void SetAssetHandle(AssetHandle handle) = 0;
 	
 	protected:
 		virtual void OnWindowStylePush() {}
