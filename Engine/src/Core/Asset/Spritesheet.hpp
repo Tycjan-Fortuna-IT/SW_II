@@ -16,6 +16,9 @@ namespace SW {
 		AssetType GetAssetType() const override { return AssetType::Spritesheet; }
 
 		Texture2D* GetSpritesheetTexture() const { return m_SpritesheetTexture; }
+		void SetSpritesheetTexture(Texture2D* spritesheetTexture){ m_SpritesheetTexture = spritesheetTexture; }
+
+		const std::vector<Sprite*>& GetSprites() const { return m_Sprites; }
 
 		f32 GetViewZoom() const { return m_ViewZoom; }
 		void SetViewZoom(f32 val) { m_ViewZoom = val; }
@@ -26,7 +29,8 @@ namespace SW {
 		const glm::vec2& GetCenterOffset() const { return CenterOffset; }
 		void SetCenterOffset(const glm::vec2& val) { CenterOffset = val; }
 	
-		const std::vector<Sprite*>& GetSprites() const { return m_Sprites; }
+		const glm::vec2& GetViewPos() const { return ViewPos; }
+		void SetViewPos(const glm::vec2& val) { ViewPos = val; }
 
 	private:
 		Texture2D* m_SpritesheetTexture = nullptr;
@@ -36,6 +40,7 @@ namespace SW {
 		f32 m_GridScale = 64.0f;
 		
 		glm::vec2 CenterOffset = glm::vec2(0.f, 0.f);
+		glm::vec2 ViewPos = glm::vec2(0.f, 0.f);
 	};
 
 }

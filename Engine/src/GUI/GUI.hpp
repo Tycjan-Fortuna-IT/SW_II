@@ -743,10 +743,12 @@ namespace SW::GUI {
 	 * @param max The maximum value allowed for the vector components. Default is FLT_MAX.
 	 * @param format The format string used to display the vector components. Default is "%.2f".
 	 */
-	static void DrawVector2Control(
+	static bool DrawVector2Control(
 		glm::vec2& vector, f32 resetValue = 0.f,
 		f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
 	) {
+		bool changed = false;
+
 		const ImGuiIO& io = ImGui::GetIO();
 
 		ImFont* boldFont = GUI::Appearance::GetFonts().DefaultBoldFont;
@@ -770,14 +772,17 @@ namespace SW::GUI {
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
 			ImGui::PushFont(boldFont);
-			if (ImGui::Button("X", buttonSize))
+			if (ImGui::Button("X", buttonSize)) {
 				vector.x = resetValue;
+				changed = true;
+			}
 			ImGui::PopFont();
 			ImGui::PopStyleColor(4);
 
 			ImGui::SameLine();
 			ImGui::SetNextItemWidth(inputItemWidth);
-			ImGui::DragFloat("##X", &vector.x, 0.05f, min, max, format.c_str());
+			if (ImGui::DragFloat("##X", &vector.x, 0.05f, min, max, format.c_str()))
+				changed = true;
 			ImGui::PopStyleVar();
 		}
 
@@ -791,16 +796,22 @@ namespace SW::GUI {
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
 			ImGui::PushFont(boldFont);
-			if (ImGui::Button("Y", buttonSize))
+			if (ImGui::Button("Y", buttonSize)) {
 				vector.y = resetValue;
+				changed = true;
+			}
+				
 			ImGui::PopFont();
 			ImGui::PopStyleColor(4);
 
 			ImGui::SameLine();
 			ImGui::SetNextItemWidth(inputItemWidth);
-			ImGui::DragFloat("##Y", &vector.y, 0.05f, min, max, format.c_str());
+			if (ImGui::DragFloat("##Y", &vector.y, 0.05f, min, max, format.c_str()))
+				changed = true;
 			ImGui::PopStyleVar();
 		}
+
+		return changed;
 	}
 
 	/**
@@ -818,15 +829,19 @@ namespace SW::GUI {
 	 * @param max The maximum value allowed for each component of the vector.
 	 * @param format The format string used to display the values of the vector components.
 	 */
-	static void DrawVector2ControlProperty(
+	static bool DrawVector2ControlProperty(
 		glm::vec2& vector, const char* label, const char* tooltip = nullptr, f32 resetValue = 0.f,
 		f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
 	) {
+		bool changed = false;
+
 		BeginPropertyGrid(label, tooltip, false);
 
-		DrawVector2Control(vector, resetValue, min, max, format);
+		changed = DrawVector2Control(vector, resetValue, min, max, format);
 
 		EndPropertyGrid();
+
+		return changed;
 	}
 
 	/**

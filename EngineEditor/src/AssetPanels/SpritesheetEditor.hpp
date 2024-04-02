@@ -19,17 +19,17 @@ namespace SW {
 	public:
 		SpritesheetEditor(const char* name, const char* icon);
 
-		void OnUpdate(Timestep ts) override final;
+		void OnUpdate(Timestep ts) override;
 
-		void OnWindowStylePush() override final;
+		void OnWindowStylePush() override;
 
-		void OnWindowStylePop() override final;
+		void OnWindowStylePop() override;
 
-		void OnOpen() override final;
+		void OnOpen() override;
 
-		void OnClose() override final;
+		void OnClose() override;
 
-		void Render() override final;
+		void Render() override;
 
 		void SetAsset(Asset* asset) override;
 

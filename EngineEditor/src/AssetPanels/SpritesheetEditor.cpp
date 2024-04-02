@@ -34,18 +34,72 @@ namespace SW {
 
 	}
 
-	static void DrawRectOnCanvas(
-		ImDrawList* drawList, const glm::vec2& position, const glm::vec2& scale
+	static bool DrawAssetDropdownProperty(
+		Asset** asset, const char* payloadName, const char* label, const char* tooltip = nullptr
 	) {
-		ImVec2 topLeft = ImVec2(position.x, position.y);
-		ImVec2 topRight = ImVec2(position.x + scale.x, position.y);
-		ImVec2 bottomRight = ImVec2(position.x + scale.x, position.y + scale.y);
-		ImVec2 bottomLeft = ImVec2(position.x, position.y + scale.y);
+		bool changed = false;
 
-		drawList->AddLine(topLeft, topRight, GUI::Theme::NiceBlue);
-		drawList->AddLine(topRight, bottomRight, GUI::Theme::NiceBlue);
-		drawList->AddLine(bottomRight, bottomLeft, GUI::Theme::NiceBlue);
-		drawList->AddLine(bottomLeft, topLeft, GUI::Theme::NiceBlue);
+		std::string tag = "none";
+
+		if (*asset)
+			tag = AssetManager::GetAssetMetaData((*asset)->GetHandle()).Path.filename().string();
+
+		GUI::BeginPropertyGrid(label, tooltip, true);
+
+		ImVec2 region = ImGui::GetContentRegionAvail();
+		region.x -= 20.0f;
+		region.y = ImGui::GetFrameHeight();
+
+		ImVec2 pos = ImGui::GetCursorPos();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyle().Colors[ImGuiCol_Button]);
+
+		ImGui::Button("##font_dropdown_property", region);
+
+		ImGui::PopStyleColor();
+
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(payloadName)) {
+				u64* handle = static_cast<u64*>(payload->Data);
+
+				*asset = AssetManager::GetAssetRaw(*handle);
+
+				changed = true;
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		ImGui::SameLine();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.3f, 0.3f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+
+		if (ImGui::Button("x", { 20.0f, region.y })) {
+			*asset = nullptr;
+			changed = true;
+		}
+
+		ImGui::PopStyleColor(3);
+		ImGui::PopStyleVar();
+
+
+		if (*asset) {
+			ImVec4 selectedColor = GUI::Colors::Darken(ImVec4(0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f), 0.05f);
+			ImGui::PushStyleColor(ImGuiCol_Text, selectedColor);
+		}
+
+		ImVec2 padding = ImGui::GetStyle().FramePadding;
+		ImGui::SetCursorPos({ pos.x + padding.x, pos.y + padding.y });
+		ImGui::Text("%s", tag.c_str());
+
+		if (*asset)
+			ImGui::PopStyleColor();
+
+		GUI::EndPropertyGrid();
+
+		return changed;
 	}
 
 	void SpritesheetEditor::Render()
@@ -59,7 +113,6 @@ namespace SW {
 		static bool isDragging = false;
 
 		ImVec2 viewOrigin = canvas.ViewOrigin();
-		f32 viewScale = canvas.ViewScale();
 
 		constexpr ImGuiTableFlags flags = ImGuiTableFlags_NoPadInnerX
 			| ImGuiTableFlags_NoPadOuterX
@@ -72,17 +125,33 @@ namespace SW {
 			ImGui::TableNextColumn();
 
 			GUI::BeginProperties("##spritesheet_editor_properties");
-			if (GUI::DrawFloatingPointProperty(viewScale, "View Zoom", nullptr, 0.5f, 15.0f)) {
-				canvas.SetView(viewOrigin, viewScale);
+			
+			f32 viewZoom = m_Spritesheet->GetViewZoom();
+			if (GUI::DrawFloatingPointProperty(viewZoom, "View Zoom", nullptr, 0.5f, 15.0f)) {
+				m_Spritesheet->SetViewZoom(viewZoom);
+				canvas.SetView(viewOrigin, viewZoom);
 			}
-			static f32 scale = 100.f;
-			GUI::DrawFloatingPointProperty(scale, "Scale", nullptr, 16.f, 1000.f);
-			static glm::vec2 sOffset = glm::vec2(0.f);
-			GUI::DrawVector2ControlProperty(sOffset, "Offset from center");
+
+			f32 gridScale = m_Spritesheet->GetGridScale();
+			if (GUI::DrawFloatingPointProperty(gridScale, "Grid Scale", nullptr, 16.f, 1000.f)) {
+				m_Spritesheet->SetGridScale(gridScale);
+			}
+
+			glm::vec2 offset = m_Spritesheet->GetCenterOffset();
+			if (GUI::DrawVector2ControlProperty(offset, "Center Offset")) {
+				m_Spritesheet->SetCenterOffset(offset);
+			}
+
+			Asset* spritesheetAsset = m_Spritesheet->GetSpritesheetTexture();
+			if (DrawAssetDropdownProperty(&spritesheetAsset, STRINGIFY_MACRO(Texture2D), "Spritesheet")) {
+				m_Spritesheet->SetSpritesheetTexture(spritesheetAsset->AsRaw<Texture2D>());
+			}
+
+			m_Spritesheet->SetViewPos({ viewOrigin.x, viewOrigin.y });
 
 			GUI::EndProperties();
 
-			RenderSpriteCards(scale);
+			RenderSpriteCards(gridScale);
 			
 			ImGui::TableNextColumn();
 
@@ -93,7 +162,7 @@ namespace SW {
 						drawStartPoint = viewOrigin;
 					}
 
-					canvas.SetView(drawStartPoint + ImGui::GetMouseDragDelta(1, 0.0f) * viewScale, viewScale);
+					canvas.SetView(drawStartPoint + ImGui::GetMouseDragDelta(1, 0.0f) * viewZoom, viewZoom);
 				}
 				else if (isDragging) {
 					isDragging = false;
@@ -101,28 +170,28 @@ namespace SW {
 
 				ImRect viewRect = canvas.ViewRect();
 
-				const ImVec2 lineOffset = { sOffset.x, sOffset.y };
+				const ImVec2 lineOffset = { offset.x, offset.y };
 
-				ImVec2 offset = canvas.ViewOrigin() * (1.0f / canvas.ViewScale()) - lineOffset;
+				ImVec2 loffset = canvas.ViewOrigin() * (1.0f / viewZoom) - lineOffset;
 				ImVec2 viewPos = canvas.ViewRect().Min + lineOffset;
 				ImVec2 viewSize = canvas.ViewRect().GetSize();
 				ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-				drawList->AddRectFilled(viewPos, viewPos + viewSize, GUI::Theme::Background);
+				drawList->AddRectFilled(viewPos, viewPos + viewSize, GUI::Theme::SelectionMuted);
 
-				for (f32 x = fmodf(offset.x, scale); x < viewSize.x; x += scale)
-					drawList->AddLine(ImVec2(x - sOffset.x, 0.0f - sOffset.y) + viewPos, ImVec2(x - sOffset.x, viewSize.y - sOffset.y) + viewPos, GUI::Theme::Selection);
-				for (f32 y = fmodf(offset.y, scale); y < viewSize.y; y += scale)
-					drawList->AddLine(ImVec2(0.0f - sOffset.x, y - sOffset.y) + viewPos, ImVec2(viewSize.x - sOffset.x, y - sOffset.y) + viewPos, GUI::Theme::Selection);
+				for (f32 x = fmodf(loffset.x, gridScale); x < viewSize.x; x += gridScale)
+					drawList->AddLine(ImVec2(x - offset.x, 0.0f - offset.y) + viewPos, ImVec2(x - offset.x, viewSize.y - offset.y) + viewPos, GUI::Theme::Selection);
+				for (f32 y = fmodf(loffset.y, gridScale); y < viewSize.y; y += gridScale)
+					drawList->AddLine(ImVec2(0.0f - offset.x, y - offset.y) + viewPos, ImVec2(viewSize.x - offset.x, y - offset.y) + viewPos, GUI::Theme::Selection);
 
-				if (viewRect.Max.x > 0.0f)
-					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(viewRect.Max.x, 0.0f), scale, 16.0f, 0.6f);
+				/*if (viewRect.Max.x > 0.0f)
+					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(viewRect.Max.x, 0.0f), gridScale, 16.0f, 0.6f);
 				if (viewRect.Min.x < 0.0f)
-					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(viewRect.Min.x, 0.0f), scale, 16.0f, 0.6f, -1.0f);
+					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(viewRect.Min.x, 0.0f), gridScale, 16.0f, 0.6f, -1.0f);
 				if (viewRect.Max.y > 0.0f)
-					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Max.y), scale, 16.0f, 0.6f);
+					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Max.y), gridScale, 16.0f, 0.6f);
 				if (viewRect.Min.y < 0.0f)
-					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Min.y), scale, 16.0f, 0.6f, -1.0f);
+					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Min.y), gridScale, 16.0f, 0.6f, -1.0f);*/
 
 				Texture2D* spritesheetTexture = m_Spritesheet->GetSpritesheetTexture();
 				if (spritesheetTexture == nullptr)

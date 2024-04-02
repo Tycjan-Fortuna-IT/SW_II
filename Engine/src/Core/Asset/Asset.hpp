@@ -67,6 +67,7 @@ namespace SW {
 			return dynamic_cast<T*>(this);
 		}
 
+		AssetHandle GetHandle() const { return m_Handle; }
 		AssetState GetCurrentState() const { return m_State; }
 
 		bool IsValid() const { return m_State == AssetState::Loaded; }
