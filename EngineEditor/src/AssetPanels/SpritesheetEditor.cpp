@@ -37,10 +37,10 @@ namespace SW {
 
 	void SpritesheetEditor::Render()
 	{
-		const glm::vec2 vo = (*m_Spritesheet)->GetViewPos();
+		const glm::vec2 vo = (*m_Spritesheet)->ViewPos;
 
 		ImVec2 viewOrigin = { vo.x, vo.y };
-		m_Canvas.SetView(viewOrigin, (*m_Spritesheet)->GetViewZoom());
+		m_Canvas.SetView(viewOrigin, (*m_Spritesheet)->ViewZoom);
 
 		ImGuiIO& io = ImGui::GetIO();
 
@@ -55,26 +55,20 @@ namespace SW {
 			| ImGuiTableFlags_BordersInnerH
 			| ImGuiTableFlags_ScrollY;
 
+		f32 wz = (*m_Spritesheet)->ViewZoom;
+
 		if (ImGui::BeginTable("MainViewTable", 2, flags, ImGui::GetContentRegionAvail())) {
 			ImGui::TableNextRow();
 			ImGui::TableNextColumn();
 
 			GUI::BeginProperties("##spritesheet_editor_properties");
-			
-			f32 viewZoom = (*m_Spritesheet)->GetViewZoom();
-			if (GUI::DrawFloatingPointProperty(viewZoom, "View Zoom", nullptr, 0.5f, 15.0f)) {
-				(*m_Spritesheet)->SetViewZoom(viewZoom);
-			}
 
-			f32 gridScale = (*m_Spritesheet)->GetGridScale();
-			if (GUI::DrawFloatingPointProperty(gridScale, "Grid Scale", nullptr, 16.f, 1000.f)) {
-				(*m_Spritesheet)->SetGridScale(gridScale);
-			}
+			GUI::DrawFloatingPointProperty((*m_Spritesheet)->ViewZoom, "View Zoom", nullptr, 0.5f, 15.0f);
+			GUI::DrawFloatingPointProperty((*m_Spritesheet)->GridScale, "Grid Scale", nullptr, 16.f, 1000.f);
+			GUI::DrawVector2ControlProperty((*m_Spritesheet)->CenterOffset, "Center Offset");
 
-			glm::vec2 offset = (*m_Spritesheet)->GetCenterOffset();
-			if (GUI::DrawVector2ControlProperty(offset, "Center Offset")) {
-				(*m_Spritesheet)->SetCenterOffset(offset);
-			}
+			static bool displayImageBorders = false;
+			GUI::DrawBooleanProperty(displayImageBorders, "Show Image Borders");
 
 			Asset* asset = (*m_Spritesheet)->GetSpritesheetTexture();
 			if (GUI::DrawAssetDropdownProperty<Texture2D>(&asset, "Spritesheet")) {
@@ -83,11 +77,11 @@ namespace SW {
 				(*m_Spritesheet)->SetSpritesheetTexture(texture);
 			}
 
-			(*m_Spritesheet)->SetViewPos({ viewOrigin.x, viewOrigin.y });
+			(*m_Spritesheet)->ViewPos = glm::vec2{ viewOrigin.x, viewOrigin.y };
 
 			GUI::EndProperties();
 
-			RenderSpriteCards(gridScale);
+			RenderSpriteCards((*m_Spritesheet)->GridScale);
 			
 			ImGui::TableNextColumn();
 
@@ -98,47 +92,55 @@ namespace SW {
 						drawStartPoint = viewOrigin;
 					}
 
-					const ImVec2 nvp = drawStartPoint + ImGui::GetMouseDragDelta(1, 0.0f) * viewZoom;
+					const ImVec2 nvp = drawStartPoint + ImGui::GetMouseDragDelta(1, 0.0f) * (*m_Spritesheet)->ViewZoom;
 
-					(*m_Spritesheet)->SetViewPos({nvp.x, nvp.y});
+					(*m_Spritesheet)->ViewPos = glm::vec2{ nvp.x, nvp.y };
 				} else if (isDragging) {
 					isDragging = false;
 				}
 
 				ImRect viewRect = m_Canvas.ViewRect();
 
+				glm::vec2 offset = (*m_Spritesheet)->CenterOffset;
 				const ImVec2 lineOffset = { offset.x, offset.y };
 
-				ImVec2 loffset = m_Canvas.ViewOrigin() * (1.0f / viewZoom) - lineOffset;
+				ImVec2 loffset = m_Canvas.ViewOrigin() * (1.0f / wz) + lineOffset;
 				ImVec2 viewPos = m_Canvas.ViewRect().Min + lineOffset;
 				ImVec2 viewSize = m_Canvas.ViewRect().GetSize();
 				ImDrawList* drawList = ImGui::GetWindowDrawList();
+				f32 gridScale = (*m_Spritesheet)->GridScale;
 
-				drawList->AddRectFilled(viewPos, viewPos + viewSize, GUI::Theme::SelectionMuted);
+				{
+					ImRect rect = m_Canvas.ViewRect();
 
-				for (f32 x = fmodf(loffset.x, gridScale); x < viewSize.x; x += gridScale)
-					drawList->AddLine(ImVec2(x - offset.x, 0.0f - offset.y) + viewPos, ImVec2(x - offset.x, viewSize.y - offset.y) + viewPos, GUI::Theme::Selection);
-				for (f32 y = fmodf(loffset.y, gridScale); y < viewSize.y; y += gridScale)
-					drawList->AddLine(ImVec2(0.0f - offset.x, y - offset.y) + viewPos, ImVec2(viewSize.x - offset.x, y - offset.y) + viewPos, GUI::Theme::Selection);
+					drawList->AddRectFilled(rect.Min, rect.Max, GUI::Theme::BackgroundDark);
+				}
 
-				/*if (viewRect.Max.x > 0.0f)
-					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(viewRect.Max.x, 0.0f), gridScale, 16.0f, 0.6f);
-				if (viewRect.Min.x < 0.0f)
-					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(viewRect.Min.x, 0.0f), gridScale, 16.0f, 0.6f, -1.0f);
-				if (viewRect.Max.y > 0.0f)
-					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Max.y), gridScale, 16.0f, 0.6f);
-				if (viewRect.Min.y < 0.0f)
-					GUI::DrawScale(ImVec2(0.0f, 0.0f), ImVec2(0.0f, viewRect.Min.y), gridScale, 16.0f, 0.6f, -1.0f);*/
+				for (f32 x = fmodf(loffset.x, gridScale); x < viewSize.x; x += gridScale) {
+					if (x < 0) continue;
+				
+					drawList->AddLine(ImVec2(x - offset.x, 0.0f - offset.y) + viewPos, ImVec2(x - offset.x, viewSize.y - offset.y) + viewPos, GUI::Theme::TextBrighter);
+				}
+
+				for (f32 y = fmodf(loffset.y, gridScale); y < viewSize.y; y += gridScale) {
+					if (y < 0) continue;
+
+					drawList->AddLine(ImVec2(0.0f - offset.x, y - offset.y) + viewPos, ImVec2(viewSize.x - offset.x, y - offset.y) + viewPos, GUI::Theme::TextBrighter);
+				}
 
 				Texture2D* spritesheetTexture = (*m_Spritesheet)->GetSpritesheetTexture();
 				if (!spritesheetTexture)
 					spritesheetTexture = EditorResources::MissingAssetIcon;
 
+				const ImVec4 borderCol = displayImageBorders ?
+					ImGui::ColorConvertU32ToFloat4(GUI::Theme::Accent) : ImVec4(1.f, 1.f, 1.f, 1.f);
+
 				ImGui::Image(
-					GUI::GetTextureID(spritesheetTexture->GetTexHandle()), { (f32)spritesheetTexture->GetWidth(), (f32)spritesheetTexture->GetHeight() }, { 0, 1 }, { 1, 0 }
+					GUI::GetTextureID(spritesheetTexture->GetTexHandle()), { (f32)spritesheetTexture->GetWidth() - 1.f, (f32)spritesheetTexture->GetHeight() - 1.f },
+					{ 0, 1 }, { 1, 0 }, ImVec4(1.f, 1.f, 1.f, 1.f), borderCol
 				);
 
-				for (const Sprite* sprite : (*m_Spritesheet)->GetSprites()) {
+				for (const Sprite& sprite : (*m_Spritesheet)->Sprites) {
 					DrawSpriteRectOnCanvas(drawList, sprite);
 				}
 
@@ -154,30 +156,30 @@ namespace SW {
 		m_Spritesheet = AssetManager::GetAssetRaw<Spritesheet>(handle);
 	}
 
-	void SpritesheetEditor::DrawSpriteRectOnCanvas(ImDrawList* drawList, const Sprite* sprite) const
+	void SpritesheetEditor::DrawSpriteRectOnCanvas(ImDrawList* drawList, const Sprite& sprite) const
 	{
-		const glm::vec2 position = sprite->Position;
-		const glm::vec2 scale = sprite->Scale * (*m_Spritesheet)->GetViewZoom();
-		const glm::vec2 offset = (*m_Spritesheet)->GetCenterOffset();
+		const glm::vec2 position = sprite.Position;
+		const glm::vec2 scale = sprite.Scale;
+		const glm::vec2 offset = (*m_Spritesheet)->CenterOffset;
+		const f32 gridSize = (*m_Spritesheet)->GridScale;
 
-		ImVec2 topLeft = ImVec2(position.x + offset.x, position.y + offset.y);
-		ImVec2 topRight = ImVec2(position.x + scale.x + offset.x, position.y + offset.y);
-		ImVec2 bottomRight = ImVec2(position.x + scale.x + offset.x, position.y + scale.y + offset.y);
-		ImVec2 bottomLeft = ImVec2(position.x + offset.x, position.y + scale.y + offset.y);
+		const ImVec2 topLeft = { position.x + offset.x, position.y + offset.y };
+		const ImVec2 topRight = { position.x + offset.x + scale.x * gridSize, position.y + offset.y };
+		const ImVec2 bottomRight = { position.x + offset.x + scale.x * gridSize, position.y + offset.y + scale.y * gridSize };
+		const ImVec2 bottomLeft = { position.x + offset.x, position.y + offset.y + scale.y * gridSize };
 
-		drawList->AddLine(topLeft, topRight, GUI::Theme::SelectionHalfMuted);
-		drawList->AddLine(topRight, bottomRight, GUI::Theme::SelectionHalfMuted);
-		drawList->AddLine(bottomRight, bottomLeft, GUI::Theme::SelectionHalfMuted);
-		drawList->AddLine(bottomLeft, topLeft, GUI::Theme::SelectionHalfMuted);
+		drawList->AddLine(topLeft, topRight, GUI::Theme::MissingMesh);
+		drawList->AddLine(topRight, bottomRight, GUI::Theme::MissingMesh);
+		drawList->AddLine(bottomRight, bottomLeft, GUI::Theme::MissingMesh);
+		drawList->AddLine(bottomLeft, topLeft, GUI::Theme::MissingMesh);
 	}
 
-	void SpritesheetEditor::RenderSpriteCards(f32 scale)
+	void SpritesheetEditor::RenderSpriteCards(f32 vscale)
 	{
 		constexpr ImGuiTableFlags flags = ImGuiTableFlags_NoPadInnerX
 			| ImGuiTableFlags_NoPadOuterX
 			| ImGuiTableFlags_Resizable
 			| ImGuiTableFlags_BordersInnerH
-			| ImGuiTableFlags_ContextMenuInBody
 			| ImGuiTableFlags_ScrollY;
 
 		constexpr ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_SpanAvailWidth
@@ -186,13 +188,14 @@ namespace SW {
 			| ImGuiTreeNodeFlags_FramePadding;
 
 		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 16.f);
-		if (ImGui::Button("Save spritesheet")) {
-
-		}
+		if (ImGui::Button("Add new sprite"))
+			AddNewSprite();
+		
 		ImGui::SameLine();
-		if (ImGui::Button("Add new sprite")) {
 
-		}
+		if (ImGui::Button("Save"))
+			OnClose(); // serialize
+
 		static GUI::TextFilter spriteFilter;
 
 		const f32 availableWidth = ImGui::GetContentRegionAvail().x - 16.f - 16.f;
@@ -212,18 +215,17 @@ namespace SW {
 				return;
 			}
 
-			const std::vector<Sprite*> sprites = (*m_Spritesheet)->GetSprites();
-
+			std::vector<Sprite>& sprites = (*m_Spritesheet)->Sprites;
 			for (int i = 0; i < sprites.size(); i++) {
-				Sprite* sprite = sprites[i];
+				Sprite& sprite = sprites[i];
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
 
-				if (!spriteFilter.FilterPass(sprite->Name))
+				if (!spriteFilter.FilterPass(sprite.Name))
 					continue;
 
-				const char* spriteName = sprite->Name.c_str();
+				const char* spriteName = sprite.Name.c_str();
 				const std::string uid = std::to_string(i);
 				const char* uidc = uid.c_str();
 				
@@ -253,13 +255,16 @@ namespace SW {
 
 				if (opened) {
 					GUI::BeginProperties(uidc);
-					GUI::DrawSingleLineTextInputProperty(sprite->Name, "Sprite name");
-					GUI::DrawVector2ControlProperty(sprite->Position, "Position");
-					GUI::DrawVector2ControlProperty(sprite->Scale, "Scale", nullptr, 1.f, 1.f, 20.f);
-					GUI::DrawVector4ColorPickerProperty(sprite->Tint, "Tint");
+
+					GUI::DrawSingleLineTextInputProperty(sprite.Name, "Sprite name");
+					GUI::DrawVector2ControlProperty(sprite.Position, "Position");
+					GUI::DrawVector2ControlProperty(sprite.Scale, "Scale", nullptr, 1.f, 1.f, 20.f);
+					GUI::DrawVector4ColorPickerProperty(sprite.Tint, "Tint");
+					glm::vec2 position = sprite.Position + (*m_Spritesheet)->CenterOffset;
 					GUI::DrawImagePartProperty(
-						(*m_Spritesheet)->GetSpritesheetTexture(), "Sprite", nullptr, sprite->Position, sprite->Scale, sprite->Tint, scale
+						(*m_Spritesheet)->GetSpritesheetTexture(), "Sprite", nullptr, position, sprite.Scale, sprite.Tint, vscale
 					);
+					
 					GUI::EndProperties();
 
 					ImGui::TreePop();
@@ -272,6 +277,11 @@ namespace SW {
 
 			ImGui::EndTable();
 		}
+	}
+
+	void SpritesheetEditor::AddNewSprite()
+	{
+		(*m_Spritesheet)->Sprites.emplace_back(Sprite{ Random::CreateTag() });
 	}
 
 }

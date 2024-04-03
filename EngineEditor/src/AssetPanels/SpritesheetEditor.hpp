@@ -41,8 +41,9 @@ namespace SW {
 		Spritesheet** m_Spritesheet = nullptr;
 
 	private:
-		void DrawSpriteRectOnCanvas(ImDrawList* drawList, const Sprite* sprite) const;
-		void RenderSpriteCards(f32 scale);
+		void DrawSpriteRectOnCanvas(ImDrawList* drawList, const Sprite& sprite) const;
+		void RenderSpriteCards(f32 vscale);
+		void AddNewSprite();
 	};
 
 }

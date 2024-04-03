@@ -31,10 +31,10 @@ namespace SW {
 		output << YAML::BeginMap;
 		Texture2D* texture = spritesheet->GetSpritesheetTexture();
 		output << YAML::Key << "TextureHandle" << YAML::Value << (texture ? texture->GetHandle() : 0u);
-		output << YAML::Key << "ViewZoom" << YAML::Value << spritesheet->GetViewZoom();
-		output << YAML::Key << "GridScale" << YAML::Value << spritesheet->GetGridScale();
-		output << YAML::Key << "CenterOffset" << YAML::Value << spritesheet->GetCenterOffset();
-		output << YAML::Key << "ViewPos" << YAML::Value << spritesheet->GetViewPos();
+		output << YAML::Key << "ViewZoom" << YAML::Value << spritesheet->ViewZoom;
+		output << YAML::Key << "GridScale" << YAML::Value << spritesheet->GridScale;
+		output << YAML::Key << "CenterOffset" << YAML::Value << spritesheet->CenterOffset;
+		output << YAML::Key << "ViewPos" << YAML::Value << spritesheet->ViewPos;
 		output << YAML::EndMap;
 
 		output << YAML::EndMap;
@@ -62,19 +62,12 @@ namespace SW {
 
 		const u64 handle = data["TextureHandle"].as<u64>();
 		Texture2D** texture = handle ? AssetManager::GetAssetRaw<Texture2D>(handle) : nullptr;
+
 		spritesheet->SetSpritesheetTexture(texture);
-
-		const f32 viewZoom = data["ViewZoom"].as<f32>();
-		spritesheet->SetViewZoom(viewZoom);
-
-		const f32 gridScale = data["GridScale"].as<f32>();
-		spritesheet->SetGridScale(gridScale);
-
-		const glm::vec2 centerOffset = data["CenterOffset"].as<glm::vec2>();
-		spritesheet->SetCenterOffset(centerOffset);
-
-		const glm::vec2 viewPost = data["ViewPos"].as<glm::vec2>();
-		spritesheet->SetViewPos(viewPost);
+		spritesheet->ViewZoom = data["ViewZoom"].as<f32>();
+		spritesheet->GridScale = data["GridScale"].as<f32>();
+		spritesheet->CenterOffset = data["CenterOffset"].as<glm::vec2>();
+		spritesheet->ViewPos = data["ViewPos"].as<glm::vec2>();
 
 		return spritesheet;
 	}

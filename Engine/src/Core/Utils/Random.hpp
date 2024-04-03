@@ -25,4 +25,25 @@ namespace SW::Random {
 		return s_IDDistribution(s_Generator);
 	}
 
+	/**
+	 * @brief Creates a random tag.
+	 * @param count The length of the tag.
+	 * 
+	 * @return std::string The random tag.
+	 */
+	static std::string CreateTag(int count = 10)
+	{
+		static const char alphanum[] =
+			"0123456789"
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+			"abcdefghijklmnopqrstuvwxyz";
+
+		std::string tag;
+		
+		for (int i = 0; i < count; ++i)
+			tag += alphanum[s_IDDistribution(s_Generator) % (sizeof(alphanum) - 1)];
+
+		return tag;
+	}
+
 }
