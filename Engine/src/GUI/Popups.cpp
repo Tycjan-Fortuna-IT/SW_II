@@ -12,7 +12,11 @@ R"(Spritesheet:
   ViewZoom: 1
   GridScale: 64
   CenterOffset: [0, 0]
-  ViewPos: [0, 0])"
+  ViewPos: [0, 0]
+  ShowImageBorders: false
+  ExportPath: ""
+  Sprites:
+    {})"
 
 namespace SW::GUI::Popups {
 

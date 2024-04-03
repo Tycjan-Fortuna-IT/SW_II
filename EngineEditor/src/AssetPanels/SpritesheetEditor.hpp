@@ -39,9 +39,11 @@ namespace SW {
 		ImGuiEx::Canvas m_Canvas;
 
 		Spritesheet** m_Spritesheet = nullptr;
+		
+		bool m_IsCanvasHovered = false;
 
 	private:
-		void DrawSpriteRectOnCanvas(ImDrawList* drawList, const Sprite& sprite) const;
+		void DrawSpriteRectOnCanvas(ImDrawList* drawList, const SpriteData& sprite) const;
 		void RenderSpriteCards(f32 vscale);
 		void AddNewSprite();
 	};

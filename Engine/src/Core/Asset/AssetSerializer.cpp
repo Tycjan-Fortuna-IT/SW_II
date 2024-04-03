@@ -35,7 +35,28 @@ namespace SW {
 		output << YAML::Key << "GridScale" << YAML::Value << spritesheet->GridScale;
 		output << YAML::Key << "CenterOffset" << YAML::Value << spritesheet->CenterOffset;
 		output << YAML::Key << "ViewPos" << YAML::Value << spritesheet->ViewPos;
+		output << YAML::Key << "ShowImageBorders" << YAML::Value << spritesheet->ShowImageBorders;
+		output << YAML::Key << "ExportPath" << YAML::Value << spritesheet->ExportPath.string();
+
+		output << YAML::Key << "Sprites" << YAML::Value << YAML::BeginSeq;
+
+		for (const SpriteData& sprite : spritesheet->Sprites) {
+			output << YAML::BeginMap;
+
+			output << YAML::Key << "Sprite";
+
+			output << YAML::BeginMap;
+			output << YAML::Key << "Name" << YAML::Value << sprite.Name;
+			output << YAML::Key << "Position" << YAML::Value << sprite.Position;
+			output << YAML::Key << "Scale" << YAML::Value << sprite.Scale;
+			output << YAML::Key << "Tint" << YAML::Value << sprite.Tint;
+			output << YAML::EndMap;
+
+			output << YAML::EndMap;
+		}
+
 		output << YAML::EndMap;
+		output << YAML::EndSeq;
 
 		output << YAML::EndMap;
 
@@ -68,6 +89,20 @@ namespace SW {
 		spritesheet->GridScale = data["GridScale"].as<f32>();
 		spritesheet->CenterOffset = data["CenterOffset"].as<glm::vec2>();
 		spritesheet->ViewPos = data["ViewPos"].as<glm::vec2>();
+		spritesheet->ShowImageBorders = data["ShowImageBorders"].as<bool>();
+		spritesheet->ExportPath = data["ExportPath"].as<std::string>();
+
+		YAML::Node sprites = data["Sprites"];
+		for (YAML::Node sprite : sprites) {
+			std::string name = sprite["Sprite"]["Name"].as<std::string>();
+
+			SpriteData spriteData(name);
+			spriteData.Position = sprite["Sprite"]["Position"].as<glm::vec2>();
+			spriteData.Scale = sprite["Sprite"]["Scale"].as<glm::vec2>();
+			spriteData.Tint = sprite["Sprite"]["Tint"].as<glm::vec4>();
+
+			spritesheet->Sprites.emplace_back(spriteData);
+		}
 
 		return spritesheet;
 	}

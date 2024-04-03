@@ -28,6 +28,7 @@ namespace SW::Random {
 	/**
 	 * @brief Creates a random tag.
 	 * @param count The length of the tag.
+	 * @info Safe to use for file names. (A-Z, a-z, 0-9)
 	 * 
 	 * @return std::string The random tag.
 	 */

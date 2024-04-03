@@ -39,6 +39,7 @@ namespace SW {
 			constexpr u32 ValidPrefab = IM_COL32(82, 179, 222, 255);
 			constexpr u32 InvalidPrefab = IM_COL32(222, 43, 43, 255);
 			constexpr u32 MissingMesh = IM_COL32(230, 102, 76, 255);
+			constexpr u32 MissingMeshTrans = IM_COL32(230, 102, 76, 150);
 			constexpr u32 MeshNotSet = IM_COL32(250, 101, 23, 255);
 			constexpr u32 TabActive = IM_COL32(128, 128, 128, 150);
 		}

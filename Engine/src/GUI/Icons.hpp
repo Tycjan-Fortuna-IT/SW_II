@@ -78,3 +78,5 @@
 #define SW_ICON_COGS u8"\uF8D5"
 #define SW_ICON_BOOK_OPEN u8"\uF0BD"
 #define SW_ICON_DOTS_VERTICAL u8"\uF1D9"
+#define SW_ICON_EXPORT u8"\uF207"
+#define SW_ICON_SAVE u8"\uF193"

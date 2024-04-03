@@ -1314,9 +1314,14 @@ namespace SW::GUI {
 		bool changed = false;
 
 		std::string tag = "none";
+		std::string fullPath = "none";
 
-		if (*asset)
-			tag = AssetManager::GetAssetMetaData((*asset)->GetHandle()).Path.filename().string();
+		if (*asset) {
+			const AssetMetaData& metadata = AssetManager::GetAssetMetaData((*asset)->GetHandle());
+
+			tag = metadata.Path.filename().string();
+			fullPath = (ProjectContext::Get()->GetAssetDirectory() / metadata.Path).string();
+		}
 
 		BeginPropertyGrid(label, tooltip, true);
 
@@ -1330,6 +1335,12 @@ namespace SW::GUI {
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyle().Colors[ImGuiCol_Button]);
 
 		ImGui::Button("##font_dropdown_property", region);
+
+		if (ImGui::IsItemHovered() && *asset) {
+			ImGui::BeginTooltip();
+			ImGui::TextUnformatted(fullPath.c_str());
+			ImGui::EndTooltip();
+		}
 
 		ImGui::PopStyleColor();
 
@@ -1360,18 +1371,17 @@ namespace SW::GUI {
 		ImGui::PopStyleColor(3);
 		ImGui::PopStyleVar();
 
-
 		if (*asset) {
-			ImVec4 selectedColor = GUI::Colors::Darken(ImVec4(0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f), 0.05f);
-			ImGui::PushStyleColor(ImGuiCol_Text, selectedColor);
+			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::Selection);
+		} else {
+			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::InvalidPrefab);
 		}
 
 		ImVec2 padding = ImGui::GetStyle().FramePadding;
 		ImGui::SetCursorPos({ pos.x + padding.x, pos.y + padding.y });
 		ImGui::Text("%s", tag.c_str());
 
-		if (*asset)
-			ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
 
 		EndPropertyGrid();
 
@@ -1392,7 +1402,7 @@ namespace SW::GUI {
 	static void DrawImagePartProperty(
 		Texture2D* wholeImage, const char* label, const char* tooltip = nullptr,
 		glm::vec2 offset = glm::vec2(0.0f), glm::vec2 size = glm::vec2(0.0f), glm::vec4 tint = glm::vec4(1.0f),
-		f32 additionalScale = 1.f
+		f32 additionalScale = 1.f, bool showBorder = false
 	) {
 		f32 width = (f32)wholeImage->GetWidth();
 		f32 height = (f32)wholeImage->GetHeight();
@@ -1402,21 +1412,24 @@ namespace SW::GUI {
 		ImVec2 uv0 = ImVec2(offset.x / width, (height - offset.y) / height);
 		ImVec2 uv1 = ImVec2((offset.x + size.x * additionalScale) / width, (height - offset.y - (size.y * additionalScale)) / height);
 
-		ImVec2 imageSize = ImGui::GetContentRegionAvail();
-
 		f32 originalImageWidth = size.x * additionalScale;
 		f32 originalImageHeight = size.y * additionalScale;
 
-		f32 imageAspectRatio = originalImageWidth / originalImageHeight;
-		f32 availableAspectRatio = imageSize.x / imageSize.y;
+		ImVec2 space = ImGui::GetContentRegionAvail();
+		ImVec2 imagePartSize = ImVec2(originalImageWidth, originalImageHeight);
 
-		if (imageAspectRatio > availableAspectRatio)
-			imageSize.y = imageSize.x / imageAspectRatio;
-		else
-			imageSize.x = imageSize.y * imageAspectRatio;
+		// if image is smaller than the space, scale it up
+		// this nasty way, because of variations and flickering of ImGui::GetContentRegionAvail() at certain column sizes.
+		if (originalImageHeight < space.x) {
+			f32 scale = std::floor(space.x / additionalScale);
+			imagePartSize = ImVec2(originalImageWidth * scale, originalImageHeight * scale);
+		}
+
+		const ImVec4 borderCol = showBorder ?
+			ImGui::ColorConvertU32ToFloat4(GUI::Theme::TextBrighter) : ImVec4(0.f, 0.f, 0.f, 0.f);
 
 		ImGui::Image(
-			GUI::GetTextureID(wholeImage->GetTexHandle()), imageSize, uv0, uv1, { tint.r, tint.g, tint.b, tint.a }
+			GUI::GetTextureID(wholeImage->GetTexHandle()), imagePartSize, uv0, uv1, { tint.r, tint.g, tint.b, tint.a }, borderCol
 		);
 
 		GUI::EndPropertyGrid();
