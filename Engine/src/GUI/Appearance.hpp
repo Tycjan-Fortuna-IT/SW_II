@@ -31,7 +31,8 @@ namespace SW {
 			constexpr u32 TextDarker = IM_COL32(128, 128, 128, 255);
 			constexpr u32 TextError = IM_COL32(230, 51, 51, 255);
 			constexpr u32 Muted = IM_COL32(77, 77, 77, 255);
-			constexpr u32 GroupHeader = IM_COL32(47, 47, 47, 255);
+			constexpr u32 Header = IM_COL32(47, 47, 47, 255);
+			constexpr u32 HeaderHovered = IM_COL32(92, 90, 90, 255);
 			constexpr u32 Selection = IM_COL32(237, 192, 119, 255);
 			constexpr u32 SelectionMuted = IM_COL32(237, 201, 142, 23);
 			constexpr u32 SelectionHalfMuted = IM_COL32(237, 201, 142, 127);
@@ -143,11 +144,11 @@ namespace SW {
 			ImVec4 ButtonHovered = ImColor(70, 70, 70, 255);
 			ImVec4 ButtonActive = ImColor(128, 128, 128, 150);
 
-			ImVec4 Header = ImGui::ColorConvertU32ToFloat4(Theme::GroupHeader);
-			ImVec4 HeaderHovered = ImGui::ColorConvertU32ToFloat4(Theme::GroupHeader);
-			ImVec4 HeaderActive = ImGui::ColorConvertU32ToFloat4(Theme::GroupHeader);
+			ImVec4 Header = ImGui::ColorConvertU32ToFloat4(Theme::Header);
+			ImVec4 HeaderHovered = ImGui::ColorConvertU32ToFloat4(Theme::HeaderHovered);
+			ImVec4 HeaderActive = ImGui::ColorConvertU32ToFloat4(Theme::Header);
 
-			ImVec4 Separator = ImGui::ColorConvertU32ToFloat4(Theme::BackgroundDark);
+			ImVec4 Separator = ImGui::ColorConvertU32ToFloat4(IM_COL32(44, 44, 44, 255));
 			ImVec4 SeparatorActive = ImGui::ColorConvertU32ToFloat4(Theme::Highlight);
 			ImVec4 SeparatorHovered = ImColor(39, 185, 242, 150);
 
@@ -166,8 +167,8 @@ namespace SW {
 			ImVec4 PlotHistogram = { 0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f };
 			ImVec4 PlotHistogramHovered = { 0.8705882430076599f, 0.8980392217636108f, 0.07058823853731155f, 1.0f };
 
-			ImVec4 TableHeaderBackground = ImGui::ColorConvertU32ToFloat4(Theme::GroupHeader);
-			ImVec4 TableBorderLight = ImGui::ColorConvertU32ToFloat4(Theme::BackgroundDark);
+			ImVec4 TableHeaderBackground = ImGui::ColorConvertU32ToFloat4(Theme::Header);
+			ImVec4 TableBorderLight = ImGui::ColorConvertU32ToFloat4(IM_COL32(48, 48, 48, 255));
 
 			ImVec4 TextSelectedBackground = { 0.2352941185235977f, 0.2156862765550613f, 0.5960784554481506f, 1.0f };
 

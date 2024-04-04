@@ -61,11 +61,12 @@ namespace SW {
 	private:
 		std::filesystem::path m_AssetsDirectory;	/** @brief The path to the assets directory. */
 
+		bool m_IsTableHovered = false;
 		bool m_OpenDeleteWarningModal = false;
 		bool m_OpenNewFileModal = false;
 		bool m_RenameEntryModal = false;
 
-		int m_ThumbnailSize = 256;
+		int m_ThumbnailSize = 220;
 
 		std::filesystem::path m_FilesystemEntryToDelete = "";
 		std::filesystem::path m_FilesystemEntryToRename = "";
@@ -102,7 +103,7 @@ namespace SW {
 		void DrawBody();
 
 		void DrawItemOperationsPopup(const AssetSourceItem* item);
-
+		
 		void HandleItemOnDoubleClick(AssetSourceItem* item, bool* refreshDirectory);
 
 		/**

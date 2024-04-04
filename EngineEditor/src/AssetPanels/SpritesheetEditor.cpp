@@ -327,10 +327,11 @@ namespace SW {
 		const Texture2D* texture = (*m_Spritesheet)->GetSpritesheetTexture();
 		const f32 texWidth = (f32)texture->GetWidth();
 		const f32 texHeight = (f32)texture->GetHeight();
+		const glm::vec2 offset = (*m_Spritesheet)->CenterOffset;
 
 		for (const SpriteData& sprite : (*m_Spritesheet)->Sprites) {
-			const f32 x = sprite.Position.x; // 0 -> texWidth
-			const f32 y = sprite.Position.y; // 0 -> texHeight
+			const f32 x = sprite.Position.x + offset.x; // 0 -> texWidth
+			const f32 y = sprite.Position.y + offset.y; // 0 -> texHeight
 			const f32 width = sprite.Size.x;
 			const f32 height = sprite.Size.y;
 

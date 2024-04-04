@@ -155,19 +155,12 @@ namespace SW {
 			for (auto it = paths.rbegin(); it != paths.rend(); ++it) {
 				ImGui::SameLine();
 
-				const std::string filename = std::format("{}   {}", SW_ICON_FOLDER, it->filename().string());
+				const std::string filename = std::format("{} {}", SW_ICON_FOLDER, it->filename().string());
 
 				if (ImGui::Button(filename.c_str(), { ImGui::CalcTextSize(filename.c_str()).x * 1.5f, 34.f })) {
 					const std::filesystem::path path = std::filesystem::relative(*it, ProjectContext::Get()->GetAssetDirectory());
 
 					m_QueuedSelectedItem = m_AssetTree->FindChildItemByPath(m_AssetTree->GetRootItem(), path);
-				}
-
-				if (it + 1 != paths.rend()) {
-					ImGui::SameLine();
-					GUI::MoveMousePosY(8.f);
-					ImGui::TextUnformatted(SW_ICON_DOTS_VERTICAL);
-					GUI::MoveMousePosY(-8.f);
 				}
 			}
 		}
@@ -206,6 +199,17 @@ namespace SW {
 
 			ImGui::PopStyleColor(selected ? 2 : 1);
 
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
+				ImGui::BeginTooltip();
+
+				ImGui::Text("Handle: %llu", child->Handle);
+				ImGui::Text("Last Modified: %llu", child->ModificationTime);
+				ImGui::Text("Type: %s", Asset::GetStringifiedAssetType(child->Type));
+				ImGui::Text("Path: %s", child->Path.string().c_str());
+
+				ImGui::EndTooltip();
+			}
+
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
 				if (child->IsDirectory())
 					FileSystem::RevealFolderInFileExplorer(entryPath);
@@ -217,12 +221,21 @@ namespace SW {
 				m_SelectedItem = child;
 			}
 
+			std::string filename = entryPath.filename().string();
+
+			const f32 charWidth = ImGui::CalcTextSize("A").x;
+			const f32 colWidth = ImGui::GetColumnWidth();
+			const int maxChars = (int)(colWidth / charWidth) - 4;
+			if (ImGui::CalcTextSize(filename.c_str()).x > maxChars * charWidth) {
+				filename = filename.substr(0, maxChars) + "...";
+			}
+
 			ImGui::SameLine();
 			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::TextBrighter);
 			ImGui::TextUnformatted(child->Icon);
 			ImGui::PopStyleColor();
 			ImGui::SameLine();
-			ImGui::TextUnformatted(entryPath.filename().string().c_str());
+			ImGui::TextUnformatted(filename.c_str());
 
 			if (!entryIsFile) {
 				if (opened) {
@@ -292,16 +305,16 @@ namespace SW {
 	{
 		bool refreshDirectory = false;
 
-		constexpr f32 padding = 6.0f;
+		constexpr f32 padding = 4.0f;
 		const f32 scaledThumbnailSize = m_ThumbnailSize * ImGui::GetIO().FontGlobalScale;
-		const f32 scaledThumbnailSizeX = scaledThumbnailSize * 0.55f;
-		const f32 cellSize = scaledThumbnailSizeX + 2 * padding - 5.f;
+		const f32 scaledThumbnailSizeX = scaledThumbnailSize * 0.65f;
+		const f32 cellSize = scaledThumbnailSizeX + 2 * padding;
 
 		constexpr f32 overlayPaddingY = 6.0f * padding;
 		constexpr f32 thumbnailPadding = overlayPaddingY * 0.5f;
 		const f32 thumbnailSize = scaledThumbnailSizeX - thumbnailPadding;
 
-		const ImVec2 backgroundThumbnailSize = { scaledThumbnailSizeX + padding * 2, scaledThumbnailSize - 20.f };
+		const ImVec2 backgroundThumbnailSize = { scaledThumbnailSizeX + padding * 2, scaledThumbnailSize };
 
 		const f32 panelWidth = ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ScrollbarSize;
 		int columnCount = static_cast<int>(panelWidth / cellSize);
@@ -309,31 +322,42 @@ namespace SW {
 		if (!columnCount) // Edge case
 			return;
 
-		ImGuiTableFlags flags = ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_ScrollY
-			| ImGuiTableFlags_PadOuterX | ImGuiTableFlags_SizingFixedFit;
+		constexpr ImGuiTableFlags flags = ImGuiTableFlags_ContextMenuInBody
+			| ImGuiTableFlags_ScrollY
+			| ImGuiTableFlags_PadOuterX
+			| ImGuiTableFlags_BordersOuterV
+			| ImGuiTableFlags_SizingFixedFit;
+
+		GUI::ScopedStyle CellPadding(ImGuiStyleVar_CellPadding, ImVec2(4.f, 1.f));
 
 		ImTextureID whiteTexId = GUI::GetTextureID(Renderer2D::WhiteTexture->GetTexHandle());
 
 		bool isAnyItemHovered = false;
 
 		if (ImGui::BeginTable("BodyTable", columnCount, flags)) {
-			int i = 0;
-
-			for (AssetSourceItem* child : m_SelectedItem->Children) {
+			for (u32 i = 0; i < (u32)m_SelectedItem->Children.size(); i++) {
+				AssetSourceItem* item = m_SelectedItem->Children[i];
+				
+				ImGui::TableNextColumn();
+				
 				ImGui::PushID(i);
+				
+				std::string filename = item->Path.stem().string();
 
-				std::string filename = child->Path.filename().string();
+				f32 charWidth = ImGui::CalcTextSize("A").x;
+				int maxCharsPerLine = static_cast<int>(scaledThumbnailSizeX / charWidth);
 
-				if (ImGui::CalcTextSize(filename.c_str()).x > m_ThumbnailSize / 2.f) {
-					filename = filename.substr(0, std::min<u64>(15, filename.size())) + "...";
+				if (ImGui::CalcTextSize(filename.c_str()).x > scaledThumbnailSizeX) {
+					int maxChars = maxCharsPerLine * 2;
+					if (filename.size() > maxChars) {
+						filename = filename.substr(0, maxChars) + "...";
+					}
 				}
 
 				const char* filenameEnd = filename.data() + filename.size();
 
 				// TODO THUMBNAILS
-				const ImTextureID textureId = child->Thumbnail ? GUI::GetTextureID(child->Thumbnail) : 0;
-
-				ImGui::TableNextColumn();
+				const ImTextureID textureId = item->Thumbnail ? GUI::GetTextureID(item->Thumbnail) : 0;
 
 				const ImVec2 cursorPos = ImGui::GetCursorPos();
 
@@ -348,39 +372,39 @@ namespace SW {
 				const ImVec2 max = { imagePos.x + imageSize.x, imagePos.y + imageSize.y };
 
 				const ImVec4 backgroundColor = ImGui::ColorConvertU32ToFloat4(GUI::Theme::SelectionMuted);
-				const ImVec4 borderColor = ImGui::IsMouseHoveringRect(min, max) ?
+				const ImVec4 borderColor = m_IsTableHovered && ImGui::IsMouseHoveringRect(min, max) ?
 					ImGui::ColorConvertU32ToFloat4(GUI::Theme::Selection) : ImGui::ColorConvertU32ToFloat4(GUI::Theme::PropertyField);
 
 				ImGui::Image(whiteTexId, imageSize, { 0, 0 }, { 1, 1 }, backgroundColor, borderColor);
 
-				DrawItemOperationsPopup(child);
-				
+				DrawItemOperationsPopup(item);
+
 				if (ImGui::IsItemHovered())
 					isAnyItemHovered = true;
 
-				if (ImGui::IsItemHovered()) {
+				if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
 					ImGui::BeginTooltip();
 
-					ImGui::Text("Handle: %llu", child->Handle);
-					ImGui::Text("Last Modified: %llu", child->ModificationTime);
-					ImGui::Text("Type: %s", Asset::GetStringifiedAssetType(child->Type));
-					ImGui::Text("Path: %s", child->Path.string().c_str());
+					ImGui::Text("Handle: %llu", item->Handle);
+					ImGui::Text("Last Modified: %llu", item->ModificationTime);
+					ImGui::Text("Type: %s", Asset::GetStringifiedAssetType(item->Type));
+					ImGui::Text("Path: %s", item->Path.string().c_str());
 
 					ImGui::EndTooltip();
 
 					if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-						HandleItemOnDoubleClick(child, &refreshDirectory);
+						HandleItemOnDoubleClick(item, &refreshDirectory);
 				}
 
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-					const char* type = Asset::GetStringifiedAssetType(child->Type);
+					const char* type = Asset::GetStringifiedAssetType(item->Type);
 
-					ImGui::SetDragDropPayload(type, &child->Handle, sizeof(child->Handle));
+					ImGui::SetDragDropPayload(type, &item->Handle, sizeof(item->Handle));
 					
-					ImGui::Text("Handle: %llu", child->Handle);
-					ImGui::Text("Last Modified: %llu", child->ModificationTime);
+					ImGui::Text("Handle: %llu", item->Handle);
+					ImGui::Text("Last Modified: %llu", item->ModificationTime);
 					ImGui::Text("Type: %s", type);
-					ImGui::Text("Path: %s", child->Path.string().c_str());
+					ImGui::Text("Path: %s", item->Path.string().c_str());
 					ImGui::Spacing();
 
 					const f32 tooltipSize = ImGui::GetFrameHeight() * 11.0f;
@@ -396,7 +420,7 @@ namespace SW {
 				// Type Color frame
 				const ImVec2 typeColorFrameSize = { scaledThumbnailSizeX - 7.f, scaledThumbnailSizeX * 0.05f };
 				ImGui::SetCursorPosX(cursorPos.x + padding * 1.5f);
-				ImGui::Image(whiteTexId, typeColorFrameSize, { 0, 0 }, { 1, 1 }, ImGui::ColorConvertU32ToFloat4(child->Color));
+				ImGui::Image(whiteTexId, typeColorFrameSize, { 0, 0 }, { 1, 1 }, ImGui::ColorConvertU32ToFloat4(item->Color));
 
 				const ImVec2 rectMin = ImGui::GetItemRectMin();
 				const ImVec2 rectSize = ImGui::GetItemRectSize();
@@ -407,14 +431,16 @@ namespace SW {
 				ImGui::SetCursorPos({ cursorPos.x + padding * 2.0f, cursorPos.y + backgroundThumbnailSize.y - GUI::Appearance::GetFonts().DefaultBoldFont->FontSize - padding * 2.0f });
 				ImGui::BeginDisabled();
 				ImGui::PushFont(GUI::Appearance::GetFonts().DefaultBoldFont);
-				ImGui::TextUnformatted(Asset::GetStringifiedAssetType(child->Type));
+				ImGui::TextUnformatted(Asset::GetStringifiedAssetType(item->Type));
 				ImGui::PopFont();
 				ImGui::EndDisabled();
 
-				ImGui::PopID(); ++i;
+				ImGui::PopID();
 			}
 
 			ImGui::EndTable();
+
+			m_IsTableHovered = ImGui::IsItemHovered();
 
 			if (!isAnyItemHovered)
 				DrawAssetPanelPopup();

@@ -35,16 +35,16 @@ namespace SW {
 
 	static const std::unordered_map<AssetType, ImU32> s_AssetSourceTypeColors =
 	{
-		{ AssetType::Unknown,		IM_COL32(204, 133,   0, 255) },
-		{ AssetType::Texture2D,		IM_COL32(204, 102, 102, 255) },
-		{ AssetType::Directory,		IM_COL32(204, 204, 178, 255) },
-		{ AssetType::Scene,			IM_COL32(122, 163, 204, 255) },
-		{ AssetType::Font,			IM_COL32(135, 135, 135, 255) },
-		{ AssetType::Prefab,		IM_COL32(184, 102, 184, 255) },
-		{ AssetType::Script,		IM_COL32(115, 189, 115, 255) },
-		{ AssetType::Sprite,		IM_COL32(115, 189, 189, 255) },
-		{ AssetType::Spritesheet,	IM_COL32(189, 115, 115, 255) },
-		{ AssetType::Shader,		IM_COL32(189, 189, 115, 255) },
+		{ AssetType::Unknown,		IM_COL32(179, 167, 167, 255) },
+		{ AssetType::Texture2D,		IM_COL32(229,  70,  70, 255) },
+		{ AssetType::Directory,		IM_COL32(255, 171,   0, 255) },
+		{ AssetType::Scene,			IM_COL32( 70, 103, 226, 255) },
+		{ AssetType::Font,			IM_COL32( 88,  88,  88, 255) },
+		{ AssetType::Prefab,		IM_COL32( 70, 199, 152, 255) },
+		{ AssetType::Script,		IM_COL32(  0, 255, 17, 255)  },
+		{ AssetType::Sprite,		IM_COL32(230, 255, 0, 255)   },
+		{ AssetType::Spritesheet,	IM_COL32(172, 101, 183, 255) },
+		{ AssetType::Shader,		IM_COL32(201, 197, 202, 255) },
 	};
 
 	static const std::unordered_map <AssetType, const char*> s_AssetSourceTypesToIcon =

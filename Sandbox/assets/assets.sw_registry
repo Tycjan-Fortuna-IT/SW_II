@@ -2,7 +2,7 @@ Assets:
   - Handle: 180645514351760687
     Path: spritesheets\1.sw_spritesh
     Type: Spritesheet
-    ModificationTime: 133567279938432469
+    ModificationTime: 133567331476076230
   - Handle: 212989388691238768
     Path: scenes\Platformer.sw_scene
     Type: Scene
@@ -74,7 +74,7 @@ Assets:
   - Handle: 12350258421033414411
     Path: sprites\K7GQu49FE1.sw_sprite
     Type: Sprite
-    ModificationTime: 133567279435666477
+    ModificationTime: 133567331454439002
   - Handle: 12742390312197663864
     Path: textures
     Type: Directory
@@ -110,7 +110,7 @@ Assets:
   - Handle: 15758475306527755018
     Path: textures\Tileset.png
     Type: Texture2D
-    ModificationTime: 133542514947777258
+    ModificationTime: 133567326527744635
   - Handle: 15968703465836506235
     Path: fonts\CascadiaCode.ttf
     Type: Font
@@ -134,8 +134,8 @@ Assets:
   - Handle: 16891725904374815267
     Path: assets.sw_registry
     Type: Unknown
-    ModificationTime: 133567279293132852
+    ModificationTime: 133567334836141915
   - Handle: 18277063836767974222
     Path: sprites\m5gYo9eltf.sw_sprite
     Type: Sprite
-    ModificationTime: 133567279435676493
+    ModificationTime: 133567331454449023
