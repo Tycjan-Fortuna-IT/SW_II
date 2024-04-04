@@ -6,6 +6,8 @@ namespace SW {
 
 	class Asset;
 
+	// When adding new serializer class remember to register it in the AssetLoader
+
 	class AssetSerializer
 	{
 	public:
@@ -16,6 +18,13 @@ namespace SW {
 
 	class Texture2DSerializer final : public AssetSerializer
 	{
+	public:
+		void Serialize(const AssetMetaData& metadata) override;
+
+		Asset* TryLoadAsset(const AssetMetaData& metadata) override;
+	};
+
+	class SpriteSerializer final : public AssetSerializer {
 	public:
 		void Serialize(const AssetMetaData& metadata) override;
 

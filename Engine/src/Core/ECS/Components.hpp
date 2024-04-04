@@ -14,6 +14,7 @@
 #include "Core/Math/Math.hpp"
 #include "Core/OpenGL/Font.hpp"
 #include "Core/Scripting/CSharpObject.hpp"
+#include "Core/Asset/Asset.hpp"
 
 namespace SW {
 
@@ -105,19 +106,14 @@ namespace SW {
     struct SpriteComponent final
     {
         glm::vec4 Color = glm::vec4(1.0f);
-		Texture2D* Texture = nullptr;	/** @brief Texture of the entity, can be nullptr! */
+		AssetHandle Handle = 0u; // sprite handle
 		f32 TilingFactor = 1.0f;
 
         SpriteComponent() = default;
         SpriteComponent(const glm::vec4& color)
             : Color(color) {}
-		SpriteComponent(Texture2D* texture, const glm::vec4& tint = glm::vec4(1.f), f32 tilingFactor = 1.f)
-			: Texture(texture), Color(tint), TilingFactor(tilingFactor) {}
-
-        SpriteComponent(const SpriteComponent& other) = default;
-        SpriteComponent(SpriteComponent&& other) = default;
-        SpriteComponent& operator=(const SpriteComponent& other) = default;
-        SpriteComponent& operator=(SpriteComponent&& other) = default;
+		SpriteComponent(AssetHandle handle, const glm::vec4& tint = glm::vec4(1.f), f32 tilingFactor = 1.f)
+			: Handle(handle), Color(tint), TilingFactor(tilingFactor) {}
 
         ~SpriteComponent() = default;
     };

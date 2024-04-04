@@ -43,6 +43,7 @@ Entities:
         Rotation: [0, 0, 0]
         Scale: [1, 1, 1]
       SpriteComponent:
+        AssetHandle: 0
         Color: [0.695187151, 0.10780976, 0.10780976, 1]
       RelationshipComponent:
         ParentID: 0
@@ -70,6 +71,7 @@ Entities:
         Rotation: [0, 0, -0.485725135]
         Scale: [7.80000019, 0.999999881, 1]
       SpriteComponent:
+        AssetHandle: 0
         Color: [0.128914207, 0.86096257, 0.755265653, 1]
       RelationshipComponent:
         ParentID: 0

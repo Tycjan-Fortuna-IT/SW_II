@@ -9,7 +9,8 @@ Entities:
         Rotation: [0, 0, 0]
         Scale: [1, 1, 1]
       SpriteComponent:
-        Color: [0.614973307, 0.161142737, 0.161142737, 1]
+        Color: [1, 1, 1, 1]
+        AssetHandle: 18277063836767974222
       RelationshipComponent:
         ParentID: 0
         ChildrenCount: 0
@@ -43,6 +44,7 @@ Entities:
         Scale: [3.1500001, 1, 1]
       SpriteComponent:
         Color: [0.236209229, 0.383997858, 0.631016016, 1]
+        AssetHandle: 0
       RelationshipComponent:
         ParentID: 0
         ChildrenCount: 1
@@ -56,11 +58,12 @@ Entities:
       TagComponent:
         Tag: Sprite
       TransformComponent:
-        Transform: [-3.33724976, 1.2297821, 0]
+        Transform: [-0.131310254, 1.94754791, 0]
         Rotation: [0, 0, 0]
         Scale: [1, 1, 1]
       SpriteComponent:
         Color: [0.0772112608, 0.534759402, 0.248485923, 1]
+        AssetHandle: 12350258421033414411
       RelationshipComponent:
         ParentID: 0
         ChildrenCount: 0

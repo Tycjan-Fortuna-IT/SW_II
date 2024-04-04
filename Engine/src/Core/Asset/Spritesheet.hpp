@@ -22,6 +22,7 @@ namespace SW {
 	public:
 		Spritesheet() = default;
 
+		static AssetType GetStaticType() { return AssetType::Spritesheet; }
 		AssetType GetAssetType() const override { return AssetType::Spritesheet; }
 
 		Texture2D* GetSpritesheetTexture() const { return m_SpritesheetTexture ? *m_SpritesheetTexture : nullptr; }

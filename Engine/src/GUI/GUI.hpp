@@ -1380,15 +1380,15 @@ namespace SW::GUI {
 	template <typename T>
 		requires std::is_base_of_v<Asset, T>
 	static bool DrawAssetDropdownProperty(
-		Asset** asset, const char* label, const char* tooltip = nullptr
+		AssetHandle& handle, const char* label, const char* tooltip = nullptr
 	) {
 		bool changed = false;
 
-		std::string tag = "invalid";
+		std::string tag = "none";
 		std::string fullPath = "none";
 
-		if (*asset) {
-			const AssetMetaData& metadata = AssetManager::GetAssetMetaData((*asset)->GetHandle());
+		if (handle) {
+			const AssetMetaData& metadata = AssetManager::GetAssetMetaData(handle);
 
 			tag = metadata.Path.filename().string();
 			fullPath = (ProjectContext::Get()->GetAssetDirectory() / metadata.Path).string();
@@ -1407,7 +1407,7 @@ namespace SW::GUI {
 
 		ImGui::Button("##font_dropdown_property", region);
 
-		if (ImGui::IsItemHovered() && *asset) {
+		if (ImGui::IsItemHovered() && handle) {
 			ImGui::BeginTooltip();
 			ImGui::TextUnformatted(fullPath.c_str());
 			ImGui::EndTooltip();
@@ -1419,9 +1419,7 @@ namespace SW::GUI {
 			const char* payloadName = Asset::GetStringifiedAssetType(T::GetStaticType());
 
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(payloadName)) {
-				u64* handle = static_cast<u64*>(payload->Data);
-
-				*asset = *AssetManager::GetAssetRaw(*handle);
+				handle = *static_cast<u64*>(payload->Data);
 
 				changed = true;
 			}
@@ -1435,14 +1433,14 @@ namespace SW::GUI {
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
 
 		if (ImGui::Button("x", { 20.0f, region.y })) {
-			*asset = nullptr;
+			handle = 0;
 			changed = true;
 		}
 
 		ImGui::PopStyleColor(3);
 		ImGui::PopStyleVar();
 
-		if (*asset) {
+		if (handle) {
 			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::Selection);
 		} else {
 			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::InvalidPrefab);

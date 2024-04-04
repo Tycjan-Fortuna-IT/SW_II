@@ -232,6 +232,7 @@ Entities:
         Scale: [4.47966337, 1.49409747, 1]
       SpriteComponent:
         Color: [0.786096275, 0.176556394, 0.176556394, 1]
+        AssetHandle: 0
       RelationshipComponent:
         ParentID: 15633082648636036500
         ChildrenCount: 0
@@ -264,6 +265,7 @@ Entities:
         Scale: [4.47966337, 1.49409747, 1]
       SpriteComponent:
         Color: [0.786096275, 0.176556394, 0.176556394, 1]
+        AssetHandle: 12350258421033414411
       RelationshipComponent:
         ParentID: 18156684293390743624
         ChildrenCount: 0
@@ -298,6 +300,7 @@ Entities:
         Scale: [7.55000019, 1, 1]
       SpriteComponent:
         Color: [0.807486653, 0.700111151, 0.159770086, 1]
+        AssetHandle: 0
       RelationshipComponent:
         ParentID: 15895639110335943461
         ChildrenCount: 0
@@ -367,6 +370,7 @@ Entities:
         Scale: [9.05000019, 1, 1]
       SpriteComponent:
         Color: [0.411764681, 0.411764681, 0.411764681, 1]
+        AssetHandle: 0
       RelationshipComponent:
         ParentID: 1823444031938407901
         ChildrenCount: 0
@@ -503,6 +507,7 @@ Entities:
         Scale: [4.69999981, 1, 1]
       SpriteComponent:
         Color: [0.184391871, 0.240056157, 0.556149721, 1]
+        AssetHandle: 0
       RelationshipComponent:
         ParentID: 0
         ChildrenCount: 0
@@ -563,6 +568,7 @@ Entities:
         Scale: [8.74999809, 1, 1]
       SpriteComponent:
         Color: [0.411764711, 0.411764711, 0.411764711, 1]
+        AssetHandle: 0
       RelationshipComponent:
         ParentID: 1823444031938407901
         ChildrenCount: 0
@@ -595,6 +601,7 @@ Entities:
         Scale: [7.55000019, 1, 1]
       SpriteComponent:
         Color: [0.807486653, 0.700111151, 0.159770086, 1]
+        AssetHandle: 0
       RelationshipComponent:
         ParentID: 9189886445870706617
         ChildrenCount: 0
@@ -675,6 +682,7 @@ Entities:
         Scale: [10.8000002, 1, 1]
       SpriteComponent:
         Color: [0.85561496, 0.352312028, 0.352312028, 1]
+        AssetHandle: 0
       RelationshipComponent:
         ParentID: 1823444031938407901
         ChildrenCount: 0

@@ -9,12 +9,14 @@ namespace SW {
 	void AssetLoader::Initialize()
 	{
 		s_Serializers[AssetType::Texture2D] = new Texture2DSerializer();
+		s_Serializers[AssetType::Sprite] = new SpriteSerializer();
 		s_Serializers[AssetType::Spritesheet] = new SpritesheetSerializer();
 	}
 
 	void AssetLoader::Shutdown()
 	{
 		delete s_Serializers[AssetType::Texture2D];
+		delete s_Serializers[AssetType::Sprite];
 		delete s_Serializers[AssetType::Spritesheet];
 
 		s_Serializers.clear();

@@ -19,6 +19,39 @@ namespace SW {
 		return texture;
 	}
 
+	void SpriteSerializer::Serialize(const AssetMetaData& metadata)
+	{
+		ASSERT(false, "Sprite serialization is not supported!");
+	}
+
+	Asset* SpriteSerializer::TryLoadAsset(const AssetMetaData& metadata)
+	{
+		const std::filesystem::path path = ProjectContext::Get()->GetAssetDirectory() / metadata.Path;
+
+		YAML::Node file = YAML::LoadFile(path.string());
+
+		YAML::Node data = file["Sprite"];
+
+		if (!data) {
+			SW_ERROR("Error while deserializing the sprite: {}", metadata.Path.string());
+
+			return new Sprite();
+		}
+
+		Sprite* sprite = new Sprite();
+
+		const u64 handle = data["SpritesheetTextureHandle"].as<u64>();
+		Texture2D** texture = handle ? AssetManager::GetAssetRaw<Texture2D>(handle) : nullptr;
+
+		sprite->SetTexture(texture);
+		sprite->TexCordLeftDown = data["TexCordLeftDown"].as<glm::vec2>();
+		sprite->TexCordRightDown = data["TexCordRightDown"].as<glm::vec2>();
+		sprite->TexCordUpRight = data["TexCordUpRight"].as<glm::vec2>();
+		sprite->TexCordUpLeft = data["TexCordUpLeft"].as<glm::vec2>();
+
+		return sprite;
+	}
+
 	void SpritesheetSerializer::Serialize(const AssetMetaData& metadata)
 	{
 		const Spritesheet* spritesheet = *AssetManager::GetAsset<Spritesheet>(metadata.Handle);
@@ -73,7 +106,7 @@ namespace SW {
 		YAML::Node data = file["Spritesheet"];
 
 		if (!data) {
-			SW_ERROR("Error while deserializing the spritesheet: {}, no entities section found!", metadata.Path.string());
+			SW_ERROR("Error while deserializing the spritesheet: {}", metadata.Path.string());
 			
 			return new Spritesheet();
 		}

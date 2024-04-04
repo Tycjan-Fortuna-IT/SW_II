@@ -91,9 +91,9 @@ namespace SW {
 			GUI::DrawBooleanProperty((*m_Spritesheet)->ShowImageBorders, "Show Image Borders");
 			GUI::DrawFolderPickerProperty((*m_Spritesheet)->ExportPath, "Export Path");
 
-			Asset* asset = (*m_Spritesheet)->GetSpritesheetTexture();
-			if (GUI::DrawAssetDropdownProperty<Texture2D>(&asset, "Spritesheet")) {
-				Texture2D** texture = asset ? AssetManager::GetAssetRaw<Texture2D>(asset->GetHandle()) : nullptr;
+			AssetHandle handle = (*m_Spritesheet)->GetSpritesheetTexture() ? (*m_Spritesheet)->GetSpritesheetTexture()->GetHandle() : 0u;
+			if (GUI::DrawAssetDropdownProperty<Texture2D>(handle, "Spritesheet")) {
+				Texture2D** texture = handle ? AssetManager::GetAssetRaw<Texture2D>(handle) : nullptr;
 
 				(*m_Spritesheet)->SetSpritesheetTexture(texture);
 			}
@@ -325,10 +325,19 @@ namespace SW {
 	void SpritesheetEditor::ExportSprites() const
 	{
 		const Texture2D* texture = (*m_Spritesheet)->GetSpritesheetTexture();
+		const f32 texWidth = (f32)texture->GetWidth();
+		const f32 texHeight = (f32)texture->GetHeight();
 
 		for (const SpriteData& sprite : (*m_Spritesheet)->Sprites) {
-			const glm::vec2 min = { sprite.Position.x, texture->GetWidth() - sprite.Position.y };
-			const glm::vec2 max = { sprite.Position.x + sprite.Size.x, texture->GetHeight() - sprite.Position.y - sprite.Size.y };
+			const f32 x = sprite.Position.x; // 0 -> texWidth
+			const f32 y = sprite.Position.y; // 0 -> texHeight
+			const f32 width = sprite.Size.x;
+			const f32 height = sprite.Size.y;
+
+			const glm::vec2 leftDown = { x / texWidth, 1.0f - y / texHeight };
+			const glm::vec2 rightDown = { (x + width) / texWidth, 1.0f - y / texHeight };
+			const glm::vec2 upRight = { (x + width) / texWidth, 1.0f - (y + height) / texHeight };
+			const glm::vec2 upLeft = { x / texWidth, 1.0f - (y + height) / texHeight };
 
 			SW_TRACE("Exporting {} sprite", sprite.Name);
 
@@ -339,8 +348,10 @@ namespace SW {
 			output << YAML::Key << "Sprite" << YAML::Value;
 			output << YAML::BeginMap;
 			output << YAML::Key << "SpritesheetTextureHandle" << YAML::Value << (*m_Spritesheet)->GetSpritesheetTexture()->GetHandle();
-			output << YAML::Key << "MinCoords" << YAML::Value << min;
-			output << YAML::Key << "MaxCoords" << YAML::Value << max;
+			output << YAML::Key << "TexCordLeftDown" << YAML::Value << leftDown;
+			output << YAML::Key << "TexCordRightDown" << YAML::Value << rightDown;
+			output << YAML::Key << "TexCordUpRight" << YAML::Value << upRight;
+			output << YAML::Key << "TexCordUpLeft" << YAML::Value << upLeft;
 			output << YAML::EndMap;
 
 			output << YAML::EndMap;

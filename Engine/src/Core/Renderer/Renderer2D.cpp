@@ -10,6 +10,7 @@
 #include "Core/Asset/AssetManager.hpp"
 #include "RendererAPI.hpp"
 #include "Core/Editor/EditorCamera.hpp"
+#include "Core/Asset/Sprite.hpp"
 
 namespace SW {
 
@@ -373,13 +374,19 @@ namespace SW {
 
 		f32 textureIndex = 0.f; // White Texture
 
-		glm::vec2 texCoords[] = { 
+		glm::vec2 texCoords[4] = { 
 			{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } 
 		};
 
-		if (sprite.Texture) {
+		if (sprite.Handle) {
+			Sprite** spriteAsset = AssetManager::GetAssetRaw<Sprite>(sprite.Handle);
+			
+			ASSERT(spriteAsset); // TODO placeholder texture or smth
+			
+			Texture2D* texture = (*spriteAsset)->GetTexture();
+
 			for (u32 i = 1; i < s_Data.TextureSlotIndex; i++) {
-				if (*s_Data.TextureSlots[i] == *sprite.Texture) {
+				if (*s_Data.TextureSlots[i] == *texture) {
 					textureIndex = static_cast<f32>(i);
 					break;
 				}
@@ -387,9 +394,14 @@ namespace SW {
 
 			if (textureIndex == 0.0f) {
 				textureIndex = (f32)s_Data.TextureSlotIndex;
-				s_Data.TextureSlots[s_Data.TextureSlotIndex] = sprite.Texture;
+				s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
 				s_Data.TextureSlotIndex++;
 			}
+
+			texCoords[0] = (*spriteAsset)->TexCordLeftDown;
+			texCoords[1] = (*spriteAsset)->TexCordRightDown;
+			texCoords[2] = (*spriteAsset)->TexCordUpRight;
+			texCoords[3] = (*spriteAsset)->TexCordUpLeft;
 		}
 
 		for (int i = 0; i < 4; i++) {

@@ -43,6 +43,7 @@ Entities:
         Rotation: [0, 0, 0]
         Scale: [7.44999933, 1, 1]
       SpriteComponent:
+        AssetHandle: 0
         Color: [0.983957231, 0.63141638, 0, 1]
       RelationshipComponent:
         ParentID: 17636249096898027447
@@ -109,8 +110,8 @@ Entities:
         Rotation: [0, 0, 0]
         Scale: [2.9000001, 2.54999995, 1]
       SpriteComponent:
+        AssetHandle: 0
         Color: [1, 1, 1, 1]
-        TexturePath: assets\textures\Triangle.png
       RelationshipComponent:
         ParentID: 0
         ChildrenCount: 0
@@ -216,6 +217,7 @@ Entities:
         Rotation: [0, 0, 0]
         Scale: [3.99999833, 2.5, 1]
       SpriteComponent:
+        AssetHandle: 0
         Color: [0.0855614692, 0.515656769, 0.941176474, 0.57219255]
       RelationshipComponent:
         ParentID: 0
@@ -253,6 +255,7 @@ Entities:
         Rotation: [0, 0, -0.722428977]
         Scale: [7.78558779, 1, 1]
       SpriteComponent:
+        AssetHandle: 0
         Color: [1, 0, 0.866310596, 1]
       RelationshipComponent:
         ParentID: 17636249096898027447
@@ -285,8 +288,8 @@ Entities:
         Rotation: [5.50412125e-08, -4.91652514e-08, 1.58683538]
         Scale: [3.50003123, 0.800000012, 1]
       SpriteComponent:
+        AssetHandle: 0
         Color: [1, 0.705882311, 0, 1]
-        TexturePath: assets\textures\Container.jpg
       RelationshipComponent:
         ParentID: 16815035606354717993
         ChildrenCount: 0
@@ -318,8 +321,8 @@ Entities:
         Rotation: [0.000145560931, 8.73988392e-06, 0.77889061]
         Scale: [6.40369177, 0.430000067, 1]
       SpriteComponent:
+        AssetHandle: 0
         Color: [1, 0, 0, 1]
-        TexturePath: assets\textures\Wall.jpg
       RelationshipComponent:
         ParentID: 17636249096898027447
         ChildrenCount: 0
@@ -383,6 +386,7 @@ Entities:
         Rotation: [0, 0, 0]
         Scale: [1, 0.600000024, 1]
       SpriteComponent:
+        AssetHandle: 0
         Color: [0, 0.213903904, 1, 1]
       RelationshipComponent:
         ParentID: 16815035606354717993

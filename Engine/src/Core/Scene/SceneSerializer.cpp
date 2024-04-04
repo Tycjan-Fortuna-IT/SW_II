@@ -60,10 +60,7 @@ namespace SW {
 				output << YAML::Key << "SpriteComponent";
 				output << YAML::BeginMap;
 				output << YAML::Key << "Color" << YAML::Value << sc.Color;
-
-				if (sc.Texture) {
-					output << YAML::Key << "TexturePath" << YAML::Value << sc.Texture->GetPath();
-				}
+				output << YAML::Key << "AssetHandle" << YAML::Value << sc.Handle;
 
 				output << YAML::EndMap;
 			}
@@ -371,12 +368,7 @@ namespace SW {
 				SpriteComponent& sc = deserialized.AddComponent<SpriteComponent>();
 
 				sc.Color = spriteComponent["Color"].as<glm::vec4>();
-
-				if (spriteComponent["TexturePath"]) {
-					std::string path = spriteComponent["TexturePath"].as<std::string>();
-
-					// sc.Texture = AssetManager::GetTexture2D(path.c_str());
-				}
+				sc.Handle = spriteComponent["AssetHandle"].as<AssetHandle>();
 			}
 
 			if (YAML::Node circleComponent = entity["Entity"]["CircleComponent"]) {

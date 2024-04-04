@@ -11,6 +11,7 @@
 #include "Core/Scripting/ScriptingCore.hpp"
 #include "Core/Scripting/ScriptStorage.hpp"
 #include "Coral/Attribute.hpp"
+#include "Core/Asset/Sprite.hpp"
 
 namespace SW {
 
@@ -110,7 +111,8 @@ namespace SW {
 			DrawComponent<SpriteComponent>(entity, [](SpriteComponent& component) {
 				GUI::BeginProperties("##sprite_property");
 				GUI::DrawVector4ColorPickerProperty(component.Color, "Color", "Color of the sprite");
-				GUI::DrawTextureProperty(&component.Texture, "Texture", "Texture to be used (transparency is supported)");
+
+				GUI::DrawAssetDropdownProperty<Sprite>(component.Handle, "Sprite", "Sprite to be used (transparency is supported)");
 				GUI::DrawFloatingPointProperty(component.TilingFactor, "Tiling", "Tiling factor of the texture (how many times the texture should be repeated)", 0.f, 10.f);
 				GUI::EndProperties();
 			}, true);
