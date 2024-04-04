@@ -43,9 +43,10 @@ namespace SW {
 		bool m_IsCanvasHovered = false;
 
 	private:
-		void DrawSpriteRectOnCanvas(ImDrawList* drawList, const SpriteData& sprite) const;
+		void DrawRectOnCanvas(ImDrawList* drawList, const glm::vec2& position, const glm::vec2& size) const;
 		void RenderSpriteCards(f32 vscale);
 		void AddNewSprite();
+		void ExportSprites() const;
 	};
 
 }

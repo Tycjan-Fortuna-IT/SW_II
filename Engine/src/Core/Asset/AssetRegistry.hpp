@@ -22,6 +22,8 @@ namespace SW {
 		AssetRegistry();		
 		~AssetRegistry();
 
+		bool Contains(AssetHandle handle) const { return m_AvailableAssets.find(handle) != m_AvailableAssets.end(); }
+
 		void FetchDirectory(std::map<std::filesystem::path, AssetMetaData>& registered, const std::filesystem::path& dir, bool reload);
 		void RefetchAvailableAssets();
 

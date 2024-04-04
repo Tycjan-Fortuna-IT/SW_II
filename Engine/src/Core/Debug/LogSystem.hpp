@@ -9,6 +9,7 @@
 #pragma once
 
 #include <spdlog/spdlog.h>
+#include "LogCustomFormatters.hpp"
 
 namespace SW {
 

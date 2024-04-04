@@ -18,6 +18,9 @@ namespace SW {
 		if (*element != nullptr)
 			return element;
 
+		if (!IsAvailable(handle))
+			return nullptr;
+
 		const AssetMetaData& metadata = GetAssetMetaData(handle);
 
 		Asset* newAsset = AssetLoader::TryLoadAsset(metadata);

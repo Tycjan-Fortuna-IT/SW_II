@@ -1,8 +1,8 @@
 ﻿/**
  * @file GUI.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.2.4
- * @date 2024-03-05
+ * @version 0.2.5
+ * @date 2024-04-04
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -17,6 +17,7 @@
 #include "Core/ECS/Entity.hpp"
 #include "Core/OpenGL/Font.hpp"
 #include "Core/Renderer/Renderer2D.hpp"
+#include "Core/Utils/FileSystem.hpp"
 
 namespace SW::GUI {
 
@@ -1059,6 +1060,76 @@ namespace SW::GUI {
 		EndPropertyGrid();
 	}
 
+	static bool DrawFolderPickerProperty(
+		std::filesystem::path& path, const char* label, const char* tooltip = nullptr
+	) {
+		bool changed = false;
+		bool isEmpty = path.empty();
+
+		std::string tag = "none";
+
+		if (!isEmpty)
+			tag = path.string();
+
+		GUI::BeginPropertyGrid(label, tooltip, true);
+
+		ImVec2 region = ImGui::GetContentRegionAvail();
+		region.x -= 20.0f;
+		region.y = ImGui::GetFrameHeight();
+
+		ImVec2 pos = ImGui::GetCursorPos();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyle().Colors[ImGuiCol_Button]);
+
+		if (ImGui::Button("##font_dropdown_property", region)) {
+			std::filesystem::path pickedPath = FileSystem::OpenFolderDialog(ProjectContext::Get()->GetAssetDirectory().parent_path().string().c_str());
+
+			path = std::filesystem::relative(pickedPath, ProjectContext::Get()->GetAssetDirectory());
+		}
+
+		if (ImGui::IsItemHovered() && !isEmpty) {
+			std::filesystem::path fullPath = ProjectContext::Get()->GetAssetDirectory() / path;
+
+			ImGui::BeginTooltip();
+			ImGui::TextUnformatted(fullPath.string().c_str());
+			ImGui::EndTooltip();
+		}
+
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.3f, 0.3f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+
+		if (ImGui::Button("x", { 20.0f, region.y })) {
+			path.clear();
+			changed = true;
+		}
+
+		ImGui::PopStyleColor(3);
+		ImGui::PopStyleVar();
+
+		if (!isEmpty) {
+			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::Selection);
+		}
+		else {
+			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::InvalidPrefab);
+		}
+
+		ImVec2 padding = ImGui::GetStyle().FramePadding;
+		ImGui::SetCursorPos({ pos.x + padding.x, pos.y + padding.y });
+		ImGui::Text("%s", tag.c_str());
+
+		ImGui::PopStyleColor();
+
+		GUI::EndPropertyGrid();
+
+		return changed;
+	}
+
 	/**
 	 * @brief Draws a dropdown property for an entity.
 	 *
@@ -1313,7 +1384,7 @@ namespace SW::GUI {
 	) {
 		bool changed = false;
 
-		std::string tag = "none";
+		std::string tag = "invalid";
 		std::string fullPath = "none";
 
 		if (*asset) {
@@ -1397,12 +1468,12 @@ namespace SW::GUI {
 	 * @param offset The offset of the image part within the whole image.
 	 * @param size The size of the image part.
 	 * @param tint The tint color of the image part.
-	 * @param additionalScale Additional scale factor for the image part.
+	 * @param showBorder Show border around the image.
 	 */
 	static void DrawImagePartProperty(
 		Texture2D* wholeImage, const char* label, const char* tooltip = nullptr,
 		glm::vec2 offset = glm::vec2(0.0f), glm::vec2 size = glm::vec2(0.0f), glm::vec4 tint = glm::vec4(1.0f),
-		f32 additionalScale = 1.f, bool showBorder = false
+		bool showBorder = false
 	) {
 		f32 width = (f32)wholeImage->GetWidth();
 		f32 height = (f32)wholeImage->GetHeight();
@@ -1410,10 +1481,10 @@ namespace SW::GUI {
 		GUI::BeginPropertyGrid(label, tooltip, false);
 
 		ImVec2 uv0 = ImVec2(offset.x / width, (height - offset.y) / height);
-		ImVec2 uv1 = ImVec2((offset.x + size.x * additionalScale) / width, (height - offset.y - (size.y * additionalScale)) / height);
+		ImVec2 uv1 = ImVec2((offset.x + size.x) / width, (height - offset.y - (size.y)) / height);
 
-		f32 originalImageWidth = size.x * additionalScale;
-		f32 originalImageHeight = size.y * additionalScale;
+		f32 originalImageWidth = size.x;
+		f32 originalImageHeight = size.y;
 
 		ImVec2 space = ImGui::GetContentRegionAvail();
 		ImVec2 imagePartSize = ImVec2(originalImageWidth, originalImageHeight);
@@ -1421,7 +1492,7 @@ namespace SW::GUI {
 		// if image is smaller than the space, scale it up
 		// this nasty way, because of variations and flickering of ImGui::GetContentRegionAvail() at certain column sizes.
 		if (originalImageHeight < space.x) {
-			f32 scale = std::floor(space.x / additionalScale);
+			f32 scale = std::floor(space.x / originalImageWidth);
 			imagePartSize = ImVec2(originalImageWidth * scale, originalImageHeight * scale);
 		}
 

@@ -10,7 +10,7 @@
 R"(Spritesheet:
   TextureHandle: 0
   ViewZoom: 1
-  GridScale: 64
+  GridSize: 64
   CenterOffset: [0, 0]
   ViewPos: [0, 0]
   ShowImageBorders: false

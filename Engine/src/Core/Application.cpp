@@ -34,9 +34,9 @@ namespace SW {
 
         m_Window = new Window(specification);
 
+		EventSystem::Initialize();
 		FileSystem::Initialize();
 		AssetManager::Initialize();
-		EventSystem::Initialize();
 		RendererAPI::Initialize();
 
 		if (m_Specification.EnableCSharpSupport)
@@ -66,9 +66,9 @@ namespace SW {
 
 	bool Application::OnShutdown()
 	{
+		EventSystem::Shutdown();
 		FileSystem::Shutdown();
 		AssetManager::Shutdown();
-		EventSystem::Shutdown();
 		RendererAPI::Shutdown();
 		
 		if (m_Specification.EnableCSharpSupport)

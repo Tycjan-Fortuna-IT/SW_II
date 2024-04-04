@@ -20,6 +20,7 @@ namespace SW {
 		const AssetRegistry& GetRegistry() { return m_Registry; }
 		AssetRegistry& GetRegistryRaw() { return m_Registry; }
 
+		bool IsAvailable(AssetHandle handle) const { return m_Registry.Contains(handle); }
 		const AssetMetaData& GetAssetMetaData(AssetHandle handle) { return m_Registry.GetAssetMetaData(handle); }
 
 	protected:

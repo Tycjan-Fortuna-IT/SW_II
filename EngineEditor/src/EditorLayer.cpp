@@ -14,12 +14,14 @@
 #include "Core/Project/ProjectSerializer.hpp"
 #include "Core/Scripting/ScriptingCore.hpp"
 #include "GUI/Editor/EditorResources.hpp"
+#include "AssetPanels/AssetEditorPanelManager.hpp"
 
 namespace SW {
 
 	void EditorLayer::OnAttach()
 	{
 		EditorResources::Initialize();
+		AssetEditorPanelManager::Initialize();
 
 		const GUI::FontSpecification fontSpec("assets/fonts/Roboto/Roboto-Regular.ttf", "assets/fonts/Roboto/Roboto-Bold.ttf");
 
@@ -59,6 +61,7 @@ namespace SW {
 		}
 
 		EditorResources::Shutdown();
+		AssetEditorPanelManager::Shutdown();
 
 		Renderer2D::Shutdown();
 
@@ -74,6 +77,8 @@ namespace SW {
 			if (panel->IsShowing())
 				panel->OnUpdate(dt);
 		}
+
+		AssetEditorPanelManager::OnUpdate(dt);
 	}
 
 	f32 EditorLayer::DrawTitleBar()
@@ -314,6 +319,8 @@ namespace SW {
 			if (panel->IsShowing())
 				panel->OnRender();
 		}
+
+		AssetEditorPanelManager::OnRender();
 
 		if (m_OpenNewSceneModal) {
 			m_OpenNewSceneModal = false;

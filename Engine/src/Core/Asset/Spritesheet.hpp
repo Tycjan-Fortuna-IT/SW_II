@@ -14,8 +14,7 @@ namespace SW {
 
 		std::string Name;
 		glm::vec2 Position = glm::vec2(0.0f);
-		glm::vec2 Scale = glm::vec2(1.0f);
-		glm::vec4 Tint = glm::vec4(1.0f);
+		glm::vec2 Size = glm::vec2(32.0f);
 	};
 
 	class Spritesheet final : public Asset
@@ -32,7 +31,7 @@ namespace SW {
 		std::vector<SpriteData> Sprites;
 
 		f32 ViewZoom = 1.0f;
-		f32 GridScale = 64.0f;
+		f32 GridSize = 64.0f;
 
 		glm::vec2 CenterOffset = glm::vec2(0.f, 0.f);
 		glm::vec2 ViewPos = glm::vec2(0.f, 0.f);

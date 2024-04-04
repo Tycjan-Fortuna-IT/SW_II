@@ -1,9 +1,12 @@
 #include "SpritesheetEditor.hpp"
 
+#include <fstream>
+
 #include "GUI/Editor/EditorResources.hpp"
 #include "Core/Asset/AssetLoader.hpp"
 #include "Core/Utils/FileSystem.hpp"
 #include "Core/Project/ProjectContext.hpp"
+#include "Core/Utils/SerializationUtils.hpp"
 
 namespace SW {
 
@@ -54,74 +57,6 @@ namespace SW {
 		AssetLoader::Serialize(metadata);
 	}
 
-	static bool DrawFolderPickerProperty(std::filesystem::path& path, const char* label, const char* tooltip = nullptr)
-	{
-		bool changed = false;
-		bool isEmpty = path.empty();
-
-		std::string tag = "none";
-
-		if (!isEmpty)
-			tag = path.string();
-
-		GUI::BeginPropertyGrid(label, tooltip, true);
-
-		ImVec2 region = ImGui::GetContentRegionAvail();
-		region.x -= 20.0f;
-		region.y = ImGui::GetFrameHeight();
-
-		ImVec2 pos = ImGui::GetCursorPos();
-
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyle().Colors[ImGuiCol_Button]);
-
-		if (ImGui::Button("##font_dropdown_property", region)) {
-			std::filesystem::path pickedPath = FileSystem::OpenFolderDialog(ProjectContext::Get()->GetAssetDirectory().parent_path().string().c_str());
-
-			path = std::filesystem::relative(pickedPath, ProjectContext::Get()->GetAssetDirectory());
-		}
-
-		if (ImGui::IsItemHovered() && !isEmpty) {
-			std::filesystem::path fullPath = ProjectContext::Get()->GetAssetDirectory() / path;
-
-			ImGui::BeginTooltip();
-			ImGui::TextUnformatted(fullPath.string().c_str());
-			ImGui::EndTooltip();
-		}
-
-		ImGui::PopStyleColor();
-
-		ImGui::SameLine();
-
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.3f, 0.3f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
-
-		if (ImGui::Button("x", { 20.0f, region.y })) {
-			path.clear();
-			changed = true;
-		}
-
-		ImGui::PopStyleColor(3);
-		ImGui::PopStyleVar();
-
-		if (!isEmpty) {
-			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::Selection);
-		} else {
-			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::InvalidPrefab);
-		}
-
-		ImVec2 padding = ImGui::GetStyle().FramePadding;
-		ImGui::SetCursorPos({ pos.x + padding.x, pos.y + padding.y });
-		ImGui::Text("%s", tag.c_str());
-
-		ImGui::PopStyleColor();
-
-		GUI::EndPropertyGrid();
-
-		return changed;
-	}
-
 	void SpritesheetEditor::Render()
 	{
 		const glm::vec2 vo = (*m_Spritesheet)->ViewPos;
@@ -151,10 +86,10 @@ namespace SW {
 			GUI::BeginProperties("##spritesheet_editor_properties");
 
 			GUI::DrawFloatingPointProperty((*m_Spritesheet)->ViewZoom, "View Zoom", nullptr, 0.5f, 15.0f);
-			GUI::DrawFloatingPointProperty((*m_Spritesheet)->GridScale, "Grid Scale", nullptr, 16.f, 1000.f);
+			GUI::DrawFloatingPointProperty((*m_Spritesheet)->GridSize, "Grid Size", nullptr, 16.f, 1000.f);
 			GUI::DrawVector2ControlProperty((*m_Spritesheet)->CenterOffset, "Center Offset");
 			GUI::DrawBooleanProperty((*m_Spritesheet)->ShowImageBorders, "Show Image Borders");
-			DrawFolderPickerProperty((*m_Spritesheet)->ExportPath, "Export Path");
+			GUI::DrawFolderPickerProperty((*m_Spritesheet)->ExportPath, "Export Path");
 
 			Asset* asset = (*m_Spritesheet)->GetSpritesheetTexture();
 			if (GUI::DrawAssetDropdownProperty<Texture2D>(&asset, "Spritesheet")) {
@@ -167,7 +102,7 @@ namespace SW {
 
 			GUI::EndProperties();
 
-			RenderSpriteCards((*m_Spritesheet)->GridScale);
+			RenderSpriteCards((*m_Spritesheet)->GridSize);
 
 			ImGui::TableNextColumn();
 
@@ -194,7 +129,7 @@ namespace SW {
 				ImVec2 viewPos = m_Canvas.ViewRect().Min + lineOffset;
 				ImVec2 viewSize = m_Canvas.ViewRect().GetSize();
 				ImDrawList* drawList = ImGui::GetWindowDrawList();
-				f32 gridScale = (*m_Spritesheet)->GridScale;
+				f32 gridScale = (*m_Spritesheet)->GridSize;
 
 				{
 					ImRect rect = m_Canvas.ViewRect();
@@ -218,18 +153,20 @@ namespace SW {
 				if (!spritesheetTexture)
 					spritesheetTexture = EditorResources::MissingAssetIcon;
 
-				//const ImVec4 borderCol = (*m_Spritesheet)->ShowImageBorders ?
-					//ImGui::ColorConvertU32ToFloat4(GUI::Theme::Accent) : ImVec4(0.f, 0.f, 0.f, 0.f);
+				const ImVec2 texSize = { (f32)spritesheetTexture->GetWidth(), (f32)spritesheetTexture->GetHeight() };
 
 				ImGui::Image(
-					GUI::GetTextureID(spritesheetTexture->GetTexHandle()), { (f32)spritesheetTexture->GetWidth() - 1.f, (f32)spritesheetTexture->GetHeight() - 1.f },
+					GUI::GetTextureID(spritesheetTexture->GetTexHandle()), texSize,
 					{ 0, 1 }, { 1, 0 }
 				);
 
+
 				if ((*m_Spritesheet)->ShowImageBorders) {
 					for (const SpriteData& sprite : (*m_Spritesheet)->Sprites) {
-						DrawSpriteRectOnCanvas(drawList, sprite);
+						DrawRectOnCanvas(drawList, sprite.Position - 1.f, sprite.Size + 1.f);
 					}
+
+					DrawRectOnCanvas(drawList, glm::vec2{ -1.f, -1.f }, glm::vec2{ texSize.x + 1.f, texSize.y + 1.f });
 				}
 
 				m_Canvas.End();
@@ -246,17 +183,14 @@ namespace SW {
 		m_Spritesheet = AssetManager::GetAssetRaw<Spritesheet>(handle);
 	}
 
-	void SpritesheetEditor::DrawSpriteRectOnCanvas(ImDrawList* drawList, const SpriteData& sprite) const
+	void SpritesheetEditor::DrawRectOnCanvas(ImDrawList* drawList, const glm::vec2& position, const glm::vec2& size) const
 	{
-		const glm::vec2 position = sprite.Position;
-		const glm::vec2 scale = sprite.Scale;
 		const glm::vec2 offset = (*m_Spritesheet)->CenterOffset;
-		const f32 gridSize = (*m_Spritesheet)->GridScale;
 
 		const ImVec2 topLeft = { position.x + offset.x, position.y + offset.y };
-		const ImVec2 topRight = { position.x + offset.x + scale.x * gridSize, position.y + offset.y };
-		const ImVec2 bottomRight = { position.x + offset.x + scale.x * gridSize, position.y + offset.y + scale.y * gridSize };
-		const ImVec2 bottomLeft = { position.x + offset.x, position.y + offset.y + scale.y * gridSize };
+		const ImVec2 topRight = { position.x + offset.x + size.x, position.y + offset.y };
+		const ImVec2 bottomRight = { position.x + offset.x + size.x, position.y + offset.y + size.y };
+		const ImVec2 bottomLeft = { position.x + offset.x, position.y + offset.y + size.y };
 
 		drawList->AddLine(topLeft, topRight, GUI::Theme::NiceBlue);
 		drawList->AddLine(topRight, bottomRight, GUI::Theme::NiceBlue);
@@ -273,6 +207,8 @@ namespace SW {
 			| ImGuiTableFlags_ScrollY;
 
 		constexpr ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_SpanAvailWidth
+			| ImGuiTreeNodeFlags_OpenOnDoubleClick
+			| ImGuiTreeNodeFlags_OpenOnArrow
 			| ImGuiTreeNodeFlags_AllowItemOverlap
 			| ImGuiTreeNodeFlags_Framed
 			| ImGuiTreeNodeFlags_FramePadding;
@@ -287,11 +223,11 @@ namespace SW {
 		if (ImGui::Button(SW_ICON_SAVE "Save"))
 			OnClose(); // serialize
 		
-		if (!(*m_Spritesheet)->ExportPath.empty()) {
+		if (!(*m_Spritesheet)->ExportPath.empty() && (*m_Spritesheet)->GetSpritesheetTexture()) {
 			ImGui::SameLine();
 		
 			if (ImGui::Button(SW_ICON_EXPORT "Export")) {
-
+				ExportSprites();
 			}
 		}
 
@@ -321,11 +257,11 @@ namespace SW {
 			for (int i = 0; i < sprites.size(); i++) {
 				SpriteData& sprite = sprites[i];
 
-				ImGui::TableNextRow();
-				ImGui::TableNextColumn();
-
 				if (!spriteFilter.FilterPass(sprite.Name))
 					continue;
+
+				ImGui::TableNextRow();
+				ImGui::TableNextColumn();
 
 				const char* spriteName = sprite.Name.c_str();
 				const std::string uid = std::to_string(i);
@@ -359,12 +295,11 @@ namespace SW {
 					GUI::BeginProperties(uidc);
 
 					GUI::DrawSingleLineTextInputProperty(sprite.Name, "Sprite name");
-					GUI::DrawVector2ControlProperty(sprite.Position, "Position");
-					GUI::DrawVector2ControlProperty(sprite.Scale, "Scale", nullptr, 1.f, 0.1f, 20.f);
-					GUI::DrawVector4ColorPickerProperty(sprite.Tint, "Tint");
+					GUI::DrawVector2ControlProperty(sprite.Position, "Position", nullptr, 1.f);
+					GUI::DrawVector2ControlProperty(sprite.Size, "Size", nullptr, 1.f, 1.f, 1024.f);
 					glm::vec2 position = sprite.Position + (*m_Spritesheet)->CenterOffset;
 					GUI::DrawImagePartProperty(
-						(*m_Spritesheet)->GetSpritesheetTexture(), "Sprite", nullptr, position, sprite.Scale, sprite.Tint, vscale,
+						(*m_Spritesheet)->GetSpritesheetTexture(), "Sprite", nullptr, position, sprite.Size, glm::vec4(1.0f),
 						(*m_Spritesheet)->ShowImageBorders
 					);
 					
@@ -385,6 +320,36 @@ namespace SW {
 	void SpritesheetEditor::AddNewSprite()
 	{
 		(*m_Spritesheet)->Sprites.emplace_back(SpriteData{ Random::CreateTag() });
+	}
+
+	void SpritesheetEditor::ExportSprites() const
+	{
+		const Texture2D* texture = (*m_Spritesheet)->GetSpritesheetTexture();
+
+		for (const SpriteData& sprite : (*m_Spritesheet)->Sprites) {
+			const glm::vec2 min = { sprite.Position.x, texture->GetWidth() - sprite.Position.y };
+			const glm::vec2 max = { sprite.Position.x + sprite.Size.x, texture->GetHeight() - sprite.Position.y - sprite.Size.y };
+
+			SW_TRACE("Exporting {} sprite", sprite.Name);
+
+			YAML::Emitter output;
+
+			output << YAML::BeginMap;
+
+			output << YAML::Key << "Sprite" << YAML::Value;
+			output << YAML::BeginMap;
+			output << YAML::Key << "SpritesheetTextureHandle" << YAML::Value << (*m_Spritesheet)->GetSpritesheetTexture()->GetHandle();
+			output << YAML::Key << "MinCoords" << YAML::Value << min;
+			output << YAML::Key << "MaxCoords" << YAML::Value << max;
+			output << YAML::EndMap;
+
+			output << YAML::EndMap;
+
+			std::filesystem::path path = ProjectContext::Get()->GetAssetDirectory() / (*m_Spritesheet)->ExportPath / (sprite.Name + ".sw_sprite");
+
+			std::ofstream fout(path);
+			fout << output.c_str();
+		}
 	}
 
 }
