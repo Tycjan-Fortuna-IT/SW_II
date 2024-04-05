@@ -295,8 +295,8 @@ namespace SW {
 					GUI::BeginProperties(uidc);
 
 					GUI::DrawSingleLineTextInputProperty(sprite.Name, "Sprite name");
-					GUI::DrawVector2ControlProperty(sprite.Position, "Position", nullptr, 1.f);
-					GUI::DrawVector2ControlProperty(sprite.Size, "Size", nullptr, 1.f, 1.f, 1024.f);
+					GUI::DrawVector2ControlProperty(sprite.Position, "Position", nullptr, 0.f, 0.f, FLT_MAX, "%1.f");
+					GUI::DrawVector2ControlProperty(sprite.Size, "Size", nullptr, (*m_Spritesheet)->GridSize, 1.f, 1024.f, "%1.f");
 					glm::vec2 position = sprite.Position + (*m_Spritesheet)->CenterOffset;
 					GUI::DrawImagePartProperty(
 						(*m_Spritesheet)->GetSpritesheetTexture(), "Sprite", nullptr, position, sprite.Size, glm::vec4(1.0f),

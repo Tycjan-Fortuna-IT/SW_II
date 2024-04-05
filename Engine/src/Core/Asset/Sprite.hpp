@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Core/Asset/Asset.hpp"
-#include "GUI/Editor/EditorResources.hpp"
 
 namespace SW {
 
@@ -16,7 +15,9 @@ namespace SW {
 		static AssetType GetStaticType() { return AssetType::Sprite; }
 		AssetType GetAssetType() const override { return AssetType::Sprite; }
 
-		Texture2D* GetTexture() const { return m_Texture ? *m_Texture : EditorResources::MissingAssetIcon; }
+		Texture2D* GetTexture() const { return *m_Texture; }
+		Texture2D** GetTextureRaw() const { return m_Texture; }
+
 		void SetTexture(Texture2D** texture) { m_Texture = texture; }
 
 	public:

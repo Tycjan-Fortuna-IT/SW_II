@@ -58,7 +58,7 @@ namespace SW {
 		m_Root = new AssetSourceItem();
 		//m_Root->Handle = pathToIdMap.find(dir)->second; // no need for handle for not-draggable item
 		m_Root->Type = AssetType::Directory;
-		m_Root->Thumbnail = EditorResources::DirectoryAssetIcon;
+		m_Root->Thumbnail = Asset::GetThumbnailFromAssetType(AssetType::Directory);
 		m_Root->Icon = SW_ICON_FILE;
 		m_Root->Color = IM_COL32(204, 204, 178, 255);
 		m_Root->Path = ".";

@@ -36,6 +36,11 @@ namespace SW {
 			return (const T**)ProjectContext::Get()->GetAssetManager()->GetAsset(handle);
 		}
 
+		static bool IsValid(AssetHandle handle)
+		{
+			return ProjectContext::Get()->GetAssetManager()->IsValid(handle);
+		}
+
 		static bool ForceUnload(AssetHandle handle)
 		{
 			return ProjectContext::Get()->GetAssetManager()->ForceUnload(handle);

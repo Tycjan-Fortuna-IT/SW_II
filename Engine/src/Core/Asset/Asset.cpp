@@ -14,6 +14,7 @@ namespace SW {
 		{ "Sprite",			AssetType::Sprite				},
 		{ "Spritesheet",	AssetType::Spritesheet			},
 		{ "Font",			AssetType::Font					},
+		{ "FontSource",		AssetType::FontSource			},
 		{ "Scene",			AssetType::Scene				},
 		{ "Prefab",			AssetType::Prefab				},
 		{ "Script",			AssetType::Script				},
@@ -24,7 +25,8 @@ namespace SW {
 	{
 		{ ".png",			AssetType::Texture2D		},
 		{ ".jpg",			AssetType::Texture2D		},
-		{ ".ttf",			AssetType::Font				},
+		{ ".ttf",			AssetType::FontSource		},
+		{ ".sw_font",		AssetType::Font				},
 		{ ".sw_scene",		AssetType::Scene			},
 		{ ".sw_prefab",		AssetType::Prefab			},
 		{ ".cs",			AssetType::Script			},
@@ -39,10 +41,11 @@ namespace SW {
 		{ AssetType::Texture2D,		IM_COL32(229,  70,  70, 255) },
 		{ AssetType::Directory,		IM_COL32(255, 171,   0, 255) },
 		{ AssetType::Scene,			IM_COL32( 70, 103, 226, 255) },
-		{ AssetType::Font,			IM_COL32( 88,  88,  88, 255) },
+		{ AssetType::Font,			IM_COL32(204, 255, 153, 255) },
+		{ AssetType::FontSource,	IM_COL32( 88,  88,  88, 255) },
 		{ AssetType::Prefab,		IM_COL32( 70, 199, 152, 255) },
 		{ AssetType::Script,		IM_COL32(  0, 255, 17, 255)  },
-		{ AssetType::Sprite,		IM_COL32(230, 255, 0, 255)   },
+		{ AssetType::Sprite,		IM_COL32(230, 255,   0, 255) },
 		{ AssetType::Spritesheet,	IM_COL32(172, 101, 183, 255) },
 		{ AssetType::Shader,		IM_COL32(201, 197, 202, 255) },
 	};
@@ -54,6 +57,7 @@ namespace SW {
 		{ AssetType::Directory,		SW_ICON_FOLDER			},
 		{ AssetType::Scene,			SW_ICON_FILE_VIDEO		},
 		{ AssetType::Font,			SW_ICON_FORMAT_TEXT		},
+		{ AssetType::FontSource,	SW_ICON_FORMAT_TEXT		},
 		{ AssetType::Prefab,		SW_ICON_FILE_IMPORT		},
 		{ AssetType::Script,		SW_ICON_LANGUAGE_CSHARP },
 		{ AssetType::Sprite,		SW_ICON_FILE_IMAGE		},
@@ -70,6 +74,7 @@ namespace SW {
 			case AssetType::Sprite:			return "Sprite";		break;
 			case AssetType::Spritesheet:	return "Spritesheet";	break;
 			case AssetType::Font:			return "Font";			break;
+			case AssetType::FontSource:		return "FontSource";	break;
 			case AssetType::Scene:			return "Scene";			break;
 			case AssetType::Prefab:			return "Prefab";		break;
 			case AssetType::Script:			return "Script";		break;
@@ -119,32 +124,52 @@ namespace SW {
 		return IM_COL32(204, 133, 0, 255);
 	}
 
-	Texture2D* Asset::GetThumbnailFromAssetType(AssetType type)
+	Thumbnail Asset::GetThumbnailFromAssetType(AssetType type)
 	{
+		Texture2D** texture = nullptr;
+		
 		switch (type) {
-			case AssetType::Unknown:
-				return EditorResources::UnknownAssetIcon; break;
-			case AssetType::Directory:
-				return EditorResources::DirectoryAssetIcon; break;
-			case AssetType::Texture2D:
-				return nullptr; break;	// Thumbnail will be loaded individually request based. (Dont need to load all at the beginning).
-			case AssetType::Sprite:
-				return nullptr; break;	// same
-			case AssetType::Spritesheet:
-				return nullptr; break;	// same
-			case AssetType::Font:
-				return EditorResources::FontAssetIcon; break;
-			case AssetType::Scene:
-				return EditorResources::SceneAssetIcon; break;
-			case AssetType::Prefab:
-				return EditorResources::PrefabAssetIcon; break;
-			case AssetType::Script:
-				return EditorResources::ScriptAssetIcon; break;
-			case AssetType::Shader:
-				return EditorResources::ShaderAssetIcon; break;
+			case AssetType::Unknown: {
+				texture = &EditorResources::UnknownAssetIcon;
+			} break;
+			case AssetType::Directory: {
+				texture = &EditorResources::DirectoryAssetIcon;
+			} break;
+			case AssetType::Texture2D: {
+				// Thumbnail will be lazy loaded individually request based. (No need to load at the beginning).
+			} break;	
+			case AssetType::Sprite: {
+				// Thumbnail will be lazy loaded individually request based. (No need to load at the beginning).
+			} break;	// same
+			case AssetType::Spritesheet: {
+				// Thumbnail will be lazy loaded individually request based. (No need to load at the beginning).
+			} break;	// same
+			case AssetType::Font: {
+				// Thumbnail will be lazy loaded individually request based. (No need to load at the beginning).
+			} break;	// same
+			case AssetType::FontSource: {
+				texture = &EditorResources::FontAssetIcon;
+			} break;
+			case AssetType::Scene: {
+				texture = &EditorResources::SceneAssetIcon;
+			} break;
+			case AssetType::Prefab: {
+				texture = &EditorResources::PrefabAssetIcon;
+			} break;
+			case AssetType::Script: {
+				texture = &EditorResources::ScriptAssetIcon;
+			} break;
+			case AssetType::Shader: {
+				texture = &EditorResources::ShaderAssetIcon;
+			} break;
 		}
 
-		return nullptr;
+		Thumbnail thumbnail;
+		thumbnail.Texture = texture ? texture : nullptr;
+		thumbnail.Width = texture ? (f32)(*texture)->GetWidth() : 64.f;
+		thumbnail.Height = texture ? (f32)(*texture)->GetHeight() : 64.f;
+
+		return thumbnail;
 	}
 
 }

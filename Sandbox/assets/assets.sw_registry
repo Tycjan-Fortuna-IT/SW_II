@@ -2,14 +2,14 @@ Assets:
   - Handle: 180645514351760687
     Path: spritesheets\1.sw_spritesh
     Type: Spritesheet
-    ModificationTime: 133567331476076230
+    ModificationTime: 133568076352375298
   - Handle: 212989388691238768
     Path: scenes\Platformer.sw_scene
     Type: Scene
     ModificationTime: 133567242788779629
   - Handle: 1228424024008410871
     Path: fonts\CascadiaMono.ttf
-    Type: Font
+    Type: FontSource
     ModificationTime: 133250476020000000
   - Handle: 1851129292016874927
     Path: scenes
@@ -21,7 +21,7 @@ Assets:
     ModificationTime: 133567242300834935
   - Handle: 2825569506529799740
     Path: fonts\OpenSans-Regular.ttf
-    Type: Font
+    Type: FontSource
     ModificationTime: 133470633820000000
   - Handle: 3554386479571016826
     Path: build\Engine.ScriptCore.dll
@@ -74,7 +74,7 @@ Assets:
   - Handle: 12350258421033414411
     Path: sprites\K7GQu49FE1.sw_sprite
     Type: Sprite
-    ModificationTime: 133567331454439002
+    ModificationTime: 133568076339312881
   - Handle: 12742390312197663864
     Path: textures
     Type: Directory
@@ -113,7 +113,7 @@ Assets:
     ModificationTime: 133567326527744635
   - Handle: 15968703465836506235
     Path: fonts\CascadiaCode.ttf
-    Type: Font
+    Type: FontSource
     ModificationTime: 133250476020000000
   - Handle: 16362462507353948521
     Path: build\Sandbox.dll
@@ -134,8 +134,8 @@ Assets:
   - Handle: 16891725904374815267
     Path: assets.sw_registry
     Type: Unknown
-    ModificationTime: 133567334836141915
+    ModificationTime: 133568078735076444
   - Handle: 18277063836767974222
     Path: sprites\m5gYo9eltf.sw_sprite
     Type: Sprite
-    ModificationTime: 133567331454449023
+    ModificationTime: 133568076339322875

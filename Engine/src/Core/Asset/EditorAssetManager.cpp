@@ -18,7 +18,7 @@ namespace SW {
 		if (*element != nullptr)
 			return element;
 
-		if (!IsAvailable(handle))
+		if (!IsValid(handle))
 			return nullptr;
 
 		const AssetMetaData& metadata = GetAssetMetaData(handle);

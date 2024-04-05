@@ -8,6 +8,8 @@
  */
 #pragma once
 
+#include "Thumbnail.hpp"
+
 namespace SW {
 
 	class Texture2D;
@@ -22,6 +24,7 @@ namespace SW {
 		Sprite,
 		Spritesheet,
 		Font,
+		FontSource,
 		Scene,
 		Prefab,
 		Script,
@@ -50,7 +53,7 @@ namespace SW {
 		static AssetType GetAssetTypeFromExtension(const std::string& extension);
 		static const char* GetIconFromAssetType(AssetType type);
 		static u32 GetColorFromAssetType(AssetType type);
-		static Texture2D* GetThumbnailFromAssetType(AssetType type);
+		static Thumbnail GetThumbnailFromAssetType(AssetType type);
 
 		virtual bool operator==(const Asset& other) const
 		{

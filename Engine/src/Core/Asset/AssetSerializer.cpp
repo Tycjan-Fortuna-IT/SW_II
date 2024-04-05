@@ -4,6 +4,7 @@
 #include "core/Project/ProjectContext.hpp"
 #include "Spritesheet.hpp"
 #include "Core/Utils/SerializationUtils.hpp"
+#include "GUI/Editor/EditorResources.hpp"
 
 namespace SW {
 
@@ -41,13 +42,14 @@ namespace SW {
 		Sprite* sprite = new Sprite();
 
 		const u64 handle = data["SpritesheetTextureHandle"].as<u64>();
-		Texture2D** texture = handle ? AssetManager::GetAssetRaw<Texture2D>(handle) : nullptr;
+		const bool isValid = AssetManager::IsValid(handle);
+		Texture2D** texture = isValid ? AssetManager::GetAssetRaw<Texture2D>(handle) : &EditorResources::MissingAssetIcon;
 
 		sprite->SetTexture(texture);
-		sprite->TexCordLeftDown = data["TexCordLeftDown"].as<glm::vec2>();
-		sprite->TexCordRightDown = data["TexCordRightDown"].as<glm::vec2>();
-		sprite->TexCordUpRight = data["TexCordUpRight"].as<glm::vec2>();
-		sprite->TexCordUpLeft = data["TexCordUpLeft"].as<glm::vec2>();
+		sprite->TexCordLeftDown = isValid ? data["TexCordLeftDown"].as<glm::vec2>() : glm::vec2(0.0f, 0.0f);
+		sprite->TexCordRightDown = isValid ? data["TexCordRightDown"].as<glm::vec2>() : glm::vec2(1.0f, 0.0f);
+		sprite->TexCordUpRight = isValid ? data["TexCordUpRight"].as<glm::vec2>() : glm::vec2(1.0f, 1.0f);
+		sprite->TexCordUpLeft = isValid ? data["TexCordUpLeft"].as<glm::vec2>() : glm::vec2(0.0f, 1.0f);
 
 		return sprite;
 	}

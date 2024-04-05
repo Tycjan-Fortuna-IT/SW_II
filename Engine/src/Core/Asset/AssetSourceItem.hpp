@@ -14,7 +14,7 @@ namespace SW {
 		AssetType Type = AssetType::Unknown;
 
 		Timestamp ModificationTime = 0;
-		Texture2D* Thumbnail = nullptr;
+		Thumbnail Thumbnail;
 
 		const char* Icon = SW_ICON_FILE;
 		u32 Color = IM_COL32(204, 133, 0, 255);

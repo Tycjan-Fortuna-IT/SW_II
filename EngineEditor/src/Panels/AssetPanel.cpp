@@ -15,6 +15,8 @@
 #include "Core/Asset/AssetDirectoryTree.hpp"
 #include "Core/Renderer/Renderer2D.hpp"
 #include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.hpp" // FIXME
+#include "Core/Asset/Sprite.hpp"
+#include "Core/Asset/Thumbnail.hpp"
 
 namespace SW {
 
@@ -23,7 +25,7 @@ namespace SW {
 	{
 		m_AssetTree = new AssetDirectoryTree();
 
-		EventSystem::Register(EVENT_CODE_PROJECT_LOADED, nullptr, [this](Event event, void* sender, void* listener) -> bool {		
+		EventSystem::Register(EVENT_CODE_PROJECT_LOADED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
 			m_AssetsDirectory = ProjectContext::Get()->GetAssetDirectory();
 
 			m_AssetTree->TraverseDirectoryAndMapAssets(m_AssetsDirectory);
@@ -68,7 +70,8 @@ namespace SW {
 
 					ImGui::EndTable();
 				}
-			} else {
+			}
+			else {
 				ImGui::Text("No project selected...");
 			}
 
@@ -191,7 +194,8 @@ namespace SW {
 				nodeFlags |= ImGuiTreeNodeFlags_Selected;
 				ImGui::PushStyleColor(ImGuiCol_Header, GUI::Theme::SelectionHalfMuted);
 				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI::Theme::SelectionHalfMuted);
-			} else {
+			}
+			else {
 				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI::Theme::Background);
 			}
 
@@ -272,7 +276,8 @@ namespace SW {
 				nodeFlags |= ImGuiTreeNodeFlags_Selected;
 				ImGui::PushStyleColor(ImGuiCol_Header, GUI::Theme::SelectionHalfMuted);
 				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI::Theme::SelectionHalfMuted);
-			} else {
+			}
+			else {
 				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI::Theme::Background);
 			}
 
@@ -337,11 +342,11 @@ namespace SW {
 		if (ImGui::BeginTable("BodyTable", columnCount, flags)) {
 			for (u32 i = 0; i < (u32)m_SelectedItem->Children.size(); i++) {
 				AssetSourceItem* item = m_SelectedItem->Children[i];
-				
+
 				ImGui::TableNextColumn();
-				
+
 				ImGui::PushID(i);
-				
+
 				std::string filename = item->Path.stem().string();
 
 				f32 charWidth = ImGui::CalcTextSize("A").x;
@@ -355,10 +360,6 @@ namespace SW {
 				}
 
 				const char* filenameEnd = filename.data() + filename.size();
-
-				// TODO THUMBNAILS
-				const ImTextureID textureId = item->Thumbnail ? GUI::GetTextureID(item->Thumbnail) : 0;
-
 				const ImVec2 cursorPos = ImGui::GetCursorPos();
 
 				// Foreground Image
@@ -379,8 +380,12 @@ namespace SW {
 
 				DrawItemOperationsPopup(item);
 
-				if (ImGui::IsItemHovered())
+				if (ImGui::IsItemHovered()) {
+					if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+						HandleItemOnDoubleClick(item, &refreshDirectory);
+
 					isAnyItemHovered = true;
+				}
 
 				if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
 					ImGui::BeginTooltip();
@@ -391,16 +396,13 @@ namespace SW {
 					ImGui::Text("Path: %s", item->Path.string().c_str());
 
 					ImGui::EndTooltip();
-
-					if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-						HandleItemOnDoubleClick(item, &refreshDirectory);
 				}
 
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
 					const char* type = Asset::GetStringifiedAssetType(item->Type);
 
 					ImGui::SetDragDropPayload(type, &item->Handle, sizeof(item->Handle));
-					
+
 					ImGui::Text("Handle: %llu", item->Handle);
 					ImGui::Text("Last Modified: %llu", item->ModificationTime);
 					ImGui::Text("Type: %s", type);
@@ -408,18 +410,64 @@ namespace SW {
 					ImGui::Spacing();
 
 					const f32 tooltipSize = ImGui::GetFrameHeight() * 11.0f;
-					ImGui::Image(textureId, { tooltipSize, tooltipSize }, { 0, 1 }, { 1, 0 });
 					ImGui::EndDragDropSource();
 				}
 
+				// TODO THUMBNAILS
+				if (!item->Thumbnail) {
+
+					if (item->Type == AssetType::Sprite) {
+						Sprite** spriteAsset = AssetManager::GetAssetRaw<Sprite>(item->Handle);
+						Texture2D* texture = (*spriteAsset)->GetTexture();
+
+						Thumbnail thumbnail; // I keep an eye you - std::roundf!
+						thumbnail.Width = std::roundf(abs((*spriteAsset)->TexCordUpRight.x - (*spriteAsset)->TexCordLeftDown.x) * texture->GetWidth());
+						thumbnail.Height = std::roundf(abs((*spriteAsset)->TexCordUpRight.y - (*spriteAsset)->TexCordLeftDown.y) * texture->GetHeight());
+						thumbnail.TexCoordMin = { (*spriteAsset)->TexCordLeftDown.x, (*spriteAsset)->TexCordLeftDown.y };
+						thumbnail.TexCoordMax = { (*spriteAsset)->TexCordUpRight.x, (*spriteAsset)->TexCordUpRight.y };
+						thumbnail.Texture = (*spriteAsset)->GetTextureRaw();
+
+						item->Thumbnail = thumbnail;
+					} else if (item->Type == AssetType::Texture2D) {
+
+					} else if (item->Type == AssetType::Spritesheet) {
+
+					} else if (item->Type == AssetType::Font) {
+
+					}
+
+				}
+
 				// Thumbnail Image
+				const ImVec2 thumbSize = { item->Thumbnail.Width, item->Thumbnail.Height };
+				const ImTextureID texId = item->Thumbnail ? GUI::GetTextureID(*item->Thumbnail.Texture) : 0;
+				const ImVec2 uv0 = item->Thumbnail.TexCoordMin;
+				const ImVec2 uv1 = item->Thumbnail.TexCoordMax;
+				const float aspectRatio = thumbSize.x / thumbSize.y;
+
+				ImVec2 displaySize = { thumbnailSize, thumbnailSize };
+				const f32 leftSpaceX = (thumbnailSize - thumbSize.x) * 0.25f;
+				const f32 leftSpaceY = (thumbnailSize - thumbSize.y) * 0.25f;
+
 				ImGui::SetCursorPos({ cursorPos.x + thumbnailPadding * 0.8f, cursorPos.y + thumbnailPadding * 0.8f });
 				ImGui::SetItemAllowOverlap();
-				ImGui::Image(textureId, { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
+
+				if (thumbSize.x != thumbSize.y) {
+					if (aspectRatio > 1.0f) { // Image is wider than it is tall
+						displaySize = { thumbnailSize, thumbnailSize / aspectRatio };
+						GUI::MoveMousePosY(leftSpaceY);
+					} else { // Image is taller than it is wide
+						displaySize = { thumbnailSize * aspectRatio, thumbnailSize };
+						GUI::MoveMousePosX(leftSpaceX);
+					}
+				}
+
+				// Display the image
+				ImGui::Image(texId, displaySize, uv0, uv1);
 
 				// Type Color frame
 				const ImVec2 typeColorFrameSize = { scaledThumbnailSizeX - 7.f, scaledThumbnailSizeX * 0.05f };
-				ImGui::SetCursorPosX(cursorPos.x + padding * 1.5f);
+				ImGui::SetCursorPos({ cursorPos.x + padding * 1.5f, cursorPos.y + scaledThumbnailSizeX + padding });
 				ImGui::Image(whiteTexId, typeColorFrameSize, { 0, 0 }, { 1, 1 }, ImGui::ColorConvertU32ToFloat4(item->Color));
 
 				const ImVec2 rectMin = ImGui::GetItemRectMin();
@@ -500,9 +548,10 @@ namespace SW {
 
 		if (item->Type == AssetType::Spritesheet) {
 			AssetEditorPanelManager::OpenEditor(item->Handle, item->Type);
-		} else {
+		}
+		else {
 			FileSystem::OpenExternally(m_AssetsDirectory / item->Path);
-		}	
+		}
 	}
 
 	void AssetPanel::DrawAssetPanelPopup()
