@@ -19,6 +19,7 @@ namespace SW {
 		{ "Prefab",			AssetType::Prefab				},
 		{ "Script",			AssetType::Script				},
 		{ "Shader",			AssetType::Shader				},
+		{ "AssetRegistry",	AssetType::AssetRegistry		},
 	};
 
 	static std::unordered_map<std::string, AssetType> s_AssetSourceTypes =
@@ -33,36 +34,39 @@ namespace SW {
 		{ ".sw_sprite",		AssetType::Sprite			},
 		{ ".sw_spritesh",	AssetType::Spritesheet		},
 		{ ".glsl",			AssetType::Shader			},
+		{ ".sw_registry",	AssetType::AssetRegistry	},
 	};
 
 	static const std::unordered_map<AssetType, ImU32> s_AssetSourceTypeColors =
 	{
-		{ AssetType::Unknown,		IM_COL32(179, 167, 167, 255) },
-		{ AssetType::Texture2D,		IM_COL32(229,  70,  70, 255) },
-		{ AssetType::Directory,		IM_COL32(255, 171,   0, 255) },
-		{ AssetType::Scene,			IM_COL32( 70, 103, 226, 255) },
-		{ AssetType::Font,			IM_COL32(204, 255, 153, 255) },
-		{ AssetType::FontSource,	IM_COL32( 88,  88,  88, 255) },
-		{ AssetType::Prefab,		IM_COL32( 70, 199, 152, 255) },
-		{ AssetType::Script,		IM_COL32(  0, 255, 17, 255)  },
-		{ AssetType::Sprite,		IM_COL32(230, 255,   0, 255) },
-		{ AssetType::Spritesheet,	IM_COL32(172, 101, 183, 255) },
-		{ AssetType::Shader,		IM_COL32(201, 197, 202, 255) },
+		{ AssetType::Unknown,			IM_COL32(179, 167, 167, 255) },
+		{ AssetType::Texture2D,			IM_COL32(229,  70,  70, 255) },
+		{ AssetType::Directory,			IM_COL32(255, 171,   0, 255) },
+		{ AssetType::Scene,				IM_COL32( 70, 103, 226, 255) },
+		{ AssetType::Font,				IM_COL32(204, 255, 153, 255) },
+		{ AssetType::FontSource,		IM_COL32( 88,  88,  88, 255) },
+		{ AssetType::Prefab,			IM_COL32( 70, 199, 152, 255) },
+		{ AssetType::Script,			IM_COL32(  0, 255, 17, 255)  },
+		{ AssetType::Sprite,			IM_COL32(230, 255,   0, 255) },
+		{ AssetType::Spritesheet,		IM_COL32(172, 101, 183, 255) },
+		{ AssetType::Shader,			IM_COL32(201, 197, 202, 255) },
+		{ AssetType::AssetRegistry,		IM_COL32(  0,   0,   0,   0) },
 	};
 
 	static const std::unordered_map <AssetType, const char*> s_AssetSourceTypesToIcon =
 	{
-		{ AssetType::Unknown,		SW_ICON_FILE			},
-		{ AssetType::Texture2D,		SW_ICON_FILE_IMAGE		},
-		{ AssetType::Directory,		SW_ICON_FOLDER			},
-		{ AssetType::Scene,			SW_ICON_FILE_VIDEO		},
-		{ AssetType::Font,			SW_ICON_FORMAT_TEXT		},
-		{ AssetType::FontSource,	SW_ICON_FORMAT_TEXT		},
-		{ AssetType::Prefab,		SW_ICON_FILE_IMPORT		},
-		{ AssetType::Script,		SW_ICON_LANGUAGE_CSHARP },
-		{ AssetType::Sprite,		SW_ICON_FILE_IMAGE		},
-		{ AssetType::Spritesheet,	SW_ICON_FILE_IMAGE		},
-		{ AssetType::Shader,		SW_ICON_LANGUAGE_C      },
+		{ AssetType::Unknown,			SW_ICON_FILE			},
+		{ AssetType::Texture2D,			SW_ICON_FILE_IMAGE		},
+		{ AssetType::Directory,			SW_ICON_FOLDER			},
+		{ AssetType::Scene,				SW_ICON_FILE_VIDEO		},
+		{ AssetType::Font,				SW_ICON_FORMAT_TEXT		},
+		{ AssetType::FontSource,		SW_ICON_FORMAT_TEXT		},
+		{ AssetType::Prefab,			SW_ICON_FILE_IMPORT		},
+		{ AssetType::Script,			SW_ICON_LANGUAGE_CSHARP },
+		{ AssetType::Sprite,			SW_ICON_FILE_IMAGE		},
+		{ AssetType::Spritesheet,		SW_ICON_FILE_IMAGE		},
+		{ AssetType::Shader,			SW_ICON_LANGUAGE_C      },
+		{ AssetType::AssetRegistry,		SW_ICON_FILE			},
 	};
 
 	const char* Asset::GetStringifiedAssetType(AssetType type)
@@ -79,6 +83,7 @@ namespace SW {
 			case AssetType::Prefab:			return "Prefab";		break;
 			case AssetType::Script:			return "Script";		break;
 			case AssetType::Shader:			return "Shader";		break;
+			case AssetType::AssetRegistry:	return "AssetRegistry";		break;
 		}
 
 		return "Unknown";
@@ -161,6 +166,9 @@ namespace SW {
 			} break;
 			case AssetType::Shader: {
 				texture = &EditorResources::ShaderAssetIcon;
+			} break;
+			case AssetType::AssetRegistry: {
+				// This file as an exception is not shown in the asset panel!
 			} break;
 		}
 

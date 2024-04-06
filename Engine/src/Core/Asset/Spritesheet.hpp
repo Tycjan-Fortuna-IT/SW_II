@@ -28,6 +28,8 @@ namespace SW {
 		Texture2D* GetSpritesheetTexture() const { return m_SpritesheetTexture ? *m_SpritesheetTexture : nullptr; }
 		void SetSpritesheetTexture(Texture2D** texture) { m_SpritesheetTexture = texture; }
 
+		Texture2D** GetSpritesheetTextureRaw() const { return m_SpritesheetTexture; }
+
 	public:
 		std::vector<SpriteData> Sprites;
 

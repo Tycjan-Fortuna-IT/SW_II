@@ -29,6 +29,7 @@ namespace SW {
 		Prefab,
 		Script,
 		Shader,
+		AssetRegistry,
 	};
 
 	enum class AssetState : u8

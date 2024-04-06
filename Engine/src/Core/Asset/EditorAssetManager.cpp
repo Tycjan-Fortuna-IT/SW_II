@@ -45,7 +45,7 @@ namespace SW {
 
     bool EditorAssetManager::ForceReload(AssetHandle handle)
     {
-		if (!Contains(handle))
+		if (!ContainsAsset(handle))
 			return false;
 
 		const AssetMetaData& metadata = GetAssetMetaData(handle);

@@ -52,9 +52,9 @@ namespace SW {
 
 	void SpritesheetEditor::OnClose()
 	{
-		const AssetMetaData& metadata = AssetManager::GetAssetMetaData((*m_Spritesheet)->GetHandle());
+		//const AssetMetaData& metadata = AssetManager::GetAssetMetaData((*m_Spritesheet)->GetHandle());
 		
-		AssetLoader::Serialize(metadata);
+		//AssetLoader::Serialize(metadata);
 	}
 
 	void SpritesheetEditor::Render()

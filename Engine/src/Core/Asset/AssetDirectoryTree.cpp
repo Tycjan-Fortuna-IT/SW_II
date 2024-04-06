@@ -77,8 +77,17 @@ namespace SW {
 
 			const std::filesystem::path itemPath = std::filesystem::relative(entry.path(), ProjectContext::Get()->GetAssetDirectory());
 
+			AssetType type = std::filesystem::is_directory(entry) ? AssetType::Directory : Asset::GetAssetTypeFromExtension(itemPath.extension().string());
+
+			if (
+				type == AssetType::AssetRegistry ||
+				(type == AssetType::Directory && 
+					(itemPath.filename() == "build" || itemPath.filename() == "cache"))
+			)
+				continue;
+
 			newItem->Handle = pathToIdMap.at(itemPath);
-			newItem->Type = std::filesystem::is_directory(entry) ? AssetType::Directory : Asset::GetAssetTypeFromExtension(itemPath.extension().string());
+			newItem->Type = type;
 			newItem->Thumbnail = Asset::GetThumbnailFromAssetType(newItem->Type);
 			newItem->Icon = Asset::GetIconFromAssetType(newItem->Type);
 			newItem->Color = Asset::GetColorFromAssetType(newItem->Type);

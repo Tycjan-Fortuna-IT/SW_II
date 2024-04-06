@@ -1347,7 +1347,7 @@ namespace SW::GUI {
 
 		if (*texture && ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
 			ImGui::BeginTooltip();
-			ImGui::TextUnformatted((*texture)->GetPath().c_str());
+			//ImGui::TextUnformatted((*texture)->GetPath().c_str()); // TODO
 			ImGui::Spacing();
 			ImGui::Image(GUI::GetTextureID(textureId), { tooltipSize, tooltipSize }, { 0, 1 }, { 1, 0 });
 			ImGui::EndTooltip();
