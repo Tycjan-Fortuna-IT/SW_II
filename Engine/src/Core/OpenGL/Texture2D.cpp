@@ -9,6 +9,19 @@
 
 namespace SW {
 
+	static int DataFormatToChannels(GLenum format)
+	{
+		switch (format) {
+			case GL_RED: return 1;
+			case GL_RG: return 2;
+			case GL_RGB: return 3;
+			case GL_RGBA: return 4;
+		}
+
+		SW_ERROR("Unknown format: {}", format);
+		return 0;
+	}
+
     Texture2D::Texture2D(const char* filepath, bool flipped /*= true*/)
 	{
 		LoadTextureData(filepath, flipped);
@@ -43,6 +56,9 @@ namespace SW {
 	Texture2D::Texture2D(const TextureSpecification& spec)
 	{
 		switch (spec.Format) {
+			case ImageFormat::RED: {
+				m_DataFormat = GL_RED; m_InternalFormat = GL_RED; break;
+			}
 			case ImageFormat::RGB8: {
 				m_DataFormat = GL_RGB; m_InternalFormat = GL_RGB8; break;
 			}
@@ -53,7 +69,7 @@ namespace SW {
 
 		m_Width = spec.Width;
 		m_Height = spec.Height;
-		m_Channels = 0;
+		m_Channels = DataFormatToChannels(m_DataFormat);
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_Handle);
 		glTextureStorage2D(m_Handle, 1, m_InternalFormat, m_Width, m_Height);
@@ -113,7 +129,7 @@ namespace SW {
 
 	const char* Texture2D::GetBytes() const
 	{
-		GLint bpp = m_DataFormat == GL_RGBA ? 4 : 3;
+		GLint bpp = DataFormatToChannels(m_DataFormat);
 		GLint size = m_Width * m_Height * bpp;
 
 		char* data = new char[size];
@@ -127,7 +143,7 @@ namespace SW {
 
 	void Texture2D::SetData(void* data, u32 size)
 	{
-		u32 bpp = m_DataFormat == GL_RGBA ? 4 : 3;
+		u32 bpp = DataFormatToChannels(m_DataFormat);
 
 		ASSERT(size == m_Width * m_Height * bpp, "Data must be entire texture!");
 

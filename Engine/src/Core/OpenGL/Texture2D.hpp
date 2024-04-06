@@ -18,6 +18,7 @@ namespace SW {
 	enum class ImageFormat
 	{
 		None = 0, /**< No format specified */
+		RED,
 		RGB8, /**< RGB format with 8 bits per channel */
 		RGBA8 /**< RGBA format with 8 bits per channel */
 	};

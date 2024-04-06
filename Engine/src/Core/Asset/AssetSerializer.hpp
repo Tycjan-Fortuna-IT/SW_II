@@ -38,4 +38,18 @@ namespace SW {
 		Asset* TryLoadAsset(const AssetMetaData& metadata) override;
 	};
 
+	class FontSerializer final : public AssetSerializer {
+	public:
+		void Serialize(const AssetMetaData& metadata) override;
+
+		Asset* TryLoadAsset(const AssetMetaData& metadata) override;
+	};
+
+	class FontSourceSerializer final : public AssetSerializer {
+	public:
+		void Serialize(const AssetMetaData& metadata) override;
+
+		Asset* TryLoadAsset(const AssetMetaData& metadata) override;
+	};
+
 }

@@ -11,6 +11,8 @@ namespace SW {
 		s_Serializers[AssetType::Texture2D] = new Texture2DSerializer();
 		s_Serializers[AssetType::Sprite] = new SpriteSerializer();
 		s_Serializers[AssetType::Spritesheet] = new SpritesheetSerializer();
+		s_Serializers[AssetType::Font] = new FontSerializer();
+		s_Serializers[AssetType::FontSource] = new FontSourceSerializer();
 	}
 
 	void AssetLoader::Shutdown()
@@ -18,6 +20,8 @@ namespace SW {
 		delete s_Serializers[AssetType::Texture2D];
 		delete s_Serializers[AssetType::Sprite];
 		delete s_Serializers[AssetType::Spritesheet];
+		delete s_Serializers[AssetType::Font];
+		delete s_Serializers[AssetType::FontSource];
 
 		s_Serializers.clear();
 	}

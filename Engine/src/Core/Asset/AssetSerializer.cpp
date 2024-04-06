@@ -5,6 +5,8 @@
 #include "Spritesheet.hpp"
 #include "Core/Utils/SerializationUtils.hpp"
 #include "GUI/Editor/EditorResources.hpp"
+#include "Core/Asset/Font.hpp"
+#include "Cache/FontCache.hpp"
 
 namespace SW {
 
@@ -138,6 +140,52 @@ namespace SW {
 		}
 
 		return spritesheet;
+	}
+
+	void FontSerializer::Serialize(const AssetMetaData& metadata)
+	{
+		ASSERT(false, "Font serialization is not supported!");
+	}
+
+	Asset* FontSerializer::TryLoadAsset(const AssetMetaData& metadata)
+	{
+		const std::filesystem::path path = ProjectContext::Get()->GetAssetDirectory() / metadata.Path;
+
+		YAML::Node file = YAML::LoadFile(path.string());
+
+		YAML::Node data = file["Font"];
+
+		if (!data) {
+			SW_ERROR("Error while deserializing the font: {}", metadata.Path.string());
+
+			return new Spritesheet();
+		}
+
+		const u64 fontSourceHandle = data["FontSourceHandle"].as<u64>();
+
+		const AssetMetaData& sourceMetadata = AssetManager::GetAssetMetaData(fontSourceHandle);
+
+		FontSpecification spec;
+		spec.Path = ProjectContext::Get()->GetAssetDirectory() / sourceMetadata.Path;
+		spec.Charset = FontCharsetType::ASCII;
+		spec.PreloadedAtlas = FontCache::TryGetCachedAtlas(metadata.Handle, metadata.ModificationTime);
+
+		Font* font = new Font(spec);
+
+		if (!spec.PreloadedAtlas)
+			FontCache::CacheAtlas(font->GetAtlasTexture(), metadata.Handle, metadata.ModificationTime);
+
+		return font;
+	}
+
+	void FontSourceSerializer::Serialize(const AssetMetaData& metadata)
+	{
+
+	}
+
+	Asset* FontSourceSerializer::TryLoadAsset(const AssetMetaData& metadata)
+	{
+		return nullptr;
 	}
 
 }
