@@ -120,7 +120,26 @@ namespace SW {
 		return LoadAndCacheTexture(itemPath, cachePath, handle, lastModified);
 	}
 
-	void ThumbnailCache::DownscaleTexture(Texture2D* texture)
+	void ThumbnailCache::Initialize()
+	{
+		FileSystem::CreateEmptyDirectoryIfNotExists(ProjectContext::Get()->GetAssetDirectory() / "cache"); // TODO move this somewhere
+		FileSystem::CreateEmptyDirectoryIfNotExists(ProjectContext::Get()->GetAssetDirectory() / "cache" / "thumbnails");
+	}
+
+	void ThumbnailCache::Clear()
+    {
+		std::filesystem::remove_all((ProjectContext::Get()->GetAssetDirectory() / "cache" / "thumbnails"));
+		
+		for (std::pair<AssetHandle, ThumbnailCacheData> pair : m_Thumbnails) {
+			delete pair.second.Texture;
+		}
+
+		m_Thumbnails.clear();
+
+		FileSystem::CreateEmptyDirectory(ProjectContext::Get()->GetAssetDirectory() / "cache" / "thumbnails");
+    }
+
+    void ThumbnailCache::DownscaleTexture(Texture2D* texture)
 	{
 		i32 originalWidth = texture->GetWidth();
 		i32 originalHeight = texture->GetHeight();

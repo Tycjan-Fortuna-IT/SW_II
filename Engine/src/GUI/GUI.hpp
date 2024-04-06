@@ -1458,6 +1458,31 @@ namespace SW::GUI {
 	}
 
 	/**
+	 * @brief Draws a button property in the GUI.
+	 *
+	 * @param icon The icon to display on the button.
+	 * @param label The label to display next to the button.
+	 * @param tooltip An optional tooltip to display when hovering over the button.
+	 * @param size The size of the button.
+	 * @return True if the button is clicked, false otherwise.
+	 */
+	static bool DrawButtonProperty(const char* icon, const char* label, const char* tooltip = nullptr, glm::vec2 size = glm::vec2(40.0f))
+	{
+		bool clicked = false;
+
+		BeginPropertyGrid(label, tooltip, false);
+
+		MoveMousePosX(ImGui::GetColumnWidth() / 2.0f - ImGui::GetStyle().FramePadding.x - 7.5f);
+
+		if (ImGui::Button(icon, { size.x, size.y }))
+			clicked = true;
+
+		EndPropertyGrid();
+	
+		return clicked;
+	}
+
+	/**
 	 * @brief Draws a part of an image with customizable properties.
 	 *
 	 * @param wholeImage Pointer to the Texture2D object representing the whole image.

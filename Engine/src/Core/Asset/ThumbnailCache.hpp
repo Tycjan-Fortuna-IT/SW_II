@@ -22,6 +22,9 @@ namespace SW {
 		using Timestamp = u64;
 		Texture2D** GetThumbnail(const std::filesystem::path& itemPath, AssetHandle handle, Timestamp lastModified);
 
+		void Initialize();
+		void Clear();
+
 	private:
 		std::unordered_map<AssetHandle, ThumbnailCacheData> m_Thumbnails;
 

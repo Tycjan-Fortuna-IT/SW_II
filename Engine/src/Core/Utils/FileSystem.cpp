@@ -40,7 +40,15 @@ namespace SW {
 		return std::filesystem::create_directory(path);
     }
 
-	u64 FileSystem::GetLastWriteTime(const std::filesystem::directory_entry& entry)
+    bool FileSystem::CreateEmptyDirectoryIfNotExists(const std::filesystem::path& path)
+    {
+		if (Exists(path))
+			return false;
+
+		return std::filesystem::create_directory(path);
+	}
+
+    u64 FileSystem::GetLastWriteTime(const std::filesystem::directory_entry& entry)
 	{
 		return GetLastWriteTime(entry.path());
 	}

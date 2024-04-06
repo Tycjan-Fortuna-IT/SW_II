@@ -55,6 +55,14 @@ namespace SW {
 		static bool CreateEmptyDirectory(const std::filesystem::path& path);
 
 		/**
+		 * @brief Creates a new directory in a given path to it if it doesn't exist.
+		 *
+		 * @param path Path to directory. e.g. C:/dev/newdir
+		 * @return Whether the operation was successful.
+		 */
+		static bool CreateEmptyDirectoryIfNotExists(const std::filesystem::path& path);
+
+		/**
 		 * @brief Obtain last time when the filesystem entry was modified.
 		 *
 		 * @param entry Directory entry.

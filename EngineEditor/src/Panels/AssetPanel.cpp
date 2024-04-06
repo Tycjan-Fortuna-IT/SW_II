@@ -32,6 +32,8 @@ namespace SW {
 			m_AssetTree->TraverseDirectoryAndMapAssets(m_AssetsDirectory);
 			m_SelectedItem = m_AssetTree->GetRootItem();
 
+			m_Cache.Initialize();
+
 			return false;
 		});
 	}
@@ -112,8 +114,15 @@ namespace SW {
 
 		if (ImGui::BeginPopup("SettingsPopup")) {
 			GUI::BeginProperties("##thumbnail_size");
-			GUI::DrawIntegralProperty(m_ThumbnailSize, "Thumbnail Size", nullptr, 150, 400);
+			GUI::DrawIntegralProperty(m_ThumbnailSize, "Thumbnail Size", nullptr, 200, 400);
+			if (GUI::DrawButtonProperty(SW_ICON_DELETE, "Clear thumbnail cache", nullptr, { 34.f, 34.f })) {
+				m_Cache.Clear();
+
+				LoadDirectoryEntries();
+			}
+
 			GUI::EndProperties();
+
 			ImGui::EndPopup();
 		}
 
@@ -501,7 +510,7 @@ namespace SW {
 
 				const ImVec2 rectMin = ImGui::GetItemRectMin();
 				const ImVec2 rectSize = ImGui::GetItemRectSize();
-				const ImRect clipRect = ImRect({ rectMin.x + padding * 1.0f, rectMin.y + padding * 2.0f },
+				const ImRect clipRect = ImRect({ rectMin.x + padding * 1.0f, rectMin.y + padding * (m_ThumbnailSize / 100.f)},
 					{ rectMin.x + rectSize.x, rectMin.y + scaledThumbnailSizeX - GUI::Appearance::GetFonts().SmallFont->FontSize - padding * 4.0f });
 				GUI::ClippedText(clipRect.Min, clipRect.Max, filename.c_str(), filenameEnd, nullptr, { 0, 0 }, nullptr, clipRect.GetSize().x);
 
