@@ -8,15 +8,16 @@
 #include "GUI/Colors.hpp"
 #include "GUI/Appearance.hpp"
 #include "Core/Project/ProjectContext.hpp"
-#include "Core/Project/Project.hpp"
 #include "Core/Utils/FileSystem.hpp"
 #include "GUI/Popups.hpp"
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/Asset/AssetDirectoryTree.hpp"
 #include "Core/Renderer/Renderer2D.hpp"
-#include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.hpp" // FIXME
+#include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.hpp" // TODO
 #include "Core/Asset/Sprite.hpp"
 #include "Core/Asset/Thumbnail.hpp"
+#include "Core/Asset/Spritesheet.hpp"
+#include "GUI/Editor/EditorResources.hpp"
 
 namespace SW {
 
@@ -194,10 +195,12 @@ namespace SW {
 				nodeFlags |= ImGuiTreeNodeFlags_Selected;
 				ImGui::PushStyleColor(ImGuiCol_Header, GUI::Theme::SelectionHalfMuted);
 				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI::Theme::SelectionHalfMuted);
-			}
-			else {
+			} else {
 				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI::Theme::Background);
 			}
+
+			if (child->IsParentOfDescendant(m_SelectedItem)) // recursive open
+				ImGui::SetNextItemOpen(true);
 
 			bool opened = ImGui::TreeNodeEx(entryPath.string().c_str(), nodeFlags, "");
 
@@ -413,7 +416,6 @@ namespace SW {
 					ImGui::EndDragDropSource();
 				}
 
-				// TODO THUMBNAILS
 				if (!item->Thumbnail) {
 
 					if (item->Type == AssetType::Sprite) {
@@ -429,11 +431,35 @@ namespace SW {
 
 						item->Thumbnail = thumbnail;
 					} else if (item->Type == AssetType::Texture2D) {
+						Texture2D** texture = m_Cache.GetThumbnail(item->Path, item->Handle, item->ModificationTime);
 
+						Thumbnail thumbnail;
+						thumbnail.Width = (f32)(*texture)->GetWidth();
+						thumbnail.Height = (f32)(*texture)->GetHeight();
+						thumbnail.Texture = texture;
+
+						item->Thumbnail = thumbnail;
 					} else if (item->Type == AssetType::Spritesheet) {
+						Spritesheet** spritesheetAsset = AssetManager::GetAssetRaw<Spritesheet>(item->Handle);
+						Texture2D** texture = (*spritesheetAsset)->GetSpritesheetTextureRaw();
+						
+						if (!texture) {
+							texture = &EditorResources::MissingAssetIcon;
 
+						} else {
+							const AssetMetaData& metadata = AssetManager::GetAssetMetaData((*texture)->GetHandle());
+
+							texture = m_Cache.GetThumbnail(metadata.Path, (*texture)->GetHandle(), metadata.ModificationTime);
+						}
+
+						Thumbnail thumbnail;
+						thumbnail.Width = (f32)(*texture)->GetWidth();
+						thumbnail.Height = (f32)(*texture)->GetHeight();
+						thumbnail.Texture = texture;
+
+						item->Thumbnail = thumbnail;
 					} else if (item->Type == AssetType::Font) {
-
+						// TODO FONT THUMBNAILS + FONT CACHE
 					}
 
 				}
@@ -446,8 +472,11 @@ namespace SW {
 				const float aspectRatio = thumbSize.x / thumbSize.y;
 
 				ImVec2 displaySize = { thumbnailSize, thumbnailSize };
-				const f32 leftSpaceX = (thumbnailSize - thumbSize.x) * 0.25f;
-				const f32 leftSpaceY = (thumbnailSize - thumbSize.y) * 0.25f;
+				const f32 minSpace = 0.0f;
+				const f32 maxSpace = thumbnailSize * 0.25f;
+
+				const f32 leftSpaceX = std::clamp(abs((256.f - thumbSize.x) * 0.25f), minSpace, maxSpace);
+				const f32 leftSpaceY = std::clamp(abs((256.f - thumbSize.y) * 0.25f), minSpace, maxSpace);
 
 				ImGui::SetCursorPos({ cursorPos.x + thumbnailPadding * 0.8f, cursorPos.y + thumbnailPadding * 0.8f });
 				ImGui::SetItemAllowOverlap();

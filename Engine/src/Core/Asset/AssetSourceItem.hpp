@@ -26,6 +26,9 @@ namespace SW {
 
 		bool IsDirectory() const { return Type == AssetType::Directory; }
 		bool IsFile() const { return Type != AssetType::Directory; }
+
+		// recursive
+		bool IsParentOfDescendant(const AssetSourceItem* descendant) const;
 	};
 
 }

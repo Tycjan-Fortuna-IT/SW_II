@@ -11,7 +11,7 @@
 #include <filesystem>
 
 #include "GUI/Panel.hpp"
-#include "Core/Asset/Asset.hpp"
+#include "Core/Asset/ThumbnailCache.hpp"
 
 namespace SW {
 
@@ -74,6 +74,8 @@ namespace SW {
 		AssetDirectoryTree* m_AssetTree = nullptr;
 		AssetSourceItem* m_SelectedItem = nullptr;
 		AssetSourceItem* m_QueuedSelectedItem = nullptr;
+
+		ThumbnailCache m_Cache;
 
 		/**
 		 * @brief Loads the directory entries.
