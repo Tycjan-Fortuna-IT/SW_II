@@ -1,0 +1,42 @@
+#pragma once
+
+#include "Core/Asset/Asset.hpp"
+
+namespace SW {
+
+	class Texture2D;
+	struct AssetSourceItem;
+
+	struct ThumbnailCacheData
+	{
+		Texture2D* Texture;
+		u64 LastModified;
+	};
+
+	class ThumbnailCache
+	{
+	public:
+		ThumbnailCache() = default;
+		~ThumbnailCache();
+
+		using Timestamp = u64;
+		Texture2D** GetTextureThumbnail(const std::filesystem::path& itemPath, AssetHandle handle, Timestamp lastModified);
+
+		Texture2D** GetFontAtlasThumbnail(const std::filesystem::path& itemPath, AssetHandle handle, Timestamp lastModified);
+
+		void Clear();
+
+	private:
+		std::unordered_map<AssetHandle, ThumbnailCacheData> m_Thumbnails;
+
+	private:
+		void DownscaleTexture(Texture2D* texture);
+
+		Texture2D** LoadAndCacheTexture(const std::filesystem::path& itemPath, const std::filesystem::path& cachePath,
+			AssetHandle handle, Timestamp lastModified);
+
+		Texture2D** LoadAndCacheFontAtlas(const std::filesystem::path& itemPath, const std::filesystem::path& cachePath,
+			AssetHandle handle, Timestamp lastModified);
+	};
+
+}

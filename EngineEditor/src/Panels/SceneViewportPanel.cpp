@@ -11,7 +11,7 @@
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Project/Project.hpp"
-#include "Core/OpenGL/Font.hpp"
+#include "Core/Asset/Font.hpp"
 #include "Core/Scripting/ScriptingCore.hpp"
 #include "Core/Asset/AssetManager.hpp"
 

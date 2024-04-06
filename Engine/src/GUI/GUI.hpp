@@ -15,7 +15,7 @@
 #include "Appearance.hpp"
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/ECS/Entity.hpp"
-#include "Core/OpenGL/Font.hpp"
+#include "Core/Asset/Font.hpp"
 #include "Core/Renderer/Renderer2D.hpp"
 #include "Core/Utils/FileSystem.hpp"
 
@@ -1207,71 +1207,6 @@ namespace SW::GUI {
 		}
 
 		if (!ID)
-			ImGui::PopStyleColor();
-
-		EndPropertyGrid();
-	}
-
-	/**
-	 * @brief Draws a font dropdown property in the GUI.
-	 * 
-	 * @param font A pointer to a Font object representing the selected font. This pointer will be updated with the user's selection.
-	 * @param label The label to display for the font dropdown property.
-	 * @param tooltip An optional tooltip to display for the font dropdown property.
-	 */
-	static void DrawFontDropdownProperty(
-		Font** font, const char* label, const char* tooltip = nullptr
-	) {
-		std::string tag = "none";
-
-		if (*font)
-			tag = (*font)->GetFilename();
-
-		BeginPropertyGrid(label, tooltip, true);
-
-		ImVec2 region = ImGui::GetContentRegionAvail();
-		region.x -= 20.0f;
-		region.y = ImGui::GetFrameHeight();
-
-		ImVec2 pos = ImGui::GetCursorPos();
-
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyle().Colors[ImGuiCol_Button]);
-
-		ImGui::Button("##font_dropdown_property", region);
-
-		ImGui::PopStyleColor();
-
-		if (ImGui::BeginDragDropTarget()) {
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Font")) {
-				// *font = AssetManager::GetFont(static_cast<char*>(payload->Data));
-			}
-			ImGui::EndDragDropTarget();
-		}
-
-		ImGui::SameLine();
-
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.3f, 0.3f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
-
-		if (ImGui::Button("x", { 20.0f, region.y })) {
-			*font = nullptr;
-		}
-
-		ImGui::PopStyleColor(3);
-		ImGui::PopStyleVar();
-
-		if (*font) {
-			ImVec4 selectedColor = GUI::Colors::Darken(ImVec4(0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f), 0.05f);
-			ImGui::PushStyleColor(ImGuiCol_Text, selectedColor);
-		}
-
-		ImVec2 padding = ImGui::GetStyle().FramePadding;
-		ImGui::SetCursorPos({ pos.x + padding.x, pos.y + padding.y });
-		ImGui::Text("%s", tag.c_str());
-
-		if (*font)
 			ImGui::PopStyleColor();
 
 		EndPropertyGrid();

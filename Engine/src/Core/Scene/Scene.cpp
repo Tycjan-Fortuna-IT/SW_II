@@ -201,7 +201,7 @@ namespace SW {
 		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TextComponent>().each()) {
 			Entity entity = { handle, this };
 
-			if (!tc.Font)
+			if (!tc.Handle)
 				continue;
 
 			Renderer2D::DrawString(entity.GetWorldSpaceTransformMatrix(), tc, (int)handle);
@@ -378,7 +378,7 @@ namespace SW {
 		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TextComponent>().each()) {
 			Entity entity = { handle, this };
 
-			if (!tc.Font)
+			if (!tc.Handle)
 				continue;
 
 			Renderer2D::DrawString(entity.GetWorldSpaceTransformMatrix(), tc, (int)handle);

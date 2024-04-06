@@ -12,7 +12,7 @@
 #include "Core/Scene/SceneCamera.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
 #include "Core/Math/Math.hpp"
-#include "Core/OpenGL/Font.hpp"
+#include "Core/Asset/Font.hpp"
 #include "Core/Scripting/CSharpObject.hpp"
 #include "Core/Asset/Asset.hpp"
 
@@ -150,7 +150,7 @@ namespace SW {
 	{
 		std::string TextString = "Empty";	/**< Text to be rendered. */
 
-		Font* Font = nullptr;				/**< Font of the text, can be nullptr! */
+		AssetHandle Handle = 0u; // font handle
 
 		glm::vec4 Color = glm::vec4(1.0f);	/**< Color of the text. */
 

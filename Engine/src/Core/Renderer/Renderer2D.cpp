@@ -1,7 +1,7 @@
 #include "Renderer2D.hpp"
 
 #include "Core/OpenGL/Texture2D.hpp"
-#include "Core/OpenGL/Font.hpp"
+#include "Core/Asset/Font.hpp"
 #include "Core/OpenGL/VertexArray.hpp"
 #include "Core/OpenGL/VertexBuffer.hpp"
 #include "Core/OpenGL/IndexBuffer.hpp"
@@ -483,15 +483,17 @@ namespace SW {
 
 	void Renderer2D::DrawString(const glm::mat4& transform, const TextComponent& text, int entityID)
 	{
-		DrawString(text.TextString, text.Font, transform, text.Color, text.Kerning, text.LineSpacing, entityID);
+		Font** fontAsset = AssetManager::GetAssetRaw<Font>(text.Handle);
+
+		DrawString(text.TextString, fontAsset, transform, text.Color, text.Kerning, text.LineSpacing, entityID);
 	}
 
-	void Renderer2D::DrawString(const std::string& string, Font* font, const glm::mat4& transform, const glm::vec4& color, f32 kerning /*= 0.0f*/, f32 lineSpacing /*= 0.0f*/, int entityID /*= -1*/)
+	void Renderer2D::DrawString(const std::string& string, Font** font, const glm::mat4& transform, const glm::vec4& color, f32 kerning /*= 0.0f*/, f32 lineSpacing /*= 0.0f*/, int entityID /*= -1*/)
 	{
 		f32 textureIndex = 0.f;
 
-		Texture2D* atlasTexture = font->GetAtlasTexture();
-		const msdf_atlas::FontGeometry& fontGeometry = font->GetMSDFData()->FontGeometry;
+		Texture2D* atlasTexture = (*font)->GetAtlasTexture();
+		const msdf_atlas::FontGeometry& fontGeometry = (*font)->GetMSDFData().FontGeometry;
 		const msdfgen::FontMetrics& fontMetrics = fontGeometry.getMetrics();
 
 		for (u32 i = 1; i < s_Data.FontTextureSlotIndex; i++) {

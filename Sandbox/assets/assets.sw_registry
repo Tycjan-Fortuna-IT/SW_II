@@ -7,6 +7,10 @@ Assets:
     Path: scenes\Platformer.sw_scene
     Type: Scene
     ModificationTime: 133567242788779629
+  - Handle: 797252750352022058
+    Path: cache
+    Type: Directory
+    ModificationTime: 133568978387626194
   - Handle: 1228424024008410871
     Path: fonts\CascadiaMono.ttf
     Type: FontSource
@@ -51,6 +55,10 @@ Assets:
     Path: build\Sandbox.deps.json
     Type: Unknown
     ModificationTime: 133548080728236076
+  - Handle: 8103278870192969790
+    Path: cache\fonts
+    Type: Directory
+    ModificationTime: 133568980561759174
   - Handle: 8755409979203817553
     Path: build\Sandbox.pdb
     Type: Unknown
@@ -71,6 +79,10 @@ Assets:
     Path: sprites
     Type: Directory
     ModificationTime: 133567218078292422
+  - Handle: 11757453218432867535
+    Path: cache\thumbnails\15758475306527755018_133567326527744635.cache
+    Type: Unknown
+    ModificationTime: 133568807544480493
   - Handle: 12350258421033414411
     Path: sprites\K7GQu49FE1.sw_sprite
     Type: Sprite
@@ -83,6 +95,14 @@ Assets:
     Path: prefabs
     Type: Directory
     ModificationTime: 133551602556286285
+  - Handle: 14752323293676452243
+    Path: cache\fonts\15747787348725738273_133568959160169211.cache
+    Type: Unknown
+    ModificationTime: 133568980561779157
+  - Handle: 14947059261056302630
+    Path: cache\thumbnails
+    Type: Directory
+    ModificationTime: 133568807544460502
   - Handle: 14996597783001670902
     Path: scenes\Physics_DistanceJoints.sw_scene
     Type: Scene
@@ -106,7 +126,11 @@ Assets:
   - Handle: 15671670272651360779
     Path: scenes\Physics_BoxCirclePolygonCollision.sw_scene
     Type: Scene
-    ModificationTime: 133567241918842259
+    ModificationTime: 133568959634413889
+  - Handle: 15747787348725738273
+    Path: fonts\roboto.sw_font
+    Type: Font
+    ModificationTime: 133568959160169211
   - Handle: 15758475306527755018
     Path: textures\Tileset.png
     Type: Texture2D
@@ -122,7 +146,7 @@ Assets:
   - Handle: 16381209260815648203
     Path: fonts
     Type: Directory
-    ModificationTime: 133546353185238241
+    ModificationTime: 133568959058657075
   - Handle: 16423494596943192328
     Path: scenes\Physics_PrismaticJoints.sw_scene
     Type: Scene
@@ -134,7 +158,7 @@ Assets:
   - Handle: 16891725904374815267
     Path: assets.sw_registry
     Type: Unknown
-    ModificationTime: 133568078735076444
+    ModificationTime: 133569017611265051
   - Handle: 18277063836767974222
     Path: sprites\m5gYo9eltf.sw_sprite
     Type: Sprite

@@ -13,11 +13,11 @@
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/Asset/AssetDirectoryTree.hpp"
 #include "Core/Renderer/Renderer2D.hpp"
-#include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.hpp" // TODO
 #include "Core/Asset/Sprite.hpp"
 #include "Core/Asset/Thumbnail.hpp"
 #include "Core/Asset/Spritesheet.hpp"
 #include "GUI/Editor/EditorResources.hpp"
+#include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.hpp" // TODO - remove (because of Testbed)
 
 namespace SW {
 
@@ -31,8 +31,6 @@ namespace SW {
 
 			m_AssetTree->TraverseDirectoryAndMapAssets(m_AssetsDirectory);
 			m_SelectedItem = m_AssetTree->GetRootItem();
-
-			m_Cache.Initialize();
 
 			return false;
 		});
@@ -440,7 +438,7 @@ namespace SW {
 
 						item->Thumbnail = thumbnail;
 					} else if (item->Type == AssetType::Texture2D) {
-						Texture2D** texture = m_Cache.GetThumbnail(item->Path, item->Handle, item->ModificationTime);
+						Texture2D** texture = m_Cache.GetTextureThumbnail(item->Path, item->Handle, item->ModificationTime);
 
 						Thumbnail thumbnail;
 						thumbnail.Width = (f32)(*texture)->GetWidth();
@@ -458,7 +456,7 @@ namespace SW {
 						} else {
 							const AssetMetaData& metadata = AssetManager::GetAssetMetaData((*texture)->GetHandle());
 
-							texture = m_Cache.GetThumbnail(metadata.Path, (*texture)->GetHandle(), metadata.ModificationTime);
+							texture = m_Cache.GetTextureThumbnail(metadata.Path, (*texture)->GetHandle(), metadata.ModificationTime);
 						}
 
 						Thumbnail thumbnail;
@@ -468,7 +466,14 @@ namespace SW {
 
 						item->Thumbnail = thumbnail;
 					} else if (item->Type == AssetType::Font) {
-						// TODO FONT THUMBNAILS + FONT CACHE
+						Texture2D** texture = m_Cache.GetFontAtlasThumbnail(item->Path, item->Handle, item->ModificationTime);
+
+						Thumbnail thumbnail;
+						thumbnail.Width = (f32)(*texture)->GetWidth();
+						thumbnail.Height = (f32)(*texture)->GetHeight();
+						thumbnail.Texture = texture;
+
+						item->Thumbnail = thumbnail;
 					}
 
 				}

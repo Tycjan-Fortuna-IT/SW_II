@@ -1,6 +1,7 @@
 #include "Project.hpp"
 
 #include "Core/Asset/EditorAssetManager.hpp"
+#include "Core/Utils/FileSystem.hpp"
 
 namespace SW {
 
@@ -14,6 +15,10 @@ namespace SW {
 
 	void Project::Initialize()
 	{
+		FileSystem::CreateEmptyDirectoryIfNotExists(m_Config.AssetsDirectory / "cache");
+		FileSystem::CreateEmptyDirectoryIfNotExists(m_Config.AssetsDirectory / "cache" / "thumbnails");
+		FileSystem::CreateEmptyDirectoryIfNotExists(m_Config.AssetsDirectory / "cache" / "fonts");
+
 		m_AssetManager = new EditorAssetManager();
 	}
 

@@ -130,8 +130,12 @@ namespace SW {
 
 			DrawComponent<TextComponent>(entity, [](TextComponent& component) {
 				GUI::BeginProperties("##text_property");
-				GUI::DrawFontDropdownProperty(&component.Font, "Font", "Font to be used");
-				if (component.Font) {
+
+				AssetHandle handle = component.Handle;
+				if (GUI::DrawAssetDropdownProperty<Font>(handle, "Font", "Font to be used")) {
+					component.Handle = handle;
+				}
+				if (component.Handle) {
 					GUI::DrawMultilineTextInputProperty(component.TextString, "Text", "Text to display (max 500 characters)");
 					GUI::DrawVector4ColorPickerProperty(component.Color, "Color", "Color of the text");
 					GUI::DrawFloatingPointProperty(component.Kerning, "Kerning", "The space between the characters", 0.f, MaxFloatValue);

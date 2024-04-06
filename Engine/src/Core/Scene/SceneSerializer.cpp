@@ -81,14 +81,11 @@ namespace SW {
 
 				output << YAML::Key << "TextComponent";
 				output << YAML::BeginMap;
+				output << YAML::Key << "AssetHandle" << YAML::Value << tc.Handle;
 				output << YAML::Key << "TextString" << YAML::Value << tc.TextString;
 				output << YAML::Key << "Color" << YAML::Value << tc.Color;
 				output << YAML::Key << "Kerning" << YAML::Value << tc.Kerning;
 				output << YAML::Key << "LineSpacing" << YAML::Value << tc.LineSpacing;
-
-				if (tc.Font) {
-					output << YAML::Key << "FontPath" << YAML::Value << tc.Font->GetPath();
-				}
 
 				output << YAML::EndMap;
 			}
@@ -380,18 +377,13 @@ namespace SW {
 			}
 
 			if (YAML::Node textComponent = entity["Entity"]["TextComponent"]) {
-				TextComponent& cc = deserialized.AddComponent<TextComponent>();
+				TextComponent& tc = deserialized.AddComponent<TextComponent>();
 
-				cc.TextString = textComponent["TextString"].as<std::string>();
-				cc.Color = textComponent["Color"].as<glm::vec4>();
-				cc.Kerning = textComponent["Kerning"].as<f32>();
-				cc.LineSpacing = textComponent["LineSpacing"].as<f32>();
-
-				if (textComponent["FontPath"]) {
-					std::string path = textComponent["FontPath"].as<std::string>();
-
-					// cc.Font = AssetManager::GetFont(path.c_str());
-				}
+				tc.TextString = textComponent["TextString"].as<std::string>();
+				tc.Color = textComponent["Color"].as<glm::vec4>();
+				tc.Kerning = textComponent["Kerning"].as<f32>();
+				tc.LineSpacing = textComponent["LineSpacing"].as<f32>();
+				tc.Handle = textComponent["AssetHandle"].as<AssetHandle>();
 			}
 
 			if (YAML::Node relationshipComponent = entity["Entity"]["RelationshipComponent"]) {
