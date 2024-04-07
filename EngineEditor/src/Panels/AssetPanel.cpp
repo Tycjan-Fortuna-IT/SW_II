@@ -10,12 +10,12 @@
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Utils/FileSystem.hpp"
 #include "GUI/Popups.hpp"
-#include "Core/Asset/AssetManager.hpp"
-#include "Core/Asset/AssetDirectoryTree.hpp"
+#include "Asset/AssetManager.hpp"
+#include "Asset/AssetDirectoryTree.hpp"
 #include "Core/Renderer/Renderer2D.hpp"
-#include "Core/Asset/Sprite.hpp"
-#include "Core/Asset/Thumbnail.hpp"
-#include "Core/Asset/Spritesheet.hpp"
+#include "Asset/Sprite.hpp"
+#include "Asset/Thumbnail.hpp"
+#include "Asset/Spritesheet.hpp"
 #include "GUI/Editor/EditorResources.hpp"
 #include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.hpp" // TODO - remove (because of Testbed)
 

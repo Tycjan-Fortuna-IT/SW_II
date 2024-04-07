@@ -1,12 +1,12 @@
 #include "ThumbnailCache.hpp"
 
 #include "Core/OpenGL/Texture2D.hpp"
-#include "Core/Asset/AssetSourceItem.hpp"
+#include "Asset/AssetSourceItem.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Utils/FileSystem.hpp"
 #include "Core/Utils/SerializationUtils.hpp"
-#include "../Font.hpp"
-#include "../AssetManager.hpp"
+#include "Asset/Font.hpp"
+#include "Asset/AssetManager.hpp"
 
 namespace SW {
 
@@ -171,7 +171,18 @@ namespace SW {
 		return LoadAndCacheFontAtlas(itemPath, cachePath, handle, lastModified);
 	}
 
-    void ThumbnailCache::DownscaleTexture(Texture2D* texture)
+	void ThumbnailCache::Clear()
+	{
+		for (std::pair<AssetHandle, ThumbnailCacheData> pair : m_Thumbnails) {
+			delete pair.second.Texture;
+		}
+
+		std::filesystem::remove_all(ProjectContext::Get()->GetAssetDirectory() / "cache" / "thumbnails");
+
+		FileSystem::CreateEmptyDirectoryIfNotExists(ProjectContext::Get()->GetAssetDirectory() / "cache" / "thumbnails");
+	}
+
+	void ThumbnailCache::DownscaleTexture(Texture2D* texture)
 	{
 		i32 originalWidth = texture->GetWidth();
 		i32 originalHeight = texture->GetHeight();

@@ -10,9 +10,9 @@
 
 #include <imgui_canvas.h>
 
-#include "Core/Asset/Panels/AssetEditorPanel.hpp"
-#include "Core/Asset/Spritesheet.hpp"
-#include "Core/Asset/Sprite.hpp"
+#include "Asset/Panels/AssetEditorPanel.hpp"
+#include "Asset/Spritesheet.hpp"
+#include "Asset/Sprite.hpp"
 
 namespace SW {
 

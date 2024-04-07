@@ -1,16 +1,16 @@
 #include "Renderer2D.hpp"
 
 #include "Core/OpenGL/Texture2D.hpp"
-#include "Core/Asset/Font.hpp"
+#include "Asset/Font.hpp"
 #include "Core/OpenGL/VertexArray.hpp"
 #include "Core/OpenGL/VertexBuffer.hpp"
 #include "Core/OpenGL/IndexBuffer.hpp"
 #include "Core/OpenGL/Shader.hpp"
 #include "Core/Math/Math.hpp"
-#include "Core/Asset/AssetManager.hpp"
+#include "Asset/AssetManager.hpp"
 #include "RendererAPI.hpp"
 #include "Core/Editor/EditorCamera.hpp"
-#include "Core/Asset/Sprite.hpp"
+#include "Asset/Sprite.hpp"
 
 namespace SW {
 

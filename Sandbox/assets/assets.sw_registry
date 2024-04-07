@@ -10,7 +10,7 @@ Assets:
   - Handle: 797252750352022058
     Path: cache
     Type: Directory
-    ModificationTime: 133568978387626194
+    ModificationTime: 133569897259010403
   - Handle: 1228424024008410871
     Path: fonts\CascadiaMono.ttf
     Type: FontSource
@@ -42,7 +42,7 @@ Assets:
   - Handle: 2876084304230329714
     Path: cache\thumbnails\1895022271424216758_133569670506842517.cache
     Type: Unknown
-    ModificationTime: 133569694202013678
+    ModificationTime: 133569897317646495
   - Handle: 3554386479571016826
     Path: build\Engine.ScriptCore.dll
     Type: Unknown
@@ -54,7 +54,7 @@ Assets:
   - Handle: 4623462104134965875
     Path: cache\thumbnails\13681513260605220869_133569695048463406.cache
     Type: Unknown
-    ModificationTime: 133569695064833403
+    ModificationTime: 133569897368076906
   - Handle: 5439308717581076059
     Path: build
     Type: Directory
@@ -70,7 +70,7 @@ Assets:
   - Handle: 6933903906055657242
     Path: cache\thumbnails\2344416971790700506_133569673748243683.cache
     Type: Unknown
-    ModificationTime: 133569694219573680
+    ModificationTime: 133569897334821615
   - Handle: 7077105227154440329
     Path: build\Coral.Managed.pdb
     Type: Unknown
@@ -86,7 +86,7 @@ Assets:
   - Handle: 8103278870192969790
     Path: cache\fonts
     Type: Directory
-    ModificationTime: 133569697994375363
+    ModificationTime: 133569905442655220
   - Handle: 8755409979203817553
     Path: build\Sandbox.pdb
     Type: Unknown
@@ -94,11 +94,15 @@ Assets:
   - Handle: 9266921833604036830
     Path: cache\thumbnails\5441874985758434010_133569684038127795.cache
     Type: Unknown
-    ModificationTime: 133569694184743680
+    ModificationTime: 133569897300126380
   - Handle: 9404689471195940422
     Path: scenes\TestScene.sw_scene
     Type: Scene
     ModificationTime: 133567280322183339
+  - Handle: 9450557721691356235
+    Path: fonts\l
+    Type: Directory
+    ModificationTime: 133569906291592420
   - Handle: 9751217973959575363
     Path: scenes\Physics_WheelJoints.sw_scene
     Type: Scene
@@ -119,14 +123,14 @@ Assets:
     Path: sprites\K7GQu49FE1.sw_sprite
     Type: Sprite
     ModificationTime: 133568076339312881
-  - Handle: 12440185047945180166
-    Path: cache\thumbnails\15758475306527755018_133567326527744635.cache
-    Type: Unknown
-    ModificationTime: 133569701951136024
   - Handle: 12742390312197663864
     Path: textures
     Type: Directory
     ModificationTime: 133567243038252115
+  - Handle: 13097619316375314683
+    Path: cache\fonts\1895022271424216758_133569670506842517.cache
+    Type: Unknown
+    ModificationTime: 133569905442705229
   - Handle: 13681513260605220869
     Path: fonts\1.sw_font
     Type: Font
@@ -138,7 +142,7 @@ Assets:
   - Handle: 14947059261056302630
     Path: cache\thumbnails
     Type: Directory
-    ModificationTime: 133569701951116005
+    ModificationTime: 133569897368026928
   - Handle: 14996597783001670902
     Path: scenes\Physics_DistanceJoints.sw_scene
     Type: Scene
@@ -162,7 +166,7 @@ Assets:
   - Handle: 15671670272651360779
     Path: scenes\Physics_BoxCirclePolygonCollision.sw_scene
     Type: Scene
-    ModificationTime: 133569669942566514
+    ModificationTime: 133569905490453380
   - Handle: 15758475306527755018
     Path: textures\Tileset.png
     Type: Texture2D
@@ -178,7 +182,7 @@ Assets:
   - Handle: 16381209260815648203
     Path: fonts
     Type: Directory
-    ModificationTime: 133569695048213409
+    ModificationTime: 133569906291592420
   - Handle: 16423494596943192328
     Path: scenes\Physics_PrismaticJoints.sw_scene
     Type: Scene
@@ -190,11 +194,11 @@ Assets:
   - Handle: 16891725904374815267
     Path: assets.sw_registry
     Type: Unknown
-    ModificationTime: 133569726892696241
+    ModificationTime: 133569906593673409
   - Handle: 17781802530407390795
     Path: cache\thumbnails\2525114378178378104_133569679998142416.cache
     Type: Unknown
-    ModificationTime: 133569694236372757
+    ModificationTime: 133569897351171735
   - Handle: 18277063836767974222
     Path: sprites\m5gYo9eltf.sw_sprite
     Type: Sprite

@@ -8,7 +8,7 @@
  */
 #pragma once
 
-#include "Core/Asset/Asset.hpp"
+#include "Asset/Asset.hpp"
 
 namespace SW {
 
@@ -50,6 +50,12 @@ namespace SW {
 		 * @return A pointer to the thumbnail texture if it exists, nullptr otherwise.
 		 */
 		Texture2D** GetFontAtlasThumbnail(const std::filesystem::path& itemPath, AssetHandle handle, Timestamp lastModified);
+
+		/**
+		 * @brief Clear the cache of all thumbnails.
+		 * @note Both in memory and on disk.
+		 */
+		void Clear();
 		
 	private:
 		std::unordered_map<AssetHandle, ThumbnailCacheData> m_Thumbnails;	// The cache of thumbnails.

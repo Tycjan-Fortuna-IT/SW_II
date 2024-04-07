@@ -3,7 +3,7 @@
 
 #include <fstream>
 
-#include "Core/Asset/AssetManager.hpp"
+#include "Asset/AssetManager.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Scripting/ScriptingCore.hpp"
 #include "Core/Utils/SerializationUtils.hpp"

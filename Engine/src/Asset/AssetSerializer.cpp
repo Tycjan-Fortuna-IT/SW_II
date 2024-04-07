@@ -5,7 +5,7 @@
 #include "Spritesheet.hpp"
 #include "Core/Utils/SerializationUtils.hpp"
 #include "GUI/Editor/EditorResources.hpp"
-#include "Core/Asset/Font.hpp"
+#include "Asset/Font.hpp"
 #include "Cache/FontCache.hpp"
 
 namespace SW {

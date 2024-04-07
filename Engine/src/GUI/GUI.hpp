@@ -13,9 +13,9 @@
 #include "Core/Utils/Utils.hpp"
 #include "GUI/Icons.hpp"
 #include "Appearance.hpp"
-#include "Core/Asset/AssetManager.hpp"
+#include "Asset/AssetManager.hpp"
 #include "Core/ECS/Entity.hpp"
-#include "Core/Asset/Font.hpp"
+#include "Asset/Font.hpp"
 #include "Core/Renderer/Renderer2D.hpp"
 #include "Core/Utils/FileSystem.hpp"
 

@@ -11,7 +11,7 @@
 #include "Core/Scripting/ScriptingCore.hpp"
 #include "Core/Scripting/ScriptStorage.hpp"
 #include "Coral/Attribute.hpp"
-#include "Core/Asset/Sprite.hpp"
+#include "Asset/Sprite.hpp"
 
 namespace SW {
 

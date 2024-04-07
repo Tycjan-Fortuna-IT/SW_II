@@ -181,7 +181,7 @@ Entities:
         Rotation: [0, 0, 0]
         Scale: [1, 1, 1]
       TextComponent:
-        AssetHandle: 0
+        AssetHandle: 1895022271424216758
         TextString: Isn't this scene nice?
         Color: [1, 0.99465239, 0, 1]
         Kerning: 0

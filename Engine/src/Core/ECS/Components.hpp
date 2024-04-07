@@ -12,9 +12,9 @@
 #include "Core/Scene/SceneCamera.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
 #include "Core/Math/Math.hpp"
-#include "Core/Asset/Font.hpp"
+#include "Asset/Font.hpp"
 #include "Core/Scripting/CSharpObject.hpp"
-#include "Core/Asset/Asset.hpp"
+#include "Asset/Asset.hpp"
 
 namespace SW {
 

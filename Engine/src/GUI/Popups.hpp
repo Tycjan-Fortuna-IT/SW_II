@@ -8,7 +8,7 @@
  */
 #pragma once
 
-#include "Core/Asset/AssetImporter.hpp"
+#include "Asset/AssetImporter.hpp"
 
 namespace SW::GUI::Popups {
 

@@ -8,8 +8,8 @@
  */
 #pragma once
 
-#include "Core/Asset/Asset.hpp"
-#include "Core/Asset/Panels/AssetEditorPanel.hpp"
+#include "Asset/Asset.hpp"
+#include "Asset/Panels/AssetEditorPanel.hpp"
 
 namespace SW {
 

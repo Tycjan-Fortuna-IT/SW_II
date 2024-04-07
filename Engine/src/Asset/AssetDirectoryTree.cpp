@@ -1,6 +1,6 @@
 #include "AssetDirectoryTree.hpp"
 
-#include "Core/Asset/AssetManager.hpp"
+#include "Asset/AssetManager.hpp"
 #include "Core/Project/Project.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Utils/FileSystem.hpp"

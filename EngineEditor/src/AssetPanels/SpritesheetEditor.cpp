@@ -3,7 +3,7 @@
 #include <fstream>
 
 #include "GUI/Editor/EditorResources.hpp"
-#include "Core/Asset/AssetLoader.hpp"
+#include "Asset/AssetLoader.hpp"
 #include "Core/Utils/FileSystem.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Utils/SerializationUtils.hpp"

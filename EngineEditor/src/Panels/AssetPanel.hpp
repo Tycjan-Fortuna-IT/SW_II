@@ -11,7 +11,7 @@
 #include <filesystem>
 
 #include "GUI/Panel.hpp"
-#include "Core/Asset/Cache/ThumbnailCache.hpp"
+#include "Asset/Cache/ThumbnailCache.hpp"
 
 namespace SW {
 

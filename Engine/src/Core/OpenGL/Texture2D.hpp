@@ -8,7 +8,7 @@
  */
 #pragma once
 
-#include "Core/Asset/Asset.hpp"
+#include "Asset/Asset.hpp"
 
 namespace SW {
 

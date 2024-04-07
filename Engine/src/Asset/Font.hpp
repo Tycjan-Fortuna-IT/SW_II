@@ -11,7 +11,7 @@
 #undef INFINITE
 #include <msdf-atlas-gen/msdf-atlas-gen.h>
 
-#include "Core/Asset/Asset.hpp"
+#include "Asset/Asset.hpp"
 
 namespace SW {
 
