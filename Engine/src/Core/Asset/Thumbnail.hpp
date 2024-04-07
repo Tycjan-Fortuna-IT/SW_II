@@ -1,3 +1,11 @@
+/**
+ * @file Thumbnail.hpp
+ * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
+ * @version 0.1.1
+ * @date 2024-04-07
+ *
+ * @copyright Copyright (c) 2024 Tycjan Fortuna
+ */
 #pragma once
 
 namespace SW {
@@ -14,6 +22,9 @@ namespace SW {
 
 		Texture2D** Texture = nullptr;
 
+		/**
+		 * @brief Thumbnail is valid only if the texture is not nullptr. 
+		 */
 		operator bool() const { return Texture != nullptr && *Texture != nullptr; }
 	};
 

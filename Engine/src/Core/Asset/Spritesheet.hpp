@@ -1,3 +1,11 @@
+/**
+ * @file Spritesheet.hpp
+ * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
+ * @version 0.1.1
+ * @date 2024-04-07
+ *
+ * @copyright Copyright (c) 2024 Tycjan Fortuna
+ */
 #pragma once
 
 #include "Asset.hpp"

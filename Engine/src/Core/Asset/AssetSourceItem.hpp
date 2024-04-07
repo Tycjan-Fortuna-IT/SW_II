@@ -1,3 +1,11 @@
+/**
+ * @file AssetSourceItem.hpp
+ * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
+ * @version 0.1.1
+ * @date 2024-04-07
+ *
+ * @copyright Copyright (c) 2024 Tycjan Fortuna
+ */
 #pragma once
 
 #include "Asset.hpp"
@@ -28,6 +36,12 @@ namespace SW {
 		bool IsFile() const { return Type != AssetType::Directory; }
 
 		// recursive
+		/**
+		 * @brief Check if the asset is a descendant of the specified ancestor.
+		 * 
+		 * @param descendant The descendant asset.
+		 * @return If the asset is a descendant of the specified ancestor.
+		 */
 		bool IsParentOfDescendant(const AssetSourceItem* descendant) const;
 	};
 

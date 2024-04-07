@@ -119,6 +119,10 @@ Assets:
     Path: sprites\K7GQu49FE1.sw_sprite
     Type: Sprite
     ModificationTime: 133568076339312881
+  - Handle: 12440185047945180166
+    Path: cache\thumbnails\15758475306527755018_133567326527744635.cache
+    Type: Unknown
+    ModificationTime: 133569701951136024
   - Handle: 12742390312197663864
     Path: textures
     Type: Directory
@@ -134,7 +138,7 @@ Assets:
   - Handle: 14947059261056302630
     Path: cache\thumbnails
     Type: Directory
-    ModificationTime: 133569695064783417
+    ModificationTime: 133569701951116005
   - Handle: 14996597783001670902
     Path: scenes\Physics_DistanceJoints.sw_scene
     Type: Scene
@@ -186,7 +190,7 @@ Assets:
   - Handle: 16891725904374815267
     Path: assets.sw_registry
     Type: Unknown
-    ModificationTime: 133569698522461590
+    ModificationTime: 133569726892696241
   - Handle: 17781802530407390795
     Path: cache\thumbnails\2525114378178378104_133569679998142416.cache
     Type: Unknown
