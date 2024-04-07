@@ -69,6 +69,13 @@ Dependencies = {
     DBGHELP = {
         LinkAs = "Dbghelp",
     },
+    CORAL = {
+		LinkAs = "Coral.Native",
+        IncludeDir = "%{wks.location}/Engine/vendor/Coral/Coral.Native/Include"
+    },
+    IMGUI_NODE_EDITOR = {
+		IncludeDir = "%{wks.location}/Engine/vendor/imgui-node-editor",
+	},
 }
 
 function IncludeEngineDependencies(additional)

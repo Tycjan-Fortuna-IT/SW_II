@@ -11,19 +11,19 @@ namespace SW {
 
 	void OrthographicCameraController::OnUpdate(Timestep dt)
 	{
-		if (Input::IsKeyPressed(KeyCode::A))
+		if (Input::IsKeyDown(KeyCode::A))
 			m_CameraPosition.x -= m_CameraMoveSpeed * dt;
-		else if (Input::IsKeyPressed(KeyCode::D))
+		else if (Input::IsKeyDown(KeyCode::D))
 			m_CameraPosition.x += m_CameraMoveSpeed * dt;
 
-		if (Input::IsKeyPressed(KeyCode::W))
+		if (Input::IsKeyDown(KeyCode::W))
 			m_CameraPosition.y += m_CameraMoveSpeed * dt;
-		else if (Input::IsKeyPressed(KeyCode::S))
+		else if (Input::IsKeyDown(KeyCode::S))
 			m_CameraPosition.y -= m_CameraMoveSpeed * dt;
 
-		if (Input::IsKeyPressed(KeyCode::Q))
+		if (Input::IsKeyDown(KeyCode::Q))
 			m_CameraRotation += m_CameraRotationSpeed * dt;
-		else if (Input::IsKeyPressed(KeyCode::E))
+		else if (Input::IsKeyDown(KeyCode::E))
 			m_CameraRotation -= m_CameraRotationSpeed * dt;
 
 		m_Camera.SetPosition(m_CameraPosition);

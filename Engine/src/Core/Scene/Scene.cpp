@@ -10,6 +10,7 @@
 #include "Core/ECS/Entity.hpp"
 #include "Core/Editor/EditorCamera.hpp"
 #include "Core/Physics/Physics2DContactListener.hpp"
+#include "Core/Scripting/ScriptingCore.hpp"
 
 namespace SW {
 
@@ -26,7 +27,7 @@ namespace SW {
 
 	Entity Scene::CreateEntity(const std::string& tag /*= "Entity"*/)
 	{
-		return CreateEntityWithID(CreateID(), tag);
+		return CreateEntityWithID(Random::CreateID(), tag);
 	}
 
 	Entity Scene::CreateEntityWithID(u64 id, const std::string& tag /*= "Entity"*/)
@@ -38,7 +39,7 @@ namespace SW {
 		entity.AddComponent<TransformComponent>();
 		entity.AddComponent<RelationshipComponent>();
 
-		m_EntityMap[id] = (entt::entity)entity;
+		m_EntityMap[id] = entity;
 
 		return entity;
 	}
@@ -78,6 +79,13 @@ namespace SW {
 		RemoveReferencedConnections<SpringJoint2DComponent>(registry, entity, id);
 		RemoveReferencedConnections<WheelJoint2DComponent>(registry, entity, id);
 
+		if (entity.HasComponent<ScriptComponent>()) {
+			ScriptComponent& sc = entity.GetComponent<ScriptComponent>();
+
+			if (sc.ScriptID)
+				m_ScriptStorage.ShutdownEntityStorage(sc.ScriptID, id);
+		}
+
 		m_EntityMap.erase(id);
 		m_Registry.DestroyEntity(entity);
 
@@ -101,47 +109,6 @@ namespace SW {
 		});
 	}
 
-	bool Scene::BeginRendering(EditorCamera* camera)
-	{
-		switch (m_SceneState) {
-			case SW::SceneState::Edit:
-				Renderer2D::BeginScene(camera); break;
-			case SW::SceneState::Play:
-			case SW::SceneState::Pause: {
-				glm::mat4 cameraTransform;
-				SceneCamera* mainCamera = nullptr;
-
-				for (auto&& [handle, tc, cc] : m_Registry.GetEntitiesWith<TransformComponent, CameraComponent>().each()) {
-					Entity entity = { handle, this };
-
-					if (cc.Primary) {
-						mainCamera = &cc.Camera;
-						cameraTransform = glm::translate(glm::mat4(1.0f), tc.Position) // do not apply scale to the camera
-							* glm::toMat4(glm::quat(tc.Rotation));
-
-						break;
-					}
-				}
-
-				if (!mainCamera)
-					return false;
-
-				Renderer2D::BeginScene(*mainCamera, cameraTransform);
-
-				break;
-			}
-			case SW::SceneState::Simulate:
-				SW_FATAL("Not yet implemented!"); break;
-		}
-
-		return true;
-	}
-
-	void Scene::EndRendering()
-	{
-		Renderer2D::EndScene();
-	}
-
 	void Scene::OnRuntimeStart()
 	{
 		m_PhysicsFrameAccumulator = 0.0f;
@@ -149,6 +116,16 @@ namespace SW {
 		m_PhysicsWorld2D = new b2World({ Gravity.x, Gravity.y });
 		m_PhysicsContactListener2D = new Physics2DContactListener(this);
 		m_PhysicsWorld2D->SetContactListener(m_PhysicsContactListener2D);
+
+		for (auto&& [handle, id, sc] : m_Registry.GetEntitiesWith<IDComponent, ScriptComponent>().each()) {
+			Entity entity = { handle, this };
+
+			if (!sc.ScriptID)
+				continue;
+
+			sc.Instance = ScriptingCore::Get().Instantiate<u64>(id.ID, m_ScriptStorage, (u64)id.ID);
+			sc.Instance.Invoke("OnCreate");
+		}
 
 		for (auto&& [handle, rbc] : m_Registry.GetEntitiesWith<RigidBody2DComponent>().each()) {
 			Entity entity = { handle, this };
@@ -189,21 +166,25 @@ namespace SW {
 
 	void Scene::OnRuntimeStop()
 	{
+		for (auto&& [handle, id, sc] : m_Registry.GetEntitiesWith<IDComponent, ScriptComponent>().each()) {
+			Entity entity = { handle, this };
+
+			if (!sc.ScriptID)
+				continue;
+
+			sc.Instance.Invoke("OnDestroy");
+			ScriptingCore::Get().DestroyInstance(id.ID, m_ScriptStorage);
+		}
+
 		delete m_PhysicsWorld2D;
 		delete m_PhysicsContactListener2D;
 	}
 
-	void Scene::OnUpdate(Timestep dt)
-	{
-		if (m_SceneState == SceneState::Play)
-			this->OnUpdateRuntime(dt);
-		else
-			this->OnUpdateEditor(dt);
-	}
-
-    void Scene::OnUpdateEditor(Timestep dt)
+    void Scene::OnUpdateEditor(Timestep dt, EditorCamera* camera)
     {
 		PROFILE_FUNCTION();
+
+		Renderer2D::BeginScene(camera);
 
 		for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<SpriteComponent>().each()) {
 			Entity entity = { handle, this };
@@ -220,7 +201,7 @@ namespace SW {
 		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TextComponent>().each()) {
 			Entity entity = { handle, this };
 
-			if (!tc.Font)
+			if (!tc.Handle)
 				continue;
 
 			Renderer2D::DrawString(entity.GetWorldSpaceTransformMatrix(), tc, (int)handle);
@@ -336,6 +317,52 @@ namespace SW {
 
 #pragma endregion
 
+		{
+			PROFILE_SCOPE("Scene::OnUpdate - C# OnUpdate");
+
+			for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<ScriptComponent>().each()) {
+				sc.Instance.Invoke<f32>("OnUpdate", dt);
+			}
+		}
+
+		{
+			PROFILE_SCOPE("Scene::OnUpdate - C# OnLateUpdate");
+
+			for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<ScriptComponent>().each()) {
+				sc.Instance.Invoke<f32>("OnLateUpdate", dt);
+			}
+		}
+
+		glm::mat4 cameraTransform;
+		SceneCamera* mainCamera = nullptr;
+
+		for (auto&& [handle, cc] : m_Registry.GetEntitiesWith<CameraComponent>().each()) {
+			Entity entity = { handle, this };
+
+			if (cc.Primary) {
+				mainCamera = &cc.Camera;
+
+				glm::mat4 worldTransform = entity.GetWorldSpaceTransformMatrix();
+
+				glm::vec3 position;
+				glm::vec3 rotation;
+
+				Math::DecomposeTransformForTranslationAndRotation(worldTransform, position, rotation);
+
+				cameraTransform = glm::translate(glm::mat4(1.0f), position) // do not apply scale to the camera
+					* glm::toMat4(glm::quat(rotation));
+
+				break;
+			}
+		}
+
+		if (!mainCamera) {
+			Renderer2D::StartBatch(); // fix to a bug where camera is not present, but leftovers from edit state were present.
+			return;
+		}
+
+		Renderer2D::BeginScene(*mainCamera, cameraTransform);
+
 		for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<SpriteComponent>().each()) {
 			Entity entity = { handle, this };
 
@@ -351,7 +378,7 @@ namespace SW {
 		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TextComponent>().each()) {
 			Entity entity = { handle, this };
 
-			if (!tc.Font)
+			if (!tc.Handle)
 				continue;
 
 			Renderer2D::DrawString(entity.GetWorldSpaceTransformMatrix(), tc, (int)handle);
@@ -371,17 +398,41 @@ namespace SW {
 	Entity Scene::GetEntityByID(u64 id)
 	{
 		if (m_EntityMap.find(id) != m_EntityMap.end())
-			return { m_EntityMap.at(id), this };
+			return m_EntityMap.at(id);
 
-		ASSERT(false, "Entity not found!"); // TODO: allow in ASSERTS to format strings
+		ASSERT(false, "Entity with ID: {} does not exist!", id);
 
 		return {};
 	}
 
 	Entity Scene::TryGetEntityByID(u64 id)
 	{
-		if (m_EntityMap.find(id) != m_EntityMap.end())
-			return { m_EntityMap.at(id), this };
+		if (const auto iter = m_EntityMap.find(id); iter != m_EntityMap.end())
+			return iter->second;
+
+		return {};
+	}
+
+    Entity Scene::GetEntityByTag(const std::string& tag)
+    {
+		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TagComponent>().each()) {
+			if (tc.Tag == tag) {
+				return { handle, this };
+			}
+		}
+
+		ASSERT(false, "Entity with tag: {} does not exist!", tag);
+
+		return {};
+    }
+
+	Entity Scene::TryGetEntityByTag(const std::string& tag)
+	{
+		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TagComponent>().each()) {
+			if (tc.Tag == tag) {
+				return { handle, this };
+			}
+		}
 
 		return {};
 	}
@@ -417,6 +468,7 @@ namespace SW {
 		CopyComponent<SpriteComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<CircleComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<RelationshipComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<ScriptComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<TextComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<CameraComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<RigidBody2DComponent>(copyRegistry, currentRegistry, enttMap);
@@ -429,6 +481,8 @@ namespace SW {
 		CopyComponent<PrismaticJoint2DComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<SpringJoint2DComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<WheelJoint2DComponent>(copyRegistry, currentRegistry, enttMap);
+
+		m_ScriptStorage.CopyTo(copy->m_ScriptStorage);
 
 		return copy;
     }
@@ -481,6 +535,10 @@ namespace SW {
 		duplicatedEntities[entity.GetID()] = newEntity;
 
 		std::vector<u64> childIds = entity.GetRelations().ChildrenIDs;
+
+		if (Entity parent = entity.GetParent()) {
+			newEntity.SetParent(parent);
+		}
 
 		for (u64 childId : childIds) {
 			Entity childDuplicate = DuplicateEntity(GetEntityByID(childId), duplicatedEntities);

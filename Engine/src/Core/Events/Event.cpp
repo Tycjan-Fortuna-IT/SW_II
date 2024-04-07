@@ -119,4 +119,11 @@ namespace SW {
         return false;
     }
 
+    bool EventSystem::Emit(EventCode code)
+    {
+		return Emit({
+			.Code = code
+		});
+    }
+
 }

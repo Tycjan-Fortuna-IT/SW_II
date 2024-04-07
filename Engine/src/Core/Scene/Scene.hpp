@@ -1,8 +1,8 @@
 /**
  * @file Scene.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.6
- * @date 2024-03-05
+ * @version 0.1.7
+ * @date 2024-03-14
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -13,6 +13,7 @@
 #include "Core/Math/Vector2.hpp"
 #include "Core/ECS/EntityRegistry.hpp"
 #include "Core/ECS/Components.hpp"
+#include "Core/Scripting/ScriptStorage.hpp"
 
 class b2World;
 
@@ -75,19 +76,6 @@ namespace SW {
 		void DestroyAllEntities();
 
 		/**
-		 * Begins the rendering process using the specified camera.
-		 *
-		 * @param camera The camera to be used for rendering.
-		 * @return Whether the scene rendering process can be proceeded.
-		 */
-		bool BeginRendering(EditorCamera* camera);
-
-		/**
-		 * Ends the rendering process for the scene.
-		 */
-		void EndRendering();
-
-		/**
 		 * @brief This function is called when the scene is started (the state has changed)
 		 */
 		void OnRuntimeStart();
@@ -98,18 +86,11 @@ namespace SW {
 		void OnRuntimeStop();
 
 		/**
-		 * @brief Updates the scene with the specified timestep and camera.
-		 * @param dt The timestep since the last update.
-		 * @param camera The camera to use for rendering the scene.
-		 */
-		void OnUpdate(Timestep dt);
-
-		/**
 		 * @brief Updates the scene in edit mode with the specified timestep and camera.
 		 * @param dt The timestep since the last update.
 		 * @param camera The camera to use for rendering the scene.
 		 */
-		void OnUpdateEditor(Timestep dt);
+		void OnUpdateEditor(Timestep dt, EditorCamera* camera);
 
 		/**
 		 * @brief Updates the scene in runtime mode with the specified timestep.
@@ -149,6 +130,26 @@ namespace SW {
 		Entity TryGetEntityByID(u64 id);
 
 		/**
+		 * @brief Retrieves the entity with the specified tag.
+		 * @param tag The tag of the entity.
+		 * @return The entity with the specified tag.
+		 *
+		 * @warning Entity is expected to exist (runtime error if it doesn't)!
+					If multiple entities have the same tag - the first found is returned.
+		 */
+		Entity GetEntityByTag(const std::string& tag);
+
+		/**
+		 * @brief Retrieves the entity with the specified tag.
+		 * @param tag The tag of the entity.
+		 * @return The entity with the specified tag.
+		 *
+		 * @warning Entity is not expected to exist (empty returned if it doesn't) - caller must check!
+		 *			If multiple entities have the same tag - the first found is returned.
+		 */
+		Entity TryGetEntityByTag(const std::string& tag);
+
+		/**
 		 * @brief Retrieves the filepath to the serialized scene.
 		 * @return The filepath to the serialized scene.
 		 */
@@ -174,6 +175,22 @@ namespace SW {
 		 * @param state The new state of the scene.
 		 */
 		void SetNewState(SceneState state) { m_SceneState = state; }
+
+		/**
+		 * @brief Set the position of the viewport.
+		 * 
+		 * @param position The new position of the viewport.
+		 */
+		void SetViewportPosition(glm::vec2 position) { m_ViewportPosition = position; }
+
+		/**
+		 * @brief Retrieves the position of the viewport.
+		 * 
+		 * @warning This is only the initial position of the viewport. Does not change during runtime.
+		 * 
+		 * @return glm::vec2 The position of the viewport.
+		 */
+		const glm::vec2& GetViewportPosition() const { return m_ViewportPosition; }
 
 		/**
 		 * @brief Copies the scene. (deep copy with all components and entities)
@@ -247,6 +264,13 @@ namespace SW {
 			CopyComponentIfExists<T>(to, destRegistry, from);
 		}
 
+		/**
+		 * @brief Gets the script storage associated with the scene.
+		 * 
+		 * @return A reference to the script storage.
+		 */
+		ScriptStorage& GetScriptStorage() { return m_ScriptStorage; }
+
 		glm::vec2 Gravity = { 0.0f, -9.80665f };	/**< The gravity of the scene. */
 
 	private:
@@ -255,10 +279,12 @@ namespace SW {
 		std::string m_FilePath;		/**< The filepath to the serialized scene file. */
 		std::string m_Name;			/**< The filename of the serialized scene file. */
 
-		std::unordered_map<u64, entt::entity> m_EntityMap = {}; /**< Map of entity IDs to entt::entity handles. (cache) */
+		std::unordered_map<u64, Entity> m_EntityMap = {}; /**< Map of entity IDs to entt::entity handles. (cache) */
 
 		u32 m_ViewportWidth = 0; /**< The width of the viewport. */
 		u32 m_ViewportHeight = 0; /**< The height of the viewport. */
+
+		glm::vec2 m_ViewportPosition = glm::vec2(0.f); /**< The initial position of the viewport. */
 
 		SceneState m_SceneState = SceneState::Edit;	/**< The current state of the scene. */
 
@@ -268,6 +294,8 @@ namespace SW {
 		u32 m_VelocityIterations = 8;			/**< The number of velocity iterations for the physics simulation. */
 		u32 m_PositionIterations = 3;			/**< The number of position iterations for the physics simulation. */
 		f32 m_PhysicsFrameAccumulator = 0.0f;	/**< The frame accumulator for the physics simulation. */
+
+		ScriptStorage m_ScriptStorage;			/**< The script storage of the scene. */
 
 		/**
 		 * @brief Register entity's rigidbody component in the physics world.

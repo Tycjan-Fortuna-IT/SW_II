@@ -1,0 +1,17 @@
+Spritesheet:
+  TextureHandle: 15758475306527755018
+  ViewZoom: 2.39999986
+  GridSize: 48
+  CenterOffset: [0, 0]
+  ViewPos: [46.9999924, 86.9999847]
+  ShowImageBorders: true
+  ExportPath: sprites
+  Sprites:
+    - Sprite:
+        Name: K7GQu49FE1
+        Position: [208, 80]
+        Size: [32, 32]
+    - Sprite:
+        Name: m5gYo9eltf
+        Position: [208, 16]
+        Size: [32, 32]

@@ -1,15 +1,16 @@
 #include "Renderer2D.hpp"
 
 #include "Core/OpenGL/Texture2D.hpp"
-#include "Core/OpenGL/Font.hpp"
+#include "Asset/Font.hpp"
 #include "Core/OpenGL/VertexArray.hpp"
 #include "Core/OpenGL/VertexBuffer.hpp"
 #include "Core/OpenGL/IndexBuffer.hpp"
 #include "Core/OpenGL/Shader.hpp"
 #include "Core/Math/Math.hpp"
-#include "Core/AssetManager.hpp"
+#include "Asset/AssetManager.hpp"
 #include "RendererAPI.hpp"
 #include "Core/Editor/EditorCamera.hpp"
+#include "Asset/Sprite.hpp"
 
 namespace SW {
 
@@ -112,8 +113,19 @@ namespace SW {
 
 	static Renderer2DData s_Data;
 
+	Texture2D* Renderer2D::WhiteTexture = nullptr;
+	Texture2D* Renderer2D::BlackTexture = nullptr;
+
 	void Renderer2D::Initialize()
 	{
+		WhiteTexture = new Texture2D(1, 1);
+		u32 whiteTextureData = 0xffffffff;
+		WhiteTexture->SetData(&whiteTextureData, sizeof(u32));
+
+		BlackTexture = new Texture2D(1, 1);
+		u32 blackTextureData = 0x000000ff;
+		BlackTexture->SetData(&blackTextureData, sizeof(u32));
+
 		s_Data.SpriteShader = new Shader("assets/shaders/Builtin.2D.Sprite.vert.glsl", "assets/shaders/Builtin.2D.Sprite.frag.glsl");
 		s_Data.LineShader = new Shader("assets/shaders/Builtin.2D.Line.vert.glsl", "assets/shaders/Builtin.2D.Line.frag.glsl");
 		s_Data.CircleShader = new Shader("assets/shaders/Builtin.2D.Circle.vert.glsl", "assets/shaders/Builtin.2D.Circle.frag.glsl");
@@ -208,7 +220,7 @@ namespace SW {
 		s_Data.TextShader->Bind();
 		s_Data.TextShader->UploadUniformIntArray("u_FontAtlasTextures", samplers, s_Data.MaxTextureSlots);
 
-		s_Data.TextureSlots[0] = AssetManager::GetWhiteTexture();
+		s_Data.TextureSlots[0] = WhiteTexture;
 
 		s_Data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
@@ -218,6 +230,9 @@ namespace SW {
 
 	void Renderer2D::Shutdown()
 	{
+		delete WhiteTexture;
+		delete BlackTexture;
+
 		delete[] s_Data.QuadVertexBufferBase;
 		delete s_Data.QuadVertexArray;
 
@@ -359,13 +374,19 @@ namespace SW {
 
 		f32 textureIndex = 0.f; // White Texture
 
-		glm::vec2 texCoords[] = { 
+		glm::vec2 texCoords[4] = { 
 			{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } 
 		};
 
-		if (sprite.Texture) {
+		if (sprite.Handle) {
+			Sprite** spriteAsset = AssetManager::GetAssetRaw<Sprite>(sprite.Handle);
+			
+			ASSERT(spriteAsset); // TODO placeholder texture or smth
+			
+			Texture2D* texture = (*spriteAsset)->GetTexture();
+
 			for (u32 i = 1; i < s_Data.TextureSlotIndex; i++) {
-				if (*s_Data.TextureSlots[i] == *sprite.Texture) {
+				if (*s_Data.TextureSlots[i] == *texture) {
 					textureIndex = static_cast<f32>(i);
 					break;
 				}
@@ -373,9 +394,14 @@ namespace SW {
 
 			if (textureIndex == 0.0f) {
 				textureIndex = (f32)s_Data.TextureSlotIndex;
-				s_Data.TextureSlots[s_Data.TextureSlotIndex] = sprite.Texture;
+				s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
 				s_Data.TextureSlotIndex++;
 			}
+
+			texCoords[0] = (*spriteAsset)->TexCordLeftDown;
+			texCoords[1] = (*spriteAsset)->TexCordRightDown;
+			texCoords[2] = (*spriteAsset)->TexCordUpRight;
+			texCoords[3] = (*spriteAsset)->TexCordUpLeft;
 		}
 
 		for (int i = 0; i < 4; i++) {
@@ -457,15 +483,17 @@ namespace SW {
 
 	void Renderer2D::DrawString(const glm::mat4& transform, const TextComponent& text, int entityID)
 	{
-		DrawString(text.TextString, text.Font, transform, text.Color, text.Kerning, text.LineSpacing, entityID);
+		Font** fontAsset = AssetManager::GetAssetRaw<Font>(text.Handle);
+
+		DrawString(text.TextString, fontAsset, transform, text.Color, text.Kerning, text.LineSpacing, entityID);
 	}
 
-	void Renderer2D::DrawString(const std::string& string, Font* font, const glm::mat4& transform, const glm::vec4& color, f32 kerning /*= 0.0f*/, f32 lineSpacing /*= 0.0f*/, int entityID /*= -1*/)
+	void Renderer2D::DrawString(const std::string& string, Font** font, const glm::mat4& transform, const glm::vec4& color, f32 kerning /*= 0.0f*/, f32 lineSpacing /*= 0.0f*/, int entityID /*= -1*/)
 	{
 		f32 textureIndex = 0.f;
 
-		Texture2D* atlasTexture = font->GetAtlasTexture();
-		const msdf_atlas::FontGeometry& fontGeometry = font->GetMSDFData()->FontGeometry;
+		Texture2D* atlasTexture = (*font)->GetAtlasTexture();
+		const msdf_atlas::FontGeometry& fontGeometry = (*font)->GetMSDFData().FontGeometry;
 		const msdfgen::FontMetrics& fontMetrics = fontGeometry.getMetrics();
 
 		for (u32 i = 1; i < s_Data.FontTextureSlotIndex; i++) {

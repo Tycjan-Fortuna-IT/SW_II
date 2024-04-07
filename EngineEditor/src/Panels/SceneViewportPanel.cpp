@@ -5,14 +5,15 @@
 
 #include "Core/Utils/Utils.hpp"
 #include "GUI/Icons.hpp"
-#include "Core/AssetManager.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Editor/EditorSettings.hpp"
 #include "Managers/SelectionManager.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Project/Project.hpp"
-#include "Core/OpenGL/Font.hpp"
+#include "Asset/Font.hpp"
+#include "Core/Scripting/ScriptingCore.hpp"
+#include "Asset/AssetManager.hpp"
 
 namespace SW {
 
@@ -139,8 +140,22 @@ namespace SW {
 
 		m_Framebuffer->ClearAttachment(1, -1);
 
-		if (IsSceneLoaded() && m_ActiveScene->BeginRendering(m_EditorCamera)) {
-			m_ActiveScene->OnUpdate(dt);
+		if (IsSceneLoaded()) {
+			switch (m_ActiveScene->GetCurrentState())
+			{
+				case SceneState::Edit:
+				{
+					m_ActiveScene->OnUpdateEditor(dt, m_EditorCamera);
+
+					break;
+				}
+				case SceneState::Play:
+				{
+					m_ActiveScene->OnUpdateRuntime(dt);
+
+					break;
+				}
+			}
 
 			if (EditorSettings::Get().ShowPhysicsColliders) {
 				PROFILE_SCOPE("SceneViewportPanel::OnUpdate() - PhysicColliderRendering");
@@ -163,7 +178,7 @@ namespace SW {
 								for (f32 y = 0.0f; y < 2.0f; y += 1.0f) {
 									for (f32 z = 0.0f; z < 2.0f; z += 1.0f) {
 										const glm::vec4 pt = inv * glm::vec4(2.0f * x - 1.0f, 2.0f * y - 1.0f, 2.0f * z - 1.0f, 1.0f);
-										
+
 										frustumCorners[i++] = glm::vec3(pt) / pt.w;
 									}
 								}
@@ -194,7 +209,7 @@ namespace SW {
 
 						glm::mat4 transform = entity.GetWorldSpaceTransformMatrix();
 
-						transform *= glm::translate(glm::mat4(1.0f), glm::vec3(bcc.Offset, 0.0f)) 
+						transform *= glm::translate(glm::mat4(1.0f), glm::vec3(bcc.Offset, 0.0f))
 							* glm::scale(glm::mat4(1.0f), glm::vec3(2.0f * bcc.Size, 1.0f));
 
 						Renderer2D::DrawRect(transform, glm::vec4(1, 1, 0, 1));
@@ -235,7 +250,8 @@ namespace SW {
 
 						if (m_ActiveScene->GetCurrentState() == SceneState::Play) { // TODO: Investigate this visualization offset difference between play/edit state
 							transform *= glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, 0.001f));
-						} else {
+						}
+						else {
 							transform *= glm::translate(glm::mat4(1.0f), glm::vec3(pcc.Offset.x, pcc.Offset.y, 0.001f));
 						}
 
@@ -405,7 +421,7 @@ namespace SW {
 				}
 			}
 
-			m_ActiveScene->EndRendering();
+			Renderer2D::EndScene();
 		}
 
 		m_Framebuffer->Unbind();
@@ -432,25 +448,33 @@ namespace SW {
 			const bool isSceneLoaded = IsSceneLoaded();
 
 			if (
-				(!isSceneLoaded || m_ActiveScene->GetCurrentState() == SceneState::Edit) &&
-				ImGui::BeginDragDropTarget()
+				!isSceneLoaded || m_ActiveScene->GetCurrentState() == SceneState::Edit
 			) {
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Scene")) {
-					std::filesystem::path path = ProjectContext::Get()->GetAssetDirectory() / static_cast<char*>(payload->Data);
+				if (ImGui::BeginDragDropTarget()) {
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Scene")) {
+						u64* handle = static_cast<u64*>(payload->Data);
 
-					if (SelectionManager::IsSelected())
-						SelectionManager::Deselect();
-
-					delete GetCurrentScene();
-
-					Scene* newScene = SceneSerializer::Deserialize(path.string());
-
-					SetCurrentScene(newScene);
+						const AssetMetaData& metadata = AssetManager::GetAssetMetaData(*handle);
 					
-					newScene->SortEntities();
+						if (SelectionManager::IsSelected())
+							SelectionManager::Deselect();
 
+						delete GetCurrentScene();
+
+						Scene* newScene = SceneSerializer::Deserialize(ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
+
+						SetCurrentScene(newScene);
+					
+						newScene->SortEntities();
+					}
+
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FontSource")) {
+						u64* handle = static_cast<u64*>(payload->Data);
+
+						fontImportDialog.Open(*handle);
+					}
+					ImGui::EndDragDropTarget();
 				}
-				ImGui::EndDragDropTarget();
 			}
 
 			const ImVec2 windowPosition = ImGui::GetWindowPos();
@@ -465,7 +489,7 @@ namespace SW {
 
 			glm::mat4 cameraProjection = m_EditorCamera->GetProjectionMatrix();
 			glm::mat4 cameraView = m_EditorCamera->GetViewMatrix();
-			
+
 			ImGuizmo::SetID(1);
 			ImGuizmo::SetOrthographic(false);
 			ImGuizmo::SetDrawlist();
@@ -500,7 +524,7 @@ namespace SW {
 
 				ImVec2 resolutionTextSize = ImGui::CalcTextSize(resolution);
 				ImVec2 resolutionTextPosition = { ImGui::GetCursorPosX() + m_ViewportSize.x - resolutionTextSize.x - framePadding.x, startCursorPos.y + framePadding.y };
-				
+
 				ImGui::SetCursorPos({ resolutionTextPosition.x, resolutionTextPosition.y });
 				ImGui::TextUnformatted(resolution);
 			}
@@ -512,9 +536,9 @@ namespace SW {
 				glm::mat4 transform = selectedEntity.GetWorldSpaceTransformMatrix();
 
 				// Snapping
-				const bool snap = Input::IsKeyPressed(KeyCode::LeftControl);
+				const bool snap = Input::IsKeyDown(KeyCode::LeftControl);
 				f32 snapValue = 0.5f; // Snap to 0.5m for translation/scale
-				
+
 				// Snap to 45 degrees for rotation
 				if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
 					snapValue = 45.0f;
@@ -543,6 +567,8 @@ namespace SW {
 
 			if (isSceneLoaded)
 				RenderGizmoToolbar(startCursorPos);
+
+			fontImportDialog.OnRender();
 
 			OnEnd();
 		}
@@ -675,7 +701,14 @@ namespace SW {
 					} else {
 						m_SceneCopy = m_ActiveScene->DeepCopy();
 
+						ScriptingCore::Get().SetCurrentScene(m_ActiveScene);
+
 						m_ActiveScene->SetNewState(SceneState::Play);
+						m_ActiveScene->OnViewportResize((u32)m_ViewportSize.x, (u32)m_ViewportSize.y);
+						
+						ImVec2 viewportPos = ImGui::GetWindowPos();
+						m_ActiveScene->SetViewportPosition({viewportPos.x, viewportPos.y});
+
 						m_ActiveScene->OnRuntimeStart();
 					}
 				}
@@ -701,6 +734,8 @@ namespace SW {
 					m_ActiveScene = nullptr;
 
 					m_ActiveScene = m_SceneCopy->DeepCopy();
+
+					ScriptingCore::Get().SetCurrentScene(m_ActiveScene);
 
 					delete m_SceneCopy;
 					m_SceneCopy = nullptr;

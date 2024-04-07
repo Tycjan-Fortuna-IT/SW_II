@@ -2,7 +2,6 @@ include "SolutionItems.lua"
 include "Dependencies.lua"
 
 workspace "SW_II"
-    architecture "x86_64"
     configurations { "Debug", "Release", "Dist" }
     startproject "EngineEditor"
     conformancemode "On"
@@ -10,7 +9,7 @@ workspace "SW_II"
 	cppdialect "C++20"
 	staticruntime "Off"
 	externalwarnings "off"
-	rtti "off"
+	-- rtti "off"
 
     defines {
         -- Disable warnings for using unsafe functions
@@ -41,9 +40,6 @@ workspace "SW_II"
             -- This option enables the __cplusplus macro to report an accurate value for the C++
             -- language standard supported by the compiler.
             "/Zc:__cplusplus",
-
-            -- This option enables the compiler to generate code that's compliant with the C++20 for char8_t literals.
-            "/Zc:char8_t-"
         }
 
     filter "system:linux"
@@ -52,6 +48,9 @@ workspace "SW_II"
         buildoptions {
             "-fno-char8_t"
         }
+
+    filter "language:C++ or language:C"
+		architecture "x86_64"
 
 -- Folder name containing compiled output in a following format: /[config]-[platform]-[architecture]/.
 -- e.g. folder Windows-x64/Debug
@@ -62,3 +61,4 @@ group "Engine"
 group ""
 
 include "EngineEditor/Build-EngineEditor.lua"
+include "Testbed/Build-Testbed.lua"

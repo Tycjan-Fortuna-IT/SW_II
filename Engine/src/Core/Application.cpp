@@ -5,8 +5,10 @@
 #include "Events/Event.hpp"
 #include "GUI/GuiLayer.hpp"
 #include "Utils/FileSystem.hpp"
-#include "AssetManager.hpp"
+#include "Asset/AssetManager.hpp"
 #include "Renderer/RendererAPI.hpp"
+#include "Scripting/ScriptingCore.hpp"
+#include "Utils/Input.hpp"
 
 namespace SW {
 
@@ -32,10 +34,13 @@ namespace SW {
 
         m_Window = new Window(specification);
 
+		EventSystem::Initialize();
 		FileSystem::Initialize();
 		AssetManager::Initialize();
-		EventSystem::Initialize();
 		RendererAPI::Initialize();
+
+		if (m_Specification.EnableCSharpSupport)
+			ScriptingCore::Get().InitializeHost();
 
 		EventSystem::Register(EventCode::EVENT_CODE_APPLICATION_QUIT, nullptr, [this](Event event, void* sender, void* listener) -> bool {
 			Application::Close();
@@ -61,10 +66,13 @@ namespace SW {
 
 	bool Application::OnShutdown()
 	{
+		EventSystem::Shutdown();
 		FileSystem::Shutdown();
 		AssetManager::Shutdown();
-		EventSystem::Shutdown();
 		RendererAPI::Shutdown();
+		
+		if (m_Specification.EnableCSharpSupport)
+			ScriptingCore::Get().ShutdownHost();
 
 		m_GuiLayer->OnDetach();
 
@@ -82,6 +90,8 @@ namespace SW {
 			const float time = (float)glfwGetTime();
 			const Timestep dt = time - m_LastFrameTime;
 			m_LastFrameTime = time;
+
+			Input::UpdateKeysStateIfNecessary();
 
 			m_Window->OnUpdate();
 
@@ -102,6 +112,8 @@ namespace SW {
 				}
 				m_GuiLayer->End();
 			}
+
+			Input::ClearReleasedKeys();
 		}
 
 		if (!this->OnShutdown())

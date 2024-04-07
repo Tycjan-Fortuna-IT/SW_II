@@ -1,5 +1,6 @@
 project "EngineEditor"
     kind "ConsoleApp"
+    architecture "x86_64"
 
     targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
@@ -37,14 +38,14 @@ project "EngineEditor"
 
     IncludeEngineDependencies()
     LinkEngineDependencies()
-
-    postbuildcommands {
-        "{COPY} assets %{wks.location}/bin/" .. outputdir .. "/EngineEditor/assets"
-    }
     
     filter "system:windows"
 	    linkoptions { "/NODEFAULTLIB:LIBCMT" }
-	
+        buildoptions {
+            -- This option enables the compiler to generate code that's compliant with the C++20 for char8_t literals.
+            "/Zc:char8_t-"
+        }
+
     filter "system:linux"
         pic "On"
         systemversion "latest"
@@ -58,15 +59,36 @@ project "EngineEditor"
         defines { "SW_DEBUG_BUILD" }
         runtime "Debug"
         symbols "On"
+        postbuildcommands {
+            "{COPY} %{wks.location}/Engine/vendor/Coral/Coral.Managed/Coral.Managed.runtimeconfig.json %{wks.location}/EngineEditor/assets/dotnet",
+            "{COPY} %{wks.location}/Engine/vendor/Coral/Build/Debug/Coral.Managed.dll %{wks.location}/EngineEditor/assets/dotnet",
+            "{COPY} %{wks.location}/Engine/vendor/Coral/Build/Debug/Coral.Managed.pdb %{wks.location}/EngineEditor/assets/dotnet",
+            "{COPY} %{wks.location}/Engine/vendor/Coral/Build/Debug/Coral.Managed.deps.json %{wks.location}/EngineEditor/assets/dotnet",
+            "{COPY} assets %{wks.location}/bin/" .. outputdir .. "/EngineEditor/assets",
+        }
 
     filter "configurations:Release"
         defines { "SW_RELEASE_BUILD" }
         runtime "Release"
         optimize "On"
         symbols "On"
+        postbuildcommands {
+            "{COPY} %{wks.location}/Engine/vendor/Coral/Coral.Managed/Coral.Managed.runtimeconfig.json %{wks.location}/EngineEditor/assets/dotnet",
+            "{COPY} %{wks.location}/Engine/vendor/Coral/Build/Release/Coral.Managed.dll %{wks.location}/EngineEditor/assets/dotnet",
+            "{COPY} %{wks.location}/Engine/vendor/Coral/Build/Release/Coral.Managed.pdb %{wks.location}/EngineEditor/assets/dotnet",
+            "{COPY} %{wks.location}/Engine/vendor/Coral/Build/Release/Coral.Managed.deps.json %{wks.location}/EngineEditor/assets/dotnet",
+            "{COPY} assets %{wks.location}/bin/" .. outputdir .. "/EngineEditor/assets",
+        }
 
     filter "configurations:Dist"
         defines { "SW_DIST_BUILD" }
         runtime "Release"
         optimize "On"
         symbols "Off"
+        postbuildcommands {
+            "{COPY} %{wks.location}/Engine/vendor/Coral/Coral.Managed/Coral.Managed.runtimeconfig.json %{wks.location}/EngineEditor/assets/dotnet",
+            "{COPY} %{wks.location}/Engine/vendor/Coral/Build/Release/Coral.Managed.dll %{wks.location}/EngineEditor/assets/dotnet",
+            "{COPY} %{wks.location}/Engine/vendor/Coral/Build/Release/Coral.Managed.pdb %{wks.location}/EngineEditor/assets/dotnet",
+            "{COPY} %{wks.location}/Engine/vendor/Coral/Build/Release/Coral.Managed.deps.json %{wks.location}/EngineEditor/assets/dotnet",
+            "{COPY} assets %{wks.location}/bin/" .. outputdir .. "/EngineEditor/assets",
+        }

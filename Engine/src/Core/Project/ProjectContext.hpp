@@ -8,9 +8,10 @@
  */
 #pragma once
 
-namespace SW {
+#include "Core/Events/Event.hpp"
+#include "Project.hpp"
 
-	class Project;
+namespace SW {
 
 	/**
 	 * @brief The ProjectContext class represents the context of the current project.
@@ -28,7 +29,12 @@ namespace SW {
 		 * @brief Sets the current project.
 		 * @param project A pointer to the project to set as the current project.
 		 */
-		static void Set(Project* project) { s_CurrentProject = project; }
+		static void Set(Project* project) {
+			s_CurrentProject = project;
+			s_CurrentProject->Initialize();
+		
+			EventSystem::Emit(EVENT_CODE_PROJECT_LOADED);
+		}
 
 		/**
 		 * @brief Gets the current project.

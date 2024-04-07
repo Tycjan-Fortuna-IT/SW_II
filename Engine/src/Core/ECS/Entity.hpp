@@ -59,7 +59,7 @@ namespace SW {
         template <typename T, typename... Args>
         T& AddComponent(Args&&... args)
 		{
-            ASSERT(!HasComponent<T>(), "Entity already has component!");
+            ASSERT(!HasComponent<T>(), "Entity already has {} component!", typeid(T).name());
 
             return m_Scene->GetRegistry().GetRegistryHandle().emplace<T>(m_Handle, std::forward<Args>(args)...);
 		}
@@ -72,7 +72,7 @@ namespace SW {
 		template <typename T>
 		T& GetComponent()
 		{
-			ASSERT(HasComponent<T>(), "Entity does not have component!");
+			ASSERT(HasComponent<T>(), "Entity does not have {} component!", typeid(T).name());
 
 			return m_Scene->GetRegistry().GetRegistryHandle().get<T>(m_Handle);
 		}
@@ -84,7 +84,7 @@ namespace SW {
 		template <typename T>
 		void RemoveComponent()
 		{
-			ASSERT(HasComponent<T>(), "Entity does not have component!");
+			ASSERT(HasComponent<T>(), "Entity does not have {} component!", typeid(T).name());
 
 			m_Scene->GetRegistry().GetRegistryHandle().remove<T>(m_Handle);
         }

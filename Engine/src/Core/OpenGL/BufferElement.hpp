@@ -85,7 +85,7 @@ namespace SW {
 				case ShaderDataType::Int4:   return 4;
 				case ShaderDataType::Bool:   return 1;
 				default:
-					ASSERT(false, "Unknown ShaderDataType!");
+					ASSERT(false, "Unknown ShaderDataType! {}", (int)Type);
 			}
 
 			return 0;

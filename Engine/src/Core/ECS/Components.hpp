@@ -1,8 +1,8 @@
 /**
  * @file Components.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.5
- * @date 2024-03-02
+ * @version 0.1.6
+ * @date 2024-03-09
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -12,7 +12,9 @@
 #include "Core/Scene/SceneCamera.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
 #include "Core/Math/Math.hpp"
-#include "Core/OpenGL/Font.hpp"
+#include "Asset/Font.hpp"
+#include "Core/Scripting/CSharpObject.hpp"
+#include "Asset/Asset.hpp"
 
 namespace SW {
 
@@ -26,7 +28,7 @@ namespace SW {
         u64 ID = 0;
 
         IDComponent()
-            : ID(CreateID()) {}
+            : ID(Random::CreateID()) {}
         IDComponent(u64 id)
             : ID(id) {}
 
@@ -104,19 +106,14 @@ namespace SW {
     struct SpriteComponent final
     {
         glm::vec4 Color = glm::vec4(1.0f);
-		Texture2D* Texture = nullptr;	/** @brief Texture of the entity, can be nullptr! */
+		AssetHandle Handle = 0u; // sprite handle
 		f32 TilingFactor = 1.0f;
 
         SpriteComponent() = default;
         SpriteComponent(const glm::vec4& color)
             : Color(color) {}
-		SpriteComponent(Texture2D* texture, const glm::vec4& tint = glm::vec4(1.f), f32 tilingFactor = 1.f)
-			: Texture(texture), Color(tint), TilingFactor(tilingFactor) {}
-
-        SpriteComponent(const SpriteComponent& other) = default;
-        SpriteComponent(SpriteComponent&& other) = default;
-        SpriteComponent& operator=(const SpriteComponent& other) = default;
-        SpriteComponent& operator=(SpriteComponent&& other) = default;
+		SpriteComponent(AssetHandle handle, const glm::vec4& tint = glm::vec4(1.f), f32 tilingFactor = 1.f)
+			: Handle(handle), Color(tint), TilingFactor(tilingFactor) {}
 
         ~SpriteComponent() = default;
     };
@@ -153,7 +150,7 @@ namespace SW {
 	{
 		std::string TextString = "Empty";	/**< Text to be rendered. */
 
-		Font* Font = nullptr;				/**< Font of the text, can be nullptr! */
+		AssetHandle Handle = 0u; // font handle
 
 		glm::vec4 Color = glm::vec4(1.0f);	/**< Color of the text. */
 
@@ -198,6 +195,15 @@ namespace SW {
 		RelationshipComponent(RelationshipComponent&& other) = default;
 		RelationshipComponent& operator=(const RelationshipComponent& other) = default;
 		RelationshipComponent& operator=(RelationshipComponent&& other) = default;
+	};
+
+	struct ScriptComponent final
+	{
+		u64 ScriptID = 0;			/** @brief Unique ID of the script. */
+		
+		CSharpObject Instance;		/** @brief Instance of the script. */
+
+		std::vector<u32> FieldIDs;	/** @brief IDs of the fields. */
 	};
 
 	/**

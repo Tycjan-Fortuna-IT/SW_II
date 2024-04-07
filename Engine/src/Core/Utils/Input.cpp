@@ -5,18 +5,104 @@
 
 namespace SW {
 
+	std::map<SW::KeyCode, SW::ClickableState> Input::s_KeyStates;
+
+	std::map<SW::MouseCode, SW::ClickableState> Input::s_MouseStates;
+
+	void Input::UpdateKeyState(KeyCode code, ClickableState state)
+	{
+		s_KeyStates[code] = state;
+	}
+
+	void Input::UpdateMouseState(MouseCode code, ClickableState state)
+	{
+		s_MouseStates[code] = state;
+	}
+
+	void Input::UpdateKeysStateIfNecessary()
+	{
+		for (auto& [code, state] : s_KeyStates) {
+			if (state == ClickableState::Pressed) {
+				state = ClickableState::Repeated;
+			}
+		}
+
+		for (auto& [code, state] : s_MouseStates) {
+			if (state == ClickableState::Pressed) {
+				state = ClickableState::Repeated;
+			}
+		}
+	}
+
+	void Input::ClearReleasedKeys()
+	{
+		for (auto& [code, state] : s_KeyStates) {
+			if (state == ClickableState::Released) {
+				state = ClickableState::None;
+			}
+		}
+
+		for (auto& [code, state] : s_MouseStates) {
+			if (state == ClickableState::Released) {
+				state = ClickableState::None;
+			}
+		}
+	}
+
 	bool Input::IsKeyPressed(KeyCode key)
 	{
-		const i32 state = glfwGetKey(Application::Get()->GetWindow()->GetHandle(), (i32)key);
+		auto val = s_KeyStates.find(key);
 
-		return (state == GLFW_PRESS) | (state == GLFW_REPEAT);
+		return val == s_KeyStates.end() ? false : val->second == ClickableState::Pressed;
+	}
+
+	bool Input::IsKeyHeld(KeyCode key)
+	{
+		auto val = s_KeyStates.find(key);
+		
+		return val == s_KeyStates.end() ? false : val->second == ClickableState::Repeated;
+	}
+
+	bool Input::IsKeyDown(KeyCode key)
+	{
+		auto val = s_KeyStates.find(key);
+
+		return val == s_KeyStates.end() ? false : (val->second == ClickableState::Pressed || val->second == ClickableState::Repeated);
+	}
+
+	bool Input::IsKeyReleased(KeyCode key)
+	{
+		auto val = s_KeyStates.find(key);
+
+		return val == s_KeyStates.end() ? false : val->second == ClickableState::Released;
 	}
 
 	bool Input::IsMouseButtonPressed(MouseCode button)
 	{
-		const i32 state = glfwGetMouseButton(Application::Get()->GetWindow()->GetHandle(), (i32)button);
+		auto val = s_MouseStates.find(button);
 
-		return state == GLFW_PRESS;
+		return val == s_MouseStates.end() ? false : val->second == ClickableState::Pressed;
+	}
+
+	bool Input::IsMouseButtonHeld(MouseCode button)
+	{
+		auto val = s_MouseStates.find(button);
+
+		return val == s_MouseStates.end() ? false : val->second == ClickableState::Repeated;
+	}
+
+	bool Input::IsMouseButtonDown(MouseCode button)
+	{
+		auto val = s_MouseStates.find(button);
+
+		return val == s_MouseStates.end() ? false : (val->second == ClickableState::Pressed || val->second == ClickableState::Repeated);
+	}
+
+	bool Input::IsMouseButtonReleased(MouseCode button)
+	{
+		auto val = s_MouseStates.find(button);
+
+		return val == s_MouseStates.end() ? false : val->second == ClickableState::Released;
 	}
 
 	glm::vec2 Input::GetMousePosition()

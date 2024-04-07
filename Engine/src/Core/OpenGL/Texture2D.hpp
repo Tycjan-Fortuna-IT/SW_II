@@ -1,12 +1,14 @@
 /**
  * @file Texture2D.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.4
- * @date 2024-02-03
+ * @version 0.1.5
+ * @date 2024-04-06
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
 #pragma once
+
+#include "Asset/Asset.hpp"
 
 namespace SW {
 
@@ -16,6 +18,7 @@ namespace SW {
 	enum class ImageFormat
 	{
 		None = 0, /**< No format specified */
+		RED,
 		RGB8, /**< RGB format with 8 bits per channel */
 		RGBA8 /**< RGBA format with 8 bits per channel */
 	};
@@ -33,7 +36,7 @@ namespace SW {
 	/**
 	 * @brief 2D texture class
 	 */
-    class Texture2D final
+	class Texture2D final : public Asset
     {
     public:
 		/**
@@ -68,6 +71,20 @@ namespace SW {
         ~Texture2D();
 
 		/**
+		 * @brief Get the static type of the texture asset
+		 * 
+		 * @return AssetType Type of the asset
+		 */
+		static AssetType GetStaticType() { return AssetType::Texture2D; }
+		
+		/**
+		 * @brief Get the type of the asset
+		 * 
+		 * @return AssetType Type of the asset
+		 */
+		AssetType GetAssetType() const override { return AssetType::Texture2D; }
+
+		/**
 		 * @brief Bind texture to the specified slot
 		 * 
 		 * @param slot Slot to bind texture to
@@ -79,7 +96,7 @@ namespace SW {
 		 *
 		 * @return u32
 		 */
-		u32 GetHandle() const { return m_Handle; }
+		u32 GetTexHandle() const { return m_Handle; }
 
 		/**
 		 * @brief Get the Width of the texture
@@ -94,6 +111,29 @@ namespace SW {
 		 * @return i32 
 		 */
 		i32 GetHeight() const { return m_Height; }
+
+		/**
+		 * @brief Get the Channels of the texture
+		 * 
+		 * @return i32 
+		 */
+		i32 GetChannels() const { return m_Channels; }
+
+		/**
+		 * @brief Change the size of the texture
+		 * 
+		 * @param newWidth New width of the texture
+		 * @param newHeight New height of the texture
+		 */
+		void ChangeSize(i32 newWidth, i32 newHeight);
+
+		/**
+		 * @brief Get the bytes of the texture
+		 * @warning Returned pointer must be freed by the caller!!
+		 * 
+		 * @return const char* 
+		 */
+		const char* GetBytes() const;
 
 		/**
 		 * @brief Get only the estimated size of the texture on the GPU
@@ -119,13 +159,6 @@ namespace SW {
 			return m_Handle == ((Texture2D&)other).m_Handle;
 		}
 
-		/**
-		 * @brief Get the path to the original texture file from which the texture was loaded.
-		 *
-		 * @return std::string
-		 */
-		const std::string& GetPath() const { return m_Path; }
-
     private:
         u32 m_Handle;				/** @brief OpenGL texture handle */
 		i32 m_Width;				/** @brief Texture width */
@@ -133,7 +166,6 @@ namespace SW {
 		i32 m_Channels;				/** @brief Texture channels */
 		u32 m_DataFormat;			/** @brief Texture data format */
 		u32 m_InternalFormat;		/** @brief Texture internal format */
-		std::string m_Path = "";	/** @brief Path to the texture file */
 
 		/**
 		 * Loads the texture data from the specified file.

@@ -1,8 +1,8 @@
 /**
  * @file AssetPanel.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.3
- * @date 2024-02-20
+ * @version 0.2.1
+ * @date 2024-03-29
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -11,35 +11,13 @@
 #include <filesystem>
 
 #include "GUI/Panel.hpp"
+#include "Asset/Cache/ThumbnailCache.hpp"
 
 namespace SW {
 
 	class Texture2D;
-
-	/**
-	 * @brief The FileType enum class represents the type of a file.
-	 */
-	enum class FileType : int
-	{
-		Unknown = 0,	///< Unknown file type.
-		Texture,		///< Texture file type.
-		Directory,		///< Directory file type.
-		Scene,			///< Scene file type
-		Font,			///< Font file type.
-	};
-
-	/**
-	 * @brief The File struct represents a file.
-	 */
-	struct File final
-	{
-		std::string Name = "Invalid";		/** @brief The name of the file. */
-		std::string FilePath = "Invalid";	/** @brief The path to the file. */
-		Texture2D* Thumbnail = nullptr;		/** @brief The thumbnail of the file. */
-		FileType Type = FileType::Unknown;	/** @brief The type of the file. */
-		std::string TypeString = "Unknown";	/** @brief The type of the file as a string. */
-		ImVec4 ColorIndicator;				/** @brief The color indicator of the file. */
-	};
+	class AssetDirectoryTree;
+	struct AssetSourceItem;
 
 	/**
 	 * @brief The AssetPanel class represents a panel that displays the console window.
@@ -58,7 +36,7 @@ namespace SW {
 		/**
 		 * @brief Default destructor for the AssetPanel class.
 		 */
-		~AssetPanel() override = default;
+		~AssetPanel() override;
 
 		/** @brief Copy constructor (deleted). */
 		AssetPanel(const AssetPanel& other) = delete;
@@ -73,24 +51,67 @@ namespace SW {
 		 * @brief Called every frame to update the panel.
 		 * @param dt The time since the last frame.
 		 */
-		void OnUpdate(Timestep dt) final override;
+		void OnUpdate(Timestep dt) override;
 
 		/**
 		 * @brief Called every frame to render the panel.
 		 */
-		void OnRender() final override;
-
-		void InvalidateAssetDirectory();
+		void OnRender() override;
 	
 	private:
 		std::filesystem::path m_AssetsDirectory;	/** @brief The path to the assets directory. */
-		std::filesystem::path m_CurrentDirectory;	/** @brief The path to the current directory fetched by the panel. */
-		std::vector<File> m_DirectoryEntries = {};	/** @brief The directory entries. */
+
+		bool m_IsTableHovered = false;
+		bool m_OpenDeleteWarningModal = false;
+		bool m_OpenNewFileModal = false;
+		bool m_RenameEntryModal = false;
+
+		int m_ThumbnailSize = 220;
+
+		std::filesystem::path m_FilesystemEntryToDelete = "";
+		std::filesystem::path m_FilesystemEntryToRename = "";
+
+		AssetDirectoryTree* m_AssetTree = nullptr;
+		AssetSourceItem* m_SelectedItem = nullptr;
+		AssetSourceItem* m_QueuedSelectedItem = nullptr;
+
+		ThumbnailCache m_Cache;
 
 		/**
 		 * @brief Loads the directory entries.
 		 */
 		void LoadDirectoryEntries();
+
+		/**
+		 * @brief Draws the header of the asset panel.
+		 */
+		void DrawHeader();
+
+		/**
+		 * @brief Draws the directory tree view recursively.
+		 * 
+		 * @param path The path of the directory to draw.
+		 */
+		void DrawDirectoryTreeViewRecursive(AssetSourceItem* item);
+
+		/**
+		 * @brief Draws the side view of the asset panel.
+		 */
+		void DrawSideView();
+
+		/**
+		 * @brief Draws the body of the asset panel.
+		 */
+		void DrawBody();
+
+		void DrawItemOperationsPopup(const AssetSourceItem* item);
+		
+		void HandleItemOnDoubleClick(AssetSourceItem* item, bool* refreshDirectory);
+
+		/**
+		 * @brief Draws the popup for the asset panel.
+		 */
+		void DrawAssetPanelPopup();
 	};
 
 }

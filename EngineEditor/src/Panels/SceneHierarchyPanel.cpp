@@ -145,10 +145,8 @@ namespace SW {
 			| ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAllColumns | ImGuiTreeNodeFlags_AllowOverlap;
 
 		if (selected) {
-			ImVec4 selectedColor = GUI::Colors::Darken(ImVec4(0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f), 0.2f);
-
-			ImGui::PushStyleColor(ImGuiCol_Header, selectedColor);
-			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, selectedColor);
+			ImGui::PushStyleColor(ImGuiCol_Header, ImGui::ColorConvertU32ToFloat4(GUI::Theme::TabActive));
+			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImGui::ColorConvertU32ToFloat4(GUI::Theme::TabActive));
 		}
 
 		const u64 childrenSize = rsc.ChildrenIDs.size();
@@ -363,7 +361,7 @@ namespace SW {
 
 		Entity entity = m_SceneViewportPanel->GetCurrentScene()->GetEntityByID(SelectionManager::GetSelectionID());
 
-		const bool ctrl = Input::IsKeyPressed(KeyCode::LeftControl) || Input::IsKeyPressed(KeyCode::RightControl);
+		const bool ctrl = Input::IsKeyDown(KeyCode::LeftControl) || Input::IsKeyDown(KeyCode::RightControl);
 
 		switch (code) {
 			case KeyCode::F2:

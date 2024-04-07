@@ -2,110 +2,15 @@
 #include "Scene.hpp"
 
 #include <fstream>
-#include <yaml-cpp/yaml.h>
 
-#include "Core/Math/Vector3.hpp"
-#include "Core/Math/Vector4.hpp"
-#include "Core/AssetManager.hpp"
+#include "Asset/AssetManager.hpp"
 #include "Core/ECS/Entity.hpp"
-
-namespace YAML {
-
-	Emitter& operator<<(Emitter& out, const glm::vec2& v) {
-		out << Flow;
-		out << BeginSeq << v.x << v.y << EndSeq;
-		return out;
-	}
-
-	Emitter& operator<<(Emitter& out, const glm::vec3& v) {
-		out << Flow;
-		out << BeginSeq << v.x << v.y << v.z << EndSeq;
-		return out;
-	}
-
-	Emitter& operator<<(Emitter& out, const glm::vec4& v) {
-		out << Flow;
-		out << BeginSeq << v.r << v.g << v.b << v.a << EndSeq;
-		return out;
-	}
-
-	template<>
-	struct convert<glm::vec2> {
-		static Node encode(const glm::vec2& rhs)
-		{
-			Node node;
-			node.push_back(rhs.x);
-			node.push_back(rhs.y);
-			node.SetStyle(EmitterStyle::Flow);
-			return node;
-		}
-
-		static bool decode(const Node& node, glm::vec2& rhs)
-		{
-			if (!node.IsSequence() || node.size() != 2)
-				return false;
-
-			rhs.x = node[0].as<f32>();
-			rhs.y = node[1].as<f32>();
-			return true;
-		}
-	};
-
-	template<>
-	struct convert<glm::vec3> {
-		static Node encode(const glm::vec3& rhs)
-		{
-			Node node;
-			node.push_back(rhs.x);
-			node.push_back(rhs.y);
-			node.push_back(rhs.z);
-			node.SetStyle(EmitterStyle::Flow);
-			return node;
-		}
-
-		static bool decode(const Node& node, glm::vec3& rhs)
-		{
-			if (!node.IsSequence() || node.size() != 3)
-				return false;
-
-			rhs.x = node[0].as<f32>();
-			rhs.y = node[1].as<f32>();
-			rhs.z = node[2].as<f32>();
-			return true;
-		}
-	};
-
-	template<>
-	struct convert<glm::vec4> {
-		static Node encode(const glm::vec4& rhs)
-		{
-			Node node;
-			node.push_back(rhs.x);
-			node.push_back(rhs.y);
-			node.push_back(rhs.z);
-			node.push_back(rhs.w);
-			node.SetStyle(EmitterStyle::Flow);
-			return node;
-		}
-
-		static bool decode(const Node& node, glm::vec4& rhs)
-		{
-			if (!node.IsSequence() || node.size() != 4)
-				return false;
-
-			rhs.x = node[0].as<f32>();
-			rhs.y = node[1].as<f32>();
-			rhs.z = node[2].as<f32>();
-			rhs.w = node[3].as<f32>();
-			return true;
-		}
-	};
-
-}
+#include "Core/Scripting/ScriptingCore.hpp"
+#include "Core/Utils/SerializationUtils.hpp"
 
 namespace SW {
 
-	void SceneSerializer::Serialize(Scene* scene, const std::string& path)
+	void SceneSerializer::Serialize(Scene* scene, const std::filesystem::path& path)
 	{
 		YAML::Emitter output;
 
@@ -155,10 +60,7 @@ namespace SW {
 				output << YAML::Key << "SpriteComponent";
 				output << YAML::BeginMap;
 				output << YAML::Key << "Color" << YAML::Value << sc.Color;
-
-				if (sc.Texture) {
-					output << YAML::Key << "TexturePath" << YAML::Value << sc.Texture->GetPath();
-				}
+				output << YAML::Key << "AssetHandle" << YAML::Value << sc.Handle;
 
 				output << YAML::EndMap;
 			}
@@ -179,14 +81,11 @@ namespace SW {
 
 				output << YAML::Key << "TextComponent";
 				output << YAML::BeginMap;
+				output << YAML::Key << "AssetHandle" << YAML::Value << tc.Handle;
 				output << YAML::Key << "TextString" << YAML::Value << tc.TextString;
 				output << YAML::Key << "Color" << YAML::Value << tc.Color;
 				output << YAML::Key << "Kerning" << YAML::Value << tc.Kerning;
 				output << YAML::Key << "LineSpacing" << YAML::Value << tc.LineSpacing;
-
-				if (tc.Font) {
-					output << YAML::Key << "FontPath" << YAML::Value << tc.Font->GetPath();
-				}
 
 				output << YAML::EndMap;
 			}
@@ -207,6 +106,17 @@ namespace SW {
 						output << YAML::Key << i << YAML::Value << rsc.ChildrenIDs[i];
 					output << YAML::EndMap;
 				}
+
+				output << YAML::EndMap;
+			}
+
+			if (entity.HasComponent<ScriptComponent>()) {
+				const ScriptComponent& sc = entity.GetComponent<ScriptComponent>();
+
+				output << YAML::Key << "ScriptComponent";
+				output << YAML::BeginMap;
+
+				output << YAML::Key << "ScriptID" << YAML::Value << sc.ScriptID;
 
 				output << YAML::EndMap;
 			}
@@ -418,14 +328,14 @@ namespace SW {
 		fout << output.c_str();
 	}
 
-	Scene* SceneSerializer::Deserialize(const std::string& path)
+	Scene* SceneSerializer::Deserialize(const std::filesystem::path& path)
 	{
-		Scene* scene = new Scene(path);
+		Scene* scene = new Scene(path.string());
 
-		YAML::Node data = YAML::LoadFile(path);
+		YAML::Node data = YAML::LoadFile(path.string());
 
 		if (!data["Entities"]) {
-			SW_ERROR("Error while deserializing the scene: {}, no entities section found!", path);
+			SW_ERROR("Error while deserializing the scene: {}, no entities section found!", path.string());
 			return scene;
 		}
 
@@ -455,12 +365,7 @@ namespace SW {
 				SpriteComponent& sc = deserialized.AddComponent<SpriteComponent>();
 
 				sc.Color = spriteComponent["Color"].as<glm::vec4>();
-
-				if (spriteComponent["TexturePath"]) {
-					std::string path = spriteComponent["TexturePath"].as<std::string>();
-
-					sc.Texture = AssetManager::GetTexture2D(path.c_str());
-				}
+				sc.Handle = spriteComponent["AssetHandle"].as<AssetHandle>();
 			}
 
 			if (YAML::Node circleComponent = entity["Entity"]["CircleComponent"]) {
@@ -472,18 +377,13 @@ namespace SW {
 			}
 
 			if (YAML::Node textComponent = entity["Entity"]["TextComponent"]) {
-				TextComponent& cc = deserialized.AddComponent<TextComponent>();
+				TextComponent& tc = deserialized.AddComponent<TextComponent>();
 
-				cc.TextString = textComponent["TextString"].as<std::string>();
-				cc.Color = textComponent["Color"].as<glm::vec4>();
-				cc.Kerning = textComponent["Kerning"].as<f32>();
-				cc.LineSpacing = textComponent["LineSpacing"].as<f32>();
-
-				if (textComponent["FontPath"]) {
-					std::string path = textComponent["FontPath"].as<std::string>();
-
-					cc.Font = AssetManager::GetFont(path.c_str());
-				}
+				tc.TextString = textComponent["TextString"].as<std::string>();
+				tc.Color = textComponent["Color"].as<glm::vec4>();
+				tc.Kerning = textComponent["Kerning"].as<f32>();
+				tc.LineSpacing = textComponent["LineSpacing"].as<f32>();
+				tc.Handle = textComponent["AssetHandle"].as<AssetHandle>();
 			}
 
 			if (YAML::Node relationshipComponent = entity["Entity"]["RelationshipComponent"]) {
@@ -504,6 +404,20 @@ namespace SW {
 						if (child)
 							rsc.ChildrenIDs.push_back(child);
 					}
+				}
+			}
+
+			if (YAML::Node scriptComponent = entity["Entity"]["ScriptComponent"]) {
+				ScriptComponent& sc = deserialized.AddComponent<ScriptComponent>();
+
+				u64 scriptId = scriptComponent["ScriptID"].as<u64>();
+
+				ScriptingCore& core = ScriptingCore::Get();
+
+				if (core.IsValidScript(scriptId)) {
+					sc.ScriptID = scriptId;
+
+					scene->GetScriptStorage().InitializeEntityStorage(scriptId, id);
 				}
 			}
 

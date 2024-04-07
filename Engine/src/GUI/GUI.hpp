@@ -1,8 +1,8 @@
 ﻿/**
  * @file GUI.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.2.4
- * @date 2024-03-05
+ * @version 0.2.5
+ * @date 2024-04-04
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -13,9 +13,11 @@
 #include "Core/Utils/Utils.hpp"
 #include "GUI/Icons.hpp"
 #include "Appearance.hpp"
-#include "Core/AssetManager.hpp"
+#include "Asset/AssetManager.hpp"
 #include "Core/ECS/Entity.hpp"
-#include "Core/OpenGL/Font.hpp"
+#include "Asset/Font.hpp"
+#include "Core/Renderer/Renderer2D.hpp"
+#include "Core/Utils/FileSystem.hpp"
 
 namespace SW::GUI {
 
@@ -151,7 +153,7 @@ namespace SW::GUI {
 	 */
 	static ImTextureID GetTextureID(const Texture2D& texture)
 	{
-		return reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(texture.GetHandle()));
+		return reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(texture.GetTexHandle()));
 	}
 
 	/**
@@ -163,7 +165,7 @@ namespace SW::GUI {
 	 */
 	static ImTextureID GetTextureID(const Texture2D* texture)
 	{
-		return reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(texture->GetHandle()));
+		return reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(texture->GetTexHandle()));
 	}
 
 	/**
@@ -259,6 +261,50 @@ namespace SW::GUI {
 	}
 
 	/**
+	 * @brief Creates a dockspace with the specified name and options.
+	 *
+	 * This function creates a dockspace using the Dear ImGui library. The dockspace is created at the position of the main viewport,
+	 * and its size is set to the size of the main viewport. The window flags for the dockspace can be customized.
+	 *
+	 * @param name The name of the dockspace. This is also used as the ID for the dockspace.
+	 * @param fn The function to call to draw the contents of the dockspace. This function should return the height of the top of the dockspace.
+	 * @param flags The window flags for the dockspace. These determine the behavior and appearance of the dockspace. Default is a combination of flags that result in a dockspace with no title bar, no collapse button, no resize handles, and no move functionality.
+	 */
+	template <typename T>
+	static void CreateDockspace(
+		const char* name, T fn, ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse
+	|	ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus
+	) {
+		ImGuiIO& io = ImGui::GetIO();
+
+		io.ConfigWindowsResizeFromEdges = io.BackendFlags & ImGuiBackendFlags_HasMouseCursors;
+
+		const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+		ImGui::SetNextWindowPos(viewport->Pos);
+		ImGui::SetNextWindowSize(viewport->Size);
+
+		ImGui::SetNextWindowViewport(viewport->ID);
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(6.0f, 6.0f));
+		ImGui::Begin("DockSpace Demo", nullptr, flags | ImGuiWindowFlags_NoDocking);
+		ImGui::PopStyleVar(3);
+
+		f32 topOffset = 0.0f;
+
+		if constexpr (std::is_invocable_v<T>)
+			topOffset = fn();
+
+		ImGui::SetCursorPosY(topOffset + ImGui::GetCurrentWindow()->WindowPadding.y);
+
+		ImGui::DockSpace(ImGui::GetID("MyDockspace"));
+
+		ImGui::End();
+	}
+
+	/**
 	 * @brief Draws a border around the specified rectangle.
 	 *
 	 * @param rect The rectangle to draw a border around.
@@ -297,7 +343,7 @@ namespace SW::GUI {
 	{
 		const f32 padding = (size.y - (f32)texture.GetHeight()) / 2.0f;
 
-		if (ImGui::InvisibleButton(std::to_string(texture.GetHandle()).c_str(), ImVec2(size.x, size.y)))
+		if (ImGui::InvisibleButton(std::to_string(texture.GetTexHandle()).c_str(), ImVec2(size.x, size.y)))
 			return true;
 
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
@@ -637,32 +683,54 @@ namespace SW::GUI {
 	/**
 	 * @brief Draws a single line text input property in the GUI.
 	 *
-	 * This function is used to draw a single line text input property in the GUI.
-	 * It takes a reference to a string, a label, and an optional tooltip as parameters.
-	 * The text input field is displayed with the specified label and tooltip.
-	 * The text entered by the user is stored in the provided string reference.
+	 * @tparam N The size of the buffer used to store the text input.
+	 * @param text The reference to the string where the entered text will be stored.
+	 * @param flags Additional ImGui input flags.
+	 * 
+	 * @return bool Whether something has changed
+	 */
+	template <int N = 256>
+	static bool DrawSingleLineTextInput(
+		std::string& text, ImGuiInputTextFlags flags = ImGuiInputTextFlags_None
+	) {
+		char buffer[N];
+
+		memcpy(buffer, text.c_str(), std::min(sizeof(buffer), text.size() + 1));
+
+		if (ImGui::InputText("##Tag", buffer, sizeof(buffer), flags)) {
+			text = buffer;
+
+			return true;
+		}
+			
+		return false;
+	}
+
+	/**
+	 * @brief Draws a single line text input property in the GUI.
 	 *
 	 * @tparam N The size of the buffer used to store the text input.
 	 * @param text The reference to the string where the entered text will be stored.
 	 * @param label The label to display for the text input field.
 	 * @param tooltip The optional tooltip to display for the text input field.
+	 * 
+	 * @return bool Whether something has changed
 	 */
-	template <int N>
-	static void DrawSingleLineTextInputProperty(
-		std::string& text, const char* label, const char* tooltip = nullptr
+	template <int N = 256>
+	static bool DrawSingleLineTextInputProperty(
+		std::string& text, const char* label, const char* tooltip = nullptr, ImGuiInputTextFlags flags = ImGuiInputTextFlags_None
 	) {
+		bool changed = false;
+
 		BeginPropertyGrid(label, tooltip, false);
 
-		char buffer[N];
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 
-		memcpy(buffer, text.c_str(), std::min(sizeof(buffer), text.size() + 1));
-
-		ImGui::SetNextItemWidth(ImGui::CalcItemWidth() * 1.5f);
-
-		if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
-			text = buffer;
+		changed = DrawSingleLineTextInput<N>(text, flags);
 
 		EndPropertyGrid();
+
+		return changed;
 	}
 
 	/**
@@ -676,21 +744,26 @@ namespace SW::GUI {
 	 * @param max The maximum value allowed for the vector components. Default is FLT_MAX.
 	 * @param format The format string used to display the vector components. Default is "%.2f".
 	 */
-	static void DrawVector2Control(
+	static bool DrawVector2Control(
 		glm::vec2& vector, f32 resetValue = 0.f,
 		f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
 	) {
-		ImGuiIO& io = ImGui::GetIO();
+		bool changed = false;
+
+		const ImGuiIO& io = ImGui::GetIO();
 
 		ImFont* boldFont = GUI::Appearance::GetFonts().DefaultBoldFont;
 
-		ImGui::PushMultiItemsWidths(2, ImGui::CalcItemWidth() + ImGui::GetStyle().ItemSpacing.x * 2.f + 1.f);
+		constexpr f32 spacingX = 8.0f;
+		const ImVec2 size = ImGui::GetContentRegionAvail();
 
-		f32 frameHeight = ImGui::GetFrameHeight();
-		ImVec2 buttonSize = { frameHeight + 3.0f, frameHeight };
+		GUI::ScopedStyle itemSpacing(ImGuiStyleVar_ItemSpacing, ImVec2{ spacingX, 0.0f });
+		GUI::ScopedStyle padding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 2.0f });
 
-		ImVec2 innerItemSpacing = ImGui::GetStyle().ItemInnerSpacing;
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, innerItemSpacing);
+		constexpr f32 framePadding = 2.0f;
+		const f32 lineHeight = GImGui->Font->FontSize + framePadding * 2.0f;
+		const ImVec2 buttonSize = { lineHeight + 7.0f, ImGui::GetFrameHeight() };
+		const f32 inputItemWidth = size.x / 2.0f - buttonSize.x - 4.0f;
 
 		// X
 		{
@@ -700,14 +773,17 @@ namespace SW::GUI {
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
 			ImGui::PushFont(boldFont);
-			if (ImGui::Button("X", buttonSize))
+			if (ImGui::Button("X", buttonSize)) {
 				vector.x = resetValue;
+				changed = true;
+			}
 			ImGui::PopFont();
 			ImGui::PopStyleColor(4);
 
 			ImGui::SameLine();
-			ImGui::DragFloat("##X", &vector.x, 0.05f, min, max, format.c_str());
-			ImGui::PopItemWidth();
+			ImGui::SetNextItemWidth(inputItemWidth);
+			if (ImGui::DragFloat("##X", &vector.x, 0.05f, min, max, format.c_str()))
+				changed = true;
 			ImGui::PopStyleVar();
 		}
 
@@ -721,18 +797,22 @@ namespace SW::GUI {
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
 			ImGui::PushFont(boldFont);
-			if (ImGui::Button("Y", buttonSize))
+			if (ImGui::Button("Y", buttonSize)) {
 				vector.y = resetValue;
+				changed = true;
+			}
+				
 			ImGui::PopFont();
 			ImGui::PopStyleColor(4);
 
 			ImGui::SameLine();
-			ImGui::DragFloat("##Y", &vector.y, 0.05f, min, max, format.c_str());
-			ImGui::PopItemWidth();
+			ImGui::SetNextItemWidth(inputItemWidth);
+			if (ImGui::DragFloat("##Y", &vector.y, 0.05f, min, max, format.c_str()))
+				changed = true;
 			ImGui::PopStyleVar();
 		}
 
-		ImGui::PopStyleVar();
+		return changed;
 	}
 
 	/**
@@ -750,49 +830,54 @@ namespace SW::GUI {
 	 * @param max The maximum value allowed for each component of the vector.
 	 * @param format The format string used to display the values of the vector components.
 	 */
-	static void DrawVector2ControlProperty(
+	static bool DrawVector2ControlProperty(
 		glm::vec2& vector, const char* label, const char* tooltip = nullptr, f32 resetValue = 0.f,
 		f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
 	) {
+		bool changed = false;
+
 		BeginPropertyGrid(label, tooltip, false);
 
-		DrawVector2Control(vector, resetValue, min, max, format);
+		changed = DrawVector2Control(vector, resetValue, min, max, format);
 
 		EndPropertyGrid();
+
+		return changed;
 	}
 
 	/**
-	 * @brief Draws a control property for a Vector3.
+	 * @brief Draws a control for a Vector3.
 	 *
-	 * This function is used to draw a control property for a Vector3, allowing the user to modify its values.
-	 * The control property consists of three input fields for the X, Y, and Z components of the vector.
+	 * This function is used to draw a control for a Vector3, allowing the user to modify its values.
+	 * The control consists of three input fields for the X, Y, and Z components of the vector.
 	 * Additionally, buttons are provided to reset each component to a specified value.
 	 *
-	 * @param vector The Vector3 to be modified by the control property.
-	 * @param label The label to be displayed for the control property.
-	 * @param tooltip An optional tooltip to be displayed when hovering over the control property.
+	 * @param vector The Vector3 to be modified by the control.
 	 * @param resetValue The value to which each component of the vector will be reset when the corresponding reset button is pressed.
 	 * @param min The minimum value allowed for each component of the vector.
 	 * @param max The maximum value allowed for each component of the vector.
 	 * @param format The format string used to display the values of the vector components.
 	 */
-	static void DrawVector3ControlProperty(
-		glm::vec3& vector, const char* label, const char* tooltip = nullptr, f32 resetValue = 0.f,
+	static bool DrawVector3Control(
+		glm::vec3& vector, f32 resetValue = 0.f,
 		f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
 	) {
-		BeginPropertyGrid(label, tooltip, false);
+		bool changed = false;
 
-		ImGuiIO& io = ImGui::GetIO();
+		const ImGuiIO& io = ImGui::GetIO();
 
 		ImFont* boldFont = GUI::Appearance::GetFonts().DefaultBoldFont;
 
-		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth() + ImGui::GetStyle().ItemSpacing.x - 4.f);
+		constexpr f32 spacingX = 8.0f;
+		const ImVec2 size = ImGui::GetContentRegionAvail();
 
-		f32 frameHeight = ImGui::GetFrameHeight();
-		ImVec2 buttonSize = { frameHeight + 3.0f, frameHeight };
+		GUI::ScopedStyle itemSpacing(ImGuiStyleVar_ItemSpacing, ImVec2{ spacingX, 0.0f });
+		GUI::ScopedStyle padding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 2.0f });
 
-		ImVec2 innerItemSpacing = ImGui::GetStyle().ItemInnerSpacing;
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, innerItemSpacing);
+		constexpr f32 framePadding = 2.0f;
+		const f32 lineHeight = GImGui->Font->FontSize + framePadding * 2.0f;
+		const ImVec2 buttonSize = { lineHeight + 7.0f, ImGui::GetFrameHeight() };
+		const f32 inputItemWidth = size.x / 3.0f - buttonSize.x - 5.0f;
 
 		// X
 		{
@@ -802,14 +887,17 @@ namespace SW::GUI {
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
 			ImGui::PushFont(boldFont);
-			if (ImGui::Button("X", buttonSize))
+			if (ImGui::Button("X", buttonSize)) {
 				vector.x = resetValue;
+				changed = true;
+			}
 			ImGui::PopFont();
 			ImGui::PopStyleColor(4);
 
 			ImGui::SameLine();
-			ImGui::DragFloat("##X", &vector.x, 0.05f, min, max, format.c_str());
-			ImGui::PopItemWidth();
+			ImGui::SetNextItemWidth(inputItemWidth);
+			if (ImGui::DragFloat("##X", &vector.x, 0.05f, min, max, format.c_str()))
+				changed = true;
 			ImGui::PopStyleVar();
 		}
 
@@ -823,14 +911,17 @@ namespace SW::GUI {
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
 			ImGui::PushFont(boldFont);
-			if (ImGui::Button("Y", buttonSize))
+			if (ImGui::Button("Y", buttonSize)) {
 				vector.y = resetValue;
+				changed = true;
+			}
 			ImGui::PopFont();
 			ImGui::PopStyleColor(4);
 
 			ImGui::SameLine();
-			ImGui::DragFloat("##Y", &vector.y, 0.05f, min, max, format.c_str());
-			ImGui::PopItemWidth();
+			ImGui::SetNextItemWidth(inputItemWidth);
+			if (ImGui::DragFloat("##Y", &vector.y, 0.05f, min, max, format.c_str()))
+				changed = true;
 			ImGui::PopStyleVar();
 		}
 
@@ -844,20 +935,51 @@ namespace SW::GUI {
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.2f, 0.35f, 0.9f, 1.0f });
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
 			ImGui::PushFont(boldFont);
-			if (ImGui::Button("Z", buttonSize))
+			if (ImGui::Button("Z", buttonSize)) {
 				vector.z = resetValue;
+				changed = true;
+			}
 			ImGui::PopFont();
 			ImGui::PopStyleColor(4);
 
 			ImGui::SameLine();
-			ImGui::DragFloat("##Z", &vector.z, 0.05f, min, max, format.c_str());
-			ImGui::PopItemWidth();
+			ImGui::SetNextItemWidth(inputItemWidth);
+			if (ImGui::DragFloat("##Z", &vector.z, 0.05f, min, max, format.c_str()))
+				changed = true;
 			ImGui::PopStyleVar();
 		}
 
-		ImGui::PopStyleVar();
+		return changed;
+	}
+
+	/**
+	 * @brief Draws a control property for a Vector3.
+	 *
+	 * This function is used to draw a control property for a Vector3, allowing the user to modify its values.
+	 * The control property consists of three input fields for the X, Y and Z components of the vector.
+	 * Additionally, buttons are provided to reset each component to a specified value.
+	 *
+	 * @param vector The Vector3 to be modified by the control property.
+	 * @param label The label to be displayed for the control property.
+	 * @param tooltip An optional tooltip to be displayed when hovering over the control property.
+	 * @param resetValue The value to which each component of the vector will be reset when the corresponding reset button is pressed.
+	 * @param min The minimum value allowed for each component of the vector.
+	 * @param max The maximum value allowed for each component of the vector.
+	 * @param format The format string used to display the values of the vector components.
+	 */
+	static bool DrawVector3ControlProperty(
+		glm::vec3& vector, const char* label, const char* tooltip = nullptr, f32 resetValue = 0.f,
+		f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
+	) {
+		bool changed = false;
+
+		BeginPropertyGrid(label, tooltip, false);
+
+		changed = DrawVector3Control(vector, resetValue, min, max, format);
 
 		EndPropertyGrid();
+
+		return changed;
 	}
 
 	/**
@@ -867,14 +989,18 @@ namespace SW::GUI {
 	 * @param label The label for the color picker.
 	 * @param tooltip The tooltip for the color picker (optional).
 	 */
-	static void DrawVector4ColorPickerProperty(
+	static bool DrawVector4ColorPickerProperty(
 		glm::vec4& vector, const char* label, const char* tooltip = nullptr
 	) {
+		bool changed = false;
+
 		BeginPropertyGrid(label, tooltip, true);
 
-		ImGui::ColorEdit4("##Color", glm::value_ptr(vector), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreviewHalf);
+		changed = ImGui::ColorEdit4("##Color", glm::value_ptr(vector), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreviewHalf);
 
 		EndPropertyGrid();
+	
+		return changed;
 	}
 
 	static void DrawVector2TableList(
@@ -932,6 +1058,147 @@ namespace SW::GUI {
 			vector.erase(vector.begin() + removeAt);
 
 		EndPropertyGrid();
+	}
+
+	static bool DrawFolderPickerProperty(
+		std::filesystem::path& path, const char* label, const char* tooltip = nullptr
+	) {
+		bool changed = false;
+		bool isEmpty = path.empty();
+
+		std::string tag = "none";
+
+		if (!isEmpty)
+			tag = path.string();
+
+		GUI::BeginPropertyGrid(label, tooltip, true);
+
+		ImVec2 region = ImGui::GetContentRegionAvail();
+		region.x -= 20.0f;
+		region.y = ImGui::GetFrameHeight();
+
+		ImVec2 pos = ImGui::GetCursorPos();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyle().Colors[ImGuiCol_Button]);
+
+		if (ImGui::Button("##font_dropdown_property", region)) {
+			std::filesystem::path pickedPath = FileSystem::OpenFolderDialog(ProjectContext::Get()->GetAssetDirectory().parent_path().string().c_str());
+
+			path = std::filesystem::relative(pickedPath, ProjectContext::Get()->GetAssetDirectory());
+		}
+
+		if (ImGui::IsItemHovered() && !isEmpty) {
+			std::filesystem::path fullPath = ProjectContext::Get()->GetAssetDirectory() / path;
+
+			ImGui::BeginTooltip();
+			ImGui::TextUnformatted(fullPath.string().c_str());
+			ImGui::EndTooltip();
+		}
+
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.3f, 0.3f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+
+		if (ImGui::Button("x", { 20.0f, region.y })) {
+			path.clear();
+			changed = true;
+		}
+
+		ImGui::PopStyleColor(3);
+		ImGui::PopStyleVar();
+
+		if (!isEmpty) {
+			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::Selection);
+		}
+		else {
+			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::InvalidPrefab);
+		}
+
+		ImVec2 padding = ImGui::GetStyle().FramePadding;
+		ImGui::SetCursorPos({ pos.x + padding.x, pos.y + padding.y });
+		ImGui::Text("%s", tag.c_str());
+
+		ImGui::PopStyleColor();
+
+		GUI::EndPropertyGrid();
+
+		return changed;
+	}
+
+	static bool DrawSaveFilePickerProperty(
+		std::filesystem::path& path, const std::initializer_list<FileDialogFilterItem>& filters,
+		const char* label, const char* tooltip = nullptr
+	) {
+		bool changed = false;
+		bool isEmpty = path.empty();
+
+		std::string tag = "none";
+
+		if (!isEmpty)
+			tag = path.string();
+
+		GUI::BeginPropertyGrid(label, tooltip, true);
+
+		ImVec2 region = ImGui::GetContentRegionAvail();
+		region.x -= 20.0f;
+		region.y = ImGui::GetFrameHeight();
+
+		ImVec2 pos = ImGui::GetCursorPos();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyle().Colors[ImGuiCol_Button]);
+
+		if (ImGui::Button("##font_dropdown_property", region)) {
+			std::filesystem::path pickedPath = FileSystem::SaveFileDialog(filters);
+
+			path = std::filesystem::relative(pickedPath, ProjectContext::Get()->GetAssetDirectory());
+		}
+
+		if (ImGui::IsItemHovered() && !isEmpty) {
+			std::filesystem::path fullPath = ProjectContext::Get()->GetAssetDirectory() / path;
+
+			ImGui::BeginTooltip();
+			ImGui::TextUnformatted(fullPath.string().c_str());
+			ImGui::EndTooltip();
+		}
+
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.3f, 0.3f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+
+		if (ImGui::Button("x", { 20.0f, region.y })) {
+			path.clear();
+			changed = true;
+		}
+
+		ImGui::PopStyleColor(3);
+		ImGui::PopStyleVar();
+
+		if (!isEmpty) {
+			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::Selection);
+		}
+		else {
+			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::InvalidPrefab);
+		}
+
+		ImVec2 padding = ImGui::GetStyle().FramePadding;
+		ImGui::SetCursorPos({ pos.x + padding.x, pos.y + padding.y });
+		ImGui::Text("%s", tag.c_str());
+
+		ImGui::PopStyleColor();
+
+		GUI::EndPropertyGrid();
+
+		return changed;
 	}
 
 	/**
@@ -1017,71 +1284,6 @@ namespace SW::GUI {
 	}
 
 	/**
-	 * @brief Draws a font dropdown property in the GUI.
-	 * 
-	 * @param font A pointer to a Font object representing the selected font. This pointer will be updated with the user's selection.
-	 * @param label The label to display for the font dropdown property.
-	 * @param tooltip An optional tooltip to display for the font dropdown property.
-	 */
-	static void DrawFontDropdownProperty(
-		Font** font, const char* label, const char* tooltip = nullptr
-	) {
-		std::string tag = "none";
-
-		if (*font)
-			tag = (*font)->GetFilename();
-
-		BeginPropertyGrid(label, tooltip, true);
-
-		ImVec2 region = ImGui::GetContentRegionAvail();
-		region.x -= 20.0f;
-		region.y = ImGui::GetFrameHeight();
-
-		ImVec2 pos = ImGui::GetCursorPos();
-
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyle().Colors[ImGuiCol_Button]);
-
-		ImGui::Button("##font_dropdown_property", region);
-
-		ImGui::PopStyleColor();
-
-		if (ImGui::BeginDragDropTarget()) {
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Font")) {
-				*font = AssetManager::GetFont(static_cast<char*>(payload->Data));
-			}
-			ImGui::EndDragDropTarget();
-		}
-
-		ImGui::SameLine();
-
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.3f, 0.3f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
-
-		if (ImGui::Button("x", { 20.0f, region.y })) {
-			*font = nullptr;
-		}
-
-		ImGui::PopStyleColor(3);
-		ImGui::PopStyleVar();
-
-		if (*font) {
-			ImVec4 selectedColor = GUI::Colors::Darken(ImVec4(0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f), 0.05f);
-			ImGui::PushStyleColor(ImGuiCol_Text, selectedColor);
-		}
-
-		ImVec2 padding = ImGui::GetStyle().FramePadding;
-		ImGui::SetCursorPos({ pos.x + padding.x, pos.y + padding.y });
-		ImGui::Text("%s", tag.c_str());
-
-		if (*font)
-			ImGui::PopStyleColor();
-
-		EndPropertyGrid();
-	}
-
-	/**
 	 * Draws a multiline text input property in the GUI.
 	 *
 	 * This function allows the user to input and edit multiline text in the GUI.
@@ -1143,15 +1345,15 @@ namespace SW::GUI {
 		Texture2D* textureCopy = *texture;
 
 		if (!textureCopy)
-			textureCopy = AssetManager::GetBlackTexture();
+			textureCopy = Renderer2D::BlackTexture;
 
-		u32 textureId = textureCopy->GetHandle();
+		u32 textureId = textureCopy->GetTexHandle();
 
 		ImGui::ImageButton(GUI::GetTextureID(textureId), { buttonSize, buttonSize }, { 0, 1 }, { 1, 0 }, 0);
 
 		if (*texture && ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
 			ImGui::BeginTooltip();
-			ImGui::TextUnformatted((*texture)->GetPath().c_str());
+			//ImGui::TextUnformatted((*texture)->GetPath().c_str()); // TODO
 			ImGui::Spacing();
 			ImGui::Image(GUI::GetTextureID(textureId), { tooltipSize, tooltipSize }, { 0, 1 }, { 1, 0 });
 			ImGui::EndTooltip();
@@ -1159,7 +1361,7 @@ namespace SW::GUI {
 
 		if (ImGui::BeginDragDropTarget()) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Texture")) {
-				*texture = AssetManager::GetTexture2D(static_cast<char*>(payload->Data));
+				// *texture = AssetManager::GetTexture2D(static_cast<char*>(payload->Data));
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -1181,6 +1383,158 @@ namespace SW::GUI {
 		EndPropertyGrid();
 	}
 
+	template <typename T>
+		requires std::is_base_of_v<Asset, T>
+	static bool DrawAssetDropdownProperty(
+		AssetHandle& handle, const char* label, const char* tooltip = nullptr
+	) {
+		bool changed = false;
+
+		std::string tag = "none";
+		std::string fullPath = "none";
+
+		if (handle) {
+			const AssetMetaData& metadata = AssetManager::GetAssetMetaData(handle);
+
+			tag = metadata.Path.filename().string();
+			fullPath = (ProjectContext::Get()->GetAssetDirectory() / metadata.Path).string();
+		}
+
+		BeginPropertyGrid(label, tooltip, true);
+
+		ImVec2 region = ImGui::GetContentRegionAvail();
+		region.x -= 20.0f;
+		region.y = ImGui::GetFrameHeight();
+
+		ImVec2 pos = ImGui::GetCursorPos();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyle().Colors[ImGuiCol_Button]);
+
+		ImGui::Button("##font_dropdown_property", region);
+
+		if (ImGui::IsItemHovered() && handle) {
+			ImGui::BeginTooltip();
+			ImGui::TextUnformatted(fullPath.c_str());
+			ImGui::EndTooltip();
+		}
+
+		ImGui::PopStyleColor();
+
+		if (ImGui::BeginDragDropTarget()) {
+			const char* payloadName = Asset::GetStringifiedAssetType(T::GetStaticType());
+
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(payloadName)) {
+				handle = *static_cast<u64*>(payload->Data);
+
+				changed = true;
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		ImGui::SameLine();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.3f, 0.3f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+
+		if (ImGui::Button("x", { 20.0f, region.y })) {
+			handle = 0;
+			changed = true;
+		}
+
+		ImGui::PopStyleColor(3);
+		ImGui::PopStyleVar();
+
+		if (handle) {
+			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::Selection);
+		} else {
+			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::InvalidPrefab);
+		}
+
+		ImVec2 padding = ImGui::GetStyle().FramePadding;
+		ImGui::SetCursorPos({ pos.x + padding.x, pos.y + padding.y });
+		ImGui::Text("%s", tag.c_str());
+
+		ImGui::PopStyleColor();
+
+		EndPropertyGrid();
+
+		return changed;
+	}
+
+	/**
+	 * @brief Draws a button property in the GUI.
+	 *
+	 * @param icon The icon to display on the button.
+	 * @param label The label to display next to the button.
+	 * @param tooltip An optional tooltip to display when hovering over the button.
+	 * @param size The size of the button.
+	 * @return True if the button is clicked, false otherwise.
+	 */
+	static bool DrawButtonProperty(const char* icon, const char* label, const char* tooltip = nullptr, glm::vec2 size = glm::vec2(40.0f))
+	{
+		bool clicked = false;
+
+		BeginPropertyGrid(label, tooltip, false);
+
+		MoveMousePosX(ImGui::GetColumnWidth() / 2.0f - ImGui::GetStyle().FramePadding.x - 7.5f);
+
+		if (ImGui::Button(icon, { size.x, size.y }))
+			clicked = true;
+
+		EndPropertyGrid();
+	
+		return clicked;
+	}
+
+	/**
+	 * @brief Draws a part of an image with customizable properties.
+	 *
+	 * @param wholeImage Pointer to the Texture2D object representing the whole image.
+	 * @param label The label for the property grid.
+	 * @param tooltip Optional tooltip for the property grid.
+	 * @param offset The offset of the image part within the whole image.
+	 * @param size The size of the image part.
+	 * @param tint The tint color of the image part.
+	 * @param showBorder Show border around the image.
+	 */
+	static void DrawImagePartProperty(
+		Texture2D* wholeImage, const char* label, const char* tooltip = nullptr,
+		glm::vec2 offset = glm::vec2(0.0f), glm::vec2 size = glm::vec2(0.0f), glm::vec4 tint = glm::vec4(1.0f),
+		bool showBorder = false
+	) {
+		f32 width = (f32)wholeImage->GetWidth();
+		f32 height = (f32)wholeImage->GetHeight();
+
+		GUI::BeginPropertyGrid(label, tooltip, false);
+
+		ImVec2 uv0 = ImVec2(offset.x / width, (height - offset.y) / height);
+		ImVec2 uv1 = ImVec2((offset.x + size.x) / width, (height - offset.y - (size.y)) / height);
+
+		f32 originalImageWidth = size.x;
+		f32 originalImageHeight = size.y;
+
+		ImVec2 space = ImGui::GetContentRegionAvail();
+		ImVec2 imagePartSize = ImVec2(originalImageWidth, originalImageHeight);
+
+		// if image is smaller than the space, scale it up
+		// this nasty way, because of variations and flickering of ImGui::GetContentRegionAvail() at certain column sizes.
+		if (originalImageHeight < space.x) {
+			f32 scale = std::floor(space.x / originalImageWidth);
+			imagePartSize = ImVec2(originalImageWidth * scale, originalImageHeight * scale);
+		}
+
+		const ImVec4 borderCol = showBorder ?
+			ImGui::ColorConvertU32ToFloat4(GUI::Theme::TextBrighter) : ImVec4(0.f, 0.f, 0.f, 0.f);
+
+		ImGui::Image(
+			GUI::GetTextureID(wholeImage->GetTexHandle()), imagePartSize, uv0, uv1, { tint.r, tint.g, tint.b, tint.a }, borderCol
+		);
+
+		GUI::EndPropertyGrid();
+	}
+
 	/**
 	 * @brief Draws a boolean property in the GUI.
 	 *
@@ -1194,7 +1548,7 @@ namespace SW::GUI {
 
 		BeginPropertyGrid(label, tooltip);
 
-		GUI::MoveMousePosX(ImGui::GetColumnWidth() / 2.0f - ImGui::GetStyle().FramePadding.x - 15.f);
+		GUI::MoveMousePosX(ImGui::GetColumnWidth() / 2.0f - ImGui::GetStyle().FramePadding.x - 7.5f);
 
 		changed = ImGui::Checkbox("##property_checkbox", &value);
 
@@ -1324,26 +1678,50 @@ namespace SW::GUI {
 		T value = 0;
 	};
 
+	template <typename T>
+	static bool DrawRadioButtonProperty(
+		T& value, const std::vector<SelectOption<T>>& options, const char* label, const char* tooltip = nullptr,
+		ImGuiComboFlags flags = ImGuiComboFlags_None
+	) {
+		bool changed = false;
+
+		BeginPropertyGrid(label, tooltip);
+
+		int val = (int)value;
+		for (int i = 0; i < options.size(); i++) {
+			const SelectOption<T>& option = options[i];
+
+			if (ImGui::RadioButton(option.Label.c_str(), &val, (int)option.value)) {
+				changed = true;
+				value = (T)val;
+			}
+				
+			if (i != options.size() - 1)
+				ImGui::SameLine();
+		}
+
+		EndPropertyGrid();
+
+		return changed;
+	}
+
 	/**
-	 * @brief Draws a selectable property in the GUI.
+	 * @brief Draws a selectable widget in the GUI.
 	 *
-	 * This function displays a selectable property in the GUI, allowing the user to choose from a list of options.
+	 * This function displays a selectable widget in the GUI, allowing the user to choose from a list of options.
 	 * The selected value is stored in the provided reference variable.
 	 *
-	 * @tparam T The type of the property value.
-	 * @param value The reference to the property value.
-	 * @param options The list of selectable options.
-	 * @param label The label for the property.
-	 * @param tooltip The tooltip for the property (optional).
-	 * 
+	 * @tparam T The type of the value.
+	 * @param value The reference to the value.
+	 * @param options The vector of selectable options.
+	 * @param flags Additional ImGui flags (optional).
+	 *
 	 * @return bool Whether something has changed
 	 */
 	template <typename T>
-	static bool DrawSelectableProperty(
-		T& value, std::initializer_list<SelectOption<T>> options, const char* label, const char* tooltip = nullptr
+	static bool DrawSelectable(
+		T& value, const std::vector<SelectOption<T>>& options, ImGuiComboFlags flags = ImGuiComboFlags_None
 	) {
-		BeginPropertyGrid(label, tooltip);
-
 		bool changed = false;
 
 		std::string chosenName = "";
@@ -1370,6 +1748,35 @@ namespace SW::GUI {
 
 			ImGui::EndCombo();
 		}
+
+		return changed;
+	}
+
+	/**
+	 * @brief Draws a selectable property in the GUI.
+	 *
+	 * This function displays a selectable property in the GUI, allowing the user to choose from a list of options.
+	 * The selected value is stored in the provided reference variable.
+	 *
+	 * @tparam T The type of the property value.
+	 * @param value The reference to the property value.
+	 * @param options The vector of selectable options.
+	 * @param label The label for the property.
+	 * @param tooltip The tooltip for the property (optional).
+	 * @param flags Additional ImGui flags (optional).
+	 * 
+	 * @return bool Whether something has changed
+	 */
+	template <typename T>
+	static bool DrawSelectableProperty(
+		T& value, const std::vector<SelectOption<T>>& options, const char* label,
+		const char* tooltip = nullptr, ImGuiComboFlags flags = ImGuiComboFlags_None
+	) {
+		bool changed = false;
+
+		BeginPropertyGrid(label, tooltip);
+
+		changed = DrawSelectable(value, options, flags);
 
 		EndPropertyGrid();
 
@@ -1456,4 +1863,62 @@ namespace SW::GUI {
 		ImGuiWindow* window = GImGui->CurrentWindow;
 		return window->ContentRegionRect.GetWidth();
 	}
+
+	static void DrawScale(const ImVec2& from, const ImVec2& to, f32 majorUnit, f32 minorUnit, f32 labelAlignment, f32 sign = 1.0f)
+	{
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+		ImVec2 direction = (to - from) * ImInvLength(to - from, 0.0f);
+		ImVec2 normal = ImVec2(-direction.y, direction.x);
+		f32 distance = sqrtf(ImLengthSqr(to - from));
+
+		if (ImDot(direction, direction) < FLT_EPSILON)
+			return;
+
+		f32 minorSize = 5.0f;
+		f32 majorSize = 10.0f;
+		f32 labelDistance = 8.0f;
+
+		drawList->AddLine(from, to, IM_COL32(255, 255, 255, 255));
+
+		ImVec2 p = from;
+
+		for (f32 d = 0.0f; d <= distance; d += minorUnit, p += direction * minorUnit)
+			drawList->AddLine(p - normal * minorSize, p + normal * minorSize, IM_COL32(255, 255, 255, 255));
+
+		for (f32 d = 0.0f; d <= distance + majorUnit; d += majorUnit) {
+			p = from + direction * d;
+
+			drawList->AddLine(p - normal * majorSize, p + normal * majorSize, IM_COL32(255, 255, 255, 255));
+
+			if (d == 0.0f)
+				continue;
+
+			char label[16];
+			snprintf(label, 15, "%g", d * sign);
+			ImVec2 labelSize = ImGui::CalcTextSize(label);
+
+			ImVec2 labelPosition = p + ImVec2(fabsf(normal.x), fabsf(normal.y)) * labelDistance;
+			f32 labelAlignedSize = ImDot(labelSize, direction);
+			labelPosition += direction * (-labelAlignedSize + labelAlignment * labelAlignedSize * 2.0f);
+			labelPosition = ImFloor(labelPosition + ImVec2(0.5f, 0.5f));
+
+			drawList->AddText(labelPosition, IM_COL32(255, 255, 255, 255), label);
+		}
+	}
+
+	static bool Splitter(bool split_vertically, f32 thickness, f32* size1, f32* size2, f32 min_size1, f32 min_size2, f32 splitter_long_axis_size = -1.0f)
+	{
+		using namespace ImGui;
+
+		ImGuiContext& g = *GImGui;
+		ImGuiWindow* window = g.CurrentWindow;
+		ImGuiID id = window->GetID("##Splitter");
+		ImRect bb;
+
+		bb.Min = window->DC.CursorPos + (split_vertically ? ImVec2(*size1, 0.0f) : ImVec2(0.0f, *size1));
+		bb.Max = bb.Min + CalcItemSize(split_vertically ? ImVec2(thickness, splitter_long_axis_size) : ImVec2(splitter_long_axis_size, thickness), 0.0f, 0.0f);
+
+		return SplitterBehavior(bb, id, split_vertically ? ImGuiAxis_X : ImGuiAxis_Y, size1, size2, min_size1, min_size2, 0.0f);
+	}
+
 }

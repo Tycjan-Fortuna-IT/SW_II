@@ -1,0 +1,127 @@
+Entities:
+  - Entity:
+      IDComponent:
+        ID: 1549445028952477093
+      TagComponent:
+        Tag: Circle Collider
+      TransformComponent:
+        Transform: [1.61640847, 2.10712433, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      CircleComponent:
+        Color: [1, 1, 1, 1]
+        Thickness: 1
+        Fade: 0.00499999989
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 2
+        AutoMass: true
+        Mass: 1
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
+      CircleCollider2DComponent:
+        Radius: 0.5
+        Offset: [0, 0]
+        Density: 1
+        IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 4837957523152422526
+      TagComponent:
+        Tag: Joint
+      TransformComponent:
+        Transform: [-0.490708232, -0.216501236, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      SpriteComponent:
+        AssetHandle: 0
+        Color: [0.695187151, 0.10780976, 0.10780976, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 0
+        AutoMass: true
+        Mass: 1
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
+  - Entity:
+      IDComponent:
+        ID: 12883491613867056130
+      TagComponent:
+        Tag: Box Collider
+      TransformComponent:
+        Transform: [-0.447395325, -0.476275444, 0]
+        Rotation: [0, 0, -0.485725135]
+        Scale: [7.80000019, 0.999999881, 1]
+      SpriteComponent:
+        AssetHandle: 0
+        Color: [0.128914207, 0.86096257, 0.755265653, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 2
+        AutoMass: true
+        Mass: 1
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
+      BoxCollider2DComponent:
+        Size: [0.5, 0.5]
+        Offset: [0, 0]
+        Density: 1
+        IsSensor: false
+      RevolutionJoint2DComponent:
+        ConnectedEntityID: 4837957523152422526
+        OriginAnchor: [0, 0]
+        LowerAngle: 0
+        UpperAngle: 6.26573181
+        MotorSpeed: 0
+        MaxMotorTorque: 10
+        BreakingForce: 3.40282347e+38
+        BreakingTorque: 3.40282347e+38
+        EnableLimit: false
+        EnableMotor: true
+        EnableCollision: false
+  - Entity:
+      IDComponent:
+        ID: 15711495299791154194
+      TagComponent:
+        Tag: Camera
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      CameraComponent:
+        Primary: true
+        AspectRatio: 1.99825788
+        ProjectionType: 1
+        OrthographicSize: 10
+        OrthographicNearClip: -1
+        OrthographicFarClip: 1

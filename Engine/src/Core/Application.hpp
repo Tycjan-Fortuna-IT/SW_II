@@ -28,9 +28,10 @@ namespace SW {
         u16 Width = 1280;					/** @brief Width of the application window. */
         u16 Height = 720;					/** @brief Height of the application window. */
         bool VSync = false;					/** @brief Whether the application should use VSync. */
-		EmbeddedIcon Icon = {};				/** @brief Window's icon, shown only if toolbar is enabled */
+		EmbeddedIcon Icon = {};				/** @brief Window's icon, shown only if toolbar is enabled. */
 		bool DisableToolbar = false;		/** @brief Whether the default window's toolbar should be visible. */
-		bool Fullscreen = false;			/** @brief Whether the window on start should be full screen */
+		bool Fullscreen = false;			/** @brief Whether the window on start should be full screen. */
+		bool EnableCSharpSupport = true;	/** @brief Whether the C# host should be initialized. */
     };
 
 	/**

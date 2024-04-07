@@ -38,6 +38,10 @@ namespace SW {
 	class Renderer2D final
 	{
 	public:
+		static Texture2D* WhiteTexture;
+		static Texture2D* BlackTexture;
+
+	public:
 		/**
 		 * @brief Initializes the Renderer2D with the specified shader.
 		 */
@@ -152,7 +156,7 @@ namespace SW {
 		 */
 		static void DrawString(const glm::mat4& transform, const TextComponent& text, int entityID = -1);
 
-		static void DrawString(const std::string& string, Font* font, const glm::mat4& transform, const glm::vec4& color, 
+		static void DrawString(const std::string& string, Font** font, const glm::mat4& transform, const glm::vec4& color, 
 			f32 kerning = 0.0f, f32 lineSpacing = 0.0f, int entityID = -1);
 	};
 

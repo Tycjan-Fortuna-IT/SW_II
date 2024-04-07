@@ -1,8 +1,8 @@
 /**
  * @file Icons.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.1
- * @date 2024-01-24
+ * @version 0.1.1
+ * @date 2024-03-16
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -65,3 +65,18 @@
 #define SW_ICON_CONTENT_DUPLICATE u8"\uF191"
 #define SW_ICON_CONTENT_COPY u8"\uF18F"
 #define SW_ICON_CONTENT_PASTE u8"\uF192"
+#define SW_ICON_SCRIPT u8"\uF424"
+#define SW_ICON_LANGUAGE_C u8"\uF671"
+#define SW_ICON_LANGUAGE_CSHARP u8"\uF31B"
+#define SW_ICON_FOLDER u8"\uF24B"
+#define SW_ICON_FOLDER_OPEN u8"\uF76F"
+#define SW_ICON_FILE u8"\uF214"
+#define SW_ICON_FILE_IMAGE u8"\uF21F"
+#define SW_ICON_FILE_IMPORT u8"\uF220"
+#define SW_ICON_FILE_VIDEO u8"\uF22B"
+#define SW_ICON_NEW_BOX u8"\uF394"
+#define SW_ICON_COGS u8"\uF8D5"
+#define SW_ICON_BOOK_OPEN u8"\uF0BD"
+#define SW_ICON_DOTS_VERTICAL u8"\uF1D9"
+#define SW_ICON_EXPORT u8"\uF207"
+#define SW_ICON_SAVE u8"\uF193"

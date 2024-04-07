@@ -8,21 +8,20 @@
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Core/Utils/FileSystem.hpp"
 #include "Managers/SelectionManager.hpp"
-#include "Core/AssetManager.hpp"
 #include "Panels/SceneViewportPanel.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Project/Project.hpp"
 #include "Core/Project/ProjectSerializer.hpp"
+#include "Core/Scripting/ScriptingCore.hpp"
+#include "GUI/Editor/EditorResources.hpp"
+#include "AssetPanels/AssetEditorPanelManager.hpp"
 
 namespace SW {
 
 	void EditorLayer::OnAttach()
 	{
-		m_IconTexture = AssetManager::GetEditorTexture2D("assets/icons/SW_Icon.png");
-		m_CloseIconTexture = AssetManager::GetEditorTexture2D("assets/icons/editor/windows/Close.png");
-		m_MaximizeIconTexture = AssetManager::GetEditorTexture2D("assets/icons/editor/windows/Maximize.png");
-		m_MinimizeIconTexture = AssetManager::GetEditorTexture2D("assets/icons/editor/windows/Minimize.png");
-		m_RestoreIconTexture = AssetManager::GetEditorTexture2D("assets/icons/editor/windows/Restore.png");
+		EditorResources::Initialize();
+		AssetEditorPanelManager::Initialize();
 
 		const GUI::FontSpecification fontSpec("assets/fonts/Roboto/Roboto-Regular.ttf", "assets/fonts/Roboto/Roboto-Bold.ttf");
 
@@ -49,6 +48,10 @@ namespace SW {
 		Application::Get()->GetWindow()->SetVSync(true);
 
 		Renderer2D::Initialize();
+
+#ifdef SW_DEBUG_BUILD
+		OpenProject();
+#endif
 	}
 
 	void EditorLayer::OnDetach()
@@ -57,7 +60,13 @@ namespace SW {
 			delete panel;
 		}
 
+		EditorResources::Shutdown();
+		AssetEditorPanelManager::Shutdown();
+
 		Renderer2D::Shutdown();
+
+		if (ProjectContext::HasContext())
+			delete ProjectContext::Get();
 	}
 
 	void EditorLayer::OnUpdate(Timestep dt)
@@ -68,6 +77,8 @@ namespace SW {
 			if (panel->IsShowing())
 				panel->OnUpdate(dt);
 		}
+
+		AssetEditorPanelManager::OnUpdate(dt);
 	}
 
 	f32 EditorLayer::DrawTitleBar()
@@ -107,13 +118,13 @@ namespace SW {
 		drawList->AddRectFilledMultiColor(titlebarMin, ImVec2(titlebarMin.x + 600.0f, titlebarMax.y), gradientColor, Color::TitleBar, Color::TitleBar, gradientColor);
 
 		{
-			const f32 logoWidth = (f32)m_IconTexture->GetWidth() / 3.f;
-			const f32 logoHeight = (f32)m_IconTexture->GetHeight() / 3.f;
+			const f32 logoWidth = (f32)EditorResources::SW_Icon->GetWidth() / 3.f;
+			const f32 logoHeight = (f32)EditorResources::SW_Icon->GetHeight() / 3.f;
 			const ImVec2 logoOffset(20.0f + windowPadding.x, windowPadding.y - 1.2f);
 			const ImVec2 logoRectStart = { ImGui::GetItemRectMin().x + logoOffset.x, ImGui::GetItemRectMin().y + logoOffset.y };
 			const ImVec2 logoRectMax = { logoRectStart.x + logoWidth, logoRectStart.y + logoHeight };
 
-			drawList->AddImage(GUI::GetTextureID(m_IconTexture), logoRectStart, logoRectMax, { 0, 1 }, { 1, 0 });
+			drawList->AddImage(GUI::GetTextureID(EditorResources::SW_Icon), logoRectStart, logoRectMax, { 0, 1 }, { 1, 0 });
 		}
 
 		const f32 w = ImGui::GetContentRegionAvail().x;
@@ -190,7 +201,7 @@ namespace SW {
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
 			ImGui::SetItemAllowOverlap();
 
-			if (GUI::ImageButton(*m_MinimizeIconTexture, { 40.f, 40.f })) {
+			if (GUI::ImageButton(*EditorResources::MinimizeIcon, { 40.f, 40.f })) {
 				Application::Get()->GetWindow()->Minimize();
 			}
 		}
@@ -205,11 +216,11 @@ namespace SW {
 			ImGui::SetItemAllowOverlap();
 
 			if (m_WindowMaximized) {
-				if (GUI::ImageButton(*m_RestoreIconTexture, { 40.f, 40.f })) {
+				if (GUI::ImageButton(*EditorResources::RestoreIcon, { 40.f, 40.f })) {
 					Application::Get()->GetWindow()->Restore();
 				}
 			} else {
-				if (GUI::ImageButton(*m_MaximizeIconTexture, { 40.f, 40.f })) {
+				if (GUI::ImageButton(*EditorResources::MaximizeIcon, { 40.f, 40.f })) {
 					Application::Get()->GetWindow()->Maximize();
 				}
 			}
@@ -223,7 +234,7 @@ namespace SW {
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
 			ImGui::SetItemAllowOverlap();
 
-			if (GUI::ImageButton(*m_CloseIconTexture, { 40.f, 40.f })) {
+			if (GUI::ImageButton(*EditorResources::CloseIcon, { 40.f, 40.f })) {
 				Application::Get()->Close();
 			}
 		}
@@ -277,9 +288,9 @@ namespace SW {
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("View")) {
-				if (ImGui::MenuItem("Show viewport")) {
-
+			if (ImGui::BeginMenu("Scripting")) {
+				if (ImGui::MenuItem("Reload C# Assemblies", "Ctrl+B")) {
+					ReloadCSharpScripts();
 				}
 
 				ImGui::EndMenu();
@@ -295,52 +306,21 @@ namespace SW {
 	{
 		PROFILE_FUNCTION();
 
-		Application::Get()->GetWindow()->RegisterOverTitlebar(false);
+		Window* window = Application::Get()->GetWindow();
 
-		ImGuiIO& io = ImGui::GetIO();
-		ImGuiStyle& style = ImGui::GetStyle();
-
-		io.ConfigWindowsResizeFromEdges = io.BackendFlags & ImGuiBackendFlags_HasMouseCursors;
-
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
-
-		const ImGuiViewport* viewport = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(viewport->Pos);
-		ImGui::SetNextWindowSize(viewport->Size);
-		ImGui::SetNextWindowViewport(viewport->ID);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
-		m_WindowMaximized = Application::Get()->GetWindow()->IsCurrentlyMaximized();
-
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, m_WindowMaximized ? ImVec2(6.0f, 6.0f) : ImVec2(1.0f, 1.0f));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
-
-		ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4{ 0.0f, 0.0f, 0.0f, 0.0f });
-		ImGui::Begin("DockSpace Demo", nullptr, window_flags);
-		ImGui::PopStyleColor();
-		ImGui::PopStyleVar(2);
-
-		ImGui::PopStyleVar(2);
-
-		f32 titlebarHeight = DrawTitleBar();
-
-		ImGui::SetCursorPosY(titlebarHeight + ImGui::GetCurrentWindow()->WindowPadding.y);
-
-		// Dockspace
-		f32 minWinSizeX = style.WindowMinSize.x;
-		style.WindowMinSize.x = 370.0f;
-		ImGui::DockSpace(ImGui::GetID("MyDockspace"));
-		style.WindowMinSize.x = minWinSizeX;
-
-		ImGui::End();
+		window->RegisterOverTitlebar(false);
+		m_WindowMaximized = window->IsCurrentlyMaximized();
+		
+		GUI::CreateDockspace("Main dockspace", [this]() -> f32 {
+			return DrawTitleBar();
+		});
 
 		for (Panel* panel : m_Panels) {
 			if (panel->IsShowing())
 				panel->OnRender();
 		}
+
+		AssetEditorPanelManager::OnRender();
 
 		if (m_OpenNewSceneModal) {
 			m_OpenNewSceneModal = false;
@@ -360,16 +340,16 @@ namespace SW {
 			GUI::DrawSingleLineTextInputProperty<256>(newProjectName, "Name");
 			GUI::EndProperties();
 
-			if (newProjectName != "") {
+			if (newProjectName != "") { // TODO fixme
 				if (ImGui::Button("Create", ImVec2(100.f, 0))) {
 					if (SelectionManager::IsSelected())
 						SelectionManager::Deselect();
 
-					std::filesystem::path newScenePath = ProjectContext::Get()->GetAssetDirectory() / "assets" / "scenes" / newProjectName;
+					std::filesystem::path newScenePath = ProjectContext::Get()->GetAssetDirectory() / "scenes" / newProjectName;
 
 					Scene* newScene = new Scene(newScenePath.string());
 
-					SceneSerializer::Serialize(newScene, newScenePath.string());
+					SceneSerializer::Serialize(newScene, newScenePath);
 
 					delete m_Viewport->GetCurrentScene();
 					m_Viewport->SetCurrentScene(newScene);
@@ -394,9 +374,9 @@ namespace SW {
 
 	bool EditorLayer::OnKeyPressed(KeyCode code)
 	{
-		const bool shift = Input::IsKeyPressed(KeyCode::LeftShift) || Input::IsKeyPressed(KeyCode::RightShift);
-		const bool ctrl = Input::IsKeyPressed(KeyCode::LeftControl) || Input::IsKeyPressed(KeyCode::RightControl);
-		const bool alt = Input::IsKeyPressed(KeyCode::LeftAlt) || Input::IsKeyPressed(KeyCode::RightAlt);
+		const bool shift = Input::IsKeyDown(KeyCode::LeftShift) || Input::IsKeyDown(KeyCode::RightShift);
+		const bool ctrl = Input::IsKeyDown(KeyCode::LeftControl) || Input::IsKeyDown(KeyCode::RightControl);
+		const bool alt = Input::IsKeyDown(KeyCode::LeftAlt) || Input::IsKeyDown(KeyCode::RightAlt);
 
 		switch (code) {
 			case KeyCode::Escape:
@@ -412,6 +392,8 @@ namespace SW {
 				if (ctrl) OpenProject(); break;
 			case KeyCode::N:
 				if (ctrl && ProjectContext::HasContext()) CreateNewScene(); break;
+			case KeyCode::B:
+				if (ctrl) ReloadCSharpScripts(); break;
 			default:
 				break;
 		}
@@ -444,14 +426,9 @@ namespace SW {
 			std::string path = filepath.string();
 
 			Project* newProject = ProjectSerializer::Deserialize(path);
-			ProjectContext::Set(newProject);
+			ProjectContext::Set(newProject); // TODO: Make projects switchable
 
-			EventSystem::Emit({
-				.Code = EVENT_CODE_PROJECT_LOADED,
-				.Payload = {
-					.f32 = { (f32)0, (f32)0 }
-				}
-			}, nullptr);
+			ScriptingCore::Get().Initialize();
 		}
 	}
 
@@ -468,6 +445,33 @@ namespace SW {
 			Scene* currentScene = m_Viewport->GetCurrentScene();
 			SceneSerializer::Serialize(currentScene, currentScene->GetFilePath());
 		}
+	}
+
+	void EditorLayer::ReloadCSharpScripts()
+	{
+		if (!ProjectContext::HasContext())
+			return;
+
+		if (m_Viewport->GetCurrentScene()->GetCurrentState() != SceneState::Edit)
+			return;
+
+		SW_INFO("Reloading C# Scripts ...");
+
+		ScriptingCore& core = ScriptingCore::Get();
+
+		ScriptStorage tempStorage;
+
+		auto& scriptStorage = m_Viewport->GetCurrentScene()->GetScriptStorage();
+		scriptStorage.CopyTo(tempStorage);
+		scriptStorage.Clear();
+
+		core.Shutdown();
+		core.Initialize();
+
+		tempStorage.CopyTo(scriptStorage);
+		tempStorage.Clear();
+
+		scriptStorage.SynchronizeStorage();
 	}
 
 }

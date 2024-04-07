@@ -24,7 +24,7 @@ namespace SW {
 		 * @param scene Scene to serialize.
 		 * @param path Path to file.
 		 */
-		static void Serialize(Scene* scene, const std::string& path);
+		static void Serialize(Scene* scene, const std::filesystem::path& path);
 
 		/**
 		 * @brief Deserializes scene from file.
@@ -32,7 +32,7 @@ namespace SW {
 		 * @param scene Scene to deserialize.
 		 * @param path Path to file.
 		 */
-		[[nodiscard]] static Scene* Deserialize(const std::string& path);
+		[[nodiscard]] static Scene* Deserialize(const std::filesystem::path& path);
 	};
 
 }
