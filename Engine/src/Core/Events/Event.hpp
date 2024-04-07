@@ -65,6 +65,12 @@ namespace SW {
 		 * @warning Event without payload!
 		 */
 		EVENT_CODE_PROJECT_LOADED = 0x09,
+
+		/**
+		 * @brief A change of the project's assets directory was made by the sender.
+		 * @warning Event without payload!
+		 */
+		EVENT_CODE_ASSET_DIR_CONTENT_CHANGED = 0x10,
     };
 
 	/**

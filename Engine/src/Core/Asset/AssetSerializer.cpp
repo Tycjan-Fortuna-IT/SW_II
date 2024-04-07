@@ -167,7 +167,7 @@ namespace SW {
 
 		FontSpecification spec;
 		spec.Path = ProjectContext::Get()->GetAssetDirectory() / sourceMetadata.Path;
-		spec.Charset = FontCharsetType::ASCII;
+		spec.Charset = (FontCharsetType)data["CharsetType"].as<int>();;
 		spec.PreloadedAtlas = FontCache::TryGetCachedAtlas(metadata.Handle, metadata.ModificationTime);
 
 		Font* font = new Font(spec);

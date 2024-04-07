@@ -8,6 +8,8 @@
  */
 #pragma once
 
+#include "Core/Asset/AssetImporter.hpp"
+
 namespace SW::GUI::Popups {
 
 	/**
@@ -36,5 +38,16 @@ namespace SW::GUI::Popups {
 	 * @return True if the file was deleted successfully, false otherwise.
 	 */
 	bool DrawDeleteFileToRenamePopup(const std::filesystem::path& filepath, bool* opened);
+
+	class FontSourceImportDialog
+	{
+	public:
+		void Open(AssetHandle handle);
+		void OnRender();
+		void Reset();
+
+	private:
+		FontImportData m_Data;
+	};
 
 }

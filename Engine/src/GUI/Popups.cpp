@@ -206,4 +206,100 @@ namespace SW::GUI::Popups {
 		return renamed;
 	}
 
+	void FontSourceImportDialog::Open(AssetHandle handle)
+	{
+		Reset();
+
+		m_Data.FontSourceHandle = handle;
+
+		ImGui::OpenPopup("Font Source Import Dialog");
+	}
+
+	void FontSourceImportDialog::OnRender()
+	{
+		constexpr ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen
+			| ImGuiTreeNodeFlags_SpanAvailWidth
+			| ImGuiTreeNodeFlags_AllowItemOverlap
+			| ImGuiTreeNodeFlags_Framed
+			| ImGuiTreeNodeFlags_FramePadding;
+
+		GUI::ScopedStyle WindowPadding(ImGuiStyleVar_WindowPadding, ImVec2(4.0f, 4.0f));
+		GUI::ScopedStyle FramePadding(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 8.0f));
+		
+		bool closeable = true;
+
+		// Always should be in the middle of the screen
+		ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+		
+		if (ImGui::BeginPopupModal("Font Source Import Dialog", &closeable)) {
+
+			const bool generalOpen = ImGui::TreeNodeEx("FontImport_General", treeFlags, "%s", "General Import Options");
+			
+			if (generalOpen) {
+				GUI::BeginProperties("##font_import_general_property");
+
+				GUI::DrawSaveFilePickerProperty(m_Data.OutputPath, { { "SW Font file", "sw_font" } }, "Font output file");
+
+				GUI::EndProperties();
+			
+				ImGui::TreePop();
+			}
+
+			const bool advancedOpen = ImGui::TreeNodeEx("FontImport_Advanced", treeFlags, "%s", "Advanced Import Options");
+			
+			if (advancedOpen) {
+				GUI::BeginProperties("##font_import_advanced_property");
+				
+				GUI::DrawRadioButtonProperty(m_Data.CharsetType, {
+					GUI::SelectOption<FontCharsetType>{ "ASCII", FontCharsetType::ASCII },
+					GUI::SelectOption<FontCharsetType>{ "ALL", FontCharsetType::ALL }
+				}, "Charset Type", "Define which set of characters to use (ALL is much more memory intensive than ASCII)");
+
+				GUI::EndProperties();
+				
+				ImGui::TreePop();
+			}
+
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 10));
+
+			const f32 width = ImGui::GetContentRegionAvail().x;
+
+			bool isDataValid = (bool)m_Data;
+
+			if (!isDataValid) {
+				ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+				ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+			}
+
+			if (ImGui::Button("Import", ImVec2(width / 2.f, 30.f))) {
+				FontAssetImporter::Import(m_Data);
+
+				ImGui::CloseCurrentPopup();
+			}
+
+			if (!isDataValid) {
+				ImGui::PopItemFlag();
+				ImGui::PopStyleVar();
+			}
+
+			ImGui::SameLine();
+
+			ImGui::SetItemDefaultFocus();
+
+			if (ImGui::Button("Cancel", ImVec2(width / 2.f - 10.f, 30.f)))
+				ImGui::CloseCurrentPopup();
+
+			ImGui::PopStyleVar(1);
+
+			ImGui::EndPopup();
+		}
+	}
+
+	void FontSourceImportDialog::Reset()
+	{
+		m_Data.FontSourceHandle = 0u;
+		m_Data.CharsetType = SW::FontCharsetType::ASCII;
+		m_Data.OutputPath = "";
+	}
+
 }

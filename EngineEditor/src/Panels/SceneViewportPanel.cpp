@@ -448,26 +448,33 @@ namespace SW {
 			const bool isSceneLoaded = IsSceneLoaded();
 
 			if (
-				(!isSceneLoaded || m_ActiveScene->GetCurrentState() == SceneState::Edit) &&
-				ImGui::BeginDragDropTarget()
+				!isSceneLoaded || m_ActiveScene->GetCurrentState() == SceneState::Edit
 			) {
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Scene")) {
-					u64* handle = static_cast<u64*>(payload->Data);
+				if (ImGui::BeginDragDropTarget()) {
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Scene")) {
+						u64* handle = static_cast<u64*>(payload->Data);
 
-					const AssetMetaData& metadata = AssetManager::GetAssetMetaData(*handle);
+						const AssetMetaData& metadata = AssetManager::GetAssetMetaData(*handle);
 					
-					if (SelectionManager::IsSelected())
-						SelectionManager::Deselect();
+						if (SelectionManager::IsSelected())
+							SelectionManager::Deselect();
 
-					delete GetCurrentScene();
+						delete GetCurrentScene();
 
-					Scene* newScene = SceneSerializer::Deserialize(ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
+						Scene* newScene = SceneSerializer::Deserialize(ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
 
-					SetCurrentScene(newScene);
+						SetCurrentScene(newScene);
 					
-					newScene->SortEntities();
+						newScene->SortEntities();
+					}
+
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FontSource")) {
+						u64* handle = static_cast<u64*>(payload->Data);
+
+						fontImportDialog.Open(*handle);
+					}
+					ImGui::EndDragDropTarget();
 				}
-				ImGui::EndDragDropTarget();
 			}
 
 			const ImVec2 windowPosition = ImGui::GetWindowPos();
@@ -482,7 +489,7 @@ namespace SW {
 
 			glm::mat4 cameraProjection = m_EditorCamera->GetProjectionMatrix();
 			glm::mat4 cameraView = m_EditorCamera->GetViewMatrix();
-			
+
 			ImGuizmo::SetID(1);
 			ImGuizmo::SetOrthographic(false);
 			ImGuizmo::SetDrawlist();
@@ -517,7 +524,7 @@ namespace SW {
 
 				ImVec2 resolutionTextSize = ImGui::CalcTextSize(resolution);
 				ImVec2 resolutionTextPosition = { ImGui::GetCursorPosX() + m_ViewportSize.x - resolutionTextSize.x - framePadding.x, startCursorPos.y + framePadding.y };
-				
+
 				ImGui::SetCursorPos({ resolutionTextPosition.x, resolutionTextPosition.y });
 				ImGui::TextUnformatted(resolution);
 			}
@@ -531,7 +538,7 @@ namespace SW {
 				// Snapping
 				const bool snap = Input::IsKeyDown(KeyCode::LeftControl);
 				f32 snapValue = 0.5f; // Snap to 0.5m for translation/scale
-				
+
 				// Snap to 45 degrees for rotation
 				if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
 					snapValue = 45.0f;
@@ -560,6 +567,8 @@ namespace SW {
 
 			if (isSceneLoaded)
 				RenderGizmoToolbar(startCursorPos);
+
+			fontImportDialog.OnRender();
 
 			OnEnd();
 		}

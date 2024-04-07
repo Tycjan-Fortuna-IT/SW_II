@@ -12,6 +12,7 @@
 
 #include "GUI/Panel.hpp"
 #include "Core/Editor/EditorCamera.hpp"
+#include "GUI/Popups.hpp"
 
 namespace SW {
 
@@ -113,6 +114,8 @@ namespace SW {
 		glm::vec2 m_ToolbarPosition = glm::vec2(1.0f);
 
 		bool m_UsingEditorCamera = false;
+
+		GUI::Popups::FontSourceImportDialog fontImportDialog;
 
 		/**
 		 * Handles the event when a mouse button is pressed.

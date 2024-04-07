@@ -248,7 +248,7 @@ namespace SW {
 
 		FontSpecification spec;
 		spec.Path = ProjectContext::Get()->GetAssetDirectory() / sourceMetadata.Path;
-		spec.Charset = FontCharsetType::ASCII;
+		spec.Charset = (FontCharsetType)data["CharsetType"].as<int>();;
 		spec.ApplyMSDFColoring = false;
 		spec.ForceHeight = 512;
 		spec.ForceWidth = 512;

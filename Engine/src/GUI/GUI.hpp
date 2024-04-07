@@ -1130,6 +1130,77 @@ namespace SW::GUI {
 		return changed;
 	}
 
+	static bool DrawSaveFilePickerProperty(
+		std::filesystem::path& path, const std::initializer_list<FileDialogFilterItem>& filters,
+		const char* label, const char* tooltip = nullptr
+	) {
+		bool changed = false;
+		bool isEmpty = path.empty();
+
+		std::string tag = "none";
+
+		if (!isEmpty)
+			tag = path.string();
+
+		GUI::BeginPropertyGrid(label, tooltip, true);
+
+		ImVec2 region = ImGui::GetContentRegionAvail();
+		region.x -= 20.0f;
+		region.y = ImGui::GetFrameHeight();
+
+		ImVec2 pos = ImGui::GetCursorPos();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyle().Colors[ImGuiCol_Button]);
+
+		if (ImGui::Button("##font_dropdown_property", region)) {
+			std::filesystem::path pickedPath = FileSystem::SaveFileDialog(filters);
+
+			path = std::filesystem::relative(pickedPath, ProjectContext::Get()->GetAssetDirectory());
+		}
+
+		if (ImGui::IsItemHovered() && !isEmpty) {
+			std::filesystem::path fullPath = ProjectContext::Get()->GetAssetDirectory() / path;
+
+			ImGui::BeginTooltip();
+			ImGui::TextUnformatted(fullPath.string().c_str());
+			ImGui::EndTooltip();
+		}
+
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.3f, 0.3f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f });
+
+		if (ImGui::Button("x", { 20.0f, region.y })) {
+			path.clear();
+			changed = true;
+		}
+
+		ImGui::PopStyleColor(3);
+		ImGui::PopStyleVar();
+
+		if (!isEmpty) {
+			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::Selection);
+		}
+		else {
+			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::InvalidPrefab);
+		}
+
+		ImVec2 padding = ImGui::GetStyle().FramePadding;
+		ImGui::SetCursorPos({ pos.x + padding.x, pos.y + padding.y });
+		ImGui::Text("%s", tag.c_str());
+
+		ImGui::PopStyleColor();
+
+		GUI::EndPropertyGrid();
+
+		return changed;
+	}
+
 	/**
 	 * @brief Draws a dropdown property for an entity.
 	 *
@@ -1606,6 +1677,33 @@ namespace SW::GUI {
 		std::string Label = "No label";
 		T value = 0;
 	};
+
+	template <typename T>
+	static bool DrawRadioButtonProperty(
+		T& value, const std::vector<SelectOption<T>>& options, const char* label, const char* tooltip = nullptr,
+		ImGuiComboFlags flags = ImGuiComboFlags_None
+	) {
+		bool changed = false;
+
+		BeginPropertyGrid(label, tooltip);
+
+		int val = (int)value;
+		for (int i = 0; i < options.size(); i++) {
+			const SelectOption<T>& option = options[i];
+
+			if (ImGui::RadioButton(option.Label.c_str(), &val, (int)option.value)) {
+				changed = true;
+				value = (T)val;
+			}
+				
+			if (i != options.size() - 1)
+				ImGui::SameLine();
+		}
+
+		EndPropertyGrid();
+
+		return changed;
+	}
 
 	/**
 	 * @brief Draws a selectable widget in the GUI.

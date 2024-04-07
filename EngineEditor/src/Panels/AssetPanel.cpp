@@ -34,6 +34,13 @@ namespace SW {
 
 			return false;
 		});
+
+		EventSystem::Register(EVENT_CODE_ASSET_DIR_CONTENT_CHANGED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+			LoadDirectoryEntries();
+
+			return true;
+		});
+
 	}
 
 	AssetPanel::~AssetPanel()
@@ -425,6 +432,14 @@ namespace SW {
 
 				if (!item->Thumbnail) {
 
+					// ---- !IMPORTANT! ----
+					/*
+						Actually and edge case, when asset was just created e.g. importing a FontSource and creating with it
+						a Font, it does not have the correct modification time, since it happened instantly as for the disk save
+						takes some time and updates the modification time in a deffered way.
+					*/
+					const u64 modificationTime = FileSystem::GetLastWriteTime(ProjectContext::Get()->GetAssetDirectory() / item->Path);
+
 					if (item->Type == AssetType::Sprite) {
 						Sprite** spriteAsset = AssetManager::GetAssetRaw<Sprite>(item->Handle);
 						Texture2D* texture = (*spriteAsset)->GetTexture();
@@ -438,7 +453,7 @@ namespace SW {
 
 						item->Thumbnail = thumbnail;
 					} else if (item->Type == AssetType::Texture2D) {
-						Texture2D** texture = m_Cache.GetTextureThumbnail(item->Path, item->Handle, item->ModificationTime);
+						Texture2D** texture = m_Cache.GetTextureThumbnail(item->Path, item->Handle, modificationTime);
 
 						Thumbnail thumbnail;
 						thumbnail.Width = (f32)(*texture)->GetWidth();
@@ -466,7 +481,7 @@ namespace SW {
 
 						item->Thumbnail = thumbnail;
 					} else if (item->Type == AssetType::Font) {
-						Texture2D** texture = m_Cache.GetFontAtlasThumbnail(item->Path, item->Handle, item->ModificationTime);
+						Texture2D** texture = m_Cache.GetFontAtlasThumbnail(item->Path, item->Handle, modificationTime);
 
 						Thumbnail thumbnail;
 						thumbnail.Width = (f32)(*texture)->GetWidth();
