@@ -19,6 +19,7 @@ namespace SW {
 		{ "Prefab",			AssetType::Prefab				},
 		{ "Script",			AssetType::Script				},
 		{ "Shader",			AssetType::Shader				},
+		{ "Animation",		AssetType::Animation			},
 		{ "AssetRegistry",	AssetType::AssetRegistry		},
 	};
 
@@ -34,6 +35,7 @@ namespace SW {
 		{ ".sw_sprite",		AssetType::Sprite			},
 		{ ".sw_spritesh",	AssetType::Spritesheet		},
 		{ ".glsl",			AssetType::Shader			},
+		{ ".sw_anim",		AssetType::Animation		},
 		{ ".sw_registry",	AssetType::AssetRegistry	},
 	};
 
@@ -50,6 +52,7 @@ namespace SW {
 		{ AssetType::Sprite,			IM_COL32(230, 255,   0, 255) },
 		{ AssetType::Spritesheet,		IM_COL32(172, 101, 183, 255) },
 		{ AssetType::Shader,			IM_COL32(201, 197, 202, 255) },
+		{ AssetType::Animation,			IM_COL32(  0, 255,  17, 255) },
 		{ AssetType::AssetRegistry,		IM_COL32(  0,   0,   0,   0) },
 	};
 
@@ -66,6 +69,7 @@ namespace SW {
 		{ AssetType::Sprite,			SW_ICON_FILE_IMAGE		},
 		{ AssetType::Spritesheet,		SW_ICON_FILE_IMAGE		},
 		{ AssetType::Shader,			SW_ICON_LANGUAGE_C      },
+		{ AssetType::Animation,			SW_ICON_CAMERA		    },
 		{ AssetType::AssetRegistry,		SW_ICON_FILE			},
 	};
 
@@ -83,7 +87,8 @@ namespace SW {
 			case AssetType::Prefab:			return "Prefab";		break;
 			case AssetType::Script:			return "Script";		break;
 			case AssetType::Shader:			return "Shader";		break;
-			case AssetType::AssetRegistry:	return "AssetRegistry";		break;
+			case AssetType::Animation:		return "Animation";		break;
+			case AssetType::AssetRegistry:	return "AssetRegistry";	break;
 		}
 
 		return "Unknown";
@@ -166,6 +171,10 @@ namespace SW {
 			} break;
 			case AssetType::Shader: {
 				texture = &EditorResources::ShaderAssetIcon;
+			} break;
+			case AssetType::Animation: {
+				// Thumbnail will be lazy loaded individually request based. (No need to load at the beginning).
+				// Maybe even this animation. (?)
 			} break;
 			case AssetType::AssetRegistry: {
 				// This file as an exception is not shown in the asset panel!

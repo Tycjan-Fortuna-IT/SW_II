@@ -11,6 +11,7 @@
 #include "RendererAPI.hpp"
 #include "Core/Editor/EditorCamera.hpp"
 #include "Asset/Sprite.hpp"
+#include "GUI/Editor/EditorResources.hpp"
 
 namespace SW {
 
@@ -381,9 +382,11 @@ namespace SW {
 		if (sprite.Handle) {
 			Sprite** spriteAsset = AssetManager::GetAssetRaw<Sprite>(sprite.Handle);
 			
-			ASSERT(spriteAsset); // TODO placeholder texture or smth
-			
-			Texture2D* texture = (*spriteAsset)->GetTexture();
+			Texture2D* texture = nullptr;
+			if (spriteAsset)
+				texture = (*spriteAsset)->GetTexture();
+			else
+				texture = EditorResources::MissingAssetIcon;
 
 			for (u32 i = 1; i < s_Data.TextureSlotIndex; i++) {
 				if (*s_Data.TextureSlots[i] == *texture) {
@@ -410,6 +413,47 @@ namespace SW {
 			s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = sprite.TilingFactor;
+			s_Data.QuadVertexBufferPtr->EntityID = entityID;
+			s_Data.QuadVertexBufferPtr++;
+		}
+
+		s_Data.QuadIndexCount += 6;
+
+		s_Data.Stats.QuadCount++;
+	}
+
+	void Renderer2D::DrawMissingTextureQuad(const glm::mat4& transform, int entityID /*= -1*/)
+	{
+		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
+			FlushAndReset();
+
+		f32 textureIndex = 0.f; // White Texture
+
+		glm::vec2 texCoords[4] = {
+			{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f }
+		};
+
+		Texture2D* texture = EditorResources::MissingAssetIcon;
+
+		for (u32 i = 1; i < s_Data.TextureSlotIndex; i++) {
+			if (*s_Data.TextureSlots[i] == *texture) {
+				textureIndex = static_cast<f32>(i);
+				break;
+			}
+		}
+
+		if (textureIndex == 0.0f) {
+			textureIndex = (f32)s_Data.TextureSlotIndex;
+			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
+			s_Data.TextureSlotIndex++;
+		}
+
+		for (int i = 0; i < 4; i++) {
+			s_Data.QuadVertexBufferPtr->Position = glm::vec3(transform * s_Data.QuadVertexPositions[i]);
+			s_Data.QuadVertexBufferPtr->Color = glm::vec4(1.f);
+			s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
+			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+			s_Data.QuadVertexBufferPtr->TilingFactor = 1;
 			s_Data.QuadVertexBufferPtr->EntityID = entityID;
 			s_Data.QuadVertexBufferPtr++;
 		}
@@ -484,6 +528,12 @@ namespace SW {
 	void Renderer2D::DrawString(const glm::mat4& transform, const TextComponent& text, int entityID)
 	{
 		Font** fontAsset = AssetManager::GetAssetRaw<Font>(text.Handle);
+
+		if (!fontAsset) {
+			DrawMissingTextureQuad(transform, entityID);
+			
+			return;
+		}
 
 		DrawString(text.TextString, fontAsset, transform, text.Color, text.Kerning, text.LineSpacing, entityID);
 	}

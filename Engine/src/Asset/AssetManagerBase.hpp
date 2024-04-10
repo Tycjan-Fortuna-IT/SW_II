@@ -21,7 +21,7 @@ namespace SW {
 
 		/**
 		 * @brief Get the asset.
-		 * @warning If the asset is not available, the placeholder will be returned.
+		 * @warning If the asset is not available, the nullptr will be returned.
 		 * 
 		 * @param handle The handle of the asset.
 		 * @return Asset** The asset.
@@ -30,7 +30,7 @@ namespace SW {
 		
 		/**
 		 * @brief Get the asset.
-		 * @warning If the asset is not available, the placeholder will be returned.
+		 * @warning If the asset is not available, the nullptr will be returned.
 		 * 
 		 * @param handle The handle of the asset.
 		 * @return const Asset* The asset.

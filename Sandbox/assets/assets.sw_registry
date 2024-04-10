@@ -2,11 +2,15 @@ Assets:
   - Handle: 180645514351760687
     Path: spritesheets\1.sw_spritesh
     Type: Spritesheet
-    ModificationTime: 133568076352375298
+    ModificationTime: 133569956239201741
   - Handle: 212989388691238768
     Path: scenes\Platformer.sw_scene
     Type: Scene
-    ModificationTime: 133567242788779629
+    ModificationTime: 133569940577951128
+  - Handle: 298414256961260786
+    Path: cache\thumbnails\2525114378178378104_133569940577881088.cache
+    Type: Unknown
+    ModificationTime: 133569954350066693
   - Handle: 797252750352022058
     Path: cache
     Type: Directory
@@ -14,31 +18,27 @@ Assets:
   - Handle: 1228424024008410871
     Path: fonts\CascadiaMono.ttf
     Type: FontSource
-    ModificationTime: 133250476020000000
+    ModificationTime: 133569940505974470
   - Handle: 1851129292016874927
     Path: scenes
     Type: Directory
-    ModificationTime: 133563810396124979
-  - Handle: 1895022271424216758
-    Path: fonts\CascadiaCode_ASCII.sw_font
-    Type: Font
-    ModificationTime: 133569670506842517
+    ModificationTime: 133569940577961124
   - Handle: 2344416971790700506
     Path: fonts\CascadiaMono_ASCII.sw_font
     Type: Font
-    ModificationTime: 133569673748243683
+    ModificationTime: 133569940577871086
   - Handle: 2525114378178378104
     Path: fonts\OpenSansRegular_ASCII.sw_font
     Type: Font
-    ModificationTime: 133569679998142416
+    ModificationTime: 133569940577881088
   - Handle: 2672423647848718755
     Path: scenes\Physics_RevolutionJoints.sw_scene
     Type: Scene
-    ModificationTime: 133567242300834935
+    ModificationTime: 133569940577921095
   - Handle: 2825569506529799740
     Path: fonts\OpenSans-Regular.ttf
     Type: FontSource
-    ModificationTime: 133470633820000000
+    ModificationTime: 133569940505994474
   - Handle: 2876084304230329714
     Path: cache\thumbnails\1895022271424216758_133569670506842517.cache
     Type: Unknown
@@ -50,11 +50,11 @@ Assets:
   - Handle: 4007508123346557669
     Path: scenes\BigerScene.sw_scene
     Type: Scene
-    ModificationTime: 133567241461781609
-  - Handle: 4623462104134965875
-    Path: cache\thumbnails\13681513260605220869_133569695048463406.cache
+    ModificationTime: 133569940577891114
+  - Handle: 4585082588623793132
+    Path: cache\thumbnails\13743448306498844429_133569940577861104.cache
     Type: Unknown
-    ModificationTime: 133569897368076906
+    ModificationTime: 133569954316517912
   - Handle: 5439308717581076059
     Path: build
     Type: Directory
@@ -62,15 +62,15 @@ Assets:
   - Handle: 5441874985758434010
     Path: fonts\CascadiaCode_ALL.sw_font
     Type: Font
-    ModificationTime: 133569684038127795
+    ModificationTime: 133569940577861104
   - Handle: 5981896673017283474
     Path: build\Coral.Managed.dll
     Type: Unknown
     ModificationTime: 133548080720431248
-  - Handle: 6933903906055657242
-    Path: cache\thumbnails\2344416971790700506_133569673748243683.cache
+  - Handle: 6897457967798819381
+    Path: cache\thumbnails\15758475306527755018_133569940578021100.cache
     Type: Unknown
-    ModificationTime: 133569897334821615
+    ModificationTime: 133569955934630990
   - Handle: 7077105227154440329
     Path: build\Coral.Managed.pdb
     Type: Unknown
@@ -86,95 +86,103 @@ Assets:
   - Handle: 8103278870192969790
     Path: cache\fonts
     Type: Directory
-    ModificationTime: 133569905442655220
+    ModificationTime: 133569954460001001
   - Handle: 8755409979203817553
     Path: build\Sandbox.pdb
     Type: Unknown
     ModificationTime: 133549188709074721
-  - Handle: 9266921833604036830
-    Path: cache\thumbnails\5441874985758434010_133569684038127795.cache
-    Type: Unknown
-    ModificationTime: 133569897300126380
   - Handle: 9404689471195940422
     Path: scenes\TestScene.sw_scene
     Type: Scene
-    ModificationTime: 133567280322183339
-  - Handle: 9450557721691356235
-    Path: fonts\l
-    Type: Directory
-    ModificationTime: 133569906291592420
+    ModificationTime: 133569940577951128
   - Handle: 9751217973959575363
     Path: scenes\Physics_WheelJoints.sw_scene
     Type: Scene
-    ModificationTime: 133567242619611353
+    ModificationTime: 133569940577941112
   - Handle: 9815488022129325558
     Path: scripts
     Type: Directory
-    ModificationTime: 133549188692773309
-  - Handle: 11200198359516661076
-    Path: cache\fonts\13681513260605220869_133569695048463406.cache
-    Type: Unknown
-    ModificationTime: 133569697994395367
+    ModificationTime: 133569940577981096
   - Handle: 11341898152889544325
     Path: sprites
     Type: Directory
-    ModificationTime: 133567218078292422
+    ModificationTime: 133569940577991097
   - Handle: 12350258421033414411
     Path: sprites\K7GQu49FE1.sw_sprite
     Type: Sprite
-    ModificationTime: 133568076339312881
+    ModificationTime: 133569955866863506
   - Handle: 12742390312197663864
     Path: textures
     Type: Directory
-    ModificationTime: 133567243038252115
-  - Handle: 13097619316375314683
-    Path: cache\fonts\1895022271424216758_133569670506842517.cache
+    ModificationTime: 133569940578021100
+  - Handle: 13164468487002128473
+    Path: cache\thumbnails\5441874985758434010_133569940577861104.cache
     Type: Unknown
-    ModificationTime: 133569905442705229
+    ModificationTime: 133569954299568316
   - Handle: 13681513260605220869
     Path: fonts\1.sw_font
     Type: Font
-    ModificationTime: 133569695048463406
+    ModificationTime: 133569940577851084
+  - Handle: 13743448306498844429
+    Path: fonts\CascadiaCode_ASCII.sw_font
+    Type: Font
+    ModificationTime: 133569940577861104
+  - Handle: 14284313771548858783
+    Path: cache\fonts\13743448306498844429_133569940577861104.cache
+    Type: Unknown
+    ModificationTime: 133569954460020996
   - Handle: 14697240576490453688
     Path: prefabs
     Type: Directory
     ModificationTime: 133551602556286285
+  - Handle: 14858560164569169926
+    Path: cache\fonts\1895022271424216758_133569940577861104.cache
+    Type: Unknown
+    ModificationTime: 133569951259658985
   - Handle: 14947059261056302630
     Path: cache\thumbnails
     Type: Directory
-    ModificationTime: 133569897368026928
+    ModificationTime: 133569955934620986
   - Handle: 14996597783001670902
     Path: scenes\Physics_DistanceJoints.sw_scene
     Type: Scene
-    ModificationTime: 133567242097593075
+    ModificationTime: 133569940577901091
   - Handle: 15095759771116534335
     Path: spritesheets
     Type: Directory
-    ModificationTime: 133567209734751961
+    ModificationTime: 133569940578001097
   - Handle: 15116493500697447690
     Path: scripts\PlayerController.cs
     Type: Script
-    ModificationTime: 133549188692733325
+    ModificationTime: 133569940577971084
+  - Handle: 15218601145616416450
+    Path: cache\thumbnails\13681513260605220869_133569940577851084.cache
+    Type: Unknown
+    ModificationTime: 133569954275629481
   - Handle: 15261090433613191915
     Path: scenes\Physics_SpringJoints.sw_scene
     Type: Scene
-    ModificationTime: 133567242467134992
+    ModificationTime: 133569940577931082
+  - Handle: 15422110330296316519
+    Path: cache\thumbnails\2344416971790700506_133569940577871086.cache
+    Type: Unknown
+    ModificationTime: 133569954333537896
   - Handle: 15586129948119691457
     Path: scenes\asd.sw_scene
     Type: Scene
-    ModificationTime: 133567251167063415
+    ModificationTime: 133569940577961124
   - Handle: 15671670272651360779
     Path: scenes\Physics_BoxCirclePolygonCollision.sw_scene
     Type: Scene
-    ModificationTime: 133569905490453380
+    ModificationTime: 133569954491628133
   - Handle: 15758475306527755018
     Path: textures\Tileset.png
     Type: Texture2D
-    ModificationTime: 133567326527744635
+    ModificationTime: 133569940578021100
   - Handle: 15968703465836506235
     Path: fonts\CascadiaCode.ttf
     Type: FontSource
-    ModificationTime: 133250476020000000
+    ModificationTime: 133569940505944461
   - Handle: 16362462507353948521
     Path: build\Sandbox.dll
     Type: Unknown
@@ -182,24 +190,20 @@ Assets:
   - Handle: 16381209260815648203
     Path: fonts
     Type: Directory
-    ModificationTime: 133569906291592420
+    ModificationTime: 133569954228025944
   - Handle: 16423494596943192328
     Path: scenes\Physics_PrismaticJoints.sw_scene
     Type: Scene
-    ModificationTime: 133567242191192792
+    ModificationTime: 133569940577911099
   - Handle: 16843390503621911811
     Path: scripts\TestEntity.cs
     Type: Script
-    ModificationTime: 133548083800959161
+    ModificationTime: 133569940577981096
   - Handle: 16891725904374815267
     Path: assets.sw_registry
     Type: Unknown
-    ModificationTime: 133569906593673409
-  - Handle: 17781802530407390795
-    Path: cache\thumbnails\2525114378178378104_133569679998142416.cache
-    Type: Unknown
-    ModificationTime: 133569897351171735
+    ModificationTime: 133569956343918903
   - Handle: 18277063836767974222
     Path: sprites\m5gYo9eltf.sw_sprite
     Type: Sprite
-    ModificationTime: 133568076339322875
+    ModificationTime: 133569940578001097

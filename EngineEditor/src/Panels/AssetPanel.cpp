@@ -604,10 +604,9 @@ namespace SW {
 			return;
 		}
 
-		if (item->Type == AssetType::Spritesheet) {
+		if (item->Type == AssetType::Spritesheet || item->Type == AssetType::Animation) {
 			AssetEditorPanelManager::OpenEditor(item->Handle, item->Type);
-		}
-		else {
+		} else {
 			FileSystem::OpenExternally(m_AssetsDirectory / item->Path);
 		}
 	}

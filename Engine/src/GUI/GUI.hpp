@@ -1394,10 +1394,14 @@ namespace SW::GUI {
 		std::string fullPath = "none";
 
 		if (handle) {
-			const AssetMetaData& metadata = AssetManager::GetAssetMetaData(handle);
+			if (AssetManager::IsValid(handle)) {
+				const AssetMetaData& metadata = AssetManager::GetAssetMetaData(handle);
 
-			tag = metadata.Path.filename().string();
-			fullPath = (ProjectContext::Get()->GetAssetDirectory() / metadata.Path).string();
+				tag = metadata.Path.filename().string();
+				fullPath = (ProjectContext::Get()->GetAssetDirectory() / metadata.Path).string();
+			} else {
+				tag = "INVALID";
+			}
 		}
 
 		BeginPropertyGrid(label, tooltip, true);

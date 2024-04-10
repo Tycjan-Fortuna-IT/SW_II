@@ -40,7 +40,7 @@ namespace SW {
 
 		/**
 		 * @brief Get the asset metadata.
-		 * @warning If the asset is not available, the placeholder will be returned.
+		 * @warning If the asset is not available, the nullptr will be returned.
 		 * 
 		 * @param handle The handle of the asset.
 		 * @return const AssetMetaData& The metadata of the asset.
@@ -52,7 +52,7 @@ namespace SW {
 
 		/**
 		 * @brief Get the asset metadata.
-		 * @warning If the asset is not available, the placeholder will be returned.
+		 * @warning If the asset is not available, the nullptr will be returned.
 		 * 
 		 * @param handle The handle of the asset.
 		 * @return const AssetMetaData& The metadata of the asset.
@@ -65,7 +65,7 @@ namespace SW {
 
 		/**
 		 * @brief Get the asset metadata.
-		 * @warning If the asset is not available, the placeholder will be returned.
+		 * @warning If the asset is not available, the nullptr will be returned.
 		 * 
 		 * @param handle The handle of the asset.
 		 * @return const AssetMetaData& The metadata of the asset.
@@ -77,7 +77,7 @@ namespace SW {
 
 		/**
 		 * @brief Get the asset metadata.
-		 * @warning If the asset is not available, the placeholder will be returned.
+		 * @warning If the asset is not available, the nullptr will be returned.
 		 * 
 		 * @param handle The handle of the asset.
 		 * @return const AssetMetaData& The metadata of the asset.

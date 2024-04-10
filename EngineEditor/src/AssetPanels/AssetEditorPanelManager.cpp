@@ -1,5 +1,7 @@
 #include "AssetEditorPanelManager.hpp"
+
 #include "SpritesheetEditor.hpp"
+#include "AnimationEditor.hpp"
 
 namespace SW {
 
@@ -9,14 +11,16 @@ namespace SW {
 
 	void AssetEditorPanelManager::Initialize()
 	{
+		//Scope<SpritesheetEditor> ptr = CreateScope<SpritesheetEditor>("Animation Editor", SW_ICON_CAMERA);
+
 		s_Editors[AssetType::Spritesheet] = new SpritesheetEditor("Spritesheet Editor", SW_ICON_TEXTURE);
+		s_Editors[AssetType::Animation] = new AnimationEditor("Animation Editor", SW_ICON_CAMERA);
 	}
 
 	void AssetEditorPanelManager::Shutdown()
 	{
 		delete s_Editors[AssetType::Spritesheet];
-
-		s_Editors.clear();
+		delete s_Editors[AssetType::Animation];
 	}
 
 	void AssetEditorPanelManager::OnUpdate(Timestep ts)

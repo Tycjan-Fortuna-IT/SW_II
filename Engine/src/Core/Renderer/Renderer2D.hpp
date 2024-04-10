@@ -104,6 +104,8 @@ namespace SW {
 		 */
 		static void DrawQuad(const glm::mat4& transform, const SpriteComponent& sprite, int entityID = -1);
 
+		static void DrawMissingTextureQuad(const glm::mat4& transform, int entityID = -1);
+
 		/**
 		 * @brief Draws a line with the specified start and end points and color.
 		 * @param p0 The start point of the line.

@@ -118,6 +118,15 @@ namespace SW {
         ~SpriteComponent() = default;
     };
 
+	struct AnimatedSpriteComponent final
+	{
+		AssetHandle CurrentAnimation = 0u;
+
+		f32 FrameTime = 0u;
+
+		std::unordered_map<std::string, AssetHandle> Animations;
+	};
+
 	/**
 	 * @struct CircleComponent
 	 * @brief This component is used to store the color of an entity. This component is used for rendering of circles and rings.
