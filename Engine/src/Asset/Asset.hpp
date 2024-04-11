@@ -32,7 +32,7 @@ namespace SW {
 		Prefab,
 		Script,
 		Shader,
-		Animation,
+		Animation2D,
 		AssetRegistry,
 	};
 

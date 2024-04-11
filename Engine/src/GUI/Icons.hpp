@@ -80,4 +80,4 @@
 #define SW_ICON_DOTS_VERTICAL u8"\uF1D9"
 #define SW_ICON_EXPORT u8"\uF207"
 #define SW_ICON_SAVE u8"\uF193"
-#define SW_ICON_CAMERA u8"\uF100"
+#define SW_ICON_VIDEO u8"\uF567"

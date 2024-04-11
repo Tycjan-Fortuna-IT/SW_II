@@ -192,6 +192,15 @@ namespace SW {
 			Renderer2D::DrawQuad(entity.GetWorldSpaceTransformMatrix(), sc, (int)handle);
 		}
 
+		for (auto&& [handle, asc] : m_Registry.GetEntitiesWith<AnimatedSpriteComponent>().each()) {
+			Entity entity = { handle, this };
+
+			if (!asc.CurrentAnimation)
+				continue;
+
+			Renderer2D::DrawQuad(entity.GetWorldSpaceTransformMatrix(), asc, dt, (int)handle);
+		}
+
 		for (auto&& [handle, cc] : m_Registry.GetEntitiesWith<CircleComponent>().each()) {
 			Entity entity = { handle, this };
 
@@ -369,6 +378,15 @@ namespace SW {
 			Renderer2D::DrawQuad(entity.GetWorldSpaceTransformMatrix(), sc, (int)handle);
 		}
 
+		for (auto&& [handle, asc] : m_Registry.GetEntitiesWith<AnimatedSpriteComponent>().each()) {
+			Entity entity = { handle, this };
+
+			if (!asc.CurrentAnimation)
+				continue;
+
+			Renderer2D::DrawQuad(entity.GetWorldSpaceTransformMatrix(), asc, dt, (int)handle);
+		}
+
 		for (auto&& [handle, cc] : m_Registry.GetEntitiesWith<CircleComponent>().each()) {
 			Entity entity = { handle, this };
 
@@ -466,6 +484,7 @@ namespace SW {
 
 		CopyComponent<TransformComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<SpriteComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<AnimatedSpriteComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<CircleComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<RelationshipComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<ScriptComponent>(copyRegistry, currentRegistry, enttMap);
@@ -512,6 +531,7 @@ namespace SW {
 		CopyComponentIfExists<TagComponent>(newEntity, currentRegistry, entity);
 		CopyComponentIfExists<TransformComponent>(newEntity, currentRegistry, entity);
 		CopyComponentIfExists<SpriteComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<AnimatedSpriteComponent>(newEntity, currentRegistry, entity);
 		CopyComponentIfExists<CircleComponent>(newEntity, currentRegistry, entity);
 		CopyComponentIfExists<TextComponent>(newEntity, currentRegistry, entity);
 		CopyComponentIfExists<CameraComponent>(newEntity, currentRegistry, entity);

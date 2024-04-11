@@ -65,6 +65,32 @@ namespace SW {
 				output << YAML::EndMap;
 			}
 
+			if (entity.HasComponent<AnimatedSpriteComponent>()) {
+				const AnimatedSpriteComponent& asc = entity.GetComponent<AnimatedSpriteComponent>();
+
+				output << YAML::Key << "AnimatedSpriteComponent";
+				output << YAML::BeginMap;
+				output << YAML::Key << "CurrentFrame" << YAML::Value << asc.CurrentFrame;
+				output << YAML::Key << "CurrentAnimationHandle" << YAML::Value << (asc.CurrentAnimation ?
+					(*asc.CurrentAnimation)->GetHandle() : 0u);
+
+				output << YAML::Key << "Animations" << YAML::Value << YAML::BeginSeq;
+				
+				for (auto&& [name, anim] : asc.Animations) {
+					output << YAML::BeginMap;
+					output << YAML::Key << "Animation";
+					output << YAML::BeginMap;
+					output << YAML::Key << "Name" << YAML::Value << name;
+					output << YAML::Key << "AnimationHandle" << YAML::Value << (*anim)->GetHandle();
+					output << YAML::EndMap;
+				}
+
+				output << YAML::EndMap;
+				output << YAML::EndSeq;
+
+				output << YAML::EndMap;
+			}
+
 			if (entity.HasComponent<CircleComponent>()) {
 				const CircleComponent& cc = entity.GetComponent<CircleComponent>();
 
@@ -366,6 +392,23 @@ namespace SW {
 
 				sc.Color = spriteComponent["Color"].as<glm::vec4>();
 				sc.Handle = spriteComponent["AssetHandle"].as<AssetHandle>();
+			}
+
+			if (YAML::Node animatedSpriteComponent = entity["Entity"]["AnimatedSpriteComponent"]) {
+				AnimatedSpriteComponent& asc = deserialized.AddComponent<AnimatedSpriteComponent>();
+
+				asc.CurrentFrame = animatedSpriteComponent["CurrentFrame"].as<int>();
+				AssetHandle animHandle = animatedSpriteComponent["CurrentAnimationHandle"].as<u64>();
+
+				asc.CurrentAnimation = animHandle ? AssetManager::GetAssetRaw<Animation2D>(animHandle) : nullptr;
+
+				YAML::Node animations = animatedSpriteComponent["Animations"];
+				for (YAML::Node animation : animations) {
+					Animation2D** anim = AssetManager::GetAssetRaw<Animation2D>(animation["Animation"]["AnimationHandle"].as<u64>());
+					std::string key = animation["Animation"]["Name"].as<std::string>();
+
+					asc.Animations[key] = anim;
+				}
 			}
 
 			if (YAML::Node circleComponent = entity["Entity"]["CircleComponent"]) {

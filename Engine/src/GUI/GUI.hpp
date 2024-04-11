@@ -1028,6 +1028,7 @@ namespace SW::GUI {
 
 		if (ImGui::BeginTable("##list", 2, flags)) {
 			int row = 0;
+
 			for (glm::vec2& vec : vector) {
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
@@ -1463,6 +1464,143 @@ namespace SW::GUI {
 		ImGui::PopStyleColor();
 
 		EndPropertyGrid();
+
+		return changed;
+	}
+
+	template <typename T>
+		requires std::is_base_of_v<Asset, T>
+	static bool DrawAssetTableDropdownList(
+		std::vector<T**>& vector, const char* label, const char* tooltip = nullptr
+	) {
+		bool changed = false;
+
+		GUI::BeginPropertyGrid(label, tooltip, false);
+
+		static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit
+			| ImGuiTableFlags_RowBg
+			| ImGuiTableFlags_Borders
+			| ImGuiTableFlags_Resizable
+			| ImGuiTableFlags_ScrollY;
+
+		int removeAt = -1;
+
+		if (ImGui::BeginTable("table_advanced", 2, flags)) {
+			int row = 0;
+			for (T** element : vector) {
+				ImGui::TableNextRow();
+				ImGui::TableNextColumn();
+
+				const std::string id = "##list_element" + row;
+
+				const AssetMetaData& metadata = AssetManager::GetAssetMetaData((*element)->GetHandle());
+
+				ImGui::PushID(id.c_str());
+				ImGui::Text("%s", metadata.Path.string().c_str());
+				ImGui::PopID();
+
+				ImGui::TableNextColumn();
+
+				std::string bid = "##list_button_element" + row;
+
+				ImGui::PushID(bid.c_str());
+				if (ImGui::Button("X", { 40.f, 25.f })) {
+					removeAt = row;
+				}
+				ImGui::PopID();
+
+				row++;
+			}
+
+			ImGui::EndTable();
+		}
+
+		if (ImGui::BeginDragDropTarget()) {
+			const char* payloadName = Asset::GetStringifiedAssetType(T::GetStaticType());
+
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(payloadName)) {
+				u64 handle = *static_cast<u64*>(payload->Data);
+
+				T** newElement = AssetManager::GetAssetRaw<T>(handle);
+				vector.emplace_back(newElement);
+
+				changed = true;
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		if (removeAt > -1) {
+			vector.erase(vector.begin() + removeAt);
+			changed = true;
+		}
+
+		GUI::EndPropertyGrid();
+
+		return changed;
+	}
+
+	template <typename K, typename V>
+		requires std::is_base_of_v<Asset, V>
+	static bool DrawAssetTableMapDropdownList(
+		std::unordered_map<K, V**>& map, const char* label, const char* tooltip = nullptr
+	) {
+		bool changed = false;
+
+		constexpr ImGuiTableFlags flags = ImGuiTableFlags_RowBg
+			| ImGuiTableFlags_Resizable
+			| ImGuiTableFlags_ScrollY;
+
+		GUI::BeginPropertyGrid(label, tooltip, false);
+
+		if (ImGui::BeginTable(label, 2)) {
+			ImGui::TableSetupColumn("Key");
+			ImGui::TableSetupColumn("Asset");
+			ImGui::TableHeadersRow();
+
+			for (auto it = map.begin(); it != map.end(); /* no increment here */) {
+				ImGui::TableNextRow();
+				ImGui::TableNextColumn();
+
+				std::string key = it->first;
+
+				ImGui::PushID(it->first.c_str());
+				if (GUI::DrawSingleLineTextInput<256>(key)) {
+					auto value = it->second;
+					it = map.erase(it);
+					map[key] = value;
+					changed = true;
+					ImGui::PopID();
+					continue; // Skip the increment because we've modified the map
+				}
+
+				ImGui::TableNextColumn();
+
+				const AssetMetaData& metadata = AssetManager::GetAssetMetaData((*it->second)->GetHandle());
+
+				ImGui::Text("%s", metadata.Path.string().c_str());
+				ImGui::PopID();
+
+				++it;
+			}
+
+			ImGui::EndTable();
+		}
+
+		if (ImGui::BeginDragDropTarget()) {
+			const char* payloadName = Asset::GetStringifiedAssetType(V::GetStaticType());
+
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(payloadName)) {
+				u64 handle = *static_cast<u64*>(payload->Data);
+
+				V** newElement = AssetManager::GetAssetRaw<V>(handle);
+				map[Random::CreateTag()] = newElement;
+
+				changed = true;
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		GUI::EndPropertyGrid();
 
 		return changed;
 	}

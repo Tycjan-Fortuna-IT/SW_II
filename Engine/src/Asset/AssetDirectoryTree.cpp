@@ -54,7 +54,7 @@ namespace SW {
 
 		if (m_Root)
 			CleanUp(m_Root);
-
+		 
 		m_Root = new AssetSourceItem();
 		//m_Root->Handle = pathToIdMap.find(dir)->second; // no need for handle for not-draggable item
 		m_Root->Type = AssetType::Directory;

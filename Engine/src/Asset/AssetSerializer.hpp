@@ -52,4 +52,11 @@ namespace SW {
 		Asset* TryLoadAsset(const AssetMetaData& metadata) override;
 	};
 
+	class AnimationSerializer final : public AssetSerializer {
+	public:
+		void Serialize(const AssetMetaData& metadata) override;
+
+		Asset* TryLoadAsset(const AssetMetaData& metadata) override;
+	};
+
 }

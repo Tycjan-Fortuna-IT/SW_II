@@ -7,6 +7,7 @@
 #include "GUI/Editor/EditorResources.hpp"
 #include "Asset/Font.hpp"
 #include "Cache/FontCache.hpp"
+#include "Animation2D.hpp"
 
 namespace SW {
 
@@ -158,7 +159,7 @@ namespace SW {
 		if (!data) {
 			SW_ERROR("Error while deserializing the font: {}", metadata.Path.string());
 
-			return new Spritesheet();
+			return nullptr;
 		}
 
 		const u64 fontSourceHandle = data["FontSourceHandle"].as<u64>();
@@ -187,5 +188,68 @@ namespace SW {
 	{
 		return nullptr;
 	}
+
+    void AnimationSerializer::Serialize(const AssetMetaData& metadata)
+	{
+		const Animation2D* animation = *AssetManager::GetAsset<Animation2D>(metadata.Handle);
+
+		YAML::Emitter output;
+
+		output << YAML::BeginMap;
+		output << YAML::Key << "Animation" << YAML::Value;
+
+		output << YAML::BeginMap;
+		output << YAML::Key << "Speed" << YAML::Value << animation->Speed;
+		output << YAML::Key << "Sprites" << YAML::Value << YAML::BeginSeq;
+
+		for (Sprite** const sprite : animation->Sprites) {
+			output << YAML::BeginMap;
+
+			output << YAML::Key << "Sprite";
+
+			output << YAML::BeginMap;
+			output << YAML::Key << "SpriteHandle" << YAML::Value << (*sprite)->GetHandle();
+			output << YAML::EndMap;
+
+			output << YAML::EndMap;
+		}
+
+		output << YAML::EndMap;
+		output << YAML::EndSeq;
+
+		output << YAML::EndMap;
+
+
+		std::ofstream fout(ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
+		fout << output.c_str();
+	}
+
+	Asset* AnimationSerializer::TryLoadAsset(const AssetMetaData& metadata)
+    {
+		const std::filesystem::path path = ProjectContext::Get()->GetAssetDirectory() / metadata.Path;
+
+		YAML::Node file = YAML::LoadFile(path.string());
+
+		YAML::Node data = file["Animation"];
+
+		if (!data) {
+			SW_ERROR("Error while deserializing the animation: {}", metadata.Path.string());
+
+			return new Animation2D();
+		}
+
+		Animation2D* animation = new Animation2D();
+
+		animation->Speed = data["Speed"].as<f32>();
+
+		YAML::Node sprites = data["Sprites"];
+		for (YAML::Node sprite : sprites) {
+			Sprite** spr = AssetManager::GetAssetRaw<Sprite>(sprite["Sprite"]["SpriteHandle"].as<u64>());
+
+			animation->Sprites.emplace_back(spr);
+		}
+
+		return animation;
+    }
 
 }

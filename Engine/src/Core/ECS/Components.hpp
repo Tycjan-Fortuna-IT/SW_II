@@ -15,6 +15,7 @@
 #include "Asset/Font.hpp"
 #include "Core/Scripting/CSharpObject.hpp"
 #include "Asset/Asset.hpp"
+#include "Asset/Animation2D.hpp"
 
 namespace SW {
 
@@ -120,11 +121,11 @@ namespace SW {
 
 	struct AnimatedSpriteComponent final
 	{
-		AssetHandle CurrentAnimation = 0u;
+		int CurrentFrame = 0u;
 
-		f32 FrameTime = 0u;
+		Animation2D** CurrentAnimation = nullptr;
 
-		std::unordered_map<std::string, AssetHandle> Animations;
+		std::unordered_map<std::string, Animation2D**> Animations;
 	};
 
 	/**
