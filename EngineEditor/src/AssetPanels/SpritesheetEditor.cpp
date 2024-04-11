@@ -21,7 +21,7 @@ namespace SW {
 
 			if (m_Spritesheet) {
 				const f32 offset = yOffset / 10.f;
-				if ((*m_Spritesheet)->ViewZoom + offset > 0.5f && (*m_Spritesheet)->ViewZoom + offset < 15.f)
+				if ((*m_Spritesheet)->ViewZoom + offset > 0.1f && (*m_Spritesheet)->ViewZoom + offset < 15.f)
 					(*m_Spritesheet)->ViewZoom += offset;
 			}
 				
@@ -85,8 +85,8 @@ namespace SW {
 
 			GUI::BeginProperties("##spritesheet_editor_properties");
 
-			GUI::DrawFloatingPointProperty((*m_Spritesheet)->ViewZoom, "View Zoom", nullptr, 0.5f, 15.0f);
-			GUI::DrawFloatingPointProperty((*m_Spritesheet)->GridSize, "Grid Size", nullptr, 16.f, 1000.f);
+			GUI::DrawFloatingPointProperty((*m_Spritesheet)->ViewZoom, "View Zoom", nullptr, 0.1f, 15.0f);
+			GUI::DrawFloatingPointProperty((*m_Spritesheet)->GridSize, "Grid Size", nullptr, 16.f, 4000.f);
 			GUI::DrawVector2ControlProperty((*m_Spritesheet)->CenterOffset, "Center Offset");
 			GUI::DrawBooleanProperty((*m_Spritesheet)->ShowImageBorders, "Show Image Borders");
 			GUI::DrawFolderPickerProperty((*m_Spritesheet)->ExportPath, "Export Path");
@@ -162,11 +162,11 @@ namespace SW {
 
 
 				if ((*m_Spritesheet)->ShowImageBorders) {
-					for (const SpriteData& sprite : (*m_Spritesheet)->Sprites) {
-						DrawRectOnCanvas(drawList, sprite.Position - 1.f, sprite.Size + 1.f);
-					}
+					DrawRectOnCanvas(drawList, glm::vec2{ -1.f, -1.f }, glm::vec2{ texSize.x + 2.f, texSize.y + 2.f }, GUI::Theme::NiceBlue);
 
-					DrawRectOnCanvas(drawList, glm::vec2{ -1.f, -1.f }, glm::vec2{ texSize.x + 1.f, texSize.y + 1.f });
+					for (const SpriteData& sprite : (*m_Spritesheet)->Sprites) {
+						DrawRectOnCanvas(drawList, sprite.Position - 1.f, sprite.Size + 2.f, GUI::Theme::InvalidPrefab);
+					}
 				}
 
 				m_Canvas.End();
@@ -183,7 +183,7 @@ namespace SW {
 		m_Spritesheet = AssetManager::GetAssetRaw<Spritesheet>(handle);
 	}
 
-	void SpritesheetEditor::DrawRectOnCanvas(ImDrawList* drawList, const glm::vec2& position, const glm::vec2& size) const
+	void SpritesheetEditor::DrawRectOnCanvas(ImDrawList* drawList, const glm::vec2& position, const glm::vec2& size, u32 color) const
 	{
 		const glm::vec2 offset = (*m_Spritesheet)->CenterOffset;
 
@@ -192,10 +192,10 @@ namespace SW {
 		const ImVec2 bottomRight = { position.x + offset.x + size.x, position.y + offset.y + size.y };
 		const ImVec2 bottomLeft = { position.x + offset.x, position.y + offset.y + size.y };
 
-		drawList->AddLine(topLeft, topRight, GUI::Theme::NiceBlue);
-		drawList->AddLine(topRight, bottomRight, GUI::Theme::NiceBlue);
-		drawList->AddLine(bottomRight, bottomLeft, GUI::Theme::NiceBlue);
-		drawList->AddLine(bottomLeft, topLeft, GUI::Theme::NiceBlue);
+		drawList->AddLine(topLeft, topRight, color);
+		drawList->AddLine(topRight, bottomRight, color);
+		drawList->AddLine(bottomRight, bottomLeft, color);
+		drawList->AddLine(bottomLeft, topLeft, color);
 	}
 
 	void SpritesheetEditor::RenderSpriteCards(f32 vscale)
@@ -220,8 +220,11 @@ namespace SW {
 		
 		ImGui::SameLine();
 
-		if (ImGui::Button(SW_ICON_SAVE "Save"))
-			OnClose(); // serialize
+		if (ImGui::Button(SW_ICON_SAVE "Save")) {
+			const AssetMetaData& metadata = AssetManager::GetAssetMetaData((*m_Spritesheet)->GetHandle());
+
+			AssetLoader::Serialize(metadata);
+		}
 		
 		if (!(*m_Spritesheet)->ExportPath.empty() && (*m_Spritesheet)->GetSpritesheetTexture()) {
 			ImGui::SameLine();
@@ -255,6 +258,8 @@ namespace SW {
 
 			std::vector<SpriteData>& sprites = (*m_Spritesheet)->Sprites;
 			for (int i = 0; i < sprites.size(); i++) {
+				ImGui::PushID(i);
+
 				SpriteData& sprite = sprites[i];
 
 				if (!spriteFilter.FilterPass(sprite.Name))
@@ -307,6 +312,8 @@ namespace SW {
 
 					ImGui::TreePop();
 				}
+
+				ImGui::PopID();
 			}
 			
 			if (indexToRemove != -1) {
@@ -319,7 +326,10 @@ namespace SW {
 
 	void SpritesheetEditor::AddNewSprite()
 	{
-		(*m_Spritesheet)->Sprites.emplace_back(SpriteData{ Random::CreateTag() });
+		SpriteData data(Random::CreateTag());
+		data.Size = { (*m_Spritesheet)->GridSize, (*m_Spritesheet)->GridSize };
+
+		(*m_Spritesheet)->Sprites.emplace_back(data);
 	}
 
 	void SpritesheetEditor::ExportSprites() const

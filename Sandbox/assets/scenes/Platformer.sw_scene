@@ -9,8 +9,8 @@ Entities:
         Rotation: [8.37404457e-09, -1.20068289e-09, 0.28482154]
         Scale: [8, 1, 1]
       SpriteComponent:
-        AssetHandle: 0
         Color: [0.541996062, 0.743315518, 0.254396766, 1]
+        AssetHandle: 0
       RelationshipComponent:
         ParentID: 10496884223937514442
         ChildrenCount: 0
@@ -46,7 +46,7 @@ Entities:
         ChildrenCount: 0
       CameraComponent:
         Primary: true
-        AspectRatio: 2.05882359
+        AspectRatio: 2.01056337
         ProjectionType: 1
         OrthographicSize: 10
         OrthographicNearClip: -1
@@ -57,12 +57,16 @@ Entities:
       TagComponent:
         Tag: Player
       TransformComponent:
-        Transform: [-1.80404282, -0.202625543, 0.000122070312]
+        Transform: [-0.234035492, 0.313021481, 0.000122070312]
         Rotation: [0, 0, 9.19713443e-08]
         Scale: [1, 1, 1]
-      SpriteComponent:
-        AssetHandle: 0
-        Color: [1, 1, 1, 1]
+      AnimatedSpriteComponent:
+        CurrentFrame: 2
+        CurrentAnimationHandle: 17802206516402415737
+        Animations:
+          - Animation:
+              Name: Explode
+              AnimationHandle: 17802206516402415737
       RelationshipComponent:
         ParentID: 0
         ChildrenCount: 1
@@ -115,8 +119,8 @@ Entities:
         Rotation: [8.37404457e-09, -1.20068289e-09, 0.28482154]
         Scale: [8, 1, 1]
       SpriteComponent:
-        AssetHandle: 0
         Color: [0.541996062, 0.743315518, 0.254396766, 1]
+        AssetHandle: 0
       RelationshipComponent:
         ParentID: 10496884223937514442
         ChildrenCount: 0
@@ -148,8 +152,8 @@ Entities:
         Rotation: [0, 0, 0]
         Scale: [8, 1, 1]
       SpriteComponent:
-        AssetHandle: 0
         Color: [0.541996062, 0.743315518, 0.254396766, 1]
+        AssetHandle: 0
       RelationshipComponent:
         ParentID: 10496884223937514442
         ChildrenCount: 0
@@ -181,8 +185,8 @@ Entities:
         Rotation: [8.37404457e-09, -1.20068289e-09, 0]
         Scale: [8, 1, 1]
       SpriteComponent:
-        AssetHandle: 0
         Color: [0.541996062, 0.743315518, 0.254396766, 1]
+        AssetHandle: 0
       RelationshipComponent:
         ParentID: 10496884223937514442
         ChildrenCount: 0

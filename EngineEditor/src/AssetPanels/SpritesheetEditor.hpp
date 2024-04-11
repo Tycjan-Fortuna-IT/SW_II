@@ -43,7 +43,7 @@ namespace SW {
 		bool m_IsCanvasHovered = false;
 
 	private:
-		void DrawRectOnCanvas(ImDrawList* drawList, const glm::vec2& position, const glm::vec2& size) const;
+		void DrawRectOnCanvas(ImDrawList* drawList, const glm::vec2& position, const glm::vec2& size, u32 color) const;
 		void RenderSpriteCards(f32 vscale);
 		void AddNewSprite();
 		void ExportSprites() const;

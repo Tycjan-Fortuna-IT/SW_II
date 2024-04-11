@@ -12,6 +12,8 @@
 
 namespace SW {
 
+	class Animation2D;
+
 	class AnimationEditor final : public AssetEditorPanel
 	{
 	public:
@@ -28,7 +30,11 @@ namespace SW {
 		void Render() override;
 
 	private:
+		Animation2D** m_Animation = nullptr;
 
+		f32 m_CurrentTime = 0.f;
+		int m_CurrentFrame = 0;
+		u64 m_FramesCount = 0u;
 	};
 
 }

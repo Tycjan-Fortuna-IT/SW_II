@@ -18,6 +18,7 @@
 #include "Asset/Spritesheet.hpp"
 #include "GUI/Editor/EditorResources.hpp"
 #include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.hpp" // TODO - remove (because of Testbed)
+#include "Asset/Animation2D.hpp"
 
 namespace SW {
 
@@ -50,7 +51,7 @@ namespace SW {
 
 	void AssetPanel::OnUpdate(Timestep dt)
 	{
-
+		m_CurrentTime += dt;
 	}
 
 	void AssetPanel::OnRender()
@@ -489,8 +490,44 @@ namespace SW {
 						thumbnail.Texture = texture;
 
 						item->Thumbnail = thumbnail;
+					} else if (item->Type == AssetType::Animation2D) {
+						Texture2D** texture = &EditorResources::MissingAssetIcon;
+
+						Thumbnail thumbnail;
+						thumbnail.Width = (f32)(*texture)->GetWidth();
+						thumbnail.Height = (f32)(*texture)->GetHeight();
+						thumbnail.Texture = texture;
+
+						item->Thumbnail = thumbnail;
 					}
 
+				}
+				
+				if (item->Type == AssetType::Animation2D) {
+					Animation2D** animation = AssetManager::GetAssetRaw<Animation2D>(item->Handle);
+					Texture2D** texture = nullptr;
+
+					u64 framesCount = (*animation)->Sprites.size();
+
+					if (framesCount) {
+						item->Thumbnail.CurrentFrame = (int)(m_CurrentTime * (*animation)->Speed) % framesCount;
+
+						if (item->Thumbnail.CurrentFrame >= framesCount) {
+							item->Thumbnail.CurrentFrame = 0;
+						}
+
+						Sprite** sprite = (*animation)->Sprites[item->Thumbnail.CurrentFrame];
+
+						texture = (*sprite)->GetTextureRaw();
+						item->Thumbnail.Width = std::roundf(abs((*sprite)->TexCordUpRight.x - (*sprite)->TexCordLeftDown.x) * (*texture)->GetWidth());
+						item->Thumbnail.Height = std::roundf(abs((*sprite)->TexCordUpRight.y - (*sprite)->TexCordLeftDown.y) * (*texture)->GetHeight());
+						item->Thumbnail.TexCoordMin = { (*sprite)->TexCordLeftDown.x, (*sprite)->TexCordLeftDown.y };
+						item->Thumbnail.TexCoordMax = { (*sprite)->TexCordUpRight.x, (*sprite)->TexCordUpRight.y };
+					} else {
+						texture = &EditorResources::MissingAssetIcon;
+					}
+						
+					item->Thumbnail.Texture = texture;
 				}
 
 				// Thumbnail Image
@@ -498,7 +535,7 @@ namespace SW {
 				const ImTextureID texId = item->Thumbnail ? GUI::GetTextureID(*item->Thumbnail.Texture) : 0;
 				const ImVec2 uv0 = item->Thumbnail.TexCoordMin;
 				const ImVec2 uv1 = item->Thumbnail.TexCoordMax;
-				const float aspectRatio = thumbSize.x / thumbSize.y;
+				const f32 aspectRatio = thumbSize.x / thumbSize.y;
 
 				ImVec2 displaySize = { thumbnailSize, thumbnailSize };
 				const f32 minSpace = 0.0f;
@@ -604,7 +641,7 @@ namespace SW {
 			return;
 		}
 
-		if (item->Type == AssetType::Spritesheet || item->Type == AssetType::Animation) {
+		if (item->Type == AssetType::Spritesheet || item->Type == AssetType::Animation2D) {
 			AssetEditorPanelManager::OpenEditor(item->Handle, item->Type);
 		} else {
 			FileSystem::OpenExternally(m_AssetsDirectory / item->Path);

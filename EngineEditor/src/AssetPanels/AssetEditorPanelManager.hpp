@@ -28,7 +28,7 @@ namespace SW {
 		static void OpenEditor(AssetHandle handle, AssetType type);
 
 	private:
-		static std::unordered_map<AssetType, AssetEditorPanel*> s_Editors;
+		static std::unordered_map<AssetType, Scope<AssetEditorPanel>> s_Editors;
 
 		static Scene* s_SceneContext;
 	};

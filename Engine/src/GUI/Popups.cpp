@@ -18,6 +18,12 @@ R"(Spritesheet:
   Sprites:
     {})"
 
+#define EMPTY_ANIMATION2D_CONTENT \
+R"(Animation:
+  Speed: 1
+  Sprites:
+    {})"
+
 namespace SW::GUI::Popups {
 
 	bool DrawAddNewFilePopup(const std::filesystem::path& destinationDir, bool* opened)
@@ -38,9 +44,10 @@ namespace SW::GUI::Popups {
 			ImGui::SameLine();
 
 			GUI::DrawSelectable(filetype, {
-				GUI::SelectOption<AssetType>{ "Directory", AssetType::Directory },
-				GUI::SelectOption<AssetType>{ "Scene", AssetType::Scene },
-				GUI::SelectOption<AssetType>{ "Spritesheet", AssetType::Spritesheet },
+				GUI::SelectOption<AssetType>{ "Directory",		AssetType::Directory		},
+				GUI::SelectOption<AssetType>{ "Scene",			AssetType::Scene			},
+				GUI::SelectOption<AssetType>{ "Spritesheet",	AssetType::Spritesheet		},
+				GUI::SelectOption<AssetType>{ "Animation2D",	AssetType::Animation2D		},
 			});
 
 			static std::string filename = "";
@@ -51,16 +58,22 @@ namespace SW::GUI::Popups {
 				ImGui::SameLine();
 
 				GUI::DrawSingleLineTextInput(filename);
-				ImGui::SameLine();
 
 				switch (filetype) {
 					case AssetType::Scene:
 					{
+						ImGui::SameLine();
 						ImGui::TextUnformatted(".sw_scene");
 					} break;
 					case AssetType::Spritesheet:
 					{
+						ImGui::SameLine();
 						ImGui::TextUnformatted(".sw_spritesh");
+					} break;
+					case AssetType::Animation2D:
+					{
+						ImGui::SameLine();
+						ImGui::TextUnformatted(".sw_anim");
 					} break;
 				}
 			}
@@ -89,6 +102,13 @@ namespace SW::GUI::Popups {
 
 						if (!FileSystem::CreateFileWithContent(newFilePath, EMPTY_SPRITESHEET_CONTENT))
 							SW_ERROR("Failed to create new spritesheet: {}", name);
+					} break;
+					case AssetType::Animation2D:
+					{
+						std::filesystem::path newFilePath = destinationDir / name += ".sw_anim";
+
+						if (!FileSystem::CreateFileWithContent(newFilePath, EMPTY_ANIMATION2D_CONTENT))
+							SW_ERROR("Failed to create new animation 2D: {}", name);
 					} break;
 				}
 

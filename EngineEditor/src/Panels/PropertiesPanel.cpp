@@ -22,6 +22,7 @@ namespace SW {
 		
 		AddComponentName<TransformComponent>(SW_ICON_VECTOR_LINE "  Transform");
 		AddComponentName<SpriteComponent>(SW_ICON_IMAGE_SIZE_SELECT_ACTUAL "  Sprite");
+		AddComponentName<AnimatedSpriteComponent>(SW_ICON_VIDEO "  Animated Sprite");
 		AddComponentName<CircleComponent>(SW_ICON_CHECKBOX_BLANK_CIRCLE "  Circle");
 		AddComponentName<TextComponent>(SW_ICON_FORMAT_TEXT "  Text");
 		
@@ -117,6 +118,18 @@ namespace SW {
 					component.Handle = handle;
 				}
 				GUI::DrawFloatingPointProperty(component.TilingFactor, "Tiling", "Tiling factor of the texture (how many times the texture should be repeated)", 0.f, 10.f);
+				GUI::EndProperties();
+			}, true);
+
+			DrawComponent<AnimatedSpriteComponent>(entity, [](AnimatedSpriteComponent& component) {
+				GUI::BeginProperties("##sprite_property");
+
+				AssetHandle handle = component.CurrentAnimation ? (*component.CurrentAnimation)->GetHandle() : 0u;
+				if (GUI::DrawAssetDropdownProperty<Animation2D>(handle, "Default", "Default animation to be used if nothing is being played (if not specified - nothing will be visible)")) {
+					component.CurrentAnimation = AssetManager::GetAssetRaw<Animation2D>(handle);
+				}
+				GUI::DrawAssetTableMapDropdownList<std::string, Animation2D>(component.Animations, "Animations");
+
 				GUI::EndProperties();
 			}, true);
 
@@ -473,6 +486,14 @@ namespace SW {
 			if (!entity.HasComponent<SpriteComponent>()) {
 				if (ImGui::MenuItemEx("Sprite Component", SW_ICON_IMAGE_SIZE_SELECT_ACTUAL)) {
 					entity.AddComponent<SpriteComponent>();
+
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			if (!entity.HasComponent<AnimatedSpriteComponent>()) {
+				if (ImGui::MenuItemEx("Animated Sprite Component", SW_ICON_VIDEO)) {
+					entity.AddComponent<AnimatedSpriteComponent>();
 
 					ImGui::CloseCurrentPopup();
 				}

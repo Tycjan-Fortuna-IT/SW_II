@@ -1,0 +1,27 @@
+Animation:
+  Speed: 10
+  Sprites:
+    - Sprite:
+        SpriteHandle: 7146253751239204522
+    - Sprite:
+        SpriteHandle: 4522331225463393526
+    - Sprite:
+        SpriteHandle: 14906249873942709878
+    - Sprite:
+        SpriteHandle: 3213646027814008942
+    - Sprite:
+        SpriteHandle: 13341024563828922071
+    - Sprite:
+        SpriteHandle: 12596252847092312523
+    - Sprite:
+        SpriteHandle: 201578917102956616
+    - Sprite:
+        SpriteHandle: 16668672011756415843
+    - Sprite:
+        SpriteHandle: 1602703008441517480
+    - Sprite:
+        SpriteHandle: 14241230157055215149
+    - Sprite:
+        SpriteHandle: 14357036382917257937
+    - Sprite:
+        SpriteHandle: 5881371284415469890

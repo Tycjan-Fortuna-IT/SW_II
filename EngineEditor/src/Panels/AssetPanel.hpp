@@ -77,6 +77,8 @@ namespace SW {
 
 		ThumbnailCache m_Cache;
 
+		f32 m_CurrentTime = 0u; // for animation2d thumbnails
+
 		/**
 		 * @brief Loads the directory entries.
 		 */
