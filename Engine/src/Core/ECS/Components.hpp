@@ -123,6 +123,8 @@ namespace SW {
 	{
 		int CurrentFrame = 0u;
 
+		Animation2D** DefaultAnimation = nullptr;
+
 		Animation2D** CurrentAnimation = nullptr;
 
 		std::unordered_map<std::string, Animation2D**> Animations;

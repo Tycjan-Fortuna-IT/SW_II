@@ -36,7 +36,7 @@ namespace SW {
 
 	void AnimationEditor::OnOpen()
 	{
-
+		m_FramesCount = 0;
 	}
 
 	void AnimationEditor::OnClose()
@@ -67,7 +67,9 @@ namespace SW {
 			if (GUI::DrawFloatingPointProperty((*m_Animation)->Speed, "Speed", nullptr, -25.f, 25.f, 0.5f)) {
 				m_CurrentFrame = 0;
 			}
-			
+			GUI::DrawBooleanProperty((*m_Animation)->ReverseAlongX, "Flip X");
+			GUI::DrawBooleanProperty((*m_Animation)->ReverseAlongY, "Flip Y");
+
 			GUI::DrawAssetTableDropdownList<Sprite>((*m_Animation)->Sprites, "Sprites");
 
 			GUI::EndProperties();
@@ -82,8 +84,15 @@ namespace SW {
 				Sprite** current = (*m_Animation)->Sprites[m_CurrentFrame];
 				const Texture2D* texture = (*current)->GetTexture();
 
-				ImVec2 uv0 = { (*current)->TexCordLeftDown.x, (*current)->TexCordLeftDown.y };
-				ImVec2 uv1 = { (*current)->TexCordUpRight.x, (*current)->TexCordUpRight.y };
+				ImVec2 uv0 = {
+					(*m_Animation)->ReverseAlongX ? (*current)->TexCordUpRight.x : (*current)->TexCordLeftDown.x,
+					(*m_Animation)->ReverseAlongY ? (*current)->TexCordUpRight.y : (*current)->TexCordLeftDown.y
+				};
+
+				ImVec2 uv1 = {
+					(*m_Animation)->ReverseAlongX ? (*current)->TexCordLeftDown.x : (*current)->TexCordUpRight.x,
+					(*m_Animation)->ReverseAlongY ? (*current)->TexCordLeftDown.y : (*current)->TexCordUpRight.y
+				};
 
 				const f32 sprWidth = std::roundf(abs((*current)->TexCordUpRight.x - (*current)->TexCordLeftDown.x) * texture->GetWidth());
 				const f32 sprHeight = std::roundf(abs((*current)->TexCordUpRight.y - (*current)->TexCordLeftDown.y) * texture->GetHeight());

@@ -81,6 +81,7 @@ namespace SW {
 	{
 		RegisterManagedComponent<TagComponent>(coreAssembly);
 		RegisterManagedComponent<TransformComponent>(coreAssembly);
+		RegisterManagedComponent<AnimatedSpriteComponent>(coreAssembly);
 		RegisterManagedComponent<RigidBody2DComponent>(coreAssembly);
     }
 
@@ -317,6 +318,40 @@ namespace SW {
 
 		entity.GetComponent<TransformComponent>().Scale = *inScale;
 	}
+
+	void AnimatedSpriteComponent_Play(u64 entityID, Coral::String name)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		AnimatedSpriteComponent& asc = entity.GetComponent<AnimatedSpriteComponent>();
+
+		std::string animationName = name;
+
+		Coral::String::Free(name);
+
+		auto it = asc.Animations.find(animationName);
+		if (it == asc.Animations.end()) {
+			APP_ERROR("Could not find animation {} for entity {}", animationName, entityID);
+			return;
+		}
+
+		asc.CurrentFrame = 0;
+		asc.CurrentAnimation = it->second;
+	}
+
+	void AnimatedSpriteComponent_Stop(u64 entityID)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		AnimatedSpriteComponent& asc = entity.GetComponent<AnimatedSpriteComponent>();
+
+		asc.CurrentFrame = 0;
+		asc.CurrentAnimation = asc.DefaultAnimation;
+	}
 	
 	void Rigidbody2DComponent_GetVelocity(u64 entityID, glm::vec2* outVelocity)
 	{
@@ -437,6 +472,10 @@ namespace SW {
 		ADD_INTERNAL_CALL(TransformComponent_GetScale);
 		ADD_INTERNAL_CALL(TransformComponent_SetScale);
 		
+
+		ADD_INTERNAL_CALL(AnimatedSpriteComponent_Play);
+		ADD_INTERNAL_CALL(AnimatedSpriteComponent_Stop);
+
 
 		ADD_INTERNAL_CALL(Rigidbody2DComponent_GetVelocity);
 		ADD_INTERNAL_CALL(Rigidbody2DComponent_SetVelocity);

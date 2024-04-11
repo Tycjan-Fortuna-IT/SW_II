@@ -1,5 +1,7 @@
 Animation:
   Speed: 10
+  ReverseAlongX: false
+  ReverseAlongY: false
   Sprites:
     - Sprite:
         SpriteHandle: 7146253751239204522

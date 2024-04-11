@@ -10,7 +10,7 @@ Assets:
   - Handle: 212989388691238768
     Path: scenes\Platformer.sw_scene
     Type: Scene
-    ModificationTime: 133573162848517771
+    ModificationTime: 133573384126325924
   - Handle: 298414256961260786
     Path: cache\thumbnails\2525114378178378104_133569940577881088.cache
     Type: Unknown
@@ -31,6 +31,18 @@ Assets:
     Path: textures\explosion.png
     Type: Texture2D
     ModificationTime: 130711390590000000
+  - Handle: 1611038879585998332
+    Path: sprites\person\idle\3.sw_sprite
+    Type: Sprite
+    ModificationTime: 133573293346461542
+  - Handle: 1742802283759169203
+    Path: sprites\person\walk\6.sw_sprite
+    Type: Sprite
+    ModificationTime: 133573293516690245
+  - Handle: 1813557045535702317
+    Path: animations\person_idle.sw_anim
+    Type: Animation2D
+    ModificationTime: 133573379483172813
   - Handle: 1851129292016874927
     Path: scenes
     Type: Directory
@@ -47,10 +59,18 @@ Assets:
     Path: fonts\OpenSansRegular_ASCII.sw_font
     Type: Font
     ModificationTime: 133569940577881088
+  - Handle: 2562514851330133299
+    Path: animations\person_walk_left.sw_anim
+    Type: Animation2D
+    ModificationTime: 133573391136441551
   - Handle: 2672423647848718755
     Path: scenes\Physics_RevolutionJoints.sw_scene
     Type: Scene
     ModificationTime: 133569940577921095
+  - Handle: 2708051256966645412
+    Path: cache\thumbnails\9383798946519536564_133573260325627110.cache
+    Type: Unknown
+    ModificationTime: 133573293255426351
   - Handle: 2825569506529799740
     Path: fonts\OpenSans-Regular.ttf
     Type: FontSource
@@ -66,11 +86,23 @@ Assets:
   - Handle: 3554386479571016826
     Path: build\Engine.ScriptCore.dll
     Type: Unknown
-    ModificationTime: 133549187848101545
+    ModificationTime: 133573356342451790
+  - Handle: 3705330130085690036
+    Path: cache\thumbnails\8300397909279164958_133573260325627110.cache
+    Type: Unknown
+    ModificationTime: 133573276371155211
+  - Handle: 3996008905565250756
+    Path: sprites\person\idle
+    Type: Directory
+    ModificationTime: 133573280201272677
   - Handle: 4007508123346557669
     Path: scenes\BigerScene.sw_scene
     Type: Scene
     ModificationTime: 133569940577891114
+  - Handle: 4269859881879935917
+    Path: sprites\person\walk\5.sw_sprite
+    Type: Sprite
+    ModificationTime: 133573293516680265
   - Handle: 4522331225463393526
     Path: sprites\explosion\2.sw_sprite
     Type: Sprite
@@ -82,7 +114,7 @@ Assets:
   - Handle: 5439308717581076059
     Path: build
     Type: Directory
-    ModificationTime: 133550851993334466
+    ModificationTime: 133573388761495770
   - Handle: 5441874985758434010
     Path: fonts\CascadiaCode_ALL.sw_font
     Type: Font
@@ -94,7 +126,19 @@ Assets:
   - Handle: 5981896673017283474
     Path: build\Coral.Managed.dll
     Type: Unknown
-    ModificationTime: 133548080720431248
+    ModificationTime: 133573356339044047
+  - Handle: 6214428367688977020
+    Path: sprites\person\idle\1.sw_sprite
+    Type: Sprite
+    ModificationTime: 133573293346451537
+  - Handle: 6681962697583830167
+    Path: spritesheets\person\run.sw_spritesh
+    Type: Spritesheet
+    ModificationTime: 133573293508411362
+  - Handle: 6841119081907205822
+    Path: sprites\person\walk\2.sw_sprite
+    Type: Sprite
+    ModificationTime: 133573293516650270
   - Handle: 6897457967798819381
     Path: cache\thumbnails\15758475306527755018_133569940578021100.cache
     Type: Unknown
@@ -102,15 +146,23 @@ Assets:
   - Handle: 7077105227154440329
     Path: build\Coral.Managed.pdb
     Type: Unknown
-    ModificationTime: 133548080720391261
+    ModificationTime: 133573356338974048
   - Handle: 7146253751239204522
     Path: sprites\explosion\1.sw_sprite
     Type: Sprite
     ModificationTime: 133573151011187502
+  - Handle: 7171413163995123361
+    Path: sprites\person\idle\4.sw_sprite
+    Type: Sprite
+    ModificationTime: 133573293346481541
+  - Handle: 7461636935121517168
+    Path: spritesheets\person\idle.sw_spritesh
+    Type: Spritesheet
+    ModificationTime: 133573293315688398
   - Handle: 7800523871537690417
     Path: build\Engine.ScriptCore.pdb
     Type: Unknown
-    ModificationTime: 133549187848071538
+    ModificationTime: 133573356342431791
   - Handle: 8095112862706235223
     Path: build\Sandbox.deps.json
     Type: Unknown
@@ -126,19 +178,27 @@ Assets:
   - Handle: 8755409979203817553
     Path: build\Sandbox.pdb
     Type: Unknown
-    ModificationTime: 133549188709074721
+    ModificationTime: 133573388761065770
   - Handle: 9111472524643150914
     Path: animations
     Type: Directory
-    ModificationTime: 133573129617475688
+    ModificationTime: 133573373093479858
   - Handle: 9347750893217334092
     Path: cache\thumbnails\1607516040653568952_130711390590000000.cache
     Type: Unknown
     ModificationTime: 133573150930821062
+  - Handle: 9383798946519536564
+    Path: textures\Menel.png
+    Type: Texture2D
+    ModificationTime: 133573260325627110
   - Handle: 9404689471195940422
     Path: scenes\TestScene.sw_scene
     Type: Scene
     ModificationTime: 133569940577951128
+  - Handle: 9648025481842219331
+    Path: sprites\person\idle\6.sw_sprite
+    Type: Sprite
+    ModificationTime: 133573293346491532
   - Handle: 9751217973959575363
     Path: scenes\Physics_WheelJoints.sw_scene
     Type: Scene
@@ -146,11 +206,31 @@ Assets:
   - Handle: 9815488022129325558
     Path: scripts
     Type: Directory
-    ModificationTime: 133569940577981096
+    ModificationTime: 133573373604463611
+  - Handle: 10323278151023254622
+    Path: sprites\person
+    Type: Directory
+    ModificationTime: 133573286989180180
+  - Handle: 11293373849498265294
+    Path: sprites\person\walk\8.sw_sprite
+    Type: Sprite
+    ModificationTime: 133573293516700253
   - Handle: 11341898152889544325
     Path: sprites
     Type: Directory
-    ModificationTime: 133573129306040039
+    ModificationTime: 133573278023072091
+  - Handle: 11490440563647552649
+    Path: sprites\person\walk\7.sw_sprite
+    Type: Sprite
+    ModificationTime: 133573293516700253
+  - Handle: 11498009108781426864
+    Path: sprites\person\walk\4.sw_sprite
+    Type: Sprite
+    ModificationTime: 133573293516670258
+  - Handle: 12045698465739336049
+    Path: spritesheets\person
+    Type: Directory
+    ModificationTime: 133573286809375057
   - Handle: 12350258421033414411
     Path: sprites\K7GQu49FE1.sw_sprite
     Type: Sprite
@@ -162,7 +242,7 @@ Assets:
   - Handle: 12742390312197663864
     Path: textures
     Type: Directory
-    ModificationTime: 133573128022383492
+    ModificationTime: 133573275899400182
   - Handle: 13164468487002128473
     Path: cache\thumbnails\5441874985758434010_133569940577861104.cache
     Type: Unknown
@@ -187,6 +267,10 @@ Assets:
     Path: cache\fonts\13743448306498844429_133569940577861104.cache
     Type: Unknown
     ModificationTime: 133569954460020996
+  - Handle: 14329679297740836367
+    Path: sprites\person\idle\5.sw_sprite
+    Type: Sprite
+    ModificationTime: 133573293346481541
   - Handle: 14357036382917257937
     Path: sprites\explosion\11.sw_sprite
     Type: Sprite
@@ -195,6 +279,10 @@ Assets:
     Path: prefabs
     Type: Directory
     ModificationTime: 133551602556286285
+  - Handle: 14790332015910160922
+    Path: sprites\person\idle\2.sw_sprite
+    Type: Sprite
+    ModificationTime: 133573293346461542
   - Handle: 14858560164569169926
     Path: cache\fonts\1895022271424216758_133569940577861104.cache
     Type: Unknown
@@ -203,10 +291,14 @@ Assets:
     Path: sprites\explosion\3.sw_sprite
     Type: Sprite
     ModificationTime: 133573151011207496
+  - Handle: 14938886604686502714
+    Path: sprites\person\walk
+    Type: Directory
+    ModificationTime: 133573288431312336
   - Handle: 14947059261056302630
     Path: cache\thumbnails
     Type: Directory
-    ModificationTime: 133573150930801065
+    ModificationTime: 133573293255406350
   - Handle: 14996597783001670902
     Path: scenes\Physics_DistanceJoints.sw_scene
     Type: Scene
@@ -214,11 +306,11 @@ Assets:
   - Handle: 15095759771116534335
     Path: spritesheets
     Type: Directory
-    ModificationTime: 133573128084482135
+    ModificationTime: 133573276535361117
   - Handle: 15116493500697447690
     Path: scripts\PlayerController.cs
     Type: Script
-    ModificationTime: 133571614693192025
+    ModificationTime: 133573373604433608
   - Handle: 15218601145616416450
     Path: cache\thumbnails\13681513260605220869_133569940577851084.cache
     Type: Unknown
@@ -227,6 +319,10 @@ Assets:
     Path: scenes\Physics_SpringJoints.sw_scene
     Type: Scene
     ModificationTime: 133569940577931082
+  - Handle: 15349299000260537633
+    Path: sprites\person\walk\3.sw_sprite
+    Type: Sprite
+    ModificationTime: 133573293516660238
   - Handle: 15422110330296316519
     Path: cache\thumbnails\2344416971790700506_133569940577871086.cache
     Type: Unknown
@@ -250,7 +346,7 @@ Assets:
   - Handle: 16362462507353948521
     Path: build\Sandbox.dll
     Type: Unknown
-    ModificationTime: 133549188709094718
+    ModificationTime: 133573388761095751
   - Handle: 16381209260815648203
     Path: fonts
     Type: Directory
@@ -263,6 +359,10 @@ Assets:
     Path: sprites\explosion\8.sw_sprite
     Type: Sprite
     ModificationTime: 133573151011257507
+  - Handle: 16714178167121875869
+    Path: animations\person_walk_right.sw_anim
+    Type: Animation2D
+    ModificationTime: 133573379584574184
   - Handle: 16843390503621911811
     Path: scripts\TestEntity.cs
     Type: Script
@@ -270,11 +370,15 @@ Assets:
   - Handle: 16891725904374815267
     Path: assets.sw_registry
     Type: Unknown
-    ModificationTime: 133573171345302057
+    ModificationTime: 133573398382567523
+  - Handle: 16925636474204726728
+    Path: sprites\person\walk\1.sw_sprite
+    Type: Sprite
+    ModificationTime: 133573293516640264
   - Handle: 17802206516402415737
     Path: animations\explode.sw_anim
     Type: Animation2D
-    ModificationTime: 133573151311343669
+    ModificationTime: 133573379361307436
   - Handle: 18277063836767974222
     Path: sprites\m5gYo9eltf.sw_sprite
     Type: Sprite

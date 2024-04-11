@@ -98,6 +98,33 @@
 	}
 
 	/// <summary>
+	///		Represents a component that allows playing and stopping animations for a sprite.
+	/// </summary>
+	public class AnimatedSpriteComponent : Component
+	{
+		/// <summary>
+		///		Plays the animation with the specified name.
+		/// </summary>
+		/// <param name="name">The name of the animation to play.</param>
+		public void Play(string name)
+		{
+			unsafe {
+				InternalCalls.AnimatedSpriteComponent_Play(Entity.GetID(), name);
+			}
+		}
+
+		/// <summary>
+		///		Stops the currently playing animation.
+		/// </summary>
+		public void Stop()
+		{
+			unsafe {
+				InternalCalls.AnimatedSpriteComponent_Stop(Entity.GetID());
+			}
+		}
+	}
+
+	/// <summary>
 	/// 	Represents a component that adds 2D rigid body physics to an entity.
 	/// </summary>
 	public class RigidBody2DComponent : Component

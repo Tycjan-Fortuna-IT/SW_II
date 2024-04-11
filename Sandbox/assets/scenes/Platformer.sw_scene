@@ -57,16 +57,23 @@ Entities:
       TagComponent:
         Tag: Player
       TransformComponent:
-        Transform: [-0.234035492, 0.313021481, 0.000122070312]
+        Transform: [-2.37026596, -1.35654616, 0.000122070312]
         Rotation: [0, 0, 9.19713443e-08]
-        Scale: [1, 1, 1]
+        Scale: [3, 3, 1]
       AnimatedSpriteComponent:
-        CurrentFrame: 2
-        CurrentAnimationHandle: 17802206516402415737
+        CurrentFrame: 1
+        CurrentAnimationHandle: 1813557045535702317
+        DefaultAnimationHandle: 1813557045535702317
         Animations:
           - Animation:
-              Name: Explode
-              AnimationHandle: 17802206516402415737
+              Name: Idle
+              AnimationHandle: 1813557045535702317
+          - Animation:
+              Name: Walk_Left
+              AnimationHandle: 2562514851330133299
+          - Animation:
+              Name: Walk_Right
+              AnimationHandle: 16714178167121875869
       RelationshipComponent:
         ParentID: 0
         ChildrenCount: 1
@@ -88,8 +95,8 @@ Entities:
         InitiallyAwake: true
         IsBullet: false
       BoxCollider2DComponent:
-        Size: [0.5, 0.5]
-        Offset: [0, 0]
+        Size: [0.25, 0.25]
+        Offset: [0.0199999996, -0.0500000007]
         Density: 1
         IsSensor: false
   - Entity:
@@ -142,6 +149,24 @@ Entities:
         Offset: [0, 0]
         Density: 1
         IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 16989736784473538890
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [2.58141708, -1.42517281, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      AnimatedSpriteComponent:
+        CurrentFrame: 5
+        CurrentAnimationHandle: 17802206516402415737
+        DefaultAnimationHandle: 17802206516402415737
+        Animations:
+          []
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
   - Entity:
       IDComponent:
         ID: 17234884401592776596

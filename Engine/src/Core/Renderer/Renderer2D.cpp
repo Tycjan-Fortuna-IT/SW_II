@@ -373,53 +373,53 @@ namespace SW {
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 			FlushAndReset();
 
-		f32 textureIndex = 0.f; // White Texture
+			f32 textureIndex = 0.f; // White Texture
 
-		glm::vec2 texCoords[4] = { 
-			{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } 
-		};
+			glm::vec2 texCoords[4] = {
+				{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f }
+			};
 
-		if (sprite.Handle) {
-			Sprite** spriteAsset = AssetManager::GetAssetRaw<Sprite>(sprite.Handle);
-			
-			Texture2D* texture = nullptr;
-			if (spriteAsset)
-				texture = (*spriteAsset)->GetTexture();
-			else
-				texture = EditorResources::MissingAssetIcon;
+			if (sprite.Handle) {
+				Sprite** spriteAsset = AssetManager::GetAssetRaw<Sprite>(sprite.Handle);
 
-			for (u32 i = 1; i < s_Data.TextureSlotIndex; i++) {
-				if (*s_Data.TextureSlots[i] == *texture) {
-					textureIndex = static_cast<f32>(i);
-					break;
+				Texture2D* texture = nullptr;
+				if (spriteAsset)
+					texture = (*spriteAsset)->GetTexture();
+				else
+					texture = EditorResources::MissingAssetIcon;
+
+				for (u32 i = 1; i < s_Data.TextureSlotIndex; i++) {
+					if (*s_Data.TextureSlots[i] == *texture) {
+						textureIndex = static_cast<f32>(i);
+						break;
+					}
 				}
+
+				if (textureIndex == 0.0f) {
+					textureIndex = (f32)s_Data.TextureSlotIndex;
+					s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
+					s_Data.TextureSlotIndex++;
+				}
+
+				texCoords[0] = (*spriteAsset)->TexCordUpLeft;
+				texCoords[1] = (*spriteAsset)->TexCordUpRight;
+				texCoords[2] = (*spriteAsset)->TexCordRightDown;
+				texCoords[3] = (*spriteAsset)->TexCordLeftDown;
 			}
 
-			if (textureIndex == 0.0f) {
-				textureIndex = (f32)s_Data.TextureSlotIndex;
-				s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
-				s_Data.TextureSlotIndex++;
+			for (int i = 0; i < 4; i++) {
+				s_Data.QuadVertexBufferPtr->Position = glm::vec3(transform * s_Data.QuadVertexPositions[i]);
+				s_Data.QuadVertexBufferPtr->Color = sprite.Color;
+				s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
+				s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+				s_Data.QuadVertexBufferPtr->TilingFactor = sprite.TilingFactor;
+				s_Data.QuadVertexBufferPtr->EntityID = entityID;
+				s_Data.QuadVertexBufferPtr++;
 			}
 
-			texCoords[0] = (*spriteAsset)->TexCordUpLeft;
-			texCoords[1] = (*spriteAsset)->TexCordUpRight;
-			texCoords[2] = (*spriteAsset)->TexCordRightDown;
-			texCoords[3] = (*spriteAsset)->TexCordLeftDown;
-		}
+			s_Data.QuadIndexCount += 6;
 
-		for (int i = 0; i < 4; i++) {
-			s_Data.QuadVertexBufferPtr->Position = glm::vec3(transform * s_Data.QuadVertexPositions[i]);
-			s_Data.QuadVertexBufferPtr->Color = sprite.Color;
-			s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
-			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-			s_Data.QuadVertexBufferPtr->TilingFactor = sprite.TilingFactor;
-			s_Data.QuadVertexBufferPtr->EntityID = entityID;
-			s_Data.QuadVertexBufferPtr++;
-		}
-
-		s_Data.QuadIndexCount += 6;
-
-		s_Data.Stats.QuadCount++;
+			s_Data.Stats.QuadCount++;
 	}
 
 	void Renderer2D::DrawQuad(const glm::mat4& transform, AnimatedSpriteComponent& asc, Timestep dt, int entityID /*= -1*/)
@@ -461,10 +461,21 @@ namespace SW {
 			s_Data.TextureSlotIndex++;
 		}
 
-		texCoords[0] = (*sprite)->TexCordUpLeft;
-		texCoords[1] = (*sprite)->TexCordUpRight;
-		texCoords[2] = (*sprite)->TexCordRightDown;
-		texCoords[3] = (*sprite)->TexCordLeftDown;
+		texCoords[0] = (*asc.CurrentAnimation)->ReverseAlongX 
+			? ((*asc.CurrentAnimation)->ReverseAlongY ? (*sprite)->TexCordRightDown : (*sprite)->TexCordUpRight)
+			: ((*asc.CurrentAnimation)->ReverseAlongY ? (*sprite)->TexCordLeftDown : (*sprite)->TexCordUpLeft);
+
+		texCoords[1] = (*asc.CurrentAnimation)->ReverseAlongX
+			? ((*asc.CurrentAnimation)->ReverseAlongY ? (*sprite)->TexCordLeftDown : (*sprite)->TexCordUpLeft)
+			: ((*asc.CurrentAnimation)->ReverseAlongY ? (*sprite)->TexCordRightDown : (*sprite)->TexCordUpRight);
+
+		texCoords[2] = (*asc.CurrentAnimation)->ReverseAlongX
+			? ((*asc.CurrentAnimation)->ReverseAlongY ? (*sprite)->TexCordUpLeft : (*sprite)->TexCordLeftDown)
+			: ((*asc.CurrentAnimation)->ReverseAlongY ? (*sprite)->TexCordUpRight : (*sprite)->TexCordRightDown);
+
+		texCoords[3] = (*asc.CurrentAnimation)->ReverseAlongX
+			? ((*asc.CurrentAnimation)->ReverseAlongY ? (*sprite)->TexCordUpRight : (*sprite)->TexCordRightDown)
+			: ((*asc.CurrentAnimation)->ReverseAlongY ? (*sprite)->TexCordUpLeft : (*sprite)->TexCordLeftDown);
 
 		for (int i = 0; i < 4; i++) {
 			s_Data.QuadVertexBufferPtr->Position = glm::vec3(transform * s_Data.QuadVertexPositions[i]);

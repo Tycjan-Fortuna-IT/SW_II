@@ -55,6 +55,10 @@ namespace SW
 		internal static delegate* unmanaged<ulong, Vector3*, void> TransformComponent_SetScale;
 
 
+		internal static delegate* unmanaged<ulong, NativeString, void> AnimatedSpriteComponent_Play;
+		internal static delegate* unmanaged<ulong, void> AnimatedSpriteComponent_Stop;
+
+
 		internal static delegate* unmanaged<ulong, Vector2*, void> Rigidbody2DComponent_GetVelocity;
 		internal static delegate* unmanaged<ulong, Vector2*, void> Rigidbody2DComponent_SetVelocity;
 

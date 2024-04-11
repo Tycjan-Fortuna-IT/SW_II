@@ -124,9 +124,10 @@ namespace SW {
 			DrawComponent<AnimatedSpriteComponent>(entity, [](AnimatedSpriteComponent& component) {
 				GUI::BeginProperties("##sprite_property");
 
-				AssetHandle handle = component.CurrentAnimation ? (*component.CurrentAnimation)->GetHandle() : 0u;
+				AssetHandle handle = component.DefaultAnimation ? (*component.DefaultAnimation)->GetHandle() : 0u;
 				if (GUI::DrawAssetDropdownProperty<Animation2D>(handle, "Default", "Default animation to be used if nothing is being played (if not specified - nothing will be visible)")) {
-					component.CurrentAnimation = AssetManager::GetAssetRaw<Animation2D>(handle);
+					component.DefaultAnimation = AssetManager::GetAssetRaw<Animation2D>(handle);
+					component.CurrentAnimation = component.DefaultAnimation;
 				}
 				GUI::DrawAssetTableMapDropdownList<std::string, Animation2D>(component.Animations, "Animations");
 

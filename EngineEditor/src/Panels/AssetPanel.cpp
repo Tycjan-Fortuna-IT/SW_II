@@ -521,8 +521,16 @@ namespace SW {
 						texture = (*sprite)->GetTextureRaw();
 						item->Thumbnail.Width = std::roundf(abs((*sprite)->TexCordUpRight.x - (*sprite)->TexCordLeftDown.x) * (*texture)->GetWidth());
 						item->Thumbnail.Height = std::roundf(abs((*sprite)->TexCordUpRight.y - (*sprite)->TexCordLeftDown.y) * (*texture)->GetHeight());
-						item->Thumbnail.TexCoordMin = { (*sprite)->TexCordLeftDown.x, (*sprite)->TexCordLeftDown.y };
-						item->Thumbnail.TexCoordMax = { (*sprite)->TexCordUpRight.x, (*sprite)->TexCordUpRight.y };
+						
+						item->Thumbnail.TexCoordMin = {
+							(*animation)->ReverseAlongX ? (*sprite)->TexCordUpRight.x : (*sprite)->TexCordLeftDown.x,
+							(*animation)->ReverseAlongY ? (*sprite)->TexCordUpRight.y : (*sprite)->TexCordLeftDown.y
+						};
+
+						item->Thumbnail.TexCoordMax = {
+							(*animation)->ReverseAlongX ? (*sprite)->TexCordLeftDown.x : (*sprite)->TexCordUpRight.x,
+							(*animation)->ReverseAlongY ? (*sprite)->TexCordLeftDown.y : (*sprite)->TexCordUpRight.y
+						};
 					} else {
 						texture = &EditorResources::MissingAssetIcon;
 					}

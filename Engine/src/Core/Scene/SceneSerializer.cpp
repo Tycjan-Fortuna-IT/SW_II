@@ -73,6 +73,8 @@ namespace SW {
 				output << YAML::Key << "CurrentFrame" << YAML::Value << asc.CurrentFrame;
 				output << YAML::Key << "CurrentAnimationHandle" << YAML::Value << (asc.CurrentAnimation ?
 					(*asc.CurrentAnimation)->GetHandle() : 0u);
+				output << YAML::Key << "DefaultAnimationHandle" << YAML::Value << (asc.DefaultAnimation ?
+					(*asc.DefaultAnimation)->GetHandle() : 0u);
 
 				output << YAML::Key << "Animations" << YAML::Value << YAML::BeginSeq;
 				
@@ -83,9 +85,8 @@ namespace SW {
 					output << YAML::Key << "Name" << YAML::Value << name;
 					output << YAML::Key << "AnimationHandle" << YAML::Value << (*anim)->GetHandle();
 					output << YAML::EndMap;
+					output << YAML::EndMap;
 				}
-
-				output << YAML::EndMap;
 				output << YAML::EndSeq;
 
 				output << YAML::EndMap;
@@ -398,9 +399,11 @@ namespace SW {
 				AnimatedSpriteComponent& asc = deserialized.AddComponent<AnimatedSpriteComponent>();
 
 				asc.CurrentFrame = animatedSpriteComponent["CurrentFrame"].as<int>();
-				AssetHandle animHandle = animatedSpriteComponent["CurrentAnimationHandle"].as<u64>();
+				AssetHandle currentAnimHandle = animatedSpriteComponent["CurrentAnimationHandle"].as<u64>();
+				AssetHandle defaultAnimHandle = animatedSpriteComponent["DefaultAnimationHandle"].as<u64>();
 
-				asc.CurrentAnimation = animHandle ? AssetManager::GetAssetRaw<Animation2D>(animHandle) : nullptr;
+				asc.CurrentAnimation = currentAnimHandle ? AssetManager::GetAssetRaw<Animation2D>(currentAnimHandle) : nullptr;
+				asc.DefaultAnimation = defaultAnimHandle ? AssetManager::GetAssetRaw<Animation2D>(defaultAnimHandle) : nullptr;
 
 				YAML::Node animations = animatedSpriteComponent["Animations"];
 				for (YAML::Node animation : animations) {

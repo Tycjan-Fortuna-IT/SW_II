@@ -22,6 +22,9 @@ namespace SW {
 		static AssetType GetStaticType() { return AssetType::Animation2D; }
 		AssetType GetAssetType() const override { return AssetType::Animation2D; }
 	
+		bool ReverseAlongX = false;
+		bool ReverseAlongY = false;
+
 		f32 Speed = 1.0f;
 
 		std::vector<Sprite**> Sprites;

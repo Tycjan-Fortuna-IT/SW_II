@@ -200,6 +200,9 @@ namespace SW {
 
 		output << YAML::BeginMap;
 		output << YAML::Key << "Speed" << YAML::Value << animation->Speed;
+		output << YAML::Key << "ReverseAlongX" << YAML::Value << animation->ReverseAlongX;
+		output << YAML::Key << "ReverseAlongY" << YAML::Value << animation->ReverseAlongY;
+
 		output << YAML::Key << "Sprites" << YAML::Value << YAML::BeginSeq;
 
 		for (Sprite** const sprite : animation->Sprites) {
@@ -241,6 +244,8 @@ namespace SW {
 		Animation2D* animation = new Animation2D();
 
 		animation->Speed = data["Speed"].as<f32>();
+		animation->ReverseAlongX = data["ReverseAlongX"].as<bool>();
+		animation->ReverseAlongY = data["ReverseAlongY"].as<bool>();
 
 		YAML::Node sprites = data["Sprites"];
 		for (YAML::Node sprite : sprites) {

@@ -1,0 +1,33 @@
+Spritesheet:
+  TextureHandle: 9383798946519536564
+  ViewZoom: 1.80000019
+  GridSize: 128
+  CenterOffset: [-5, 25]
+  ViewPos: [-234.999924, 26.999836]
+  ShowImageBorders: true
+  ExportPath: sprites\person\idle
+  Sprites:
+    - Sprite:
+        Name: 1
+        Position: [0, 128]
+        Size: [128, 128]
+    - Sprite:
+        Name: 2
+        Position: [128, 128]
+        Size: [128, 128]
+    - Sprite:
+        Name: 3
+        Position: [256, 128]
+        Size: [128, 128]
+    - Sprite:
+        Name: 4
+        Position: [384, 128]
+        Size: [128, 128]
+    - Sprite:
+        Name: 5
+        Position: [512, 128]
+        Size: [128, 128]
+    - Sprite:
+        Name: 6
+        Position: [640, 128]
+        Size: [128, 128]
