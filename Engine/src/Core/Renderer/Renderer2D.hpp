@@ -1,8 +1,8 @@
 /**
  * @file Renderer2D.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.2.1
- * @date 2024-02-03
+ * @version 0.2.2
+ * @date 2024-04-11
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -103,6 +103,8 @@ namespace SW {
 		 * @param entityID The ID of the entity.
 		 */
 		static void DrawQuad(const glm::mat4& transform, const SpriteComponent& sprite, int entityID = -1);
+
+		static void DrawQuad(const glm::mat4& transform, AnimatedSpriteComponent& asc, Timestep dt, int entityID = -1);
 
 		static void DrawMissingTextureQuad(const glm::mat4& transform, int entityID = -1);
 
