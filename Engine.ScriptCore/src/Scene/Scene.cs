@@ -3,6 +3,18 @@
 	public static class Scene
 	{
 		/// <summary>
+		/// 	Creates a new entity.
+		/// </summary>
+		/// <param name="name">The name of the entity. (optional)</param>
+		/// <returns>The newly created entity.</returns>
+		public static Entity CreateEntity(string name = "Empty")
+		{
+			unsafe {
+				return new Entity(InternalCalls.Scene_CreateEntity(name));
+			}
+		}
+
+		/// <summary>
 		/// 	Retrieves the entity with the specified ID.
 		/// </summary>
 		/// <param name="id">The ID of the entity.</param>

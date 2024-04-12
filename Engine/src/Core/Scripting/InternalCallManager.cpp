@@ -82,6 +82,7 @@ namespace SW {
 		RegisterManagedComponent<TagComponent>(coreAssembly);
 		RegisterManagedComponent<TransformComponent>(coreAssembly);
 		RegisterManagedComponent<AnimatedSpriteComponent>(coreAssembly);
+		RegisterManagedComponent<TextComponent>(coreAssembly);
 		RegisterManagedComponent<RigidBody2DComponent>(coreAssembly);
     }
 
@@ -207,6 +208,15 @@ namespace SW {
 		}
 
 		s_RemoveComponentFuncs.at(type.GetTypeId())(entity);
+	}
+
+	u64 Scene_CreateEntity(Coral::String tag)
+	{
+		Scene* scene = ScriptingCore::Get().GetCurrentScene();
+
+		ASSERT(scene, "No active scene!");
+
+		return scene->CreateEntity(tag).GetID();
 	}
 
 	u64 Scene_TryGetEntityByID(u64 id)
@@ -352,7 +362,86 @@ namespace SW {
 		asc.CurrentFrame = 0;
 		asc.CurrentAnimation = asc.DefaultAnimation;
 	}
-	
+
+	Coral::String TextComponent_GetText(u64 entityID)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		TextComponent& tc = entity.GetComponent<TextComponent>();
+
+		return Coral::String::New(tc.TextString);
+	}
+
+	void TextComponent_SetText(u64 entityID, Coral::String text)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		std::string newText = text;
+
+		TextComponent& tc = entity.GetComponent<TextComponent>();
+
+		tc.TextString = text;
+	}
+
+	void TextComponent_GetColor(u64 entityID, glm::vec4* outColor)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		*outColor = entity.GetComponent<TextComponent>().Color;
+	}
+
+	void TextComponent_SetColor(u64 entityID, glm::vec4* inColor)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		entity.GetComponent<TextComponent>().Color = *inColor;
+	}
+
+	f32 TextComponent_GetKerning(u64 entityID)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		return entity.GetComponent<TextComponent>().Kerning;
+	}
+
+	void TextComponent_SetKerning(u64 entityID, f32 kerning)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		entity.GetComponent<TextComponent>().Kerning = kerning;
+	}
+
+
+	f32 TextComponent_GetLineSpacing(u64 entityID)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		return entity.GetComponent<TextComponent>().LineSpacing;
+	}
+
+	void TextComponent_SetLineSpacing(u64 entityID, f32 LineSpacing)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		entity.GetComponent<TextComponent>().LineSpacing = LineSpacing;
+	}
+
 	void Rigidbody2DComponent_GetVelocity(u64 entityID, glm::vec2* outVelocity)
 	{
 		Entity entity = GetEntityById(entityID);
@@ -455,6 +544,7 @@ namespace SW {
 		ADD_INTERNAL_CALL(Entity_RemoveComponent);
 
 
+		ADD_INTERNAL_CALL(Scene_CreateEntity);
 		ADD_INTERNAL_CALL(Scene_TryGetEntityByID);
 		ADD_INTERNAL_CALL(Scene_TryGetEntityByTag);
 
@@ -475,6 +565,19 @@ namespace SW {
 
 		ADD_INTERNAL_CALL(AnimatedSpriteComponent_Play);
 		ADD_INTERNAL_CALL(AnimatedSpriteComponent_Stop);
+
+
+		ADD_INTERNAL_CALL(TextComponent_GetText);
+		ADD_INTERNAL_CALL(TextComponent_SetText);
+
+		ADD_INTERNAL_CALL(TextComponent_GetColor);
+		ADD_INTERNAL_CALL(TextComponent_SetColor);
+
+		ADD_INTERNAL_CALL(TextComponent_GetKerning);
+		ADD_INTERNAL_CALL(TextComponent_SetKerning);
+
+		ADD_INTERNAL_CALL(TextComponent_GetLineSpacing);
+		ADD_INTERNAL_CALL(TextComponent_SetLineSpacing);
 
 
 		ADD_INTERNAL_CALL(Rigidbody2DComponent_GetVelocity);

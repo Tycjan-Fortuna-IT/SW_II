@@ -728,12 +728,17 @@ namespace SW {
 
 			if (GUI::ToggleButton(SW_ICON_STOP, currentState == SceneState::Edit, { buttonSize.x + 2.f, buttonSize.y + 2.f }, alpha, alpha)) {
 				if (currentState != SceneState::Edit) {
+
 					m_ActiveScene->OnRuntimeStop();
 
 					delete m_ActiveScene;
 					m_ActiveScene = nullptr;
 
 					m_ActiveScene = m_SceneCopy->DeepCopy();
+
+					if (SelectionManager::IsSelected()) // If entity was created during run time and was selected within the editor
+						if (!m_ActiveScene->TryGetEntityByID(SelectionManager::GetSelectionID()))
+							SelectionManager::Deselect();
 
 					ScriptingCore::Get().SetCurrentScene(m_ActiveScene);
 

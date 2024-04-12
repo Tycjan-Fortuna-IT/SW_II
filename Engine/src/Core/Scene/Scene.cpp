@@ -546,6 +546,7 @@ namespace SW {
 		CopyComponentIfExists<AnimatedSpriteComponent>(newEntity, currentRegistry, entity);
 		CopyComponentIfExists<CircleComponent>(newEntity, currentRegistry, entity);
 		CopyComponentIfExists<TextComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<ScriptComponent>(newEntity, currentRegistry, entity);
 		CopyComponentIfExists<CameraComponent>(newEntity, currentRegistry, entity);
 		CopyComponentIfExists<RigidBody2DComponent>(newEntity, currentRegistry, entity);
 		CopyComponentIfExists<BoxCollider2DComponent>(newEntity, currentRegistry, entity);

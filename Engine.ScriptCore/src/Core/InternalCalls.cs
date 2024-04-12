@@ -37,6 +37,7 @@ namespace SW
 		internal static delegate* unmanaged<ulong, ReflectionType, void> Entity_RemoveComponent;
 
 
+		internal static delegate* unmanaged<NativeString, ulong> Scene_CreateEntity;
 		internal static delegate* unmanaged<ulong, ulong> Scene_TryGetEntityByID;
 		internal static delegate* unmanaged<NativeString, ulong> Scene_TryGetEntityByTag;
 		
@@ -58,6 +59,18 @@ namespace SW
 		internal static delegate* unmanaged<ulong, NativeString, void> AnimatedSpriteComponent_Play;
 		internal static delegate* unmanaged<ulong, void> AnimatedSpriteComponent_Stop;
 
+
+		internal static delegate* unmanaged<ulong, NativeString> TextComponent_GetText;
+		internal static delegate* unmanaged<ulong, NativeString, void> TextComponent_SetText;
+
+		internal static delegate* unmanaged<ulong, Vector4*, void> TextComponent_GetColor;
+		internal static delegate* unmanaged<ulong, Vector4*, void> TextComponent_SetColor;
+
+		internal static delegate* unmanaged<ulong, float> TextComponent_GetKerning;
+		internal static delegate* unmanaged<ulong, float, void> TextComponent_SetKerning;
+
+		internal static delegate* unmanaged<ulong, float> TextComponent_GetLineSpacing;
+		internal static delegate* unmanaged<ulong, float, void> TextComponent_SetLineSpacing;
 
 		internal static delegate* unmanaged<ulong, Vector2*, void> Rigidbody2DComponent_GetVelocity;
 		internal static delegate* unmanaged<ulong, Vector2*, void> Rigidbody2DComponent_SetVelocity;

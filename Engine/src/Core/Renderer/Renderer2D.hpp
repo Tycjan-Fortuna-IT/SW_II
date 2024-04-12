@@ -108,7 +108,7 @@ namespace SW {
 		 * @brief Draws a quad with the specified transformation matrix and animated sprite component.
 		 * @param transform The transformation matrix of the quad.
 		 * @param asc The animated sprite component of the quad.
-		 * @param time The time elapsed since the last frame.
+		 * @param time The time elapsed since the last frame. Cumulative time is used to determine the current frame.
 		 * @param entityID The ID of the entity.
 		 */
 		static void DrawQuad(const glm::mat4& transform, AnimatedSpriteComponent& asc, f32 time, int entityID = -1);

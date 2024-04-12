@@ -21,6 +21,8 @@ R"(Spritesheet:
 #define EMPTY_ANIMATION2D_CONTENT \
 R"(Animation:
   Speed: 1
+  ReverseAlongX: false
+  ReverseAlongY: false
   Sprites:
     {})"
 

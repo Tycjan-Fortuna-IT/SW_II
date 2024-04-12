@@ -102,6 +102,8 @@
 	/// </summary>
 	public class AnimatedSpriteComponent : Component
 	{
+		private string CurrentAnimation = string.Empty;
+
 		/// <summary>
 		///		Plays the animation with the specified name.
 		/// </summary>
@@ -109,7 +111,12 @@
 		public void Play(string name)
 		{
 			unsafe {
+				if (CurrentAnimation == name)
+					return;
+					
 				InternalCalls.AnimatedSpriteComponent_Play(Entity.GetID(), name);
+
+				CurrentAnimation = name;
 			}
 		}
 
@@ -120,6 +127,87 @@
 		{
 			unsafe {
 				InternalCalls.AnimatedSpriteComponent_Stop(Entity.GetID());
+			}
+		}
+	}
+
+	/// <summary>
+	/// 	Represents a component that displays a text.
+	/// </summary>
+	public class TextComponent : Component
+	{
+		/// <summary>
+		/// 	Gets or sets the text content of the component.
+		/// </summary>
+		public string Text
+		{
+			get {
+				unsafe {
+					return InternalCalls.TextComponent_GetText(Entity.GetID())!;
+				}
+			}
+			set {
+				unsafe {
+					InternalCalls.TextComponent_SetText(Entity.GetID(), value);
+				}
+			}
+		}
+
+		/// <summary>
+		/// 	Gets or sets the color of the text.
+		/// 	E.g. new Vector4(1.0f, 0.0f, 0.0f, 1.0f) is red.
+		/// </summary>
+		public Vector4 Color
+		{
+			get {
+				Vector4 result;
+
+				unsafe {
+					InternalCalls.TextComponent_GetColor(Entity.GetID(), &result);
+				}
+
+				return result;
+			}
+			set {
+				unsafe {
+					InternalCalls.TextComponent_SetColor(Entity.GetID(), &value);
+				}
+			}
+		}
+
+		/// <summary>
+		/// 	Gets or sets the kerning value of the text.
+		/// 	Basically, it's the space between characters.
+		/// </summary>
+		public float Kerning
+		{
+			get {
+				unsafe {
+					return InternalCalls.TextComponent_GetKerning(Entity.GetID());
+				}
+			}
+			set {
+				unsafe {
+					InternalCalls.TextComponent_SetKerning(Entity.GetID(), value);
+				}
+			}
+		}
+
+		/// <summary>
+		/// 	Gets or sets the line spacing value of the text.
+		/// 	Basically, it's the space between lines.
+		/// </summary>
+		public float LineSpacing
+		{
+			get {
+				unsafe {
+					return InternalCalls.TextComponent_GetLineSpacing(Entity.GetID());
+				}
+			}
+			set {
+				unsafe {
+					InternalCalls.TextComponent_SetLineSpacing(Entity.GetID(), value);
+				}
 			}
 		}
 	}
