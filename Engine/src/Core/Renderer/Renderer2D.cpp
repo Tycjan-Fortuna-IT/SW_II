@@ -422,12 +422,8 @@ namespace SW {
 			s_Data.Stats.QuadCount++;
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, AnimatedSpriteComponent& asc, Timestep dt, int entityID /*= -1*/)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, AnimatedSpriteComponent& asc, f32 time, int entityID /*= -1*/)
 	{
-		static f32 currentTime = 0u;
-
-		currentTime += dt;
-
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 			FlushAndReset();
 
@@ -439,7 +435,7 @@ namespace SW {
 
 		u64 framesCount = (*asc.CurrentAnimation)->Sprites.size();
 
-		asc.CurrentFrame = (int)(currentTime * (*asc.CurrentAnimation)->Speed) % framesCount;
+		asc.CurrentFrame = (int)(time * (*asc.CurrentAnimation)->Speed) % framesCount;
 
 		if (asc.CurrentFrame >= framesCount) {
 			asc.CurrentFrame = 0;

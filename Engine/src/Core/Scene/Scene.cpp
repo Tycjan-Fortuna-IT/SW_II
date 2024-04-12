@@ -18,6 +18,11 @@ namespace SW {
 		: m_Registry(this), m_FilePath(filepath)
 	{
 		m_Name = std::filesystem::path(filepath).filename().string();
+
+		entt::registry& reg = m_Registry.GetRegistryHandle();
+
+		// This enables creating entities in runtime
+		reg.on_construct<RigidBody2DComponent>().connect<&Scene::OnRigidBody2DComponentCreated>(this);
 	}
 	
 	Scene::~Scene()
@@ -177,12 +182,17 @@ namespace SW {
 		}
 
 		delete m_PhysicsWorld2D;
+		m_PhysicsWorld2D = nullptr;
+
 		delete m_PhysicsContactListener2D;
+		m_PhysicsContactListener2D = nullptr;
 	}
 
     void Scene::OnUpdateEditor(Timestep dt, EditorCamera* camera)
     {
 		PROFILE_FUNCTION();
+
+		m_AnimationTime += dt;
 
 		Renderer2D::BeginScene(camera);
 
@@ -198,7 +208,7 @@ namespace SW {
 			if (!asc.CurrentAnimation)
 				continue;
 
-			Renderer2D::DrawQuad(entity.GetWorldSpaceTransformMatrix(), asc, dt, (int)handle);
+			Renderer2D::DrawQuad(entity.GetWorldSpaceTransformMatrix(), asc, m_AnimationTime, (int)handle);
 		}
 
 		for (auto&& [handle, cc] : m_Registry.GetEntitiesWith<CircleComponent>().each()) {
@@ -220,6 +230,8 @@ namespace SW {
 	void Scene::OnUpdateRuntime(Timestep dt)
 	{
 		PROFILE_FUNCTION();
+
+		m_AnimationTime += dt;
 
 #pragma region Physics
 		if (m_SceneState != SceneState::Pause) {
@@ -384,7 +396,7 @@ namespace SW {
 			if (!asc.CurrentAnimation)
 				continue;
 
-			Renderer2D::DrawQuad(entity.GetWorldSpaceTransformMatrix(), asc, dt, (int)handle);
+			Renderer2D::DrawQuad(entity.GetWorldSpaceTransformMatrix(), asc, m_AnimationTime, (int)handle);
 		}
 
 		for (auto&& [handle, cc] : m_Registry.GetEntitiesWith<CircleComponent>().each()) {
@@ -821,6 +833,18 @@ namespace SW {
 		jointDef.upperTranslation = wjc.UpperTranslation;
 
 		wjc.RuntimeJoint = m_PhysicsWorld2D->CreateJoint(&jointDef);
+	}
+
+	void Scene::OnRigidBody2DComponentCreated(entt::registry& registry, entt::entity handle)
+	{
+		if (!m_PhysicsWorld2D)
+			return;
+
+		Entity entity = { handle, this };
+
+		RigidBody2DComponent& rbc = entity.GetComponent<RigidBody2DComponent>();
+
+		CreateRigidbody2D(entity, entity.GetWorldSpaceTransform(), rbc);
 	}
 
 }

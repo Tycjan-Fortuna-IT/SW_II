@@ -288,7 +288,7 @@ namespace SW {
 
 		SceneState m_SceneState = SceneState::Edit;	/**< The current state of the scene. */
 
-		b2World* m_PhysicsWorld2D;		/**< The physics world of the scene. */
+		b2World* m_PhysicsWorld2D = nullptr;		/**< The physics world of the scene. */
 		Physics2DContactListener* m_PhysicsContactListener2D = nullptr;
 
 		u32 m_VelocityIterations = 8;			/**< The number of velocity iterations for the physics simulation. */
@@ -296,6 +296,8 @@ namespace SW {
 		f32 m_PhysicsFrameAccumulator = 0.0f;	/**< The frame accumulator for the physics simulation. */
 
 		ScriptStorage m_ScriptStorage;			/**< The script storage of the scene. */
+
+		f32 m_AnimationTime = 0.f;			/**< The time elapsed since the last frame. Used for proper 2D animation display. */
 
 		/**
 		 * @brief Register entity's rigidbody component in the physics world.
@@ -381,6 +383,15 @@ namespace SW {
 		 * @param wjc The wheel joint component to be created.
 		 */
 		void CreateWheelJoint2D(Entity entity, const RigidBody2DComponent& rbc, WheelJoint2DComponent& wjc);
+
+		/**
+		 * @brief Function bound to the event of creating a rigidbody2D component.
+		 * 		  Used to register the rigidbody2D component in the physics world at runtime.
+		 * 
+		 * @param registry The registry of the scene.
+		 * @param handle The entity handle of the entity with the rigidbody2D component.
+		 */
+		void OnRigidBody2DComponentCreated(entt::registry& registry, entt::entity handle);
 	};
 
 }
