@@ -15,6 +15,7 @@
 #include "Core/Scripting/ScriptingCore.hpp"
 #include "GUI/Editor/EditorResources.hpp"
 #include "AssetPanels/AssetEditorPanelManager.hpp"
+#include "Asset/AssetLoader.hpp"
 
 namespace SW {
 
@@ -158,13 +159,7 @@ namespace SW {
 				ImGui::SetCursorPosX(rightOffset - windowPadding.x);
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f + windowPadding.y);
 
-				std::string label = projectName;
-
-				if (m_Viewport->IsSceneLoaded()) {
-					label = projectName + "  |  " + m_Viewport->GetCurrentScene()->GetName();
-				}
-
-				ImGui::Text(label.c_str());
+				ImGui::Text(projectName.c_str());
 
 				GUI::DrawBorder(GUI::RectExpanded(GUI::GetItemRect(), 24.0f, 68.0f), 1.0f, 3.0f, 0.0f, -60.0f);
 			}
@@ -329,27 +324,26 @@ namespace SW {
 			ImGui::OpenPopup("NewSceneModal");
 		}
 
-		if (ImGui::BeginPopupModal("NewSceneModal", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		if (ImGui::BeginPopupModal("NewSceneModal", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 			ImGui::Text("Input the desired scene name with .sw extension!");
 
 			ImGui::Separator();
 
-			static std::string newProjectName = "";
+			static std::string newProjectName;
 
 			GUI::BeginProperties("##new_scene_name");
 			GUI::DrawSingleLineTextInputProperty<256>(newProjectName, "Name");
 			GUI::EndProperties();
 
-			if (newProjectName != "") { // TODO fixme
+			if (!newProjectName.empty()) { // TODO fixme - NEW BETTER POPUP
 				if (ImGui::Button("Create", ImVec2(100.f, 0))) {
 					if (SelectionManager::IsSelected())
 						SelectionManager::Deselect();
 
-					std::filesystem::path newScenePath = ProjectContext::Get()->GetAssetDirectory() / "scenes" / newProjectName;
+					Scene* newScene = new Scene();
 
-					Scene* newScene = new Scene(newScenePath.string());
-
-					SceneSerializer::Serialize(newScene, newScenePath);
+					// TODO
+					SceneSerializer::Serialize(newScene, ProjectContext::Get()->GetAssetDirectory() / "scenes" / newProjectName);
 
 					delete m_Viewport->GetCurrentScene();
 					m_Viewport->SetCurrentScene(newScene);
@@ -368,8 +362,6 @@ namespace SW {
 
 			ImGui::EndPopup();
 		}
-
-		//ImGui::ShowDemoWindow();
 	}
 
 	bool EditorLayer::OnKeyPressed(KeyCode code)
@@ -409,7 +401,10 @@ namespace SW {
 	void EditorLayer::SaveCurrentScene()
 	{
 		Scene* currentScene = m_Viewport->GetCurrentScene();
-		SceneSerializer::Serialize(currentScene, currentScene->GetFilePath());
+
+		const AssetMetaData& metadata = AssetManager::GetAssetMetaData(currentScene->GetHandle());
+		//AssetLoader::Serialize(metadata);// reload after ?
+		SceneSerializer::Serialize(currentScene, ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
 	}
 
 	void EditorLayer::OpenProject()
@@ -443,7 +438,10 @@ namespace SW {
 			ProjectSerializer::Serialize(ProjectContext::Get(), filepath.string());
 
 			Scene* currentScene = m_Viewport->GetCurrentScene();
-			SceneSerializer::Serialize(currentScene, currentScene->GetFilePath());
+
+			const AssetMetaData& metadata = AssetManager::GetAssetMetaData(currentScene->GetHandle());
+
+			SceneSerializer::Serialize(currentScene, ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
 		}
 	}
 

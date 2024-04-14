@@ -19,6 +19,8 @@
 #include "GUI/Editor/EditorResources.hpp"
 #include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.hpp" // TODO - remove (because of Testbed)
 #include "Asset/Animation2D.hpp"
+#include "Asset/Prefab.hpp"
+#include "Asset/AssetLoader.hpp"
 
 namespace SW {
 
@@ -592,6 +594,21 @@ namespace SW {
 			ImGui::EndTable();
 
 			m_IsTableHovered = ImGui::IsItemHovered();
+
+			if (ImGui::BeginDragDropTarget()) {
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity")) {
+					Entity entity = *static_cast<Entity*>(payload->Data);
+
+					// Creating a prefab from the entity.
+					std::filesystem::path newFilePath = 
+						FileSystem::GetUniqueFilename(ProjectContext::Get()->GetAssetDirectory() / m_SelectedItem->Path / (entity.GetTag() + ".sw_prefab"));
+
+					AssetManager::CreateNew<Prefab>(std::filesystem::relative(newFilePath, ProjectContext::Get()->GetAssetDirectory()), entity);
+
+					LoadDirectoryEntries();
+				}
+				ImGui::EndDragDropTarget();
+			}
 
 			if (!isAnyItemHovered)
 				DrawAssetPanelPopup();

@@ -42,7 +42,7 @@ namespace SW {
 		AddComponentName<SpringJoint2DComponent>(SW_ICON_ARROW_EXPAND " Spring Joint 2D");
 		AddComponentName<WheelJoint2DComponent>(SW_ICON_CAR " Wheel Joint 2D");
 
-		m_ComponentCopyScene = new Scene("");
+		m_ComponentCopyScene = new Scene();
 		m_ComponentCopyEntity = m_ComponentCopyScene->CreateEntity();
 	}
 

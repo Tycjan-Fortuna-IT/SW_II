@@ -11,14 +11,27 @@
 #include "Core/Editor/EditorCamera.hpp"
 #include "Core/Physics/Physics2DContactListener.hpp"
 #include "Core/Scripting/ScriptingCore.hpp"
+#include "Asset/Prefab.hpp"
 
 namespace SW {
 
-	Scene::Scene(const std::string& filepath)
-		: m_Registry(this), m_FilePath(filepath)
-	{
-		m_Name = std::filesystem::path(filepath).filename().string();
+// WELP
+#define CopyReferencedEntities(T) \
+	{ \
+		if (src.HasComponent<T>()) { \
+			T& component = src.GetComponent<T>(); \
+			if (component.ConnectedEntityID) { \
+				Entity connectedEntity = GetEntityByID(component.ConnectedEntityID); \
+				Entity duplicatedConnectedEntity = DuplicateEntity(connectedEntity, duplicatedEntities); \
+				T& newComponent = dst.GetComponent<T>(); \
+				newComponent.ConnectedEntityID = duplicatedConnectedEntity.GetID(); \
+			} \
+		} \
+	}
 
+	Scene::Scene()
+		: m_Registry(this)
+	{
 		entt::registry& reg = m_Registry.GetRegistryHandle();
 
 		// This enables creating entities in runtime
@@ -112,6 +125,80 @@ namespace SW {
 
 			return static_cast<u32>(lhsEntity->second) < static_cast<u32>(rhsEntity->second);
 		});
+	}
+
+	Entity Scene::InstantiatePrefab(
+		const Prefab* prefab, const glm::vec3* position /*= nullptr*/, const glm::vec3* rotation /*= nullptr*/,
+		const glm::vec3* scale /*= nullptr*/
+	) {
+		std::unordered_map<u64, Entity> duplicatedEntities;
+
+		return CreatePrefabricatedEntity(prefab->GetRootEntity(), duplicatedEntities, position, rotation, scale);
+	}
+
+	Entity Scene::CreatePrefabricatedEntity(
+		Entity src, std::unordered_map<u64, Entity>& duplicatedEntities, const glm::vec3* position /*= nullptr*/,
+		const glm::vec3* rotation /*= nullptr*/, const glm::vec3* scale /*= nullptr*/
+	) {
+		Scene* srcScene = src.GetScene();
+
+		entt::registry& destReg = GetRegistry().GetRegistryHandle();
+
+		Entity dst = CreateEntity();
+
+		srcScene->CopyComponentIfExists<TagComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<TransformComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<SpriteComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<AnimatedSpriteComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<CircleComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<TextComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<ScriptComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<CameraComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<RigidBody2DComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<BoxCollider2DComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<CircleCollider2DComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<PolygonCollider2DComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<BuoyancyEffector2DComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<DistanceJoint2DComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<RevolutionJoint2DComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<PrismaticJoint2DComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<SpringJoint2DComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<WheelJoint2DComponent>(dst, destReg, src);
+
+		CopyReferencedEntities(DistanceJoint2DComponent);
+		CopyReferencedEntities(RevolutionJoint2DComponent);
+		CopyReferencedEntities(PrismaticJoint2DComponent);
+		CopyReferencedEntities(SpringJoint2DComponent);
+		CopyReferencedEntities(WheelJoint2DComponent);
+
+		if (src.HasComponent<ScriptComponent>()) {
+			ScriptComponent& sc = dst.GetComponent<ScriptComponent>();
+
+			ASSERT(ScriptingCore::Get().IsValidScript(sc.ScriptID), "Prefab's script ID is invalid!");
+
+			m_ScriptStorage.InitializeEntityStorage(sc.ScriptID, dst.GetID());
+		}
+
+		if (position)
+			dst.GetTransform().Position = *position;
+		if (rotation)
+			dst.GetTransform().Rotation = *rotation;
+		if (scale)
+			dst.GetTransform().Scale = *scale;
+
+		u64 id = dst.GetID();
+
+		duplicatedEntities[src.GetID()] = dst;
+
+		std::vector<u64> childIds = src.GetRelations().ChildrenIDs;
+
+		for (u64 childId : childIds) {
+			Entity childDuplicate = CreatePrefabricatedEntity(srcScene->GetEntityByID(childId), duplicatedEntities);
+
+			childDuplicate.SetParent(dst);
+		}
+
+		return dst;
 	}
 
 	void Scene::OnRuntimeStart()
@@ -480,7 +567,8 @@ namespace SW {
 
     Scene* Scene::DeepCopy()
     {
-		Scene* copy = new Scene(m_FilePath);
+		Scene* copy = new Scene();
+		copy->SetHandle(this->GetHandle());
 
 		std::unordered_map<u64, entt::entity> enttMap;
 
@@ -518,46 +606,34 @@ namespace SW {
 		return copy;
     }
 
-#define CopyReferencedEntities(T) \
-	if (entity.HasComponent<T>()) { \
-		auto& component = entity.GetComponent<T>(); \
-		\
-		if (component.ConnectedEntityID) { \
-			Entity connectedEntity = GetEntityByID(component.ConnectedEntityID); \
-			Entity duplicatedConnectedEntity = DuplicateEntity(connectedEntity, duplicatedEntities); \
-			auto& newComponent = newEntity.GetComponent<T>(); \
-			newComponent.ConnectedEntityID = duplicatedConnectedEntity.GetID(); \
-		} \
-	}
-
-	Entity Scene::DuplicateEntity(Entity entity, std::unordered_map<u64, Entity>& duplicatedEntities)
+	Entity Scene::DuplicateEntity(Entity src, std::unordered_map<u64, Entity>& duplicatedEntities)
 	{
-		if (duplicatedEntities.count(entity.GetID()) > 0) {
-			return duplicatedEntities[entity.GetID()];
+		if (duplicatedEntities.count(src.GetID()) > 0) {
+			return duplicatedEntities[src.GetID()];
 		}
 
 		entt::registry& currentRegistry = m_Registry.GetRegistryHandle();
 
-		Entity newEntity = CreateEntity();
+		Entity dst = CreateEntity();
 
-		CopyComponentIfExists<TagComponent>(newEntity, currentRegistry, entity);
-		CopyComponentIfExists<TransformComponent>(newEntity, currentRegistry, entity);
-		CopyComponentIfExists<SpriteComponent>(newEntity, currentRegistry, entity);
-		CopyComponentIfExists<AnimatedSpriteComponent>(newEntity, currentRegistry, entity);
-		CopyComponentIfExists<CircleComponent>(newEntity, currentRegistry, entity);
-		CopyComponentIfExists<TextComponent>(newEntity, currentRegistry, entity);
-		CopyComponentIfExists<ScriptComponent>(newEntity, currentRegistry, entity);
-		CopyComponentIfExists<CameraComponent>(newEntity, currentRegistry, entity);
-		CopyComponentIfExists<RigidBody2DComponent>(newEntity, currentRegistry, entity);
-		CopyComponentIfExists<BoxCollider2DComponent>(newEntity, currentRegistry, entity);
-		CopyComponentIfExists<CircleCollider2DComponent>(newEntity, currentRegistry, entity);
-		CopyComponentIfExists<PolygonCollider2DComponent>(newEntity, currentRegistry, entity);
-		CopyComponentIfExists<BuoyancyEffector2DComponent>(newEntity, currentRegistry, entity);
-		CopyComponentIfExists<DistanceJoint2DComponent>(newEntity, currentRegistry, entity);
-		CopyComponentIfExists<RevolutionJoint2DComponent>(newEntity, currentRegistry, entity);
-		CopyComponentIfExists<PrismaticJoint2DComponent>(newEntity, currentRegistry, entity);
-		CopyComponentIfExists<SpringJoint2DComponent>(newEntity, currentRegistry, entity);
-		CopyComponentIfExists<WheelJoint2DComponent>(newEntity, currentRegistry, entity);
+		CopyComponentIfExists<TagComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<TransformComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<SpriteComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<AnimatedSpriteComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<CircleComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<TextComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<ScriptComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<CameraComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<RigidBody2DComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<BoxCollider2DComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<CircleCollider2DComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<PolygonCollider2DComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<BuoyancyEffector2DComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<DistanceJoint2DComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<RevolutionJoint2DComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<PrismaticJoint2DComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<SpringJoint2DComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<WheelJoint2DComponent>(dst, currentRegistry, src);
 
 		CopyReferencedEntities(DistanceJoint2DComponent);
 		CopyReferencedEntities(RevolutionJoint2DComponent);
@@ -565,21 +641,21 @@ namespace SW {
 		CopyReferencedEntities(SpringJoint2DComponent);
 		CopyReferencedEntities(WheelJoint2DComponent);
 
-		duplicatedEntities[entity.GetID()] = newEntity;
+		duplicatedEntities[src.GetID()] = dst;
 
-		std::vector<u64> childIds = entity.GetRelations().ChildrenIDs;
+		std::vector<u64> childIds = src.GetRelations().ChildrenIDs;
 
-		if (Entity parent = entity.GetParent()) {
-			newEntity.SetParent(parent);
+		if (Entity parent = src.GetParent()) {
+			dst.SetParent(parent);
 		}
 
 		for (u64 childId : childIds) {
 			Entity childDuplicate = DuplicateEntity(GetEntityByID(childId), duplicatedEntities);
 			
-			childDuplicate.SetParent(newEntity);
+			childDuplicate.SetParent(dst);
 		}
 
-		return newEntity;
+		return dst;
 	}
 
 	void Scene::CreateRigidbody2D(Entity entity, const TransformComponent& tc, RigidBody2DComponent& rbc)

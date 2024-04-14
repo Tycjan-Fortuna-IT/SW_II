@@ -14,6 +14,7 @@
 #include "Asset/Font.hpp"
 #include "Core/Scripting/ScriptingCore.hpp"
 #include "Asset/AssetManager.hpp"
+#include "Asset/Prefab.hpp"
 
 namespace SW {
 
@@ -59,8 +60,6 @@ namespace SW {
 	{
 		delete m_EditorCamera;
 		delete m_Framebuffer;
-		delete m_ActiveScene;
-		delete m_SceneCopy;
 	}
 
 	void SceneViewportPanel::OnUpdate(Timestep dt)
@@ -452,20 +451,30 @@ namespace SW {
 			) {
 				if (ImGui::BeginDragDropTarget()) {
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Scene")) {
-						u64* handle = static_cast<u64*>(payload->Data);
+						u64 handle = *static_cast<u64*>(payload->Data);
 
-						const AssetMetaData& metadata = AssetManager::GetAssetMetaData(*handle);
-					
+						const AssetMetaData& metadata = AssetManager::GetAssetMetaData(handle);
+
 						if (SelectionManager::IsSelected())
 							SelectionManager::Deselect();
 
 						delete GetCurrentScene();
 
 						Scene* newScene = SceneSerializer::Deserialize(ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
+						newScene->SetHandle(handle);
 
 						SetCurrentScene(newScene);
-					
+
 						newScene->SortEntities();
+					}
+
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Prefab")) {
+						u64 handle = *static_cast<u64*>(payload->Data);
+						const Prefab* prefab = *AssetManager::GetAsset<Prefab>(handle);
+
+						Entity prefabEntity = m_ActiveScene->InstantiatePrefab(prefab);
+
+						SelectionManager::SelectByID(prefabEntity.GetID());
 					}
 
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FontSource")) {
@@ -599,9 +608,14 @@ namespace SW {
 			int pickedID = m_Framebuffer->ReadPixel(1, (int)mouseX, (int)mouseY);
 
 			if (pickedID != -1) {
-				const IDComponent& idc = m_ActiveScene->GetRegistry().GetRegistryHandle().get<IDComponent>((entt::entity)pickedID);
+				Entity picked = { (entt::entity)pickedID, m_ActiveScene };
 				
-				SelectionManager::SelectByID(idc.ID);
+				if (Input::IsKeyDown(KeyCode::LeftControl)) {
+					Entity root = picked.GetRootParent();
+					SelectionManager::SelectByID(root.GetID());
+				} else {
+					SelectionManager::SelectByID(picked.GetID());
+				}
 			} else {
 				if (!ImGuizmo::IsOver() && !ImGuizmo::IsUsingAny() && !m_IsGizmoBarHovered && !m_IsToolbarHovered)
 					SelectionManager::Deselect();

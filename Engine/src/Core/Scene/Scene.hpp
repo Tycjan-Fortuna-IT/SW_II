@@ -1,8 +1,8 @@
 /**
  * @file Scene.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.7
- * @date 2024-03-14
+ * @version 0.2.0
+ * @date 2024-04-13
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -14,6 +14,7 @@
 #include "Core/ECS/EntityRegistry.hpp"
 #include "Core/ECS/Components.hpp"
 #include "Core/Scripting/ScriptStorage.hpp"
+#include "Asset/Asset.hpp"
 
 class b2World;
 
@@ -22,7 +23,8 @@ namespace SW {
 	class Entity;
 	class EditorCamera;
 	class Physics2DContactListener;
-	
+	class Prefab;
+
 	/**
 	 * @brief Represents the state of the scene.
 	 */
@@ -36,18 +38,21 @@ namespace SW {
 	/**
 	 * @brief Represents a scene in the game engine.
 	 */
-	class Scene final
+	class Scene final : public Asset
 	{
 	public:
 		/**
 		 * @brief Default constructor.
 		 */
-		Scene(const std::string& filepath);
+		Scene();
 
 		/**
 		 * @brief Destructor.
 		 */
 		~Scene();
+
+		static AssetType GetStaticType() { return AssetType::Scene; }
+		AssetType GetAssetType() const override { return AssetType::Scene; }
 
 		/**
 		 * @brief Creates a new entity in the scene with an optional tag.
@@ -150,18 +155,6 @@ namespace SW {
 		Entity TryGetEntityByTag(const std::string& tag);
 
 		/**
-		 * @brief Retrieves the filepath to the serialized scene.
-		 * @return The filepath to the serialized scene.
-		 */
-		const std::string& GetFilePath() const { return m_FilePath; }
-
-		/**
-		 * @brief Retrieves the name of the serialized scene.
-		 * @return The name of the serialized scene.
-		 */
-		const std::string& GetName() const { return m_Name; }
-
-		/**
 		 * @brief Retrieves current state of the scene.
 		 * 
 		 * @return SceneState The current state of the scene.
@@ -200,14 +193,14 @@ namespace SW {
 		Scene* DeepCopy();
 
 		/**
-		 * @brief Duplicates the entity. (deep copy with all components)
+		 * @brief Duplicates the entity. (deep copy with all components and children)
 		 * 
 		 * @param entity The entity to duplicate.
 		 * @param duplicatedEntities The map of already duplicated entities.
 		 * 
 		 * @return Entity The duplicated entity.
 		 */
-		Entity DuplicateEntity(Entity entity, std::unordered_map<u64, Entity>& duplicatedEntities);
+		Entity DuplicateEntity(Entity src, std::unordered_map<u64, Entity>& duplicatedEntities);
 
 		/**
 		 * @brief Get the width of the viewport.
@@ -271,13 +264,18 @@ namespace SW {
 		 */
 		ScriptStorage& GetScriptStorage() { return m_ScriptStorage; }
 
+		Entity InstantiatePrefab(const Prefab* prefab, const glm::vec3* position = nullptr, const glm::vec3* rotation = nullptr,
+			const glm::vec3* scale = nullptr);
+
+	private:
+		Entity CreatePrefabricatedEntity(Entity src, std::unordered_map<u64, Entity>& duplicatedEntities, const glm::vec3* position = nullptr,
+			const glm::vec3* rotation = nullptr, const glm::vec3* scale = nullptr);
+
+	public:
 		glm::vec2 Gravity = { 0.0f, -9.80665f };	/**< The gravity of the scene. */
 
 	private:
 		EntityRegistry m_Registry; /**< The entity registry of the scene. */
-
-		std::string m_FilePath;		/**< The filepath to the serialized scene file. */
-		std::string m_Name;			/**< The filename of the serialized scene file. */
 
 		std::unordered_map<u64, Entity> m_EntityMap = {}; /**< Map of entity IDs to entt::entity handles. (cache) */
 
