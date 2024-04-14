@@ -1,0 +1,36 @@
+Prefab:
+  RootEntityHandle: 11558775199829459190
+  Entities:
+    - Entity:
+        IDComponent:
+          ID: 11558775199829459190
+        TagComponent:
+          Tag: Banana
+        TransformComponent:
+          Transform: [2.98023224e-08, 0, 0]
+          Rotation: [0, 0, 0]
+          Scale: [2, 2, 1]
+        SpriteComponent:
+          Color: [1, 1, 1, 1]
+          AssetHandle: 17898651313695350990
+        RelationshipComponent:
+          ParentID: 0
+          ChildrenCount: 0
+        RigidBody2DComponent:
+          Type: 2
+          AutoMass: true
+          Mass: 1
+          GravityScale: 1
+          Friction: 0.5
+          Restitution: 0
+          RestitutionThreshold: 0.5
+          LinearDamping: 0
+          AngularDamping: 0
+          AllowSleep: true
+          InitiallyAwake: true
+          IsBullet: false
+        BoxCollider2DComponent:
+          Size: [0.25, 0.25]
+          Offset: [0, 0]
+          Density: 1
+          IsSensor: false

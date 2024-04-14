@@ -3,7 +3,7 @@ Spritesheet:
   ViewZoom: 1.80000019
   GridSize: 128
   CenterOffset: [-5, 25]
-  ViewPos: [-234.999924, 26.999836]
+  ViewPos: [133.000107, 24.9998436]
   ShowImageBorders: true
   ExportPath: sprites\person\idle
   Sprites:

@@ -1,0 +1,41 @@
+Spritesheet:
+  TextureHandle: 831715547930304519
+  ViewZoom: 1.20000005
+  GridSize: 128
+  CenterOffset: [-12, 380]
+  ViewPos: [103.999847, -154.000198]
+  ShowImageBorders: true
+  ExportPath: sprites\player\run
+  Sprites:
+    - Sprite:
+        Name: 1
+        Position: [0, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 2
+        Position: [128, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 3
+        Position: [256, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 4
+        Position: [384, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 5
+        Position: [512, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 6
+        Position: [640, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 7
+        Position: [768, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 8
+        Position: [896, 0]
+        Size: [128, 128]

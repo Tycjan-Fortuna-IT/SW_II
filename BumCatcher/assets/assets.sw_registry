@@ -1,0 +1,301 @@
+Assets:
+  - Handle: 275943006351974855
+    Path: prefabs\Tomato.sw_prefab
+    Type: Prefab
+    ModificationTime: 133575943892020749
+  - Handle: 650601428253319591
+    Path: animations\player\idle.sw_anim
+    Type: Animation2D
+    ModificationTime: 133575946721300606
+  - Handle: 752658266699115865
+    Path: prefabs\Banana.sw_prefab
+    Type: Prefab
+    ModificationTime: 133575943030632918
+  - Handle: 831715547930304519
+    Path: textures\main.png
+    Type: Texture2D
+    ModificationTime: 133575919707174091
+  - Handle: 879538790000408613
+    Path: cache\thumbnails\2519823622692660382_133575950551672536.cache
+    Type: Unknown
+    ModificationTime: 133575951300400676
+  - Handle: 1109549821703621075
+    Path: animations
+    Type: Directory
+    ModificationTime: 133575932163649694
+  - Handle: 1410147383102770554
+    Path: sprites\player\walk\8.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575929029213832
+  - Handle: 1666069527733919562
+    Path: spritesheets\basic.sw_spritesh
+    Type: Spritesheet
+    ModificationTime: 133575922743088074
+  - Handle: 2141916683807231925
+    Path: sprites\player\walk\5.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575929029173806
+  - Handle: 2300295211093616223
+    Path: cache\thumbnails\15734778512717711947_133575950551672536.cache
+    Type: Unknown
+    ModificationTime: 133575950606264872
+  - Handle: 2332024669285803176
+    Path: sprites\player\run\5.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575931951979401
+  - Handle: 2427635675890615252
+    Path: fonts\source
+    Type: Directory
+    ModificationTime: 133575896469959527
+  - Handle: 2519823622692660382
+    Path: fonts\CascadiaCode.sw_font
+    Type: Font
+    ModificationTime: 133575950551672536
+  - Handle: 2974584202618926706
+    Path: spritesheets\player\walk.sw_spritesh
+    Type: Spritesheet
+    ModificationTime: 133575929023499837
+  - Handle: 3276583653103653168
+    Path: spritesheets\player
+    Type: Directory
+    ModificationTime: 133575928603395140
+  - Handle: 3475824128444689973
+    Path: sprites\player\run\4.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575931951969397
+  - Handle: 3540582079975325250
+    Path: animations\player
+    Type: Directory
+    ModificationTime: 133575933657323451
+  - Handle: 4037461435319838899
+    Path: prefabs
+    Type: Directory
+    ModificationTime: 133575943892020749
+  - Handle: 4087390995966246068
+    Path: textures
+    Type: Directory
+    ModificationTime: 133575920317600513
+  - Handle: 4480458202023201685
+    Path: scripts
+    Type: Directory
+    ModificationTime: 133575950243445749
+  - Handle: 5615498592752350885
+    Path: assets.sw_registry
+    Type: AssetRegistry
+    ModificationTime: 133575947899363442
+  - Handle: 5701594396406644582
+    Path: cache\fonts\15734778512717711947_133575950551672536.cache
+    Type: Unknown
+    ModificationTime: 133575950700391898
+  - Handle: 6006139226138376200
+    Path: build\BumCatcher.dll
+    Type: Unknown
+    ModificationTime: 133575951170149034
+  - Handle: 6073911719524309933
+    Path: cache\fonts
+    Type: Directory
+    ModificationTime: 133575950700371923
+  - Handle: 6642868906101994425
+    Path: cache
+    Type: Directory
+    ModificationTime: 133575901151799509
+  - Handle: 6651001985835504637
+    Path: build\BumCatcher.pdb
+    Type: Unknown
+    ModificationTime: 133575951170119051
+  - Handle: 6895740668858342272
+    Path: animations\player\run_left.sw_anim
+    Type: Animation2D
+    ModificationTime: 133575947453513193
+  - Handle: 6930214908537643229
+    Path: cache\thumbnails
+    Type: Directory
+    ModificationTime: 133575951300360676
+  - Handle: 7015022260337576446
+    Path: sprites\player\idle\1.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575929915158398
+  - Handle: 7694096910237820712
+    Path: sprites\player\run\2.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575931951959419
+  - Handle: 7795385025017711118
+    Path: sprites\player\walk\2.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575929029069928
+  - Handle: 8089411306157523054
+    Path: build\BumCatcher.deps.json
+    Type: Unknown
+    ModificationTime: 133575899063876865
+  - Handle: 8386686386496902400
+    Path: sprites\player\idle\2.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575929915168372
+  - Handle: 8985125787210060094
+    Path: sprites\player\run\3.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575931951959419
+  - Handle: 8999320076268252657
+    Path: sprites\spikes.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575922959102180
+  - Handle: 9209993608234248487
+    Path: scenes
+    Type: Directory
+    ModificationTime: 133575901492210212
+  - Handle: 9552500788049316362
+    Path: spritesheets\player\run.sw_spritesh
+    Type: Spritesheet
+    ModificationTime: 133575931948295642
+  - Handle: 9850982849837239402
+    Path: prefabs\Beer.sw_prefab
+    Type: Prefab
+    ModificationTime: 133575941393704777
+  - Handle: 9904378174786550968
+    Path: animations\player\run_right.sw_anim
+    Type: Animation2D
+    ModificationTime: 133575947551581784
+  - Handle: 9943599014800694328
+    Path: sprites\player\run\7.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575931951999401
+  - Handle: 10294558156615232059
+    Path: sprites\player\idle
+    Type: Directory
+    ModificationTime: 133575929915198378
+  - Handle: 10579185608762731148
+    Path: sprites\beer.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575922959091045
+  - Handle: 10682234263505026413
+    Path: sprites\player\walk\6.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575929029193802
+  - Handle: 10838710662924299194
+    Path: sprites\player\walk\1.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575929029059932
+  - Handle: 11023663839170045914
+    Path: sprites\tomato.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575922959181024
+  - Handle: 11136102601076004458
+    Path: fonts
+    Type: Directory
+    ModificationTime: 133575950551262533
+  - Handle: 11502595398664877449
+    Path: spritesheets\player\idle.sw_spritesh
+    Type: Spritesheet
+    ModificationTime: 133575929903755324
+  - Handle: 11884121696345246877
+    Path: build\Engine.ScriptCore.pdb
+    Type: Unknown
+    ModificationTime: 133575899061566885
+  - Handle: 12352642025322049660
+    Path: build\Coral.Managed.dll
+    Type: Unknown
+    ModificationTime: 133575899059036668
+  - Handle: 12370546426944206914
+    Path: sprites\player\walk\4.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575929029163789
+  - Handle: 12758159065898506176
+    Path: animations\player\walk_right.sw_anim
+    Type: Animation2D
+    ModificationTime: 133575947777261939
+  - Handle: 12875758880104537401
+    Path: sprites\block.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575922959191021
+  - Handle: 12888839310305889303
+    Path: cache\thumbnails\831715547930304519_133575919707174091.cache
+    Type: Unknown
+    ModificationTime: 133575921748058403
+  - Handle: 13281260179034324261
+    Path: animations\player\walk_left.sw_anim
+    Type: Animation2D
+    ModificationTime: 133575947660881343
+  - Handle: 13556836372126134944
+    Path: sprites\player\walk
+    Type: Directory
+    ModificationTime: 133575929029213832
+  - Handle: 13981036167331464636
+    Path: scripts\PlayerController.cs
+    Type: Script
+    ModificationTime: 133575950243415747
+  - Handle: 14273187891832830115
+    Path: sprites\player
+    Type: Directory
+    ModificationTime: 133575925509883465
+  - Handle: 14279818042616076453
+    Path: sprites\player\walk\3.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575929029079923
+  - Handle: 14316122990641604166
+    Path: spritesheets
+    Type: Directory
+    ModificationTime: 133575924381802196
+  - Handle: 15676219413988811726
+    Path: scenes\main.sw_scene
+    Type: Scene
+    ModificationTime: 133575950881327828
+  - Handle: 15715394190176340537
+    Path: sprites\player\idle\3.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575929915178377
+  - Handle: 15815525156264435864
+    Path: sprites\player\run
+    Type: Directory
+    ModificationTime: 133575931567460817
+  - Handle: 15916115145552487786
+    Path: sprites\player\idle\4.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575929915188378
+  - Handle: 15944493890653332944
+    Path: build\Engine.ScriptCore.dll
+    Type: Unknown
+    ModificationTime: 133575899061596870
+  - Handle: 16291172618576788612
+    Path: prefabs\Spikes.sw_prefab
+    Type: Prefab
+    ModificationTime: 133575942276230512
+  - Handle: 16640581557488841485
+    Path: build
+    Type: Directory
+    ModificationTime: 133575951173078309
+  - Handle: 16907590854818213732
+    Path: sprites\player\run\6.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575931951989393
+  - Handle: 17036905789002493857
+    Path: sprites\player\run\8.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575931952009427
+  - Handle: 17120339229260234606
+    Path: sprites
+    Type: Directory
+    ModificationTime: 133575925259368273
+  - Handle: 17216821762617451908
+    Path: sprites\player\idle\5.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575929915198378
+  - Handle: 17536965051450932215
+    Path: fonts\source\CascadiaCode.ttf
+    Type: FontSource
+    ModificationTime: 133569940505944461
+  - Handle: 17557096826972595752
+    Path: build\Coral.Managed.pdb
+    Type: Unknown
+    ModificationTime: 133575899058996676
+  - Handle: 17719678329418301841
+    Path: sprites\player\walk\7.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575929029203803
+  - Handle: 17898651313695350990
+    Path: sprites\banana.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575922959171042
+  - Handle: 17991285174882592014
+    Path: sprites\player\run\1.sw_sprite
+    Type: Sprite
+    ModificationTime: 133575931951939411

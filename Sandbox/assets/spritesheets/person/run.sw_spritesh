@@ -1,41 +1,41 @@
 Spritesheet:
   TextureHandle: 9383798946519536564
-  ViewZoom: 1.20000005
+  ViewZoom: 2.00000024
   GridSize: 128
   CenterOffset: [-5, 25]
-  ViewPos: [121.000221, 99]
+  ViewPos: [-1472, -337.999939]
   ShowImageBorders: true
-  ExportPath: sprites\person\walk
+  ExportPath: sprites\person\run
   Sprites:
     - Sprite:
         Name: 1
-        Position: [0, 0]
+        Position: [0, 256]
         Size: [128, 128]
     - Sprite:
         Name: 2
-        Position: [128, 0]
+        Position: [128, 256]
         Size: [128, 128]
     - Sprite:
         Name: 3
-        Position: [256, 0]
+        Position: [256, 256]
         Size: [128, 128]
     - Sprite:
         Name: 4
-        Position: [384, 0]
+        Position: [384, 256]
         Size: [128, 128]
     - Sprite:
         Name: 5
-        Position: [512, 0]
+        Position: [512, 256]
         Size: [128, 128]
     - Sprite:
         Name: 6
-        Position: [640, 0]
+        Position: [640, 256]
         Size: [128, 128]
     - Sprite:
         Name: 7
-        Position: [768, 0]
+        Position: [768, 256]
         Size: [128, 128]
     - Sprite:
         Name: 8
-        Position: [896, 0]
+        Position: [896, 256]
         Size: [128, 128]

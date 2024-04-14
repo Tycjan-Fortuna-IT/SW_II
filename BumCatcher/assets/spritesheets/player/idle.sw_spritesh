@@ -1,0 +1,29 @@
+Spritesheet:
+  TextureHandle: 831715547930304519
+  ViewZoom: 1.50000012
+  GridSize: 128
+  CenterOffset: [0, 256]
+  ViewPos: [-129.000122, -52.9999771]
+  ShowImageBorders: true
+  ExportPath: sprites\player\idle
+  Sprites:
+    - Sprite:
+        Name: 1
+        Position: [128, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 2
+        Position: [256, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 3
+        Position: [384, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 4
+        Position: [512, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 5
+        Position: [640, 0]
+        Size: [128, 128]

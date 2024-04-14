@@ -1,0 +1,78 @@
+Prefab:
+  RootEntityHandle: 8450629256161353249
+  Entities:
+    - Entity:
+        IDComponent:
+          ID: 1205840267739609739
+        TagComponent:
+          Tag: Left Wall
+        TransformComponent:
+          Transform: [-10.6618013, -1.59653282, 0]
+          Rotation: [0, 0, 0]
+          Scale: [1, 5.44999981, 1]
+        RelationshipComponent:
+          ParentID: 8450629256161353249
+          ChildrenCount: 0
+        RigidBody2DComponent:
+          Type: 0
+          AutoMass: true
+          Mass: 1
+          GravityScale: 1
+          Friction: 0.5
+          Restitution: 0
+          RestitutionThreshold: 0.5
+          LinearDamping: 0
+          AngularDamping: 0
+          AllowSleep: true
+          InitiallyAwake: true
+          IsBullet: false
+        BoxCollider2DComponent:
+          Size: [0.5, 0.5]
+          Offset: [0, 0]
+          Density: 1
+          IsSensor: false
+    - Entity:
+        IDComponent:
+          ID: 5446921717417215274
+        TagComponent:
+          Tag: Right Wall
+        TransformComponent:
+          Transform: [10.5, -1.59653282, 0]
+          Rotation: [0, 0, 0]
+          Scale: [1, 5.44999981, 1]
+        RelationshipComponent:
+          ParentID: 8450629256161353249
+          ChildrenCount: 0
+        RigidBody2DComponent:
+          Type: 0
+          AutoMass: true
+          Mass: 1
+          GravityScale: 1
+          Friction: 0.5
+          Restitution: 0
+          RestitutionThreshold: 0.5
+          LinearDamping: 0
+          AngularDamping: 0
+          AllowSleep: true
+          InitiallyAwake: true
+          IsBullet: false
+        BoxCollider2DComponent:
+          Size: [0.5, 0.5]
+          Offset: [0, 0]
+          Density: 1
+          IsSensor: false
+    - Entity:
+        IDComponent:
+          ID: 8450629256161353249
+        TagComponent:
+          Tag: Boundaries
+        TransformComponent:
+          Transform: [0, 0, 0]
+          Rotation: [0, 0, 0]
+          Scale: [1, 1, 1]
+        RelationshipComponent:
+          ParentID: 0
+          ChildrenCount: 2
+          ChildrenIDs:
+            0: 1205840267739609739
+            1: 5446921717417215274

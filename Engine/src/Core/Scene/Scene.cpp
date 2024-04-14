@@ -171,10 +171,12 @@ namespace SW {
 		CopyReferencedEntities(SpringJoint2DComponent);
 		CopyReferencedEntities(WheelJoint2DComponent);
 
-		if (src.HasComponent<RigidBody2DComponent>()) {
-			RigidBody2DComponent& rbc = dst.GetComponent<RigidBody2DComponent>();
+		if (IsPlaying()) {
+			if (src.HasComponent<RigidBody2DComponent>()) {
+				RigidBody2DComponent& rbc = dst.GetComponent<RigidBody2DComponent>();
 
-			CreateRigidbody2D(dst, dst.GetWorldSpaceTransform(), rbc);
+				CreateRigidbody2D(dst, dst.GetWorldSpaceTransform(), rbc);
+			}
 		}
 
 		if (src.HasComponent<ScriptComponent>()) {

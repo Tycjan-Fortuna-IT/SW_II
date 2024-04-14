@@ -1,0 +1,15 @@
+Animation:
+  Speed: 8
+  ReverseAlongX: false
+  ReverseAlongY: false
+  Sprites:
+    - Sprite:
+        SpriteHandle: 7015022260337576446
+    - Sprite:
+        SpriteHandle: 8386686386496902400
+    - Sprite:
+        SpriteHandle: 15715394190176340537
+    - Sprite:
+        SpriteHandle: 15916115145552487786
+    - Sprite:
+        SpriteHandle: 17216821762617451908

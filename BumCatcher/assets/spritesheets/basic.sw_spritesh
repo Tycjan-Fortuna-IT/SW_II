@@ -1,0 +1,29 @@
+Spritesheet:
+  TextureHandle: 831715547930304519
+  ViewZoom: 0.899999976
+  GridSize: 128
+  CenterOffset: [0, 0]
+  ViewPos: [87.0000305, 273.000092]
+  ShowImageBorders: true
+  ExportPath: sprites
+  Sprites:
+    - Sprite:
+        Name: beer
+        Position: [0, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: spikes
+        Position: [128, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: banana
+        Position: [256, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: tomato
+        Position: [384, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: block
+        Position: [512, 0]
+        Size: [128, 128]
