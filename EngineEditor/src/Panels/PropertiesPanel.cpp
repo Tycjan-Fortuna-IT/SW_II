@@ -12,6 +12,7 @@
 #include "Core/Scripting/ScriptStorage.hpp"
 #include "Coral/Attribute.hpp"
 #include "Asset/Sprite.hpp"
+#include "Asset/Prefab.hpp"
 
 namespace SW {
 
@@ -267,21 +268,21 @@ namespace SW {
 							DataType fieldType = fieldStorage.GetType();
 
 							switch (fieldType) {
-								case SW::DataType::Byte: ASSERT(false, "Byte not yet supported!");
+								case DataType::Byte: ASSERT(false, "Byte not yet supported!");
 									break;
-								case SW::DataType::Short: ASSERT(false, "Short not yet supported!");
+								case DataType::Short: ASSERT(false, "Short not yet supported!");
 									break;
-								case SW::DataType::UShort: ASSERT(false, "UShort not yet supported!");
+								case DataType::UShort: ASSERT(false, "UShort not yet supported!");
 									break;
-								case SW::DataType::Int: ASSERT(false, "Int not yet supported!");
+								case DataType::Int: ASSERT(false, "Int not yet supported!");
 									break;
-								case SW::DataType::UInt: ASSERT(false, "UInt not yet supported!");
+								case DataType::UInt: ASSERT(false, "UInt not yet supported!");
 									break;
-								case SW::DataType::Long: ASSERT(false, "Long not yet supported!");
+								case DataType::Long: ASSERT(false, "Long not yet supported!");
 									break;
-								case SW::DataType::ULong: ASSERT(false, "ULong not yet supported!");
+								case DataType::ULong: ASSERT(false, "ULong not yet supported!");
 									break;
-								case SW::DataType::Float:
+								case DataType::Float:
 								{
 									f32 value = fieldStorage.GetValue<f32>();
 									
@@ -291,12 +292,30 @@ namespace SW {
 
 									break;
 								}
-								case SW::DataType::Double: ASSERT(false, "Double not yet supported!");
+								case DataType::Double: ASSERT(false, "Double not yet supported!");
 									break;
-								case SW::DataType::Bool: ASSERT(false, "Bool not yet supported!");
+								case DataType::Bool: ASSERT(false, "Bool not yet supported!");
 									break;
-								case SW::DataType::Entity: ASSERT(false, "Entity not yet supported!");
-									break;
+								case DataType::Entity:
+								{
+									if (!m_SceneViewportPanel->GetCurrentScene()->IsPlaying()) {
+										u64 value = fieldStorage.GetValue<u64>();
+
+										if (GUI::DrawEntityDropdownProperty(value, m_SceneViewportPanel->GetCurrentScene(), "Entity", "Prefab to be used")) {
+											fieldStorage.SetValue(value);
+										}
+									}
+								} break;
+								case DataType::Prefab:
+								{
+									if (!m_SceneViewportPanel->GetCurrentScene()->IsPlaying()) {
+										AssetHandle value = fieldStorage.GetValue<u64>();
+
+										if (GUI::DrawAssetDropdownProperty<Prefab>(value, "Prefab", "Prefab to be used")) {
+											fieldStorage.SetValue(value);
+										}
+									}
+								} break;
 								default:
 									SW_WARN("{}", (int)fieldType);
 									break;

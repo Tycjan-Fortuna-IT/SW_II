@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace SW
 {
+	[EditorAssignable]
 	public class Entity : IEquatable<Entity>
 	{
 		private readonly ulong ID = 0;

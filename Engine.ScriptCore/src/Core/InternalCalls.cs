@@ -32,6 +32,9 @@ namespace SW
 		internal static delegate* unmanaged<NativeString, void> Log_ErrorMessage;
 
 
+		internal static delegate* unmanaged<ulong, bool> AssetHandle_IsValid;
+		
+
 		internal static delegate* unmanaged<ulong, ReflectionType, bool> Entity_HasComponent;
 		internal static delegate* unmanaged<ulong, ReflectionType, void> Entity_AddComponent;
 		internal static delegate* unmanaged<ulong, ReflectionType, void> Entity_RemoveComponent;
@@ -40,7 +43,12 @@ namespace SW
 		internal static delegate* unmanaged<NativeString, ulong> Scene_CreateEntity;
 		internal static delegate* unmanaged<ulong, ulong> Scene_TryGetEntityByID;
 		internal static delegate* unmanaged<NativeString, ulong> Scene_TryGetEntityByTag;
-		
+
+		internal static delegate* unmanaged<ulong, ulong> Scene_InstantiatePrefab;
+		internal static delegate* unmanaged<ulong, Vector3*, ulong> Scene_InstantiatePrefabWithPosition;
+		internal static delegate* unmanaged<ulong, Vector3*, Vector3*, ulong> Scene_InstantiatePrefabWithPositionRotation;
+		internal static delegate* unmanaged<ulong, Vector3*, Vector3*, Vector3*, ulong> Scene_InstantiatePrefabWithPositionRotationScale;
+
 
 		internal static delegate* unmanaged<ulong, NativeString> TagComponent_GetTag;
 		internal static delegate* unmanaged<ulong, NativeString, void> TagComponent_SetTag;
