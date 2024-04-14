@@ -35,7 +35,7 @@ namespace SW {
 		entt::registry& reg = m_Registry.GetRegistryHandle();
 
 		// This enables creating entities in runtime
-		reg.on_construct<RigidBody2DComponent>().connect<&Scene::OnRigidBody2DComponentCreated>(this);
+		//reg.on_construct<RigidBody2DComponent>().connect<&Scene::OnRigidBody2DComponentCreated>(this);
 	}
 	
 	Scene::~Scene()
@@ -171,12 +171,25 @@ namespace SW {
 		CopyReferencedEntities(SpringJoint2DComponent);
 		CopyReferencedEntities(WheelJoint2DComponent);
 
+		if (src.HasComponent<RigidBody2DComponent>()) {
+			RigidBody2DComponent& rbc = dst.GetComponent<RigidBody2DComponent>();
+
+			CreateRigidbody2D(dst, dst.GetWorldSpaceTransform(), rbc);
+		}
+
 		if (src.HasComponent<ScriptComponent>()) {
 			ScriptComponent& sc = dst.GetComponent<ScriptComponent>();
 
 			ASSERT(ScriptingCore::Get().IsValidScript(sc.ScriptID), "Prefab's script ID is invalid!");
 
 			m_ScriptStorage.InitializeEntityStorage(sc.ScriptID, dst.GetID());
+			srcScene->GetScriptStorage().CopyEntityStorage(src.GetID(), dst.GetID(), m_ScriptStorage);
+			ScriptingCore& scriptEngine = ScriptingCore::Get();
+
+			if (IsPlaying() && scriptEngine.IsValidScript(sc.ScriptID)) {
+				sc.Instance = scriptEngine.Instantiate(dst.GetID(), m_ScriptStorage, u64(dst.GetID()));
+				sc.Instance.Invoke("OnCreate");
+			}
 		}
 
 		if (position)
@@ -912,16 +925,16 @@ namespace SW {
 		wjc.RuntimeJoint = m_PhysicsWorld2D->CreateJoint(&jointDef);
 	}
 
-	void Scene::OnRigidBody2DComponentCreated(entt::registry& registry, entt::entity handle)
-	{
-		if (!m_PhysicsWorld2D)
-			return;
+	//void Scene::OnRigidBody2DComponentCreated(entt::registry& registry, entt::entity handle)
+	//{
+	//	if (!IsPlaying())
+	//		return;
 
-		Entity entity = { handle, this };
+	//	Entity entity = { handle, this };
 
-		RigidBody2DComponent& rbc = entity.GetComponent<RigidBody2DComponent>();
+	//	RigidBody2DComponent& rbc = entity.GetComponent<RigidBody2DComponent>();
 
-		CreateRigidbody2D(entity, entity.GetWorldSpaceTransform(), rbc);
-	}
+	//	CreateRigidbody2D(entity, entity.GetWorldSpaceTransform(), rbc);
+	//}
 
 }

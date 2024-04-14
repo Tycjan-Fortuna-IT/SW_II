@@ -1,9 +1,9 @@
 ﻿namespace SW
 {
-	<summary>
-		Prefab is a type of asset that represents a prefab file.
-		Basically a prefab is a template for creating new objects.
-	</summary>
+	/// <summary>
+	///		Prefab is a type of asset that represents a prefab file.
+	///		Basically a prefab is a template for creating new objects.
+	/// </summary>
 	[EditorAssignable]
 	public class Prefab : Asset<Prefab>
 	{

@@ -269,6 +269,8 @@ namespace SW {
 		 */
 		ScriptStorage& GetScriptStorage() { return m_ScriptStorage; }
 
+		const ScriptStorage& GetScriptStorageC() const { return m_ScriptStorage; }
+
 		Entity InstantiatePrefab(const Prefab* prefab, const glm::vec3* position = nullptr, const glm::vec3* rotation = nullptr,
 			const glm::vec3* scale = nullptr);
 
@@ -394,7 +396,7 @@ namespace SW {
 		 * @param registry The registry of the scene.
 		 * @param handle The entity handle of the entity with the rigidbody2D component.
 		 */
-		void OnRigidBody2DComponentCreated(entt::registry& registry, entt::entity handle);
+		//void OnRigidBody2DComponentCreated(entt::registry& registry, entt::entity handle);
 	};
 
 }

@@ -155,6 +155,74 @@ namespace SW {
 
 			output << YAML::Key << "ScriptID" << YAML::Value << sc.ScriptID;
 
+			ScriptingCore& core = ScriptingCore::Get();
+			if (core.IsValidScript(sc.ScriptID)) {
+				const auto& scriptMetadata = core.GetScriptMetadata(sc.ScriptID);
+				const auto& entityStorage = scene->GetScriptStorageC().EntityStorage.at(entity.GetID());
+
+				output << YAML::Key << "ScriptName" << YAML::Value << scriptMetadata.FullName;
+				output << YAML::Key << "Fields" << YAML::Value << YAML::BeginSeq;
+				
+				for (const auto& [fieldID, fieldStorage] : entityStorage.Fields) {
+					const auto& fieldMetadata = scriptMetadata.Fields.at(fieldID);
+
+					output << YAML::BeginMap;
+					output << YAML::Key << "ID" << YAML::Value << fieldID;
+					output << YAML::Key << "Name" << YAML::Value << fieldMetadata.Name;
+					output << YAML::Key << "Type" << YAML::Value << DataTypeToString(fieldMetadata.Type);
+					output << YAML::Key << "Value" << YAML::Value;
+
+					if (fieldStorage.IsArray()) {
+
+					} else {
+						switch (fieldMetadata.Type) {
+							case DataType::Byte:
+								output << fieldStorage.GetValue<u8>();
+								break;
+							case DataType::Short:
+								output << fieldStorage.GetValue<i16>();
+								break;
+							case DataType::UShort:
+								output << fieldStorage.GetValue<u16>();
+								break;
+							case DataType::Int:
+								output << fieldStorage.GetValue<i32>();
+								break;
+							case DataType::UInt:
+								output << fieldStorage.GetValue<u32>();
+								break;
+							case DataType::Long:
+								output << fieldStorage.GetValue<i64>();
+								break;
+							case DataType::ULong:
+								output << fieldStorage.GetValue<u64>();
+								break;
+							case DataType::Float:
+								output << fieldStorage.GetValue<f32>();
+								break;
+							case DataType::Double:
+								output << fieldStorage.GetValue<f64>();
+								break;
+							case DataType::Bool:
+								output << fieldStorage.GetValue<bool>();
+								break;
+							case DataType::Entity:
+								output << fieldStorage.GetValue<u64>();
+								break;
+							case DataType::Prefab:
+								output << fieldStorage.GetValue<u64>();
+								break;
+							default:
+								break;
+						}
+					}
+
+					output << YAML::EndMap;
+				}
+
+				output << YAML::EndSeq;
+			}
+
 			output << YAML::EndMap;
 		}
 
@@ -475,7 +543,77 @@ namespace SW {
 				if (core.IsValidScript(scriptId)) {
 					sc.ScriptID = scriptId;
 
+					const auto& scriptMetadata = core.GetScriptMetadata(scriptId);
+
 					scene->GetScriptStorage().InitializeEntityStorage(scriptId, id);
+
+					for (YAML::Node field : scriptComponent["Fields"]) {
+						u32 fieldID = field["ID"].as<uint32_t>(0);
+						std::string fieldName = field["Name"].as<std::string>();
+
+						if (scriptMetadata.Fields.contains(fieldID)) {
+							const auto& fieldMetadata = scriptMetadata.Fields.at(fieldID);
+							auto& fieldStorage = scene->GetScriptStorage().EntityStorage.at(id).Fields[fieldID];
+							YAML::Node valueNode = field["Value"];
+
+							if (fieldStorage.IsArray()) {
+
+							} else {
+								switch (fieldMetadata.Type) {
+									case DataType::Byte:
+									{
+										fieldStorage.SetValue(valueNode.as<u8>());
+									} break;
+									case DataType::Short:
+									{
+										fieldStorage.SetValue(valueNode.as<i16>());
+									} break;
+									case DataType::UShort:
+									{
+										fieldStorage.SetValue(valueNode.as<u16>());
+									} break;
+									case DataType::Int:
+									{
+										fieldStorage.SetValue(valueNode.as<i32>());
+									} break;
+									case DataType::UInt:
+									{
+										fieldStorage.SetValue(valueNode.as<u32>());
+									} break;
+									case DataType::Long:
+									{
+										fieldStorage.SetValue(valueNode.as<i64>());
+									} break;
+									case DataType::ULong:
+									{
+										fieldStorage.SetValue(valueNode.as<u64>());
+									} break;
+									case DataType::Float:
+									{
+										fieldStorage.SetValue(valueNode.as<f32>());
+									} break;
+									case DataType::Double:
+									{
+										fieldStorage.SetValue(valueNode.as<f64>());
+									} break;
+									case DataType::Bool:
+									{
+										fieldStorage.SetValue(valueNode.as<bool>());
+									} break;
+									case DataType::Entity:
+									{
+										fieldStorage.SetValue(valueNode.as<u64>());
+									} break;
+									case DataType::Prefab:
+									{
+										fieldStorage.SetValue(valueNode.as<u64>());
+									} break;
+									default:
+										break;
+								}
+							}
+						}
+					}
 				}
 			}
 

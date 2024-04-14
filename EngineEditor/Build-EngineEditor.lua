@@ -2,6 +2,8 @@ project "EngineEditor"
     kind "ConsoleApp"
     architecture "x86_64"
 
+    debuggertype "NativeWithManagedCore"
+
     targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 
