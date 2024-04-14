@@ -4,7 +4,6 @@
 #include <fstream>
 
 #include "Asset/AssetManager.hpp"
-#include "Core/ECS/Entity.hpp"
 #include "Core/Scripting/ScriptingCore.hpp"
 #include "Core/Utils/SerializationUtils.hpp"
 
@@ -25,328 +24,7 @@ namespace SW {
 		for (auto [id, entity] : sortedEntities) {
 			SW_DEBUG("Serialized scene entity with id: {}", id);
 
-			if (!entity) {
-				SW_WARN("SceneSerializer - NULL entity, skipped.");
-			}
-
-			output << YAML::BeginMap; // Start Entity content
-
-			output << YAML::Key << "Entity";
-
-			output << YAML::BeginMap; // Start Entity components content
-
-			output << YAML::Key << "IDComponent";
-			output << YAML::BeginMap;
-			output << YAML::Key << "ID" << YAML::Value << entity.GetID();
-			output << YAML::EndMap;
-
-			output << YAML::Key << "TagComponent";
-			output << YAML::BeginMap;
-			output << YAML::Key << "Tag" << YAML::Value << entity.GetTag();
-			output << YAML::EndMap;
-
-			const TransformComponent& tc = entity.GetComponent<TransformComponent>();
-
-			output << YAML::Key << "TransformComponent";
-			output << YAML::BeginMap;
-			output << YAML::Key << "Transform" << YAML::Value << tc.Position;
-			output << YAML::Key << "Rotation" << YAML::Value << tc.Rotation;
-			output << YAML::Key << "Scale" << YAML::Value << tc.Scale;
-			output << YAML::EndMap;
-
-			if (entity.HasComponent<SpriteComponent>()) {
-				const SpriteComponent& sc = entity.GetComponent<SpriteComponent>();
-
-				output << YAML::Key << "SpriteComponent";
-				output << YAML::BeginMap;
-				output << YAML::Key << "Color" << YAML::Value << sc.Color;
-				output << YAML::Key << "AssetHandle" << YAML::Value << sc.Handle;
-
-				output << YAML::EndMap;
-			}
-
-			if (entity.HasComponent<AnimatedSpriteComponent>()) {
-				const AnimatedSpriteComponent& asc = entity.GetComponent<AnimatedSpriteComponent>();
-
-				output << YAML::Key << "AnimatedSpriteComponent";
-				output << YAML::BeginMap;
-				output << YAML::Key << "CurrentFrame" << YAML::Value << asc.CurrentFrame;
-				output << YAML::Key << "CurrentAnimationHandle" << YAML::Value << (asc.CurrentAnimation ?
-					(*asc.CurrentAnimation)->GetHandle() : 0u);
-				output << YAML::Key << "DefaultAnimationHandle" << YAML::Value << (asc.DefaultAnimation ?
-					(*asc.DefaultAnimation)->GetHandle() : 0u);
-
-				output << YAML::Key << "Animations" << YAML::Value << YAML::BeginSeq;
-				
-				for (auto&& [name, anim] : asc.Animations) {
-					output << YAML::BeginMap;
-					output << YAML::Key << "Animation";
-					output << YAML::BeginMap;
-					output << YAML::Key << "Name" << YAML::Value << name;
-					output << YAML::Key << "AnimationHandle" << YAML::Value << (*anim)->GetHandle();
-					output << YAML::EndMap;
-					output << YAML::EndMap;
-				}
-				output << YAML::EndSeq;
-
-				output << YAML::EndMap;
-			}
-
-			if (entity.HasComponent<CircleComponent>()) {
-				const CircleComponent& cc = entity.GetComponent<CircleComponent>();
-
-				output << YAML::Key << "CircleComponent";
-				output << YAML::BeginMap;
-				output << YAML::Key << "Color" << YAML::Value << cc.Color;
-				output << YAML::Key << "Thickness" << YAML::Value << cc.Thickness;
-				output << YAML::Key << "Fade" << YAML::Value << cc.Fade;
-				output << YAML::EndMap;
-			}
-
-			if (entity.HasComponent<TextComponent>()) {
-				const TextComponent& tc = entity.GetComponent<TextComponent>();
-
-				output << YAML::Key << "TextComponent";
-				output << YAML::BeginMap;
-				output << YAML::Key << "AssetHandle" << YAML::Value << tc.Handle;
-				output << YAML::Key << "TextString" << YAML::Value << tc.TextString;
-				output << YAML::Key << "Color" << YAML::Value << tc.Color;
-				output << YAML::Key << "Kerning" << YAML::Value << tc.Kerning;
-				output << YAML::Key << "LineSpacing" << YAML::Value << tc.LineSpacing;
-
-				output << YAML::EndMap;
-			}
-
-			if (entity.HasComponent<RelationshipComponent>()) {
-				const RelationshipComponent& rsc = entity.GetComponent<RelationshipComponent>();
-
-				output << YAML::Key << "RelationshipComponent";
-				output << YAML::BeginMap;
-
-				output << YAML::Key << "ParentID" << YAML::Value << rsc.ParentID;
-				output << YAML::Key << "ChildrenCount" << YAML::Value << rsc.ChildrenIDs.size();
-
-				if (!rsc.ChildrenIDs.empty()) {
-					output << YAML::Key << "ChildrenIDs";
-					output << YAML::BeginMap;
-					for (size_t i = 0; i < rsc.ChildrenIDs.size(); i++)
-						output << YAML::Key << i << YAML::Value << rsc.ChildrenIDs[i];
-					output << YAML::EndMap;
-				}
-
-				output << YAML::EndMap;
-			}
-
-			if (entity.HasComponent<ScriptComponent>()) {
-				const ScriptComponent& sc = entity.GetComponent<ScriptComponent>();
-
-				output << YAML::Key << "ScriptComponent";
-				output << YAML::BeginMap;
-
-				output << YAML::Key << "ScriptID" << YAML::Value << sc.ScriptID;
-
-				output << YAML::EndMap;
-			}
-
-			if (entity.HasComponent<CameraComponent>()) {
-				const CameraComponent& cc = entity.GetComponent<CameraComponent>();
-
-				output << YAML::Key << "CameraComponent";
-				output << YAML::BeginMap;
-				output << YAML::Key << "Primary" << YAML::Value << cc.Primary;
-				output << YAML::Key << "AspectRatio" << YAML::Value << cc.Camera.GetAspectRatio();
-				output << YAML::Key << "ProjectionType" << YAML::Value << (int)cc.Camera.GetProjectionType();
-
-				if (cc.Camera.GetProjectionType() == ProjectionType::Orthographic) {
-
-					output << YAML::Key << "OrthographicSize" << YAML::Value << cc.Camera.GetOrthographicSize();
-					output << YAML::Key << "OrthographicNearClip" << YAML::Value << cc.Camera.GetOrthographicNearClip();
-					output << YAML::Key << "OrthographicFarClip" << YAML::Value << cc.Camera.GetOrthographicFarClip();
-
-				} else if (cc.Camera.GetProjectionType() == ProjectionType::Perspective) {
-
-					output << YAML::Key << "PerspectiveVerticalFOV" << YAML::Value << cc.Camera.GetPerspectiveVerticalFOV();
-					output << YAML::Key << "PerspectiveNearClip" << YAML::Value << cc.Camera.GetPerspectiveNearClip();
-					output << YAML::Key << "PerspectiveFarClip" << YAML::Value << cc.Camera.GetPerspectiveFarClip();
-
-				}
-
-				output << YAML::EndMap;
-			}
-
-			if (entity.HasComponent<RigidBody2DComponent>()) {
-				const RigidBody2DComponent& rbc = entity.GetComponent<RigidBody2DComponent>();
-				
-				output << YAML::Key << "RigidBody2DComponent";
-				output << YAML::BeginMap;
-				output << YAML::Key << "Type" << YAML::Value << (int)rbc.Type;
-				output << YAML::Key << "AutoMass" << YAML::Value << rbc.AutoMass;
-				output << YAML::Key << "Mass" << YAML::Value << rbc.Mass;
-				output << YAML::Key << "GravityScale" << YAML::Value << rbc.GravityScale;
-				output << YAML::Key << "Friction" << YAML::Value << rbc.Friction;
-				output << YAML::Key << "Restitution" << YAML::Value << rbc.Restitution;
-				output << YAML::Key << "RestitutionThreshold" << YAML::Value << rbc.RestitutionThreshold;
-				output << YAML::Key << "LinearDamping" << YAML::Value << rbc.LinearDamping;
-				output << YAML::Key << "AngularDamping" << YAML::Value << rbc.AngularDamping;
-				output << YAML::Key << "AllowSleep" << YAML::Value << rbc.AllowSleep;
-				output << YAML::Key << "InitiallyAwake" << YAML::Value << rbc.InitiallyAwake;
-				output << YAML::Key << "IsBullet" << YAML::Value << rbc.IsBullet;
-				output << YAML::EndMap;
-			}
-
-			if (entity.HasComponent<BoxCollider2DComponent>()) {
-				const BoxCollider2DComponent& bcc = entity.GetComponent<BoxCollider2DComponent>();
-
-				output << YAML::Key << "BoxCollider2DComponent";
-				output << YAML::BeginMap;
-				output << YAML::Key << "Size" << YAML::Value << bcc.Size;
-				output << YAML::Key << "Offset" << YAML::Value << bcc.Offset;
-				output << YAML::Key << "Density" << YAML::Value << bcc.Density;
-				output << YAML::Key << "IsSensor" << YAML::Value << bcc.IsSensor;
-				output << YAML::EndMap;
-			}
-
-			if (entity.HasComponent<CircleCollider2DComponent>()) {
-				const CircleCollider2DComponent& ccc = entity.GetComponent<CircleCollider2DComponent>();
-
-				output << YAML::Key << "CircleCollider2DComponent";
-				output << YAML::BeginMap;
-				output << YAML::Key << "Radius" << YAML::Value << ccc.Radius;
-				output << YAML::Key << "Offset" << YAML::Value << ccc.Offset;
-				output << YAML::Key << "Density" << YAML::Value << ccc.Density;
-				output << YAML::Key << "IsSensor" << YAML::Value << ccc.IsSensor;
-				output << YAML::EndMap;
-			}
-
-			if (entity.HasComponent<PolygonCollider2DComponent>()) {
-				const PolygonCollider2DComponent& pcc = entity.GetComponent<PolygonCollider2DComponent>();
-
-				output << YAML::Key << "PolygonCollider2DComponent";
-				output << YAML::BeginMap;
-				output << YAML::Key << "Vertices" << YAML::BeginMap;
-				for (u64 i = 0; i < pcc.Vertices.size(); ++i)
-					output << YAML::Key << i << YAML::Key << pcc.Vertices[i];
-				output << YAML::EndMap;
-				output << YAML::Key << "VerticesCount" << YAML::Value << pcc.Vertices.size();
-				output << YAML::Key << "Offset" << YAML::Value << pcc.Offset;
-				output << YAML::Key << "Density" << YAML::Value << pcc.Density;
-				output << YAML::Key << "IsSensor" << YAML::Value << pcc.IsSensor;
-				output << YAML::EndMap;
-			}
-
-			if (entity.HasComponent<BuoyancyEffector2DComponent>()) {
-				const BuoyancyEffector2DComponent& bec = entity.GetComponent<BuoyancyEffector2DComponent>();
-
-				output << YAML::Key << "BuoyancyEffector2DComponent";
-				output << YAML::BeginMap;
-				output << YAML::Key << "DragMultiplier" << YAML::Value << bec.DragMultiplier;
-				output << YAML::Key << "FlowAngle" << YAML::Value << bec.FlowAngle;
-				output << YAML::Key << "FlowMagnitude" << YAML::Value << bec.FlowMagnitude;
-				output << YAML::Key << "Density" << YAML::Value << bec.Density;
-				output << YAML::EndMap;
-			}
-
-			if (entity.HasComponent<DistanceJoint2DComponent>()) {
-				const DistanceJoint2DComponent& djc = entity.GetComponent<DistanceJoint2DComponent>();
-
-				output << YAML::Key << "DistanceJoint2DComponent";
-				output << YAML::BeginMap;
-				output << YAML::Key << "ConnectedEntityID" << YAML::Value << djc.ConnectedEntityID;
-				output << YAML::Key << "EnableCollision" << YAML::Value << djc.EnableCollision;
-				output << YAML::Key << "AutoLength" << YAML::Value << djc.AutoLength;
-				output << YAML::Key << "OriginAnchor" << YAML::Value << djc.OriginAnchor;
-				output << YAML::Key << "ConnectedAnchor" << YAML::Value << djc.ConnectedAnchor;
-				output << YAML::Key << "Length" << YAML::Value << djc.Length;
-				output << YAML::Key << "MinLength" << YAML::Value << djc.MinLength;
-				output << YAML::Key << "MaxLength" << YAML::Value << djc.MaxLength;
-				output << YAML::Key << "BreakingForce" << YAML::Value << djc.BreakingForce;
-				output << YAML::EndMap;
-			}
-
-			if (entity.HasComponent<RevolutionJoint2DComponent>()) {
-				const RevolutionJoint2DComponent& rjc = entity.GetComponent<RevolutionJoint2DComponent>();
-
-				output << YAML::Key << "RevolutionJoint2DComponent";
-				output << YAML::BeginMap;
-				output << YAML::Key << "ConnectedEntityID" << YAML::Value << rjc.ConnectedEntityID;
-				output << YAML::Key << "OriginAnchor" << YAML::Value << rjc.OriginAnchor;
-				output << YAML::Key << "LowerAngle" << YAML::Value << rjc.LowerAngle;
-				output << YAML::Key << "UpperAngle" << YAML::Value << rjc.UpperAngle;
-				output << YAML::Key << "MotorSpeed" << YAML::Value << rjc.MotorSpeed;
-				output << YAML::Key << "MaxMotorTorque" << YAML::Value << rjc.MaxMotorTorque;
-				output << YAML::Key << "BreakingForce" << YAML::Value << rjc.BreakingForce;
-				output << YAML::Key << "BreakingTorque" << YAML::Value << rjc.BreakingTorque;
-				output << YAML::Key << "EnableLimit" << YAML::Value << rjc.EnableLimit;
-				output << YAML::Key << "EnableMotor" << YAML::Value << rjc.EnableMotor;
-				output << YAML::Key << "EnableCollision" << YAML::Value << rjc.EnableCollision;
-
-				output << YAML::EndMap;
-			}
-
-			if (entity.HasComponent<PrismaticJoint2DComponent>()) {
-				const PrismaticJoint2DComponent& pjc = entity.GetComponent<PrismaticJoint2DComponent>();
-
-				output << YAML::Key << "PrismaticJoint2DComponent";
-				output << YAML::BeginMap;
-				output << YAML::Key << "ConnectedEntityID" << YAML::Value << pjc.ConnectedEntityID;
-				output << YAML::Key << "OriginAnchor" << YAML::Value << pjc.OriginAnchor;
-				output << YAML::Key << "Angle" << YAML::Value << pjc.Angle;
-				output << YAML::Key << "LowerTranslation" << YAML::Value << pjc.LowerTranslation;
-				output << YAML::Key << "UpperTranslation" << YAML::Value << pjc.UpperTranslation;
-				output << YAML::Key << "MotorSpeed" << YAML::Value << pjc.MotorSpeed;
-				output << YAML::Key << "MaxMotorForce" << YAML::Value << pjc.MaxMotorForce;
-				output << YAML::Key << "BreakingForce" << YAML::Value << pjc.BreakingForce;
-				output << YAML::Key << "BreakingTorque" << YAML::Value << pjc.BreakingTorque;
-				output << YAML::Key << "EnableLimit" << YAML::Value << pjc.EnableLimit;
-				output << YAML::Key << "EnableMotor" << YAML::Value << pjc.EnableMotor;
-				output << YAML::Key << "EnableCollision" << YAML::Value << pjc.EnableCollision;
-
-				output << YAML::EndMap;
-			}
-
-			if (entity.HasComponent<SpringJoint2DComponent>()) {
-				const SpringJoint2DComponent& sjc = entity.GetComponent<SpringJoint2DComponent>();
-
-				output << YAML::Key << "SpringJoint2DComponent";
-				output << YAML::BeginMap;
-				output << YAML::Key << "ConnectedEntityID" << YAML::Value << sjc.ConnectedEntityID;
-				output << YAML::Key << "EnableCollision" << YAML::Value << sjc.EnableCollision;
-				output << YAML::Key << "AutoLength" << YAML::Value << sjc.AutoLength;
-				output << YAML::Key << "OriginAnchor" << YAML::Value << sjc.OriginAnchor;
-				output << YAML::Key << "ConnectedAnchor" << YAML::Value << sjc.ConnectedAnchor;
-				output << YAML::Key << "Length" << YAML::Value << sjc.Length;
-				output << YAML::Key << "MinLength" << YAML::Value << sjc.MinLength;
-				output << YAML::Key << "MaxLength" << YAML::Value << sjc.MaxLength;
-				output << YAML::Key << "BreakingForce" << YAML::Value << sjc.BreakingForce;
-				output << YAML::Key << "Frequency" << YAML::Value << sjc.Frequency;
-				output << YAML::Key << "DampingRatio" << YAML::Value << sjc.DampingRatio;
-				output << YAML::EndMap;
-			}
-
-			if (entity.HasComponent<WheelJoint2DComponent>()) {
-				const WheelJoint2DComponent& wjc = entity.GetComponent<WheelJoint2DComponent>();
-
-				output << YAML::Key << "WheelJoint2DComponent";
-				output << YAML::BeginMap;
-				output << YAML::Key << "ConnectedEntityID" << YAML::Value << wjc.ConnectedEntityID;
-				output << YAML::Key << "OriginAnchor" << YAML::Value << wjc.OriginAnchor;
-				output << YAML::Key << "LowerTranslation" << YAML::Value << wjc.LowerTranslation;
-				output << YAML::Key << "UpperTranslation" << YAML::Value << wjc.UpperTranslation;
-				output << YAML::Key << "MotorSpeed" << YAML::Value << wjc.MotorSpeed;
-				output << YAML::Key << "MaxMotorTorque" << YAML::Value << wjc.MaxMotorTorque;
-				output << YAML::Key << "BreakingForce" << YAML::Value << wjc.BreakingForce;
-				output << YAML::Key << "BreakingTorque" << YAML::Value << wjc.BreakingTorque;
-				output << YAML::Key << "Frequency" << YAML::Value << wjc.Frequency;
-				output << YAML::Key << "DampingRatio" << YAML::Value << wjc.DampingRatio;
-				output << YAML::Key << "EnableLimit" << YAML::Value << wjc.EnableLimit;
-				output << YAML::Key << "EnableMotor" << YAML::Value << wjc.EnableMotor;
-				output << YAML::Key << "EnableCollision" << YAML::Value << wjc.EnableCollision;
-				output << YAML::EndMap;
-			}
-
-			output << YAML::EndMap; // End Entity components content
-
-			output << YAML::EndMap; // End Entity content
+			SerializeEntity(output, entity, scene);
 		}
 
 		output << YAML::EndSeq;
@@ -355,9 +33,336 @@ namespace SW {
 		fout << output.c_str();
 	}
 
+	void SceneSerializer::SerializeEntity(YAML::Emitter& output, Entity entity, const Scene* scene)
+	{
+		if (!entity) {
+			SW_WARN("SceneSerializer - NULL entity, skipped.");
+		}
+
+		output << YAML::BeginMap; // Start Entity content
+
+		output << YAML::Key << "Entity";
+
+		output << YAML::BeginMap; // Start Entity components content
+
+		output << YAML::Key << "IDComponent";
+		output << YAML::BeginMap;
+		output << YAML::Key << "ID" << YAML::Value << entity.GetID();
+		output << YAML::EndMap;
+
+		output << YAML::Key << "TagComponent";
+		output << YAML::BeginMap;
+		output << YAML::Key << "Tag" << YAML::Value << entity.GetTag();
+		output << YAML::EndMap;
+
+		const TransformComponent& tc = entity.GetComponent<TransformComponent>();
+
+		output << YAML::Key << "TransformComponent";
+		output << YAML::BeginMap;
+		output << YAML::Key << "Transform" << YAML::Value << tc.Position;
+		output << YAML::Key << "Rotation" << YAML::Value << tc.Rotation;
+		output << YAML::Key << "Scale" << YAML::Value << tc.Scale;
+		output << YAML::EndMap;
+
+		if (entity.HasComponent<SpriteComponent>()) {
+			const SpriteComponent& sc = entity.GetComponent<SpriteComponent>();
+
+			output << YAML::Key << "SpriteComponent";
+			output << YAML::BeginMap;
+			output << YAML::Key << "Color" << YAML::Value << sc.Color;
+			output << YAML::Key << "AssetHandle" << YAML::Value << sc.Handle;
+
+			output << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<AnimatedSpriteComponent>()) {
+			const AnimatedSpriteComponent& asc = entity.GetComponent<AnimatedSpriteComponent>();
+
+			output << YAML::Key << "AnimatedSpriteComponent";
+			output << YAML::BeginMap;
+			output << YAML::Key << "CurrentFrame" << YAML::Value << asc.CurrentFrame;
+			output << YAML::Key << "CurrentAnimationHandle" << YAML::Value << (asc.CurrentAnimation ?
+				(*asc.CurrentAnimation)->GetHandle() : 0u);
+			output << YAML::Key << "DefaultAnimationHandle" << YAML::Value << (asc.DefaultAnimation ?
+				(*asc.DefaultAnimation)->GetHandle() : 0u);
+
+			output << YAML::Key << "Animations" << YAML::Value << YAML::BeginSeq;
+
+			for (auto&& [name, anim] : asc.Animations) {
+				output << YAML::BeginMap;
+				output << YAML::Key << "Animation";
+				output << YAML::BeginMap;
+				output << YAML::Key << "Name" << YAML::Value << name;
+				output << YAML::Key << "AnimationHandle" << YAML::Value << (*anim)->GetHandle();
+				output << YAML::EndMap;
+				output << YAML::EndMap;
+			}
+			output << YAML::EndSeq;
+
+			output << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<CircleComponent>()) {
+			const CircleComponent& cc = entity.GetComponent<CircleComponent>();
+
+			output << YAML::Key << "CircleComponent";
+			output << YAML::BeginMap;
+			output << YAML::Key << "Color" << YAML::Value << cc.Color;
+			output << YAML::Key << "Thickness" << YAML::Value << cc.Thickness;
+			output << YAML::Key << "Fade" << YAML::Value << cc.Fade;
+			output << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<TextComponent>()) {
+			const TextComponent& tc = entity.GetComponent<TextComponent>();
+
+			output << YAML::Key << "TextComponent";
+			output << YAML::BeginMap;
+			output << YAML::Key << "AssetHandle" << YAML::Value << tc.Handle;
+			output << YAML::Key << "TextString" << YAML::Value << tc.TextString;
+			output << YAML::Key << "Color" << YAML::Value << tc.Color;
+			output << YAML::Key << "Kerning" << YAML::Value << tc.Kerning;
+			output << YAML::Key << "LineSpacing" << YAML::Value << tc.LineSpacing;
+
+			output << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<RelationshipComponent>()) {
+			const RelationshipComponent& rsc = entity.GetComponent<RelationshipComponent>();
+
+			output << YAML::Key << "RelationshipComponent";
+			output << YAML::BeginMap;
+
+			output << YAML::Key << "ParentID" << YAML::Value << rsc.ParentID;
+			output << YAML::Key << "ChildrenCount" << YAML::Value << rsc.ChildrenIDs.size();
+
+			if (!rsc.ChildrenIDs.empty()) {
+				output << YAML::Key << "ChildrenIDs";
+				output << YAML::BeginMap;
+				for (size_t i = 0; i < rsc.ChildrenIDs.size(); i++)
+					output << YAML::Key << i << YAML::Value << rsc.ChildrenIDs[i];
+				output << YAML::EndMap;
+			}
+
+			output << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<ScriptComponent>()) {
+			const ScriptComponent& sc = entity.GetComponent<ScriptComponent>();
+
+			output << YAML::Key << "ScriptComponent";
+			output << YAML::BeginMap;
+
+			output << YAML::Key << "ScriptID" << YAML::Value << sc.ScriptID;
+
+			output << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<CameraComponent>()) {
+			const CameraComponent& cc = entity.GetComponent<CameraComponent>();
+
+			output << YAML::Key << "CameraComponent";
+			output << YAML::BeginMap;
+			output << YAML::Key << "Primary" << YAML::Value << cc.Primary;
+			output << YAML::Key << "AspectRatio" << YAML::Value << cc.Camera.GetAspectRatio();
+			output << YAML::Key << "ProjectionType" << YAML::Value << (int)cc.Camera.GetProjectionType();
+
+			if (cc.Camera.GetProjectionType() == ProjectionType::Orthographic) {
+
+				output << YAML::Key << "OrthographicSize" << YAML::Value << cc.Camera.GetOrthographicSize();
+				output << YAML::Key << "OrthographicNearClip" << YAML::Value << cc.Camera.GetOrthographicNearClip();
+				output << YAML::Key << "OrthographicFarClip" << YAML::Value << cc.Camera.GetOrthographicFarClip();
+
+			}
+			else if (cc.Camera.GetProjectionType() == ProjectionType::Perspective) {
+
+				output << YAML::Key << "PerspectiveVerticalFOV" << YAML::Value << cc.Camera.GetPerspectiveVerticalFOV();
+				output << YAML::Key << "PerspectiveNearClip" << YAML::Value << cc.Camera.GetPerspectiveNearClip();
+				output << YAML::Key << "PerspectiveFarClip" << YAML::Value << cc.Camera.GetPerspectiveFarClip();
+
+			}
+
+			output << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<RigidBody2DComponent>()) {
+			const RigidBody2DComponent& rbc = entity.GetComponent<RigidBody2DComponent>();
+
+			output << YAML::Key << "RigidBody2DComponent";
+			output << YAML::BeginMap;
+			output << YAML::Key << "Type" << YAML::Value << (int)rbc.Type;
+			output << YAML::Key << "AutoMass" << YAML::Value << rbc.AutoMass;
+			output << YAML::Key << "Mass" << YAML::Value << rbc.Mass;
+			output << YAML::Key << "GravityScale" << YAML::Value << rbc.GravityScale;
+			output << YAML::Key << "Friction" << YAML::Value << rbc.Friction;
+			output << YAML::Key << "Restitution" << YAML::Value << rbc.Restitution;
+			output << YAML::Key << "RestitutionThreshold" << YAML::Value << rbc.RestitutionThreshold;
+			output << YAML::Key << "LinearDamping" << YAML::Value << rbc.LinearDamping;
+			output << YAML::Key << "AngularDamping" << YAML::Value << rbc.AngularDamping;
+			output << YAML::Key << "AllowSleep" << YAML::Value << rbc.AllowSleep;
+			output << YAML::Key << "InitiallyAwake" << YAML::Value << rbc.InitiallyAwake;
+			output << YAML::Key << "IsBullet" << YAML::Value << rbc.IsBullet;
+			output << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<BoxCollider2DComponent>()) {
+			const BoxCollider2DComponent& bcc = entity.GetComponent<BoxCollider2DComponent>();
+
+			output << YAML::Key << "BoxCollider2DComponent";
+			output << YAML::BeginMap;
+			output << YAML::Key << "Size" << YAML::Value << bcc.Size;
+			output << YAML::Key << "Offset" << YAML::Value << bcc.Offset;
+			output << YAML::Key << "Density" << YAML::Value << bcc.Density;
+			output << YAML::Key << "IsSensor" << YAML::Value << bcc.IsSensor;
+			output << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<CircleCollider2DComponent>()) {
+			const CircleCollider2DComponent& ccc = entity.GetComponent<CircleCollider2DComponent>();
+
+			output << YAML::Key << "CircleCollider2DComponent";
+			output << YAML::BeginMap;
+			output << YAML::Key << "Radius" << YAML::Value << ccc.Radius;
+			output << YAML::Key << "Offset" << YAML::Value << ccc.Offset;
+			output << YAML::Key << "Density" << YAML::Value << ccc.Density;
+			output << YAML::Key << "IsSensor" << YAML::Value << ccc.IsSensor;
+			output << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<PolygonCollider2DComponent>()) {
+			const PolygonCollider2DComponent& pcc = entity.GetComponent<PolygonCollider2DComponent>();
+
+			output << YAML::Key << "PolygonCollider2DComponent";
+			output << YAML::BeginMap;
+			output << YAML::Key << "Vertices" << YAML::BeginMap;
+			for (u64 i = 0; i < pcc.Vertices.size(); ++i)
+				output << YAML::Key << i << YAML::Key << pcc.Vertices[i];
+			output << YAML::EndMap;
+			output << YAML::Key << "VerticesCount" << YAML::Value << pcc.Vertices.size();
+			output << YAML::Key << "Offset" << YAML::Value << pcc.Offset;
+			output << YAML::Key << "Density" << YAML::Value << pcc.Density;
+			output << YAML::Key << "IsSensor" << YAML::Value << pcc.IsSensor;
+			output << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<BuoyancyEffector2DComponent>()) {
+			const BuoyancyEffector2DComponent& bec = entity.GetComponent<BuoyancyEffector2DComponent>();
+
+			output << YAML::Key << "BuoyancyEffector2DComponent";
+			output << YAML::BeginMap;
+			output << YAML::Key << "DragMultiplier" << YAML::Value << bec.DragMultiplier;
+			output << YAML::Key << "FlowAngle" << YAML::Value << bec.FlowAngle;
+			output << YAML::Key << "FlowMagnitude" << YAML::Value << bec.FlowMagnitude;
+			output << YAML::Key << "Density" << YAML::Value << bec.Density;
+			output << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<DistanceJoint2DComponent>()) {
+			const DistanceJoint2DComponent& djc = entity.GetComponent<DistanceJoint2DComponent>();
+
+			output << YAML::Key << "DistanceJoint2DComponent";
+			output << YAML::BeginMap;
+			output << YAML::Key << "ConnectedEntityID" << YAML::Value << djc.ConnectedEntityID;
+			output << YAML::Key << "EnableCollision" << YAML::Value << djc.EnableCollision;
+			output << YAML::Key << "AutoLength" << YAML::Value << djc.AutoLength;
+			output << YAML::Key << "OriginAnchor" << YAML::Value << djc.OriginAnchor;
+			output << YAML::Key << "ConnectedAnchor" << YAML::Value << djc.ConnectedAnchor;
+			output << YAML::Key << "Length" << YAML::Value << djc.Length;
+			output << YAML::Key << "MinLength" << YAML::Value << djc.MinLength;
+			output << YAML::Key << "MaxLength" << YAML::Value << djc.MaxLength;
+			output << YAML::Key << "BreakingForce" << YAML::Value << djc.BreakingForce;
+			output << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<RevolutionJoint2DComponent>()) {
+			const RevolutionJoint2DComponent& rjc = entity.GetComponent<RevolutionJoint2DComponent>();
+
+			output << YAML::Key << "RevolutionJoint2DComponent";
+			output << YAML::BeginMap;
+			output << YAML::Key << "ConnectedEntityID" << YAML::Value << rjc.ConnectedEntityID;
+			output << YAML::Key << "OriginAnchor" << YAML::Value << rjc.OriginAnchor;
+			output << YAML::Key << "LowerAngle" << YAML::Value << rjc.LowerAngle;
+			output << YAML::Key << "UpperAngle" << YAML::Value << rjc.UpperAngle;
+			output << YAML::Key << "MotorSpeed" << YAML::Value << rjc.MotorSpeed;
+			output << YAML::Key << "MaxMotorTorque" << YAML::Value << rjc.MaxMotorTorque;
+			output << YAML::Key << "BreakingForce" << YAML::Value << rjc.BreakingForce;
+			output << YAML::Key << "BreakingTorque" << YAML::Value << rjc.BreakingTorque;
+			output << YAML::Key << "EnableLimit" << YAML::Value << rjc.EnableLimit;
+			output << YAML::Key << "EnableMotor" << YAML::Value << rjc.EnableMotor;
+			output << YAML::Key << "EnableCollision" << YAML::Value << rjc.EnableCollision;
+
+			output << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<PrismaticJoint2DComponent>()) {
+			const PrismaticJoint2DComponent& pjc = entity.GetComponent<PrismaticJoint2DComponent>();
+
+			output << YAML::Key << "PrismaticJoint2DComponent";
+			output << YAML::BeginMap;
+			output << YAML::Key << "ConnectedEntityID" << YAML::Value << pjc.ConnectedEntityID;
+			output << YAML::Key << "OriginAnchor" << YAML::Value << pjc.OriginAnchor;
+			output << YAML::Key << "Angle" << YAML::Value << pjc.Angle;
+			output << YAML::Key << "LowerTranslation" << YAML::Value << pjc.LowerTranslation;
+			output << YAML::Key << "UpperTranslation" << YAML::Value << pjc.UpperTranslation;
+			output << YAML::Key << "MotorSpeed" << YAML::Value << pjc.MotorSpeed;
+			output << YAML::Key << "MaxMotorForce" << YAML::Value << pjc.MaxMotorForce;
+			output << YAML::Key << "BreakingForce" << YAML::Value << pjc.BreakingForce;
+			output << YAML::Key << "BreakingTorque" << YAML::Value << pjc.BreakingTorque;
+			output << YAML::Key << "EnableLimit" << YAML::Value << pjc.EnableLimit;
+			output << YAML::Key << "EnableMotor" << YAML::Value << pjc.EnableMotor;
+			output << YAML::Key << "EnableCollision" << YAML::Value << pjc.EnableCollision;
+
+			output << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<SpringJoint2DComponent>()) {
+			const SpringJoint2DComponent& sjc = entity.GetComponent<SpringJoint2DComponent>();
+
+			output << YAML::Key << "SpringJoint2DComponent";
+			output << YAML::BeginMap;
+			output << YAML::Key << "ConnectedEntityID" << YAML::Value << sjc.ConnectedEntityID;
+			output << YAML::Key << "EnableCollision" << YAML::Value << sjc.EnableCollision;
+			output << YAML::Key << "AutoLength" << YAML::Value << sjc.AutoLength;
+			output << YAML::Key << "OriginAnchor" << YAML::Value << sjc.OriginAnchor;
+			output << YAML::Key << "ConnectedAnchor" << YAML::Value << sjc.ConnectedAnchor;
+			output << YAML::Key << "Length" << YAML::Value << sjc.Length;
+			output << YAML::Key << "MinLength" << YAML::Value << sjc.MinLength;
+			output << YAML::Key << "MaxLength" << YAML::Value << sjc.MaxLength;
+			output << YAML::Key << "BreakingForce" << YAML::Value << sjc.BreakingForce;
+			output << YAML::Key << "Frequency" << YAML::Value << sjc.Frequency;
+			output << YAML::Key << "DampingRatio" << YAML::Value << sjc.DampingRatio;
+			output << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<WheelJoint2DComponent>()) {
+			const WheelJoint2DComponent& wjc = entity.GetComponent<WheelJoint2DComponent>();
+
+			output << YAML::Key << "WheelJoint2DComponent";
+			output << YAML::BeginMap;
+			output << YAML::Key << "ConnectedEntityID" << YAML::Value << wjc.ConnectedEntityID;
+			output << YAML::Key << "OriginAnchor" << YAML::Value << wjc.OriginAnchor;
+			output << YAML::Key << "LowerTranslation" << YAML::Value << wjc.LowerTranslation;
+			output << YAML::Key << "UpperTranslation" << YAML::Value << wjc.UpperTranslation;
+			output << YAML::Key << "MotorSpeed" << YAML::Value << wjc.MotorSpeed;
+			output << YAML::Key << "MaxMotorTorque" << YAML::Value << wjc.MaxMotorTorque;
+			output << YAML::Key << "BreakingForce" << YAML::Value << wjc.BreakingForce;
+			output << YAML::Key << "BreakingTorque" << YAML::Value << wjc.BreakingTorque;
+			output << YAML::Key << "Frequency" << YAML::Value << wjc.Frequency;
+			output << YAML::Key << "DampingRatio" << YAML::Value << wjc.DampingRatio;
+			output << YAML::Key << "EnableLimit" << YAML::Value << wjc.EnableLimit;
+			output << YAML::Key << "EnableMotor" << YAML::Value << wjc.EnableMotor;
+			output << YAML::Key << "EnableCollision" << YAML::Value << wjc.EnableCollision;
+			output << YAML::EndMap;
+		}
+
+		output << YAML::EndMap; // End Entity components content
+
+		output << YAML::EndMap; // End Entity content
+	}
+
 	Scene* SceneSerializer::Deserialize(const std::filesystem::path& path)
 	{
-		Scene* scene = new Scene(path.string());
+		Scene* scene = new Scene();
 
 		YAML::Node data = YAML::LoadFile(path.string());
 
@@ -368,7 +373,14 @@ namespace SW {
 
 		YAML::Node entities = data["Entities"];
 
-		for (auto entity : entities) {
+		DeserializeEntitiesNode(entities, scene);
+
+		return scene;
+	}
+
+	void SceneSerializer::DeserializeEntitiesNode(YAML::Node& entitiesNode, Scene* scene)
+	{
+		for (auto entity : entitiesNode) {
 			YAML::Node idComponent = entity["Entity"]["IDComponent"];
 
 			u64 id = idComponent["ID"].as<u64>();
@@ -440,9 +452,9 @@ namespace SW {
 
 				rsc.ChildrenIDs.clear();
 				rsc.ChildrenIDs.reserve(childCount);
-				
+
 				const YAML::Node children = relationshipComponent["ChildrenIDs"];
-				
+
 				if (children && childCount > 0) {
 					for (size_t i = 0; i < childCount; i++) {
 						u64 child = children[i].as<u64>();
@@ -474,7 +486,7 @@ namespace SW {
 
 				cc.Primary = cameraComponent["Primary"].as<bool>();
 				cc.Camera.SetProjectionType((ProjectionType)cameraComponent["ProjectionType"].as<int>());
-			
+
 				if (cc.Camera.GetProjectionType() == ProjectionType::Orthographic) {
 
 					cc.Camera.SetOrthographicSize(cameraComponent["OrthographicSize"].as<f32>());
@@ -613,7 +625,7 @@ namespace SW {
 				sjc.Frequency = springJoint2DComponent["Frequency"].as<f32>();
 				sjc.DampingRatio = springJoint2DComponent["DampingRatio"].as<f32>();
 			}
-			
+
 			if (YAML::Node wheelJoint2DComponent = entity["Entity"]["WheelJoint2DComponent"]) {
 				WheelJoint2DComponent& wjc = deserialized.AddComponent<WheelJoint2DComponent>();
 
@@ -632,8 +644,6 @@ namespace SW {
 				wjc.EnableCollision = wheelJoint2DComponent["EnableCollision"].as<bool>();
 			}
 		}
-
-		return scene;
 	}
 
 }

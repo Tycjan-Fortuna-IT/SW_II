@@ -9,6 +9,8 @@
 	#include <shellapi.h>
 #endif
 
+#include "Utils.hpp"
+
 
 namespace SW {
 
@@ -156,6 +158,28 @@ namespace SW {
 		ShellExecute(NULL, L"open", absolutePath.c_str(), NULL, NULL, SW_SHOWNORMAL);
 		
 		return true;
+	}
+
+	std::filesystem::path FileSystem::GetUniqueFilename(const std::filesystem::path& path)
+	{
+		if (!Exists(path))
+			return path;
+
+		int ct = 1;
+
+		while (true) {
+			std::string filename = path.filename().string();
+			std::string extension = path.extension().string();
+
+			std::string newFilename = std::format("{} ({}){}", String::RemoveExtension(filename), ct, extension);
+
+			std::filesystem::path newPath = path.parent_path() / newFilename;
+
+			if (!Exists(newPath))
+				return newPath;
+
+			ct++;
+		}
 	}
 
 }

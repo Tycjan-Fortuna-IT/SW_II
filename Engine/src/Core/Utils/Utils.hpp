@@ -66,6 +66,16 @@ namespace SW {
 		 * @return std::string The string representation of the sum of allocated memory. (bytes)
 		 */
 		std::string GetAllocatedMemoryStringRaw();
+
+		/**
+		 * @brief Removes the extension from the given filename.
+		 * 		  e.g. "file.txt" -> "file"
+		 * 
+		 * @param filename The filename to remove the extension from.
+		 * @return std::string The filename without the extension.
+		 */
+		std::string RemoveExtension(const std::string& filename);
+
 	}
 
 }

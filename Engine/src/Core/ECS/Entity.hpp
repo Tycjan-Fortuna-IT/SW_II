@@ -90,6 +90,11 @@ namespace SW {
         }
 
 		/**
+		 * @brief Gets scene to which the entity belongs.
+		 */
+		Scene* GetScene() const { return m_Scene; }
+
+		/**
 		 * @brief Gets the entity ID.
 		 * 
 		 * @return u64 The entity ID.
@@ -183,6 +188,25 @@ namespace SW {
 			RelationshipComponent& rc  = GetComponent<RelationshipComponent>();
 
 			return rc.ParentID != 0 ? m_Scene->GetEntityByID(rc.ParentID) : Entity{};
+		}
+
+		/**
+		 * @brief Retrieves the root parent entity of the current entity.
+		 * 
+		 * This function retrieves the root parent entity of the current entity by traversing the parent-child hierarchy
+		 * until the root parent is found. The root parent is the entity that has no parent.
+		 * 
+		 * @return The root parent entity.
+		 */
+		Entity GetRootParent()
+		{
+			RelationshipComponent& rc = GetComponent<RelationshipComponent>();
+
+			if (rc.ParentID) {
+				return m_Scene->GetEntityByID(rc.ParentID).GetRootParent();
+			} else {
+				return *this;
+			}
 		}
 
 		/**

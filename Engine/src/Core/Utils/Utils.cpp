@@ -30,6 +30,12 @@ namespace SW {
 		{
 			return std::to_string(GetAllocationSizeSum());
 		}
+
+		std::string RemoveExtension(const std::string& filename)
+		{
+			return filename.substr(0, filename.find_last_of('.'));
+		}
+
 	}
 
 }

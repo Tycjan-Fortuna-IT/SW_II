@@ -147,6 +147,14 @@ namespace SW {
 		 * @param path The path of the file to be opened externally.
 		 */
 		static bool OpenExternally(const std::filesystem::path& path);
+
+		/**
+		 * @brief Gets a unique filename for a given path, only if it was previously taken, if not returns not changed.
+		 *		  Pattern: 'old_filename (n).old_extension'
+		 *
+		 * @param path The path where you want to create new file.
+		 */
+		static std::filesystem::path GetUniqueFilename(const std::filesystem::path& path);
 	};
 
 }
