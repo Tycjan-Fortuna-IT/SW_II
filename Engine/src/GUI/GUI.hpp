@@ -1212,14 +1212,16 @@ namespace SW::GUI {
 	 * @param label The label for the dropdown property.
 	 * @param tooltip (optional) The tooltip for the dropdown property.
 	 */
-	static void DrawEntityDropdownProperty(
+	static bool DrawEntityDropdownProperty(
 		u64& ID, Scene* scene, const char* label, const char* tooltip = nullptr
 	) {
+		bool changed = false;
+
 		Entity entity;
 		std::string tag = "none";
 
 		if (ID)
-			entity = scene->GetEntityByID(ID);
+			entity = scene->TryGetEntityByID(ID);
 
 		if (entity)
 			tag = entity.GetTag();
@@ -1244,6 +1246,8 @@ namespace SW::GUI {
 				Entity* payloadEntity = static_cast<Entity*>(payload->Data);
 
 				ID = payloadEntity->GetID();
+
+				changed = true;
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -1256,6 +1260,7 @@ namespace SW::GUI {
 
 		if (ImGui::Button("x", { 20.0f, region.y })) {
 			ID = 0;
+			changed = true;
 		}
 
 		ImGui::PopStyleColor(3);
@@ -1282,6 +1287,8 @@ namespace SW::GUI {
 			ImGui::PopStyleColor();
 
 		EndPropertyGrid();
+
+		return changed;
 	}
 
 	/**

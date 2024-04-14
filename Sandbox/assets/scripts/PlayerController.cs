@@ -1,5 +1,5 @@
 ﻿using SW;
-using static System.Formats.Asn1.AsnWriter;
+using System.Runtime.InteropServices;
 
 namespace Sandbox
 {
@@ -14,6 +14,9 @@ namespace Sandbox
 
 		private float Score = 0.0f;
 		private TextComponent ScoreText = default!;
+
+		[SerializeField]
+		private Prefab BottlePrefab = default!;
 
 		protected override void OnCreate()
 		{
@@ -54,8 +57,7 @@ namespace Sandbox
 
 				ScoreText.Text = string.Format("Score: {0}", Score);
 
-				//Entity bottle = Scene.CreateEntity("Falling Bottle");
-				//bottle.AddComponent<RigidBody2DComponent>();
+				Scene.InstantiatePrefab(BottlePrefab);
 			}
 		}
 

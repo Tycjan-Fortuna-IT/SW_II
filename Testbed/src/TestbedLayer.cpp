@@ -18,6 +18,7 @@
 #include "../../EngineEditor/src/AssetPanels/AnimationEditor.hpp"
 #include "../../EngineEditor/src/Panels/AssetPanel.cpp"
 #include "../../EngineEditor/src/Panels/AssetPanel.hpp"
+#include "Core/Utils/FileSystem.hpp"
 
 namespace SW {
 
@@ -41,7 +42,7 @@ namespace SW {
 		AssetManager::Initialize();
 		assetPanel = new AssetPanel();
 
-		newProject = ProjectSerializer::Deserialize("C:\\Users\\tycja\\Desktop\\SW_II\\Testbed\\Testbed.swproj");
+		newProject = ProjectSerializer::Deserialize(R"(C:\Users\tycja\Desktop\SW_II\Testbed\Testbed.swproj)");
 		ProjectContext::Set(newProject); // TODO: Make projects switchable
 	}
 

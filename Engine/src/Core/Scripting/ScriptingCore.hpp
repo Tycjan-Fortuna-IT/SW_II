@@ -186,16 +186,34 @@ namespace SW {
 			for (auto& [fieldID, fieldStorage] : entityStorage.Fields) {
 				const auto& fieldMetadata = m_ScriptMetadata[entityStorage.ScriptID].Fields[fieldID];
 
-				if (fieldMetadata.ManagedType->IsSZArray()) {
-					struct ArrayContainer {
-						void* Data;
-						u32 Length;
-					} array;
+				auto& editorAssignableAttribType = m_CoreAssemblyData->Assembly->GetType("SW.EditorAssignableAttribute");
 
-					array.Data = fieldStorage.m_ValueBuffer.Data;
-					array.Length = (u32)fieldStorage.GetLength();
+				if (fieldMetadata.ManagedType->HasAttribute(editorAssignableAttribType)) {
 
-					handle.SetFieldValueRaw(fieldStorage.GetName(), &array);
+					Coral::ManagedObject value = fieldMetadata.ManagedType->CreateInstance(fieldStorage.GetValue<u64>());
+
+					handle.SetFieldValue(fieldStorage.GetName(), value);
+
+					value.Destroy();
+
+				} else if (fieldMetadata.ManagedType->IsSZArray()) {
+
+					if (fieldMetadata.ManagedType->GetElementType().HasAttribute(editorAssignableAttribType)) {
+						ASSERT(false, "TODO");
+					} else {
+
+						struct ArrayContainer {
+							void* Data;
+							u32 Length;
+						} array;
+
+						array.Data = fieldStorage.m_ValueBuffer.Data;
+						array.Length = (u32)fieldStorage.GetLength();
+
+						handle.SetFieldValueRaw(fieldStorage.GetName(), &array);
+
+					}
+
 				} else {
 					handle.SetFieldValueRaw(fieldStorage.GetName(), fieldStorage.m_ValueBuffer.Data);
 				}
@@ -205,6 +223,7 @@ namespace SW {
 
 			CSharpObject result;
 			result.m_Handle = &handle;
+
 			return result;
 		}
 

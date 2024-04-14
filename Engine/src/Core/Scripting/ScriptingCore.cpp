@@ -20,7 +20,8 @@ namespace SW {
 		{ "System.Single", DataType::Float },
 		{ "System.Double", DataType::Double },
 		{ "System.Boolean", DataType::Bool },
-		{ "Hazel.Entity", DataType::Entity },
+		{ "SW.Entity", DataType::Entity },
+		{ "SW.Prefab", DataType::Prefab },
 	};
 
 	static void OnCoralMessage(std::string_view message, Coral::MessageLevel level)
@@ -178,8 +179,8 @@ namespace SW {
 						fieldMetadata.SetDefaultValue<f64>(temp);
 						break;
 					case DataType::Bool:
-						break;
 					case DataType::Entity:
+					case DataType::Prefab:
 						break;
 					default:
 						break;

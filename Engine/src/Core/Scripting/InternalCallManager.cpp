@@ -8,6 +8,7 @@
 #include "Core/Application.hpp"
 #include "Core/Utils/TypeInfo.hpp"
 #include "Core/Utils/Input.hpp"
+#include "Asset/AssetManager.hpp"
 
 #ifdef SW_WINDOWS
 	#define SW_FUNCTION_NAME __func__
@@ -138,6 +139,11 @@ namespace SW {
 		Coral::String::Free(msg);
 	}
 
+	bool AssetHandle_IsValid(u64 assetID)
+	{
+		return AssetManager::IsValid(assetID);
+	}
+
 	bool Entity_HasComponent(u64 entityID, Coral::ReflectionType componentType)
 	{
 		Entity entity = GetEntityById(entityID);
@@ -235,6 +241,38 @@ namespace SW {
 		Coral::String::Free(tag);
 
 		return entity ? entity.GetID() : 0;
+	}
+
+	u64 Scene_InstantiatePrefab(u64 prefabID)
+	{
+		Prefab* prefab = *AssetManager::GetAssetRaw<Prefab>(prefabID);
+		Scene* scene = ScriptingCore::Get().GetCurrentScene();
+		
+		return scene->InstantiatePrefab(prefab).GetID();
+	}
+
+	u64 Scene_InstantiatePrefabWithPosition(u64 prefabID, glm::vec3* inPosition)
+	{
+		Prefab* prefab = *AssetManager::GetAssetRaw<Prefab>(prefabID);
+		Scene* scene = ScriptingCore::Get().GetCurrentScene();
+
+		return scene->InstantiatePrefab(prefab, inPosition).GetID();
+	}
+
+	u64 Scene_InstantiatePrefabWithPositionRotation(u64 prefabID, glm::vec3* inPosition, glm::vec3* inRotation)
+	{
+		Prefab* prefab = *AssetManager::GetAssetRaw<Prefab>(prefabID);
+		Scene* scene = ScriptingCore::Get().GetCurrentScene();
+
+		return scene->InstantiatePrefab(prefab, inPosition, inRotation).GetID();
+	}
+
+	u64 Scene_InstantiatePrefabWithPositionRotationScale(u64 prefabID, glm::vec3* inPosition, glm::vec3* inRotation, glm::vec3* inScale)
+	{
+		Prefab* prefab = *AssetManager::GetAssetRaw<Prefab>(prefabID);
+		Scene* scene = ScriptingCore::Get().GetCurrentScene();
+
+		return scene->InstantiatePrefab(prefab, inPosition, inRotation, inScale).GetID();
 	}
 
 	Coral::String TagComponent_GetTag(u64 entityID)
@@ -539,6 +577,9 @@ namespace SW {
 		ADD_INTERNAL_CALL(Log_ErrorMessage);
 
 
+		ADD_INTERNAL_CALL(AssetHandle_IsValid);
+
+
 		ADD_INTERNAL_CALL(Entity_HasComponent);
 		ADD_INTERNAL_CALL(Entity_AddComponent);
 		ADD_INTERNAL_CALL(Entity_RemoveComponent);
@@ -548,7 +589,12 @@ namespace SW {
 		ADD_INTERNAL_CALL(Scene_TryGetEntityByID);
 		ADD_INTERNAL_CALL(Scene_TryGetEntityByTag);
 
-		
+		ADD_INTERNAL_CALL(Scene_InstantiatePrefab);
+		ADD_INTERNAL_CALL(Scene_InstantiatePrefabWithPosition);
+		ADD_INTERNAL_CALL(Scene_InstantiatePrefabWithPositionRotation);
+		ADD_INTERNAL_CALL(Scene_InstantiatePrefabWithPositionRotationScale);
+
+
 		ADD_INTERNAL_CALL(TagComponent_GetTag);
 		ADD_INTERNAL_CALL(TagComponent_SetTag);
 

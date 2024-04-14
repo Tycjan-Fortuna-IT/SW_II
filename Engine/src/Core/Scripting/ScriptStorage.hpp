@@ -32,6 +32,7 @@ namespace SW {
 		Bool,
 
 		Entity,
+		Prefab,
 	};
 
 	inline u64 DataTypeSize(DataType type)
@@ -48,6 +49,7 @@ namespace SW {
 			case DataType::Double: return sizeof(f64);
 			case DataType::Bool: return sizeof(Coral::Bool32);
 			case DataType::Entity: return sizeof(u64);
+			case DataType::Prefab: return sizeof(u64);
 		}
 
 		return 0;

@@ -258,6 +258,11 @@ namespace SW {
 		}
 
 		/**
+		 * @brief Whether the scene is currently playing. 
+		 */
+		bool IsPlaying() const { return m_SceneState != SceneState::Edit; }
+
+		/**
 		 * @brief Gets the script storage associated with the scene.
 		 * 
 		 * @return A reference to the script storage.

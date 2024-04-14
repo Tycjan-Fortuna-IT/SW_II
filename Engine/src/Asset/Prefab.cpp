@@ -68,6 +68,13 @@ namespace SW {
 			childDuplicate.SetParent(dst);
 		}
 
+		if (dst.HasComponent<ScriptComponent>())
+		{
+			 const ScriptComponent& sc = dst.GetComponent<ScriptComponent>();
+			 dst.GetScene()->GetScriptStorage().InitializeEntityStorage(sc.ScriptID, dst.GetID());
+			 src.GetScene()->GetScriptStorage().CopyEntityStorage(src.GetID(), dst.GetID(), dst.GetScene()->GetScriptStorage());
+		}
+
 		return dst;
 	}
 
