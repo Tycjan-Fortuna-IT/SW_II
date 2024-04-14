@@ -16,6 +16,13 @@ namespace SW {
 		virtual Asset* TryLoadAsset(const AssetMetaData& metadata) = 0;
 	};
 
+	class SceneAssetSerializer final : public AssetSerializer {
+	public:
+		void Serialize(const AssetMetaData& metadata) override;
+
+		Asset* TryLoadAsset(const AssetMetaData& metadata) override;
+	};
+
 	class Texture2DSerializer final : public AssetSerializer
 	{
 	public:
@@ -53,6 +60,13 @@ namespace SW {
 	};
 
 	class AnimationSerializer final : public AssetSerializer {
+	public:
+		void Serialize(const AssetMetaData& metadata) override;
+
+		Asset* TryLoadAsset(const AssetMetaData& metadata) override;
+	};
+
+	class PrefabSerializer final : public AssetSerializer {
 	public:
 		void Serialize(const AssetMetaData& metadata) override;
 

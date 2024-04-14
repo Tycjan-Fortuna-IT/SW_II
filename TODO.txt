@@ -1,4 +1,5 @@
 [ ] - Standardize a pallete of colors, equivalents in different types, ImVec4, ImU32 ...
+[ ] - Cleanup entity duplication, both for scene and prefabs.
 
 [ ] - 2D
     [ ] - Physics

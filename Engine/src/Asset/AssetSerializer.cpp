@@ -8,8 +8,23 @@
 #include "Asset/Font.hpp"
 #include "Cache/FontCache.hpp"
 #include "Animation2D.hpp"
+#include "Core/Scene/Scene.hpp"
+#include "Core/Scene/SceneSerializer.hpp"
+#include "Prefab.hpp"
 
 namespace SW {
+
+	void SceneAssetSerializer::Serialize(const AssetMetaData& metadata)
+	{
+		Scene* scene = *AssetManager::GetAssetRaw<Scene>(metadata.Handle);
+
+		SceneSerializer::Serialize(scene, ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
+	}
+
+	Asset* SceneAssetSerializer::TryLoadAsset(const AssetMetaData& metadata)
+	{
+		return SceneSerializer::Deserialize(ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
+	}
 
 	void Texture2DSerializer::Serialize(const AssetMetaData& metadata)
 	{
@@ -256,5 +271,63 @@ namespace SW {
 
 		return animation;
     }
+
+	void PrefabSerializer::Serialize(const AssetMetaData& metadata)
+	{
+		Prefab* prefab = *AssetManager::GetAssetRaw<Prefab>(metadata.Handle);
+		Scene* prefabScene = prefab->GetSceneRaw();
+
+		YAML::Emitter output;
+
+		output << YAML::BeginMap;
+		output << YAML::Key << "Prefab" << YAML::Value;
+
+		output << YAML::BeginMap;
+		output << YAML::Key << "RootEntityHandle" << YAML::Value << prefab->GetRootEntity().GetID();
+
+		output << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
+
+		std::map<u64, Entity> sortedEntities;
+
+		for (auto&& [handle, idc] : prefabScene->GetRegistry().GetEntitiesWith<IDComponent>().each())
+			sortedEntities[idc.ID] = Entity{ handle, prefabScene };
+
+		for (auto [id, entity] : sortedEntities) {
+			SceneSerializer::SerializeEntity(output, entity, prefabScene);
+		}
+
+		output << YAML::EndSeq;
+		output << YAML::EndMap;
+
+		std::ofstream fout(ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
+		fout << output.c_str();
+	}
+
+	Asset* PrefabSerializer::TryLoadAsset(const AssetMetaData& metadata)
+	{
+		const std::filesystem::path path = ProjectContext::Get()->GetAssetDirectory() / metadata.Path;
+
+		YAML::Node file = YAML::LoadFile(path.string());
+
+		YAML::Node data = file["Prefab"];
+
+		if (!data) {
+			ASSERT(false, "Error while deserializing the prefab: {}, no entities section found!", path.string());
+
+			return new Prefab();
+		}
+
+		YAML::Node entities = data["Entities"];
+
+		Prefab* prefab = new Prefab();
+		Scene* prefabScene = prefab->GetSceneRaw();
+
+		SceneSerializer::DeserializeEntitiesNode(entities, prefabScene);
+
+		const u64 rootHandle = data["RootEntityHandle"].as<u64>();
+		prefab->SetRootEntity(prefabScene->GetEntityByID(rootHandle));
+
+		return prefab;
+	}
 
 }

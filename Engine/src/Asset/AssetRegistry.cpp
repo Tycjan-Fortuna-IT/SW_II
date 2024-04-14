@@ -95,7 +95,7 @@ namespace SW {
 			bool result = AssetManager::ForceUnload(metadata.Handle);
 
 			ASSERT(result, "Could not unload asset {} [{}]", path.string(), metadata.Handle);
-			
+
 			SW_INFO("Asset {} [{}] was unloaded!", path.string(), metadata.Handle);
 		}
 	}

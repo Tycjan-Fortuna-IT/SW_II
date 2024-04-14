@@ -49,28 +49,29 @@ namespace SW {
 		 */
 		virtual bool ForceReload(AssetHandle handle) = 0;
 
-		const AssetRegistry& GetRegistry() { return m_Registry; }
-		AssetRegistry& GetRegistryRaw() { return m_Registry; }
+		const AssetRegistry& GetRegistry() { return m_AvailRegistry; }
+
+		AssetRegistry& GetRegistryRaw() { return m_AvailRegistry; }
 
 		/**
 		 * @brief Check if the asset is valid.
-		 * 
+		 *
 		 * @param handle The handle of the asset.
 		 * @return If the asset is not valid.
 		 */
-		bool IsValid(AssetHandle handle) const { return m_Registry.Contains(handle); }
+		bool IsValid(AssetHandle handle) const { return m_AvailRegistry.Contains(handle); }
 
 		/**
 		 * @brief Get the asset metadata.
 		 * @warning The asset must be available. (means registered in the asset registry)
-		 * 
+		 *
 		 * @param handle The handle of the asset.
 		 * @return const AssetMetaData& The metadata of the asset.
 		 */
-		const AssetMetaData& GetAssetMetaData(AssetHandle handle) { return m_Registry.GetAssetMetaData(handle); }
+		const AssetMetaData& GetAssetMetaData(AssetHandle handle) { return m_AvailRegistry.GetAssetMetaData(handle); }
 
 	protected:
-		AssetRegistry m_Registry; // All asset pointers are owned by the AssetRegistry!
+		AssetRegistry m_AvailRegistry; // All asset pointers are owned by the AssetRegistry!
 	};
 
 }

@@ -38,7 +38,15 @@ namespace SW {
 
 	bool EditorAssetManager::ForceUnload(AssetHandle handle)
     {
-		//ASSERT(m_Registry.Contains(handle), "Can not unload asset: {}", handle);
+		if (!ContainsAsset(handle)) {
+			return true; // Asset was not loaded
+		}
+
+		Asset* asset = m_Registry.at(handle);
+		if (asset)
+			delete asset;
+
+		m_Registry.erase(handle);
 
 		return true;
     }
