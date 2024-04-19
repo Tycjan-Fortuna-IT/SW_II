@@ -1,6 +1,6 @@
 ﻿using SW;
 
-namespace Sandbox
+namespace BumCatcher
 {
 	internal class PlayerController : Entity
 	{
@@ -11,11 +11,10 @@ namespace Sandbox
 		private RigidBody2DComponent Body = default!;
 		private AnimatedSpriteComponent AnimationComponent = default!;
 
-		private float Score = 0.0f;
+		private float m_Exp = 0.0f;
 		private TextComponent ScoreText = default!;
 
-		[SerializeField]
-		private Prefab BottlePrefab = default!;
+		private ExperienceTextManager m_ExperienceTextManager = default!;
 
 		protected override void OnCreate()
 		{
@@ -26,6 +25,7 @@ namespace Sandbox
 			ScoreText = Scene.GetEntityByTag("ScoreText").GetComponent<TextComponent>()!;
 
 			OnCollision2DBegin += PlayerController_OnCollision2DBegin;
+			m_ExperienceTextManager = Scene.GetEntityByTag("ExperienceTextManager").As<ExperienceTextManager>()!;
 		}
 
 		private void PlayerController_OnCollision2DBegin(Entity obj)
@@ -34,11 +34,11 @@ namespace Sandbox
 
 			if (tag == "Beer") {
 				obj.Destroy();
-				Log.Warn("destroy");
-				ScoreText.Text = string.Format("Score: {0}", ++Score);
-			}
 
-			Log.Warn("Collided with: {0}", tag);
+				m_Exp += 15;
+				m_ExperienceTextManager.SpawnExpText(Transform.Position, 15);
+				ScoreText.Text = string.Format("Exp: {0}", m_Exp);
+			}
 		}
 
 		protected override void OnUpdate(float ts)
@@ -65,9 +65,7 @@ namespace Sandbox
 			}
 
 			if (Input.IsKeyPressed(KeyCode.Space)) {
-				Body.ApplyForce(new Vector2(0.0f, 250.0f));
-				
-				Scene.InstantiatePrefab(BottlePrefab);
+				Body.ApplyForce(new Vector2(0.0f, 250.0f));	
 			}
 		}
 

@@ -31,6 +31,34 @@ Entities:
         ChildrenCount: 0
   - Entity:
       IDComponent:
+        ID: 2658966893819869863
+      TagComponent:
+        Tag: DroppableSpawner
+      TransformComponent:
+        Transform: [2, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 12899590937424841027
+        ChildrenCount: 0
+      ScriptComponent:
+        ScriptID: 687438908
+        ScriptName: BumCatcher.DroppableSpawner
+        Fields:
+          - ID: 2242853084
+            Name: BottlePrefab
+            Type: Prefab
+            Value: 9850982849837239402
+          - ID: 1398040317
+            Name: timer
+            Type: Float
+            Value: 0
+          - ID: 495585200
+            Name: spawnInterval
+            Type: Float
+            Value: 1
+  - Entity:
+      IDComponent:
         ID: 3419711864795705543
       TagComponent:
         Tag: Sprite
@@ -69,7 +97,7 @@ Entities:
         Rotation: [0, 0, -3.85655267e-06]
         Scale: [3, 3, 1]
       AnimatedSpriteComponent:
-        CurrentFrame: 4
+        CurrentFrame: 0
         CurrentAnimationHandle: 650601428253319591
         DefaultAnimationHandle: 650601428253319591
         Animations:
@@ -89,21 +117,21 @@ Entities:
         ParentID: 0
         ChildrenCount: 0
       ScriptComponent:
-        ScriptID: 3044585441
-        ScriptName: Sandbox.PlayerController
+        ScriptID: 2306580548
+        ScriptName: BumCatcher.PlayerController
         Fields:
-          - ID: 3418902686
+          - ID: 1968604071
+            Name: m_Exp
+            Type: Float
+            Value: 0
+          - ID: 1836235579
             Name: Speed
             Type: Float
             Value: 12
-          - ID: 3974404665
+          - ID: 2135494556
             Name: Score
             Type: Float
             Value: 0
-          - ID: 99773847
-            Name: BottlePrefab
-            Type: Prefab
-            Value: 9850982849837239402
       RigidBody2DComponent:
         Type: 2
         AutoMass: true
@@ -114,6 +142,7 @@ Entities:
         RestitutionThreshold: 0.5
         LinearDamping: 0
         AngularDamping: 0
+        FixedRotation: false
         AllowSleep: true
         InitiallyAwake: true
         IsBullet: false
@@ -137,6 +166,26 @@ Entities:
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 4138094494943655987
+      TagComponent:
+        Tag: ExperienceTextManager
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      ScriptComponent:
+        ScriptID: 4219497647
+        ScriptName: BumCatcher.ExperienceTextManager
+        Fields:
+          - ID: 3056385495
+            Name: ExpTextPrefab
+            Type: Prefab
+            Value: 206208866301309049
   - Entity:
       IDComponent:
         ID: 4270635559211037960
@@ -184,6 +233,22 @@ Entities:
         ChildrenCount: 0
   - Entity:
       IDComponent:
+        ID: 4990206727289058483
+      TagComponent:
+        Tag: Borders
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 3
+        ChildrenIDs:
+          0: 15657509363918656491
+          1: 13891455672601397775
+          2: 15602980246693789279
+  - Entity:
+      IDComponent:
         ID: 5200842692206890297
       TagComponent:
         Tag: Sprite
@@ -203,9 +268,9 @@ Entities:
       TagComponent:
         Tag: Tomato
       TransformComponent:
-        Transform: [-5.3852191, -3.5854857, 0]
-        Rotation: [0, 0, 0.000270978693]
-        Scale: [2, 2, 1]
+        Transform: [-8.49681377, -3.45208311, 0]
+        Rotation: [0, 0, 0.000270983146]
+        Scale: [1.99996722, 1.99996722, 1]
       SpriteComponent:
         Color: [1, 1, 1, 1]
         AssetHandle: 11023663839170045914
@@ -222,6 +287,7 @@ Entities:
         RestitutionThreshold: 0.5
         LinearDamping: 0
         AngularDamping: 0
+        FixedRotation: false
         AllowSleep: true
         InitiallyAwake: true
         IsBullet: false
@@ -245,6 +311,34 @@ Entities:
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 7681774979338729770
+      TagComponent:
+        Tag: DroppableSpawner
+      TransformComponent:
+        Transform: [-5, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 12899590937424841027
+        ChildrenCount: 0
+      ScriptComponent:
+        ScriptID: 687438908
+        ScriptName: BumCatcher.DroppableSpawner
+        Fields:
+          - ID: 2242853084
+            Name: BottlePrefab
+            Type: Prefab
+            Value: 9850982849837239402
+          - ID: 1398040317
+            Name: timer
+            Type: Float
+            Value: 0
+          - ID: 495585200
+            Name: spawnInterval
+            Type: Float
+            Value: 1
   - Entity:
       IDComponent:
         ID: 7894143509650206064
@@ -296,7 +390,7 @@ Entities:
       TagComponent:
         Tag: Banana
       TransformComponent:
-        Transform: [-4.35340261, -2.52166796, 0]
+        Transform: [-7.08330727, -2.82075596, -0.000122071346]
         Rotation: [0, 0, 0.991848946]
         Scale: [2, 2, 1]
       SpriteComponent:
@@ -315,6 +409,7 @@ Entities:
         RestitutionThreshold: 0.5
         LinearDamping: 0
         AngularDamping: 0
+        FixedRotation: false
         AllowSleep: true
         InitiallyAwake: true
         IsBullet: false
@@ -359,7 +454,7 @@ Entities:
       TagComponent:
         Tag: Spikes
       TransformComponent:
-        Transform: [-6.17543697, -2.91175032, 0]
+        Transform: [-8.77501678, -2.44131279, 0]
         Rotation: [0, 0, -0.000349773967]
         Scale: [2, 2, 1]
       SpriteComponent:
@@ -378,6 +473,7 @@ Entities:
         RestitutionThreshold: 0.5
         LinearDamping: 0
         AngularDamping: 0
+        FixedRotation: false
         AllowSleep: true
         InitiallyAwake: true
         IsBullet: false
@@ -386,6 +482,51 @@ Entities:
         Offset: [0, 0.119999997]
         Density: 1
         IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 11556835301276372217
+      TagComponent:
+        Tag: DroppableSpawner
+      TransformComponent:
+        Transform: [-1.94078076, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 12899590937424841027
+        ChildrenCount: 0
+      ScriptComponent:
+        ScriptID: 687438908
+        ScriptName: BumCatcher.DroppableSpawner
+        Fields:
+          - ID: 2242853084
+            Name: BottlePrefab
+            Type: Prefab
+            Value: 9850982849837239402
+          - ID: 1398040317
+            Name: timer
+            Type: Float
+            Value: 0
+          - ID: 495585200
+            Name: spawnInterval
+            Type: Float
+            Value: 1
+  - Entity:
+      IDComponent:
+        ID: 12899590937424841027
+      TagComponent:
+        Tag: Spawners
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 4
+        ChildrenIDs:
+          0: 2658966893819869863
+          1: 7681774979338729770
+          2: 11556835301276372217
+          3: 13897141562198929693
   - Entity:
       IDComponent:
         ID: 13174236796396508617
@@ -397,8 +538,8 @@ Entities:
         Scale: [1, 1, 1]
       TextComponent:
         AssetHandle: 2519823622692660382
-        TextString: "Score: 0"
-        Color: [0.791443825, 0.469787508, 0.469787508, 1]
+        TextString: Exp 0
+        Color: [1, 0.900025725, 0.016042769, 1]
         Kerning: 0
         LineSpacing: 0
       RelationshipComponent:
@@ -438,6 +579,65 @@ Entities:
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 13891455672601397775
+      TagComponent:
+        Tag: Box Collider
+      TransformComponent:
+        Transform: [-10.1893559, 0.828558922, 0.000122069425]
+        Rotation: [0, 0, 0]
+        Scale: [1, 9.76481152, 1]
+      RelationshipComponent:
+        ParentID: 4990206727289058483
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 0
+        AutoMass: true
+        Mass: 1
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        FixedRotation: false
+        AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
+      BoxCollider2DComponent:
+        Size: [0.5, 0.5]
+        Offset: [0, 0]
+        Density: 1
+        IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 13897141562198929693
+      TagComponent:
+        Tag: DroppableSpawner
+      TransformComponent:
+        Transform: [5, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 12899590937424841027
+        ChildrenCount: 0
+      ScriptComponent:
+        ScriptID: 687438908
+        ScriptName: BumCatcher.DroppableSpawner
+        Fields:
+          - ID: 2242853084
+            Name: BottlePrefab
+            Type: Prefab
+            Value: 9850982849837239402
+          - ID: 1398040317
+            Name: timer
+            Type: Float
+            Value: 0
+          - ID: 495585200
+            Name: spawnInterval
+            Type: Float
+            Value: 1
   - Entity:
       IDComponent:
         ID: 14340539390480082291
@@ -481,6 +681,7 @@ Entities:
         RestitutionThreshold: 0.5
         LinearDamping: 0
         AngularDamping: 0
+        FixedRotation: false
         AllowSleep: true
         InitiallyAwake: true
         IsBullet: false
@@ -519,6 +720,68 @@ Entities:
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 15602980246693789279
+      TagComponent:
+        Tag: Box Collider
+      TransformComponent:
+        Transform: [0, 6.11661911, -0.64440906]
+        Rotation: [0, 0, 0]
+        Scale: [21.5867653, 1, 1]
+      RelationshipComponent:
+        ParentID: 4990206727289058483
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 0
+        AutoMass: true
+        Mass: 1
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        FixedRotation: false
+        AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
+      BoxCollider2DComponent:
+        Size: [0.5, 0.5]
+        Offset: [0, 0]
+        Density: 1
+        IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 15657509363918656491
+      TagComponent:
+        Tag: Box Collider
+      TransformComponent:
+        Transform: [10.234519, 0.828558922, 0.000122069425]
+        Rotation: [0, 0, 0]
+        Scale: [1, 9.76481152, 1]
+      RelationshipComponent:
+        ParentID: 4990206727289058483
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 0
+        AutoMass: true
+        Mass: 1
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        FixedRotation: false
+        AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
+      BoxCollider2DComponent:
+        Size: [0.5, 0.5]
+        Offset: [0, 0]
+        Density: 1
+        IsSensor: false
   - Entity:
       IDComponent:
         ID: 15849287036311643957
@@ -566,39 +829,6 @@ Entities:
         ChildrenCount: 0
   - Entity:
       IDComponent:
-        ID: 16991690553658011280
-      TagComponent:
-        Tag: Beer
-      TransformComponent:
-        Transform: [-3.56971979, -3.38478351, 0.000488212332]
-        Rotation: [0, 0, -0.000834264152]
-        Scale: [2, 2, 1]
-      SpriteComponent:
-        Color: [1, 1, 1, 1]
-        AssetHandle: 10579185608762731148
-      RelationshipComponent:
-        ParentID: 0
-        ChildrenCount: 0
-      RigidBody2DComponent:
-        Type: 2
-        AutoMass: true
-        Mass: 1
-        GravityScale: 1
-        Friction: 0.5
-        Restitution: 0
-        RestitutionThreshold: 0.5
-        LinearDamping: 0
-        AngularDamping: 0
-        AllowSleep: true
-        InitiallyAwake: true
-        IsBullet: false
-      BoxCollider2DComponent:
-        Size: [0.150000006, 0.300000012]
-        Offset: [-0.0199999996, 0]
-        Density: 1
-        IsSensor: false
-  - Entity:
-      IDComponent:
         ID: 17878141509878783574
       TagComponent:
         Tag: Sprite
@@ -612,36 +842,3 @@ Entities:
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
-  - Entity:
-      IDComponent:
-        ID: 18073059867537253770
-      TagComponent:
-        Tag: Beer
-      TransformComponent:
-        Transform: [-5.68939495, -2.01786685, 0.000610282645]
-        Rotation: [0, 0, 1.56940675]
-        Scale: [2, 2, 1]
-      SpriteComponent:
-        Color: [1, 1, 1, 1]
-        AssetHandle: 10579185608762731148
-      RelationshipComponent:
-        ParentID: 0
-        ChildrenCount: 0
-      RigidBody2DComponent:
-        Type: 2
-        AutoMass: true
-        Mass: 1
-        GravityScale: 1
-        Friction: 0.5
-        Restitution: 0
-        RestitutionThreshold: 0.5
-        LinearDamping: 0
-        AngularDamping: 0
-        AllowSleep: true
-        InitiallyAwake: true
-        IsBullet: false
-      BoxCollider2DComponent:
-        Size: [0.150000006, 0.300000012]
-        Offset: [-0.0199999996, 0]
-        Density: 1
-        IsSensor: false

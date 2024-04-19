@@ -3,7 +3,7 @@ Spritesheet:
   ViewZoom: 1.4000001
   GridSize: 128
   CenterOffset: [0, 128]
-  ViewPos: [194.999939, 84]
+  ViewPos: [-881.000061, 162]
   ShowImageBorders: true
   ExportPath: sprites\player\walk
   Sprites:
@@ -29,11 +29,11 @@ Spritesheet:
         Size: [128, 128]
     - Sprite:
         Name: 6
-        Position: [640, 0]
+        Position: [640, 1]
         Size: [128, 128]
     - Sprite:
         Name: 7
-        Position: [768, 0]
+        Position: [768, 1]
         Size: [128, 128]
     - Sprite:
         Name: 8

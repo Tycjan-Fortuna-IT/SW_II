@@ -26,6 +26,7 @@ Prefab:
           RestitutionThreshold: 0.5
           LinearDamping: 0
           AngularDamping: 0
+          FixedRotation: false
           AllowSleep: true
           InitiallyAwake: true
           IsBullet: false
