@@ -359,7 +359,10 @@ namespace SW {
 		if (!SelectionManager::IsSelected())
 			return false;
 
-		Entity entity = m_SceneViewportPanel->GetCurrentScene()->GetEntityByID(SelectionManager::GetSelectionID());
+		Entity entity = m_SceneViewportPanel->GetCurrentScene()->TryGetEntityByID(SelectionManager::GetSelectionID());
+
+		if (!entity)
+			return false;
 
 		const bool ctrl = Input::IsKeyDown(KeyCode::LeftControl) || Input::IsKeyDown(KeyCode::RightControl);
 

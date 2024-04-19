@@ -68,7 +68,11 @@ namespace SW {
 				OnEnd(); return;
 			}
 
-			Entity entity = m_SceneViewportPanel->GetCurrentScene()->GetEntityByID(SelectionManager::GetSelectionID());
+			Entity entity = m_SceneViewportPanel->GetCurrentScene()->TryGetEntityByID(SelectionManager::GetSelectionID());
+
+			if (!entity) {
+				OnEnd(); return;
+			}
 
 			if (GUI::Button("{} Add", { 90.f, 30.f }, SW_ICON_PLUS)) {
 				ImGui::OpenPopup("AddComponent_Popup");
@@ -347,6 +351,7 @@ namespace SW {
 					GUI::DrawFloatingPointProperty(component.RestitutionThreshold, "Restitution Threshold", "The velocity threshold for the restitution", 0.f, 1.f);
 					GUI::DrawFloatingPointProperty(component.LinearDamping, "Linear Damping", "The linear damping of the body (how much it resists movement)", 0.f, 1.f);
 					GUI::DrawFloatingPointProperty(component.AngularDamping, "Angular Damping", "The angular damping of the body (how much it resists rotation)", 0.f, 1.f);
+					GUI::DrawBooleanProperty(component.FixedRotation, "Fixed Rotation", "Whether the body should not be rotated by the physics system");
 					GUI::DrawBooleanProperty(component.AllowSleep, "Allow Sleep", "Whether the body should be allowed to sleep");
 					GUI::DrawBooleanProperty(component.InitiallyAwake, "Initially Awake", "Whether the body should be allowed to sleep");
 					GUI::DrawBooleanProperty(component.IsBullet, "Is Bullet", "Is this a fast moving body that should be prevented from tunneling through other moving bodies?");

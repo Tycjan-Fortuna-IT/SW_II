@@ -266,7 +266,8 @@ namespace SW {
 			output << YAML::Key << "Restitution" << YAML::Value << rbc.Restitution;
 			output << YAML::Key << "RestitutionThreshold" << YAML::Value << rbc.RestitutionThreshold;
 			output << YAML::Key << "LinearDamping" << YAML::Value << rbc.LinearDamping;
-			output << YAML::Key << "AngularDamping" << YAML::Value << rbc.AngularDamping;
+			output << YAML::Key << "AngularDamping" << YAML::Value << rbc.AngularDamping; 
+			output << YAML::Key << "FixedRotation" << YAML::Value << rbc.FixedRotation;
 			output << YAML::Key << "AllowSleep" << YAML::Value << rbc.AllowSleep;
 			output << YAML::Key << "InitiallyAwake" << YAML::Value << rbc.InitiallyAwake;
 			output << YAML::Key << "IsBullet" << YAML::Value << rbc.IsBullet;
@@ -652,6 +653,7 @@ namespace SW {
 				rbc.RestitutionThreshold = rigidBody2DComponent["RestitutionThreshold"].as<f32>();
 				rbc.LinearDamping = rigidBody2DComponent["LinearDamping"].as<f32>();
 				rbc.AngularDamping = rigidBody2DComponent["AngularDamping"].as<f32>();
+				rbc.FixedRotation = rigidBody2DComponent["FixedRotation"].as<bool>();
 				rbc.AllowSleep = rigidBody2DComponent["AllowSleep"].as<bool>();
 				rbc.InitiallyAwake = rigidBody2DComponent["InitiallyAwake"].as<bool>();
 				rbc.IsBullet = rigidBody2DComponent["IsBullet"].as<bool>();
