@@ -1,9 +1,9 @@
 Spritesheet:
   TextureHandle: 831715547930304519
-  ViewZoom: 0.899999976
+  ViewZoom: 2.10000014
   GridSize: 128
   CenterOffset: [0, 0]
-  ViewPos: [87.0000305, 273.000092]
+  ViewPos: [-1427.00012, 250.000061]
   ShowImageBorders: true
   ExportPath: sprites
   Sprites:
@@ -26,4 +26,12 @@ Spritesheet:
     - Sprite:
         Name: block
         Position: [512, 0]
+        Size: [127, 128]
+    - Sprite:
+        Name: armor powerup
+        Position: [641, 0]
         Size: [128, 128]
+    - Sprite:
+        Name: pentagram
+        Position: [769, 0]
+        Size: [125, 128]

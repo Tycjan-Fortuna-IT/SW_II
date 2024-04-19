@@ -84,6 +84,7 @@ namespace SW {
 		RegisterManagedComponent<TransformComponent>(coreAssembly);
 		RegisterManagedComponent<AnimatedSpriteComponent>(coreAssembly);
 		RegisterManagedComponent<TextComponent>(coreAssembly);
+		RegisterManagedComponent<ScriptComponent>(coreAssembly);
 		RegisterManagedComponent<RigidBody2DComponent>(coreAssembly);
     }
 
@@ -223,6 +224,12 @@ namespace SW {
 		ASSERT(scene, "No active scene!");
 
 		return scene->CreateEntity(tag).GetID();
+	}
+
+	void Scene_DestroyEntity(u64 entityID)
+	{
+		Scene* scene = ScriptingCore::Get().GetCurrentScene();
+		scene->DestroyEntityInRuntime(entityID);
 	}
 
 	u64 Scene_TryGetEntityByID(u64 id)
@@ -480,6 +487,20 @@ namespace SW {
 		entity.GetComponent<TextComponent>().LineSpacing = LineSpacing;
 	}
 
+	Coral::ManagedObject ScriptComponent_GetInstance(u64 entityID)
+	{
+		Entity entity = GetEntityById(entityID);
+		
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+		ASSERT(entity.HasComponent<ScriptComponent>());
+
+		const ScriptComponent& component = entity.GetComponent<ScriptComponent>();
+
+		ASSERT(component.Instance.IsValid());
+
+		return *component.Instance.GetHandle();
+	}
+
 	void Rigidbody2DComponent_GetVelocity(u64 entityID, glm::vec2* outVelocity)
 	{
 		Entity entity = GetEntityById(entityID);
@@ -586,6 +607,7 @@ namespace SW {
 
 
 		ADD_INTERNAL_CALL(Scene_CreateEntity);
+		ADD_INTERNAL_CALL(Scene_DestroyEntity);
 		ADD_INTERNAL_CALL(Scene_TryGetEntityByID);
 		ADD_INTERNAL_CALL(Scene_TryGetEntityByTag);
 
@@ -624,6 +646,9 @@ namespace SW {
 
 		ADD_INTERNAL_CALL(TextComponent_GetLineSpacing);
 		ADD_INTERNAL_CALL(TextComponent_SetLineSpacing);
+
+
+		ADD_INTERNAL_CALL(ScriptComponent_GetInstance);
 
 
 		ADD_INTERNAL_CALL(Rigidbody2DComponent_GetVelocity);

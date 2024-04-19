@@ -5,7 +5,7 @@ Entities:
       TagComponent:
         Tag: Sprite
       TransformComponent:
-        Transform: [-0.486136943, 1.34855509e-06, 0]
+        Transform: [-0.486136943, 1.43051147e-06, 0]
         Rotation: [0, 0, 0]
         Scale: [2, 2, 1]
       SpriteComponent:
@@ -65,8 +65,8 @@ Entities:
       TagComponent:
         Tag: Player
       TransformComponent:
-        Transform: [0.0145845339, 1.92224979e-06, 0]
-        Rotation: [0, 0, 0]
+        Transform: [3.65492773, -0.830444336, 0.206298962]
+        Rotation: [0, 0, -3.85655267e-06]
         Scale: [3, 3, 1]
       AnimatedSpriteComponent:
         CurrentFrame: 4
@@ -103,7 +103,7 @@ Entities:
           - ID: 99773847
             Name: BottlePrefab
             Type: Prefab
-            Value: 14829735431805717965
+            Value: 9850982849837239402
       RigidBody2DComponent:
         Type: 2
         AutoMass: true
@@ -136,6 +136,21 @@ Entities:
         AssetHandle: 12875758880104537401
       RelationshipComponent:
         ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 4270635559211037960
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [-0.0587328821, 0.74480027, -0.112189054]
+        Rotation: [0, 0, 0]
+        Scale: [6.40079975, 6.40079975, 1]
+      SpriteComponent:
+        Color: [1, 0, 0, 1]
+        AssetHandle: 7794725320815178832
+      RelationshipComponent:
+        ParentID: 0
         ChildrenCount: 0
   - Entity:
       IDComponent:
@@ -188,8 +203,8 @@ Entities:
       TagComponent:
         Tag: Tomato
       TransformComponent:
-        Transform: [-5.38166523, -2.36242533, 0]
-        Rotation: [0, 0, 0]
+        Transform: [-5.3852191, -3.5854857, 0]
+        Rotation: [0, 0, 0.000270978693]
         Scale: [2, 2, 1]
       SpriteComponent:
         Color: [1, 1, 1, 1]
@@ -251,7 +266,7 @@ Entities:
       TagComponent:
         Tag: Sprite
       TransformComponent:
-        Transform: [0.513863087, 1.34855509e-06, 0]
+        Transform: [0.561440825, 1.43051147e-06, 0]
         Rotation: [0, 0, 0]
         Scale: [2, 2, 1]
       SpriteComponent:
@@ -281,8 +296,8 @@ Entities:
       TagComponent:
         Tag: Banana
       TransformComponent:
-        Transform: [-3.95866394, 2.39321899, 0]
-        Rotation: [0, 0, 0]
+        Transform: [-4.35340261, -2.52166796, 0]
+        Rotation: [0, 0, 0.991848946]
         Scale: [2, 2, 1]
       SpriteComponent:
         Color: [1, 1, 1, 1]
@@ -344,8 +359,8 @@ Entities:
       TagComponent:
         Tag: Spikes
       TransformComponent:
-        Transform: [-6.16085815, 0, 0]
-        Rotation: [0, 0, 0]
+        Transform: [-6.17543697, -2.91175032, 0]
+        Rotation: [0, 0, -0.000349773967]
         Scale: [2, 2, 1]
       SpriteComponent:
         Color: [1, 1, 1, 1]
@@ -377,7 +392,7 @@ Entities:
       TagComponent:
         Tag: ScoreText
       TransformComponent:
-        Transform: [-9.2853241, 3.45566559, 0]
+        Transform: [-8.89567566, 2.9245677, 0.000122069112]
         Rotation: [0, 0, 0]
         Scale: [1, 1, 1]
       TextComponent:
@@ -403,7 +418,7 @@ Entities:
         ChildrenCount: 0
       CameraComponent:
         Primary: true
-        AspectRatio: 2.00176048
+        AspectRatio: 1.92711866
         ProjectionType: 1
         OrthographicSize: 10
         OrthographicNearClip: -1
@@ -506,6 +521,21 @@ Entities:
         ChildrenCount: 0
   - Entity:
       IDComponent:
+        ID: 15849287036311643957
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [8.85229492, 1.009166, -0.000122070312]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      SpriteComponent:
+        Color: [1, 1, 1, 1]
+        AssetHandle: 1763121921355064844
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
         ID: 16165028261600413779
       TagComponent:
         Tag: Sprite
@@ -540,8 +570,8 @@ Entities:
       TagComponent:
         Tag: Beer
       TransformComponent:
-        Transform: [-3.58766174, 2.34022737e-05, 0.000488212332]
-        Rotation: [0, 0, 0]
+        Transform: [-3.56971979, -3.38478351, 0.000488212332]
+        Rotation: [0, 0, -0.000834264152]
         Scale: [2, 2, 1]
       SpriteComponent:
         Color: [1, 1, 1, 1]
@@ -588,8 +618,8 @@ Entities:
       TagComponent:
         Tag: Beer
       TransformComponent:
-        Transform: [-3.93369937, 4.06648636, 0.000610282645]
-        Rotation: [0, 0, 0]
+        Transform: [-5.68939495, -2.01786685, 0.000610282645]
+        Rotation: [0, 0, 1.56940675]
         Scale: [2, 2, 1]
       SpriteComponent:
         Color: [1, 1, 1, 1]

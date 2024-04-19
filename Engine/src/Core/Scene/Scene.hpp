@@ -15,6 +15,7 @@
 #include "Core/ECS/Components.hpp"
 #include "Core/Scripting/ScriptStorage.hpp"
 #include "Asset/Asset.hpp"
+#include <queue>
 
 class b2World;
 
@@ -72,8 +73,15 @@ namespace SW {
 		/**
 		 * @brief Destroys the specified entity in the scene.
 		 * @param entity The entity to destroy.
+		 * @warning DO NOT use this to destroy entities during the runtime! Use DestroyEntityInRuntime instead!
 		 */
 		void DestroyEntity(Entity entity);
+
+		/**
+		 * @brief Destroys the specified entity in the scene during the runtime (SAFE).
+		 * @param entity The entity to destroy.
+		 */
+		void DestroyEntityInRuntime(u64 id);
 
 		/**
 		 * @brief Destroys all present entities in the scene.
@@ -285,6 +293,8 @@ namespace SW {
 		EntityRegistry m_Registry; /**< The entity registry of the scene. */
 
 		std::unordered_map<u64, Entity> m_EntityMap = {}; /**< Map of entity IDs to entt::entity handles. (cache) */
+
+		std::queue<u64> m_EntitiesToDelete;
 
 		u32 m_ViewportWidth = 0; /**< The width of the viewport. */
 		u32 m_ViewportHeight = 0; /**< The height of the viewport. */

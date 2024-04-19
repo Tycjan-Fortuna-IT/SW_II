@@ -15,6 +15,17 @@
 		}
 
 		/// <summary>
+		/// 	Destroys the specified entity.
+		/// </summary>
+		/// <param name="entity">The entity to destroy.</param>
+		public static void DestroyEntity(Entity entity)
+		{
+			unsafe {
+				InternalCalls.Scene_DestroyEntity(entity.GetID());
+			}
+		}
+
+		/// <summary>
 		/// 	Retrieves the entity with the specified ID.
 		/// </summary>
 		/// <param name="id">The ID of the entity.</param>

@@ -18,6 +18,11 @@ namespace SW
 		protected Entity() { ID = 0; }
 
 		/// <summary>
+		/// 	Destroys the entity.
+		/// </summary>
+		public void Destroy() => Scene.DestroyEntity(this);
+
+		/// <summary>
 		///		Called when the entity is created.
 		/// </summary>
 		protected virtual void OnCreate() { }
@@ -39,7 +44,56 @@ namespace SW
 		/// </summary>
 		protected virtual void OnDestroy() { }
 
+		/// <summary>
+		///		Called when the entity is destroyed when the scene is being unloaded.
+		/// </summary>
+		protected virtual void OnCleanup() { }
+
 		public ulong GetID() { return ID; }
+
+		/// <summary>
+		/// 	Event triggered when a 2D collision with another entity begins.
+		/// </summary>
+		/// <remarks>
+		/// 	The event handler receives the entity that this entity started colliding with.
+		/// </remarks>
+		public event Action<Entity>? OnCollision2DBegin;
+
+		/// <summary>
+		/// Event triggered when a 2D collision with another entity ends.
+		/// </summary>
+		/// <remarks>
+		/// 	The event handler receives the entity that this entity stopped colliding with.
+		/// </remarks>
+		public event Action<Entity>? OnCollision2DEnd;
+
+		private void OnCollision2DBeginInternal(ulong id) => OnCollision2DBegin?.Invoke(new Entity(id));
+		
+		private void OnCollision2DEndInternal(ulong id) => OnCollision2DEnd?.Invoke(new Entity(id));
+
+		/// <summary>
+		///		Checks if this entity is a script entity of type T
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns>True if this entity is a script entity of type T</returns>
+		public bool Is<T>() where T : Entity
+		{
+			ScriptComponent? sc = GetComponent<ScriptComponent>();
+
+			return sc?.Instance.Get() is T;
+		}
+
+		/// <summary>
+		///		Returns the script instance as type T if this entity is of the given type, otherwise null
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		public T? As<T>() where T : Entity
+		{
+			ScriptComponent? sc = GetComponent<ScriptComponent>();
+			
+			return sc?.Instance.Get() as T;
+		}
 
 		/// <summary>
 		///		Checks if the entity has a component of the specified type.

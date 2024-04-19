@@ -41,6 +41,7 @@ namespace SW
 
 
 		internal static delegate* unmanaged<NativeString, ulong> Scene_CreateEntity;
+		internal static delegate* unmanaged<ulong, void> Scene_DestroyEntity;
 		internal static delegate* unmanaged<ulong, ulong> Scene_TryGetEntityByID;
 		internal static delegate* unmanaged<NativeString, ulong> Scene_TryGetEntityByTag;
 
@@ -79,6 +80,10 @@ namespace SW
 
 		internal static delegate* unmanaged<ulong, float> TextComponent_GetLineSpacing;
 		internal static delegate* unmanaged<ulong, float, void> TextComponent_SetLineSpacing;
+
+
+		internal static delegate* unmanaged<ulong, NativeInstance<object>> ScriptComponent_GetInstance;
+
 
 		internal static delegate* unmanaged<ulong, Vector2*, void> Rigidbody2DComponent_GetVelocity;
 		internal static delegate* unmanaged<ulong, Vector2*, void> Rigidbody2DComponent_SetVelocity;

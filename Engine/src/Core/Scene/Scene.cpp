@@ -97,11 +97,21 @@ namespace SW {
 		RemoveReferencedConnections<SpringJoint2DComponent>(registry, entity, id);
 		RemoveReferencedConnections<WheelJoint2DComponent>(registry, entity, id);
 
+		if (entity.HasComponent<RigidBody2DComponent>()) {
+			b2Body* body = (b2Body*)entity.GetComponent<RigidBody2DComponent>().Handle;
+
+			m_PhysicsWorld2D->DestroyBody(body);
+		}
+
 		if (entity.HasComponent<ScriptComponent>()) {
 			ScriptComponent& sc = entity.GetComponent<ScriptComponent>();
 
-			if (sc.ScriptID)
+			if (sc.ScriptID) {
+				if (sc.Instance.IsValid())
+					sc.Instance.Invoke("OnDestroy");
+
 				m_ScriptStorage.ShutdownEntityStorage(sc.ScriptID, id);
+			}
 		}
 
 		m_EntityMap.erase(id);
@@ -110,7 +120,12 @@ namespace SW {
 		SortEntities();
 	}
 
-    void Scene::DestroyAllEntities()
+	void Scene::DestroyEntityInRuntime(u64 id)
+	{
+		m_EntitiesToDelete.emplace(id);
+	}
+
+	void Scene::DestroyAllEntities()
     {
 		m_Registry.DestroyAllEntities();
 
@@ -279,7 +294,7 @@ namespace SW {
 			if (!sc.ScriptID)
 				continue;
 
-			sc.Instance.Invoke("OnDestroy");
+			sc.Instance.Invoke("OnCleanup");
 			ScriptingCore::Get().DestroyInstance(id.ID, m_ScriptStorage);
 		}
 
@@ -436,6 +451,19 @@ namespace SW {
 					}
 				}
 			}
+		}
+
+		while (!m_EntitiesToDelete.empty()) {
+			u64 id = m_EntitiesToDelete.front();
+			Entity toDelete = TryGetEntityByID(id);
+
+			if (toDelete) {
+				DestroyEntity(toDelete);
+			} else {
+				SW_WARN("Entity could not be found {}", id);
+			}
+
+			m_EntitiesToDelete.pop();
 		}
 
 #pragma endregion

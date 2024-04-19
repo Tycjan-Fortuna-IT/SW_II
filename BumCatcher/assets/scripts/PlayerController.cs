@@ -24,6 +24,21 @@ namespace Sandbox
 			AnimationComponent = GetComponent<AnimatedSpriteComponent>()!;
 
 			ScoreText = Scene.GetEntityByTag("ScoreText").GetComponent<TextComponent>()!;
+
+			OnCollision2DBegin += PlayerController_OnCollision2DBegin;
+		}
+
+		private void PlayerController_OnCollision2DBegin(Entity obj)
+		{
+			string tag = obj.GetComponent<TagComponent>()!.Tag;
+
+			if (tag == "Beer") {
+				obj.Destroy();
+				Log.Warn("destroy");
+				ScoreText.Text = string.Format("Score: {0}", ++Score);
+			}
+
+			Log.Warn("Collided with: {0}", tag);
 		}
 
 		protected override void OnUpdate(float ts)
@@ -52,11 +67,7 @@ namespace Sandbox
 			if (Input.IsKeyPressed(KeyCode.Space)) {
 				Body.ApplyForce(new Vector2(0.0f, 250.0f));
 				
-				Score++;
-
-				ScoreText.Text = string.Format("Score: {0}", Score);
-
-				//Scene.InstantiatePrefab(BottlePrefab);
+				Scene.InstantiatePrefab(BottlePrefab);
 			}
 		}
 
@@ -66,6 +77,11 @@ namespace Sandbox
 		}
 
 		protected override void OnDestroy()
+		{
+
+		}
+
+		protected override void OnCleanup()
 		{
 
 		}

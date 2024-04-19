@@ -1,4 +1,6 @@
-﻿namespace SW
+﻿using Coral.Managed.Interop;
+
+namespace SW
 {
 	public abstract class Component
 	{
@@ -208,6 +210,22 @@
 				unsafe {
 					InternalCalls.TextComponent_SetLineSpacing(Entity.GetID(), value);
 				}
+			}
+		}
+	}
+
+	/// <summary>
+	/// Represents a script component that can be attached to an entity.
+	/// </summary>
+	public class ScriptComponent : Component
+	{
+		/// <summary>
+		/// Gets the native instance associated with this script component.
+		/// </summary>
+		public NativeInstance<object> Instance
+		{
+			get {
+				unsafe { return InternalCalls.ScriptComponent_GetInstance(Entity.GetID()); }
 			}
 		}
 	}
