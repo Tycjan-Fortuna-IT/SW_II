@@ -97,7 +97,7 @@ namespace SW {
 		RemoveReferencedConnections<SpringJoint2DComponent>(registry, entity, id);
 		RemoveReferencedConnections<WheelJoint2DComponent>(registry, entity, id);
 
-		if (entity.HasComponent<RigidBody2DComponent>()) {
+		if (IsPlaying() &&entity.HasComponent<RigidBody2DComponent>()) {
 			b2Body* body = (b2Body*)entity.GetComponent<RigidBody2DComponent>().Handle;
 
 			m_PhysicsWorld2D->DestroyBody(body);
@@ -186,6 +186,15 @@ namespace SW {
 		CopyReferencedEntities(SpringJoint2DComponent);
 		CopyReferencedEntities(WheelJoint2DComponent);
 
+		if (position)
+			dst.GetTransform().Position = *position;
+
+		if (rotation)
+			dst.GetTransform().Rotation = *rotation;
+		
+		if (scale)
+			dst.GetTransform().Scale = *scale;
+
 		if (IsPlaying()) {
 			if (src.HasComponent<RigidBody2DComponent>()) {
 				RigidBody2DComponent& rbc = dst.GetComponent<RigidBody2DComponent>();
@@ -208,13 +217,6 @@ namespace SW {
 				sc.Instance.Invoke("OnCreate");
 			}
 		}
-
-		if (position)
-			dst.GetTransform().Position = *position;
-		if (rotation)
-			dst.GetTransform().Rotation = *rotation;
-		if (scale)
-			dst.GetTransform().Scale = *scale;
 
 		u64 id = dst.GetID();
 
@@ -684,6 +686,13 @@ namespace SW {
 		CopyReferencedEntities(SpringJoint2DComponent);
 		CopyReferencedEntities(WheelJoint2DComponent);
 
+		if (dst.HasComponent<ScriptComponent>()) {
+			const ScriptComponent& sc = dst.GetComponent<ScriptComponent>();
+
+			m_ScriptStorage.InitializeEntityStorage(sc.ScriptID, dst.GetID());
+			m_ScriptStorage.CopyEntityStorage(src.GetID(), dst.GetID(), m_ScriptStorage);
+		}
+
 		duplicatedEntities[src.GetID()] = dst;
 
 		std::vector<u64> childIds = src.GetRelations().ChildrenIDs;
@@ -705,7 +714,6 @@ namespace SW {
 	{
 		b2BodyDef definition;
 		definition.type = static_cast<b2BodyType>(rbc.Type);
-		definition.fixedRotation = false;
 		definition.allowSleep = rbc.AllowSleep;
 		definition.awake = rbc.InitiallyAwake;
 		definition.fixedRotation = rbc.FixedRotation;
