@@ -82,6 +82,7 @@ namespace SW {
 		 */
 		virtual void OnWindowStylePop() {}
 
+	protected:
 		std::string m_ID;   ///< The ID of the panel.
 		std::string m_Name; ///< The name of the panel.
 		std::string m_Icon; ///< The icon of the panel.

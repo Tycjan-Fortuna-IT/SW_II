@@ -5,7 +5,7 @@ Prefab:
         IDComponent:
           ID: 6524340599106544319
         TagComponent:
-          Tag: ExpText
+          Tag: HoveringText
         TransformComponent:
           Transform: [0, 0, 0]
           Rotation: [0, 0, 0]

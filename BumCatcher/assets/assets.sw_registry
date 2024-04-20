@@ -1,12 +1,12 @@
 Assets:
-  - Handle: 206208866301309049
-    Path: prefabs\ExpText.sw_prefab
-    Type: Prefab
-    ModificationTime: 133580301010926949
   - Handle: 275943006351974855
     Path: prefabs\Tomato.sw_prefab
     Type: Prefab
     ModificationTime: 133580342155738772
+  - Handle: 276286208077860068
+    Path: sprites\denature.sw_sprite
+    Type: Sprite
+    ModificationTime: 133580735606539441
   - Handle: 650601428253319591
     Path: animations\player\idle.sw_anim
     Type: Animation2D
@@ -18,7 +18,7 @@ Assets:
   - Handle: 831715547930304519
     Path: textures\main.png
     Type: Texture2D
-    ModificationTime: 133575977676705614
+    ModificationTime: 133580927221401612
   - Handle: 879538790000408613
     Path: cache\thumbnails\2519823622692660382_133575950551672536.cache
     Type: Unknown
@@ -27,22 +27,30 @@ Assets:
     Path: animations
     Type: Directory
     ModificationTime: 133575932163649694
+  - Handle: 1319154548818181718
+    Path: cache\thumbnails\831715547930304519_133580927221401612.cache
+    Type: Unknown
+    ModificationTime: 133580927255564494
   - Handle: 1410147383102770554
     Path: sprites\player\walk\8.sw_sprite
     Type: Sprite
-    ModificationTime: 133580296140432158
+    ModificationTime: 133580736066990178
   - Handle: 1666069527733919562
     Path: spritesheets\basic.sw_spritesh
     Type: Spritesheet
-    ModificationTime: 133575978491733481
+    ModificationTime: 133580735600079004
+  - Handle: 1676530589919384107
+    Path: scripts\HealthBar.cs
+    Type: Script
+    ModificationTime: 133581063355759886
   - Handle: 1763121921355064844
     Path: sprites\armor powerup.sw_sprite
     Type: Sprite
-    ModificationTime: 133575978510048471
+    ModificationTime: 133580735606519396
   - Handle: 2141916683807231925
     Path: sprites\player\walk\5.sw_sprite
     Type: Sprite
-    ModificationTime: 133580296140402169
+    ModificationTime: 133580736066960140
   - Handle: 2300295211093616223
     Path: cache\thumbnails\15734778512717711947_133575950551672536.cache
     Type: Unknown
@@ -50,7 +58,7 @@ Assets:
   - Handle: 2332024669285803176
     Path: sprites\player\run\5.sw_sprite
     Type: Sprite
-    ModificationTime: 133575931951979401
+    ModificationTime: 133580736029282047
   - Handle: 2427635675890615252
     Path: fonts\source
     Type: Directory
@@ -59,6 +67,14 @@ Assets:
     Path: fonts\CascadiaCode.sw_font
     Type: Font
     ModificationTime: 133575950551672536
+  - Handle: 2725710666952581089
+    Path: prefabs\Wine.sw_prefab
+    Type: Prefab
+    ModificationTime: 133580766555238250
+  - Handle: 2730353169700983616
+    Path: prefabs\Denature.sw_prefab
+    Type: Prefab
+    ModificationTime: 133580766201680874
   - Handle: 2974584202618926706
     Path: spritesheets\player\walk.sw_spritesh
     Type: Spritesheet
@@ -70,7 +86,7 @@ Assets:
   - Handle: 3475824128444689973
     Path: sprites\player\run\4.sw_sprite
     Type: Sprite
-    ModificationTime: 133575931951969397
+    ModificationTime: 133580736029272024
   - Handle: 3540582079975325250
     Path: animations\player
     Type: Directory
@@ -78,19 +94,19 @@ Assets:
   - Handle: 4037461435319838899
     Path: prefabs
     Type: Directory
-    ModificationTime: 133580301010926949
+    ModificationTime: 133581066864871656
   - Handle: 4087390995966246068
     Path: textures
     Type: Directory
-    ModificationTime: 133575977896813582
+    ModificationTime: 133580732893324618
   - Handle: 4480458202023201685
     Path: scripts
     Type: Directory
-    ModificationTime: 133580331309564400
+    ModificationTime: 133581067597772126
   - Handle: 5615498592752350885
     Path: assets.sw_registry
     Type: AssetRegistry
-    ModificationTime: 133580301166366615
+    ModificationTime: 133581001389789756
   - Handle: 5701594396406644582
     Path: cache\fonts\15734778512717711947_133575950551672536.cache
     Type: Unknown
@@ -98,7 +114,7 @@ Assets:
   - Handle: 6006139226138376200
     Path: build\BumCatcher.dll
     Type: Unknown
-    ModificationTime: 133580331320668479
+    ModificationTime: 133581066505272708
   - Handle: 6073911719524309933
     Path: cache\fonts
     Type: Directory
@@ -110,7 +126,7 @@ Assets:
   - Handle: 6651001985835504637
     Path: build\BumCatcher.pdb
     Type: Unknown
-    ModificationTime: 133580331320648466
+    ModificationTime: 133581066505242712
   - Handle: 6895740668858342272
     Path: animations\player\run_left.sw_anim
     Type: Animation2D
@@ -118,47 +134,43 @@ Assets:
   - Handle: 6930214908537643229
     Path: cache\thumbnails
     Type: Directory
-    ModificationTime: 133575978185711048
+    ModificationTime: 133580927255534489
   - Handle: 7015022260337576446
     Path: sprites\player\idle\1.sw_sprite
     Type: Sprite
-    ModificationTime: 133575929915158398
-  - Handle: 7552451655232354182
-    Path: scripts\Bottle.cs
-    Type: Script
-    ModificationTime: 133580215299421695
+    ModificationTime: 133580735980410771
   - Handle: 7694096910237820712
     Path: sprites\player\run\2.sw_sprite
     Type: Sprite
-    ModificationTime: 133575931951959419
+    ModificationTime: 133580736029252054
   - Handle: 7794725320815178832
     Path: sprites\pentagram.sw_sprite
     Type: Sprite
-    ModificationTime: 133575978510058477
+    ModificationTime: 133580735606529403
   - Handle: 7795385025017711118
     Path: sprites\player\walk\2.sw_sprite
     Type: Sprite
-    ModificationTime: 133580296140382163
+    ModificationTime: 133580736066940150
   - Handle: 8089411306157523054
     Path: build\BumCatcher.deps.json
     Type: Unknown
-    ModificationTime: 133580302471657210
+    ModificationTime: 133581066508102712
+  - Handle: 8260101953793138824
+    Path: sprites\wine.sw_sprite
+    Type: Sprite
+    ModificationTime: 133580735606549412
   - Handle: 8386686386496902400
     Path: sprites\player\idle\2.sw_sprite
     Type: Sprite
-    ModificationTime: 133575929915168372
-  - Handle: 8837705008141399936
-    Path: scripts\ExperienceTextManager.cs
-    Type: Script
-    ModificationTime: 133580331309539530
+    ModificationTime: 133580735980420803
   - Handle: 8985125787210060094
     Path: sprites\player\run\3.sw_sprite
     Type: Sprite
-    ModificationTime: 133575931951959419
+    ModificationTime: 133580736029262020
   - Handle: 8999320076268252657
     Path: sprites\spikes.sw_sprite
     Type: Sprite
-    ModificationTime: 133575978510008458
+    ModificationTime: 133580735606489409
   - Handle: 9209993608234248487
     Path: scenes
     Type: Directory
@@ -178,7 +190,7 @@ Assets:
   - Handle: 9943599014800694328
     Path: sprites\player\run\7.sw_sprite
     Type: Sprite
-    ModificationTime: 133575931951999401
+    ModificationTime: 133580736029292021
   - Handle: 10294558156615232059
     Path: sprites\player\idle
     Type: Directory
@@ -186,19 +198,19 @@ Assets:
   - Handle: 10579185608762731148
     Path: sprites\beer.sw_sprite
     Type: Sprite
-    ModificationTime: 133575978509998455
+    ModificationTime: 133580735606479395
   - Handle: 10682234263505026413
     Path: sprites\player\walk\6.sw_sprite
     Type: Sprite
-    ModificationTime: 133580296140412176
+    ModificationTime: 133580736066970137
   - Handle: 10838710662924299194
     Path: sprites\player\walk\1.sw_sprite
     Type: Sprite
-    ModificationTime: 133580296140372153
+    ModificationTime: 133580736066930152
   - Handle: 11023663839170045914
     Path: sprites\tomato.sw_sprite
     Type: Sprite
-    ModificationTime: 133575978510028485
+    ModificationTime: 133580735606499412
   - Handle: 11136102601076004458
     Path: fonts
     Type: Directory
@@ -210,7 +222,7 @@ Assets:
   - Handle: 11884121696345246877
     Path: build\Engine.ScriptCore.pdb
     Type: Unknown
-    ModificationTime: 133580215699757265
+    ModificationTime: 133581059250924320
   - Handle: 12352642025322049660
     Path: build\Coral.Managed.dll
     Type: Unknown
@@ -218,7 +230,7 @@ Assets:
   - Handle: 12370546426944206914
     Path: sprites\player\walk\4.sw_sprite
     Type: Sprite
-    ModificationTime: 133580296140402169
+    ModificationTime: 133580736066950141
   - Handle: 12758159065898506176
     Path: animations\player\walk_right.sw_anim
     Type: Animation2D
@@ -226,15 +238,15 @@ Assets:
   - Handle: 12875758880104537401
     Path: sprites\block.sw_sprite
     Type: Sprite
-    ModificationTime: 133575978510038464
+    ModificationTime: 133580735606509397
   - Handle: 12933030082902175141
     Path: cache\fonts\2519823622692660382_133575950551672536.cache
     Type: Unknown
     ModificationTime: 133575951382433787
-  - Handle: 13280015989543839009
-    Path: cache\thumbnails\831715547930304519_133575977676705614.cache
-    Type: Unknown
-    ModificationTime: 133575978185731042
+  - Handle: 13254685825100701881
+    Path: prefabs\HoveringText.sw_prefab
+    Type: Prefab
+    ModificationTime: 133581066900627901
   - Handle: 13281260179034324261
     Path: animations\player\walk_left.sw_anim
     Type: Animation2D
@@ -246,7 +258,7 @@ Assets:
   - Handle: 13981036167331464636
     Path: scripts\PlayerController.cs
     Type: Script
-    ModificationTime: 133580327781952199
+    ModificationTime: 133581066493092497
   - Handle: 14273187891832830115
     Path: sprites\player
     Type: Directory
@@ -254,23 +266,27 @@ Assets:
   - Handle: 14279818042616076453
     Path: sprites\player\walk\3.sw_sprite
     Type: Sprite
-    ModificationTime: 133580296140382163
+    ModificationTime: 133580736066940150
   - Handle: 14316122990641604166
     Path: spritesheets
     Type: Directory
     ModificationTime: 133575924381802196
+  - Handle: 14499213700665633019
+    Path: scripts\HoveringTextManager.cs
+    Type: Script
+    ModificationTime: 133581067597742120
   - Handle: 14949012099113109758
     Path: scripts\DroppableSpawner.cs
     Type: Script
-    ModificationTime: 133580280584908097
+    ModificationTime: 133581059862923600
   - Handle: 15676219413988811726
     Path: scenes\main.sw_scene
     Type: Scene
-    ModificationTime: 133580340781447643
+    ModificationTime: 133581066717955006
   - Handle: 15715394190176340537
     Path: sprites\player\idle\3.sw_sprite
     Type: Sprite
-    ModificationTime: 133575929915178377
+    ModificationTime: 133580735980430772
   - Handle: 15815525156264435864
     Path: sprites\player\run
     Type: Directory
@@ -278,11 +294,11 @@ Assets:
   - Handle: 15916115145552487786
     Path: sprites\player\idle\4.sw_sprite
     Type: Sprite
-    ModificationTime: 133575929915188378
+    ModificationTime: 133580735980440768
   - Handle: 15944493890653332944
     Path: build\Engine.ScriptCore.dll
     Type: Unknown
-    ModificationTime: 133580215699807367
+    ModificationTime: 133581059250954312
   - Handle: 16291172618576788612
     Path: prefabs\Spikes.sw_prefab
     Type: Prefab
@@ -290,23 +306,23 @@ Assets:
   - Handle: 16640581557488841485
     Path: build
     Type: Directory
-    ModificationTime: 133580331320988475
+    ModificationTime: 133581066508202704
   - Handle: 16907590854818213732
     Path: sprites\player\run\6.sw_sprite
     Type: Sprite
-    ModificationTime: 133575931951989393
+    ModificationTime: 133580736029282047
   - Handle: 17036905789002493857
     Path: sprites\player\run\8.sw_sprite
     Type: Sprite
-    ModificationTime: 133575931952009427
+    ModificationTime: 133580736029302038
   - Handle: 17120339229260234606
     Path: sprites
     Type: Directory
-    ModificationTime: 133577572147782407
+    ModificationTime: 133580735606539441
   - Handle: 17216821762617451908
     Path: sprites\player\idle\5.sw_sprite
     Type: Sprite
-    ModificationTime: 133575929915198378
+    ModificationTime: 133580735980440768
   - Handle: 17536965051450932215
     Path: fonts\source\CascadiaCode.ttf
     Type: FontSource
@@ -318,12 +334,12 @@ Assets:
   - Handle: 17719678329418301841
     Path: sprites\player\walk\7.sw_sprite
     Type: Sprite
-    ModificationTime: 133580296140422156
+    ModificationTime: 133580736066980145
   - Handle: 17898651313695350990
     Path: sprites\banana.sw_sprite
     Type: Sprite
-    ModificationTime: 133575978510018466
+    ModificationTime: 133580735606489409
   - Handle: 17991285174882592014
     Path: sprites\player\run\1.sw_sprite
     Type: Sprite
-    ModificationTime: 133575931951939411
+    ModificationTime: 133580736029242018

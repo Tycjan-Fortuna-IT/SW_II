@@ -1,0 +1,37 @@
+Prefab:
+  RootEntityHandle: 1568843374939842059
+  Entities:
+    - Entity:
+        IDComponent:
+          ID: 1568843374939842059
+        TagComponent:
+          Tag: Wine
+        TransformComponent:
+          Transform: [-6.27606153, 0.360873163, 0.000610281248]
+          Rotation: [0, 0, 0]
+          Scale: [2, 2, 1]
+        SpriteComponent:
+          Color: [1, 1, 1, 1]
+          AssetHandle: 8260101953793138824
+        RelationshipComponent:
+          ParentID: 0
+          ChildrenCount: 0
+        RigidBody2DComponent:
+          Type: 2
+          AutoMass: true
+          Mass: 1
+          GravityScale: 1
+          Friction: 0.5
+          Restitution: 0
+          RestitutionThreshold: 0.5
+          LinearDamping: 0
+          AngularDamping: 0
+          FixedRotation: false
+          AllowSleep: true
+          InitiallyAwake: true
+          IsBullet: false
+        BoxCollider2DComponent:
+          Size: [0.150000006, 0.400000006]
+          Offset: [-0.0299999993, -0.0500000007]
+          Density: 1
+          IsSensor: false

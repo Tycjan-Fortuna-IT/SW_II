@@ -305,7 +305,7 @@ namespace SW {
 									if (!m_SceneViewportPanel->GetCurrentScene()->IsPlaying()) {
 										u64 value = fieldStorage.GetValue<u64>();
 
-										if (GUI::DrawEntityDropdownProperty(value, m_SceneViewportPanel->GetCurrentScene(), "Entity", "Prefab to be used")) {
+										if (GUI::DrawEntityDropdownProperty(value, m_SceneViewportPanel->GetCurrentScene(), std::string(fieldStorage.GetName()).c_str(), "Entity to be used")) {
 											fieldStorage.SetValue(value);
 										}
 									}
@@ -314,8 +314,8 @@ namespace SW {
 								{
 									if (!m_SceneViewportPanel->GetCurrentScene()->IsPlaying()) {
 										AssetHandle value = fieldStorage.GetValue<u64>();
-
-										if (GUI::DrawAssetDropdownProperty<Prefab>(value, "Prefab", "Prefab to be used")) {
+										
+										if (GUI::DrawAssetDropdownProperty<Prefab>(value, std::string(fieldStorage.GetName()).c_str(), "Prefab to be used")) {
 											fieldStorage.SetValue(value);
 										}
 									}

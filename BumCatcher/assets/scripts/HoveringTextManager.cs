@@ -1,26 +1,25 @@
 ﻿using System.Collections.Generic;
 using SW;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace BumCatcher
 {
-	internal class ExperienceTextManager : Entity
+	internal class HoveringTextManager : Entity
 	{
 		[SerializeField]
-		private Prefab ExpTextPrefab = default!;
+		private Prefab HoveringTextPrefab = default!;
 
-		class ExpTextData
+		class HoveringTextData
 		{
 			public Entity Entity;
 			public float Life = 1.0f;
 
-			public ExpTextData(Entity entity)
+			public HoveringTextData(Entity entity)
 			{
 				Entity = entity;
 			}
 		}
 
-		private List<ExpTextData> m_Texts = new List<ExpTextData>();
+		private List<HoveringTextData> m_Texts = new List<HoveringTextData>();
 
 		protected override void OnUpdate(float ts)
 		{
@@ -40,13 +39,15 @@ namespace BumCatcher
 			}
 		}
 
-		public void SpawnExpText(Vector3 position, int expAmount)
+		public void SpawnHoveringText(Vector3 position, string text, Vector4 color)
 		{
-			Entity entity = Scene.InstantiatePrefab(ExpTextPrefab, position)!;
-			entity.GetComponent<TextComponent>()!.Text = $"{expAmount} exp";
+			Entity entity = Scene.InstantiatePrefab(HoveringTextPrefab, position)!;
+			TextComponent tc = entity.GetComponent<TextComponent>()!;
 
-			ExpTextData data = new ExpTextData(entity);
+			tc.Text = text;
+			tc.Color = color;
 
+			HoveringTextData data = new HoveringTextData(entity);
 			m_Texts.Add(data);
 		}
 	}
