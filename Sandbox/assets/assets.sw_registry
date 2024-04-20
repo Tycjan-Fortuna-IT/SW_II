@@ -7,10 +7,6 @@ Assets:
     Path: sprites\explosion\7.sw_sprite
     Type: Sprite
     ModificationTime: 133573151011247504
-  - Handle: 212989388691238768
-    Path: scenes\Platformer.sw_scene
-    Type: Scene
-    ModificationTime: 133573384126325924
   - Handle: 298414256961260786
     Path: cache\thumbnails\2525114378178378104_133569940577881088.cache
     Type: Unknown
@@ -50,7 +46,7 @@ Assets:
   - Handle: 1851129292016874927
     Path: scenes
     Type: Directory
-    ModificationTime: 133573867537352433
+    ModificationTime: 133581218258701679
   - Handle: 1936657483611871712
     Path: cache\thumbnails\5018533629324701578_130711390590000000.cache
     Type: Unknown
@@ -70,7 +66,7 @@ Assets:
   - Handle: 2672423647848718755
     Path: scenes\Physics_RevolutionJoints.sw_scene
     Type: Scene
-    ModificationTime: 133569940577921095
+    ModificationTime: 133581210007468179
   - Handle: 2825569506529799740
     Path: fonts\OpenSans-Regular.ttf
     Type: FontSource
@@ -106,7 +102,7 @@ Assets:
   - Handle: 4007508123346557669
     Path: scenes\BigerScene.sw_scene
     Type: Scene
-    ModificationTime: 133569940577891114
+    ModificationTime: 133581209177335366
   - Handle: 4269859881879935917
     Path: sprites\person\walk\5.sw_sprite
     Type: Sprite
@@ -119,10 +115,6 @@ Assets:
     Path: cache\thumbnails\13743448306498844429_133569940577861104.cache
     Type: Unknown
     ModificationTime: 133569954316517912
-  - Handle: 4785696657524461570
-    Path: scenes\CollectingGame.sw_scene
-    Type: Scene
-    ModificationTime: 133575871343777294
   - Handle: 5013422240820611777
     Path: sprites\person\run\8.sw_sprite
     Type: Sprite
@@ -215,10 +207,6 @@ Assets:
     Path: textures\Menel.png
     Type: Texture2D
     ModificationTime: 133574069763192996
-  - Handle: 9404689471195940422
-    Path: scenes\TestScene.sw_scene
-    Type: Scene
-    ModificationTime: 133569940577951128
   - Handle: 9516114027346869280
     Path: sprites\person\run\2.sw_sprite
     Type: Sprite
@@ -234,11 +222,11 @@ Assets:
   - Handle: 9751217973959575363
     Path: scenes\Physics_WheelJoints.sw_scene
     Type: Scene
-    ModificationTime: 133569940577941112
+    ModificationTime: 133581210361774815
   - Handle: 9815488022129325558
     Path: scripts
     Type: Directory
-    ModificationTime: 133575880973934646
+    ModificationTime: 133575893889448584
   - Handle: 10089294134779026993
     Path: animations\person_run_right.sw_anim
     Type: Animation2D
@@ -327,10 +315,14 @@ Assets:
     Path: sprites\explosion\11.sw_sprite
     Type: Sprite
     ModificationTime: 133573151011302971
+  - Handle: 14368808741040998696
+    Path: scenes\t.sw_scene
+    Type: Scene
+    ModificationTime: 133581222788072396
   - Handle: 14697240576490453688
     Path: prefabs
     Type: Directory
-    ModificationTime: 133575884818741563
+    ModificationTime: 133581223487022639
   - Handle: 14790332015910160922
     Path: sprites\person\idle\2.sw_sprite
     Type: Sprite
@@ -354,7 +346,7 @@ Assets:
   - Handle: 14996597783001670902
     Path: scenes\Physics_DistanceJoints.sw_scene
     Type: Scene
-    ModificationTime: 133569940577901091
+    ModificationTime: 133581209801820292
   - Handle: 15095759771116534335
     Path: spritesheets
     Type: Directory
@@ -362,7 +354,7 @@ Assets:
   - Handle: 15116493500697447690
     Path: scripts\PlayerController.cs
     Type: Script
-    ModificationTime: 133575880973904633
+    ModificationTime: 133575893889418570
   - Handle: 15218601145616416450
     Path: cache\thumbnails\13681513260605220869_133569940577851084.cache
     Type: Unknown
@@ -370,7 +362,7 @@ Assets:
   - Handle: 15261090433613191915
     Path: scenes\Physics_SpringJoints.sw_scene
     Type: Scene
-    ModificationTime: 133569940577931082
+    ModificationTime: 133581210168648824
   - Handle: 15349299000260537633
     Path: sprites\person\walk\3.sw_sprite
     Type: Sprite
@@ -383,14 +375,10 @@ Assets:
     Path: prefabs\Player.sw_prefab
     Type: Prefab
     ModificationTime: 133575884818751554
-  - Handle: 15586129948119691457
-    Path: scenes\asd.sw_scene
-    Type: Scene
-    ModificationTime: 133569940577961124
   - Handle: 15671670272651360779
     Path: scenes\Physics_BoxCirclePolygonCollision.sw_scene
     Type: Scene
-    ModificationTime: 133569954491628133
+    ModificationTime: 133581209636232788
   - Handle: 15723322973065492980
     Path: animations\person_walk_right.sw_anim
     Type: Animation2D
@@ -414,7 +402,7 @@ Assets:
   - Handle: 16423494596943192328
     Path: scenes\Physics_PrismaticJoints.sw_scene
     Type: Scene
-    ModificationTime: 133569940577911099
+    ModificationTime: 133581209909420265
   - Handle: 16668672011756415843
     Path: sprites\explosion\8.sw_sprite
     Type: Sprite
@@ -426,7 +414,7 @@ Assets:
   - Handle: 16891725904374815267
     Path: assets.sw_registry
     Type: Unknown
-    ModificationTime: 133575886197188644
+    ModificationTime: 133581224057854581
   - Handle: 16920539836090114160
     Path: sprites\person\run\7.sw_sprite
     Type: Sprite
@@ -435,6 +423,10 @@ Assets:
     Path: sprites\person\walk\1.sw_sprite
     Type: Sprite
     ModificationTime: 133574077701000480
+  - Handle: 17371125633276108929
+    Path: prefabs\HingePlatform.sw_prefab
+    Type: Prefab
+    ModificationTime: 133581223487022639
   - Handle: 17802206516402415737
     Path: animations\explode.sw_anim
     Type: Animation2D

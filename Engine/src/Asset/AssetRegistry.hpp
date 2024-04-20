@@ -37,6 +37,8 @@ namespace SW {
 
 	private:
 		void FetchAvailableAssets();
+
+		void SaveRegistryToFile();
 	};
 
 }

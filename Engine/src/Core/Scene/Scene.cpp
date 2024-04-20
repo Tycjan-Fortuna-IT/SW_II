@@ -151,10 +151,32 @@ namespace SW {
 		return CreatePrefabricatedEntity(prefab->GetRootEntity(), duplicatedEntities, position, rotation, scale);
 	}
 
+#define CopyReferencedEntitiesPref(T) \
+{ \
+	if (src.HasComponent<T>()) { \
+		T& component = src.GetComponent<T>(); \
+		T& newComponent = dst.GetComponent<T>(); \
+		if (component.ConnectedEntityID) { \
+			if (duplicatedEntities.contains(component.ConnectedEntityID)) { \
+				newComponent.ConnectedEntityID = duplicatedEntities.at(component.ConnectedEntityID).GetID(); \
+			} else { \
+				Entity connectedEntity = srcScene->GetEntityByID(component.ConnectedEntityID); \
+				Entity duplicatedConnectedEntity = CreatePrefabricatedEntity(connectedEntity, duplicatedEntities); \
+				newComponent.ConnectedEntityID = duplicatedConnectedEntity.GetID(); \
+				duplicatedEntities[component.ConnectedEntityID] = duplicatedConnectedEntity; \
+			} \
+		} \
+	} \
+}
+
 	Entity Scene::CreatePrefabricatedEntity(
 		Entity src, std::unordered_map<u64, Entity>& duplicatedEntities, const glm::vec3* position /*= nullptr*/,
 		const glm::vec3* rotation /*= nullptr*/, const glm::vec3* scale /*= nullptr*/
 	) {
+		if (duplicatedEntities.count(src.GetID()) > 0) {
+			return duplicatedEntities[src.GetID()];
+		}
+
 		Scene* srcScene = src.GetScene();
 
 		entt::registry& destReg = GetRegistry().GetRegistryHandle();
@@ -180,11 +202,11 @@ namespace SW {
 		srcScene->CopyComponentIfExists<SpringJoint2DComponent>(dst, destReg, src);
 		srcScene->CopyComponentIfExists<WheelJoint2DComponent>(dst, destReg, src);
 
-		CopyReferencedEntities(DistanceJoint2DComponent);
-		CopyReferencedEntities(RevolutionJoint2DComponent);
-		CopyReferencedEntities(PrismaticJoint2DComponent);
-		CopyReferencedEntities(SpringJoint2DComponent);
-		CopyReferencedEntities(WheelJoint2DComponent);
+		CopyReferencedEntitiesPref(DistanceJoint2DComponent);
+		CopyReferencedEntitiesPref(RevolutionJoint2DComponent);
+		CopyReferencedEntitiesPref(PrismaticJoint2DComponent);
+		CopyReferencedEntitiesPref(SpringJoint2DComponent);
+		CopyReferencedEntitiesPref(WheelJoint2DComponent);
 
 		if (position)
 			dst.GetTransform().Position = *position;

@@ -22,28 +22,7 @@ namespace SW {
 
 	AssetRegistry::~AssetRegistry()
 	{
-		YAML::Emitter output;
-
-		output << YAML::BeginMap;
-		output << YAML::Key << "Assets" << YAML::Value << YAML::BeginSeq;
-
-		for (auto&& [handle, metadata] : m_AvailableAssets) {
-			output << YAML::BeginMap;
-
-			output << YAML::Key << "Handle" << YAML::Value << handle;
-			output << YAML::Key << "Path" << YAML::Value << metadata.Path.string();
-			output << YAML::Key << "Type" << YAML::Value << Asset::GetStringifiedAssetType(metadata.Type);
-			output << YAML::Key << "ModificationTime" << YAML::Value << metadata.ModificationTime;
-
-			output << YAML::EndMap;
-		}
-
-		output << YAML::EndMap;
-
-		output << YAML::EndSeq;
-
-		std::ofstream fout(ProjectContext::Get()->GetAssetDirectory() / "assets.sw_registry");
-		fout << output.c_str();
+		SaveRegistryToFile();
 	}
 
 	void AssetRegistry::FetchDirectory(std::map<std::filesystem::path, AssetMetaData>& registered, const std::filesystem::path& dir, bool reload)
@@ -98,6 +77,8 @@ namespace SW {
 
 			SW_INFO("Asset {} [{}] was unloaded!", path.string(), metadata.Handle);
 		}
+
+		SaveRegistryToFile();
 	}
 
     const SW::AssetMetaData& AssetRegistry::GetAssetMetaData(AssetHandle handle) const
@@ -130,6 +111,32 @@ namespace SW {
 
 		m_AvailableAssets.clear();
 		FetchDirectory(registeredEntries, assetsDir, false);
+	}
+
+	void AssetRegistry::SaveRegistryToFile()
+	{
+		YAML::Emitter output;
+
+		output << YAML::BeginMap;
+		output << YAML::Key << "Assets" << YAML::Value << YAML::BeginSeq;
+
+		for (auto&& [handle, metadata] : m_AvailableAssets) {
+			output << YAML::BeginMap;
+
+			output << YAML::Key << "Handle" << YAML::Value << handle;
+			output << YAML::Key << "Path" << YAML::Value << metadata.Path.string();
+			output << YAML::Key << "Type" << YAML::Value << Asset::GetStringifiedAssetType(metadata.Type);
+			output << YAML::Key << "ModificationTime" << YAML::Value << metadata.ModificationTime;
+
+			output << YAML::EndMap;
+		}
+
+		output << YAML::EndMap;
+
+		output << YAML::EndSeq;
+
+		std::ofstream fout(ProjectContext::Get()->GetAssetDirectory() / "assets.sw_registry");
+		fout << output.c_str();
 	}
 
 }

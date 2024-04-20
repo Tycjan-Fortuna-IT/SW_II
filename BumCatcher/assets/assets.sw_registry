@@ -150,7 +150,7 @@ Assets:
   - Handle: 4480458202023201685
     Path: scripts
     Type: Directory
-    ModificationTime: 133581127840187572
+    ModificationTime: 133581154810670344
   - Handle: 4843250398414140484
     Path: sprites\eye\15.sw_sprite
     Type: Sprite
@@ -162,7 +162,7 @@ Assets:
   - Handle: 5615498592752350885
     Path: assets.sw_registry
     Type: AssetRegistry
-    ModificationTime: 133581143349247485
+    ModificationTime: 133581205227591189
   - Handle: 5701594396406644582
     Path: cache\fonts\15734778512717711947_133575950551672536.cache
     Type: Unknown
@@ -170,7 +170,7 @@ Assets:
   - Handle: 6006139226138376200
     Path: build\BumCatcher.dll
     Type: Unknown
-    ModificationTime: 133581127861862417
+    ModificationTime: 133581144986593049
   - Handle: 6073911719524309933
     Path: cache\fonts
     Type: Directory
@@ -182,7 +182,7 @@ Assets:
   - Handle: 6651001985835504637
     Path: build\BumCatcher.pdb
     Type: Unknown
-    ModificationTime: 133581127861852398
+    ModificationTime: 133581144986573045
   - Handle: 6784390671045850754
     Path: sprites\eye\27.sw_sprite
     Type: Sprite
@@ -398,7 +398,7 @@ Assets:
   - Handle: 14949012099113109758
     Path: scripts\DroppableSpawner.cs
     Type: Script
-    ModificationTime: 133581059862923600
+    ModificationTime: 133581154810641951
   - Handle: 15024438530593309594
     Path: sprites\eye\11.sw_sprite
     Type: Sprite
@@ -406,7 +406,7 @@ Assets:
   - Handle: 15676219413988811726
     Path: scenes\main.sw_scene
     Type: Scene
-    ModificationTime: 133581138863430048
+    ModificationTime: 133581144186864137
   - Handle: 15715394190176340537
     Path: sprites\player\idle\3.sw_sprite
     Type: Sprite
@@ -434,7 +434,7 @@ Assets:
   - Handle: 16640581557488841485
     Path: build
     Type: Directory
-    ModificationTime: 133581127862102378
+    ModificationTime: 133581144986823053
   - Handle: 16660168842618054206
     Path: sprites\eye\10.sw_sprite
     Type: Sprite

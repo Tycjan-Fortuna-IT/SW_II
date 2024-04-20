@@ -1,37 +1,24 @@
 #include "Prefab.hpp"
 
 namespace SW {
-/*#define CopyReferencedEntitiesPref(T) \
-	{ \
-		if (src.HasComponent<T>()) { \
-			T& component = src.GetComponent<T>(); \
-			T& newComponent = dst.GetComponent<T>(); \
-			if (component.ConnectedEntityID) { \
-				if (duplicatedEntities.contains(component.ConnectedEntityID)) { \
-					newComponent.ConnectedEntityID = duplicatedEntities.at(component.ConnectedEntityID).GetID(); \
-				} else { \
-					Entity connectedEntity = srcScene->GetEntityByID(component.ConnectedEntityID); \
-					Entity duplicatedConnectedEntity = DuplicateEntityForPrefab(connectedEntity, duplicatedEntities); \
-					newComponent.ConnectedEntityID = duplicatedConnectedEntity.GetID(); \
-					duplicatedEntities[component.ConnectedEntityID] = duplicatedConnectedEntity; \
-				} \
-			} \
-		} \
-	}*/
-
-// WELP
 #define CopyReferencedEntities(T) \
-	{ \
-		if (src.HasComponent<T>()) { \
-			T& component = src.GetComponent<T>(); \
-			if (component.ConnectedEntityID) { \
+{ \
+	if (src.HasComponent<T>()) { \
+		T& component = src.GetComponent<T>(); \
+		T& newComponent = dst.GetComponent<T>(); \
+		if (component.ConnectedEntityID) { \
+			if (duplicatedEntities.contains(component.ConnectedEntityID)) { \
+				newComponent.ConnectedEntityID = duplicatedEntities.at(component.ConnectedEntityID).GetID(); \
+			} else { \
 				Entity connectedEntity = srcScene->GetEntityByID(component.ConnectedEntityID); \
-				Entity duplicatedConnectedEntity = srcScene->DuplicateEntity(connectedEntity, duplicatedEntities); \
-				T& newComponent = dst.GetComponent<T>(); \
+				Entity duplicatedConnectedEntity = DuplicateEntityForPrefab(connectedEntity, duplicatedEntities); \
 				newComponent.ConnectedEntityID = duplicatedConnectedEntity.GetID(); \
+				duplicatedEntities[component.ConnectedEntityID] = duplicatedConnectedEntity; \
 			} \
 		} \
-	}
+	} \
+}
+
 
 	Prefab::Prefab(Entity entity)
 	{
@@ -71,12 +58,11 @@ namespace SW {
 		srcScene->CopyComponentIfExists<SpringJoint2DComponent>(dst, destReg, src);
 		srcScene->CopyComponentIfExists<WheelJoint2DComponent>(dst, destReg, src);
 
-		// TODO
-		/*CopyReferencedEntities(DistanceJoint2DComponent);
+		CopyReferencedEntities(DistanceJoint2DComponent);
 		CopyReferencedEntities(RevolutionJoint2DComponent);
 		CopyReferencedEntities(PrismaticJoint2DComponent);
 		CopyReferencedEntities(SpringJoint2DComponent);
-		CopyReferencedEntities(WheelJoint2DComponent);*/
+		CopyReferencedEntities(WheelJoint2DComponent);
 
 		u64 id = dst.GetID();
 		

@@ -416,6 +416,9 @@ namespace SW {
 				SelectionManager::Deselect();
 
 			Project* currentProject = ProjectContext::Get();
+			if (currentProject)
+				ScriptingCore::Get().Shutdown();
+
 			delete currentProject;
 
 			std::string path = filepath.string();
