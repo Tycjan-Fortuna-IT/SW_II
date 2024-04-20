@@ -9,5 +9,19 @@
 	{
 		public static bool operator ==(Prefab prefabA, Prefab prefabB) => prefabA is null ? prefabB is null : prefabA.Equals(prefabB);
 		public static bool operator !=(Prefab prefabA, Prefab prefabB) => !(prefabA == prefabB);
+
+		public override bool Equals(object? obj)
+		{
+			if (obj is Prefab prefab) {
+				return prefab == this;
+			}
+
+			return false;
+		}
+
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
 	}
 }
