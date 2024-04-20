@@ -1,0 +1,129 @@
+Spritesheet:
+  TextureHandle: 831715547930304519
+  ViewZoom: 2.49999976
+  GridSize: 64
+  CenterOffset: [0, 576]
+  ViewPos: [-4319, -1278.99976]
+  ShowImageBorders: true
+  ExportPath: sprites\eye
+  Sprites:
+    - Sprite:
+        Name: 1
+        Position: [0, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 2
+        Position: [64, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 3
+        Position: [128, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 4
+        Position: [192, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 5
+        Position: [256, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 6
+        Position: [320, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 7
+        Position: [384, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 8
+        Position: [448, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 9
+        Position: [512, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 10
+        Position: [576, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 11
+        Position: [640, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 12
+        Position: [704, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 13
+        Position: [768, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 14
+        Position: [832, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 15
+        Position: [896, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 16
+        Position: [960, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 17
+        Position: [1024, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 18
+        Position: [1088, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 19
+        Position: [1152, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 20
+        Position: [1216, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 21
+        Position: [1280, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 22
+        Position: [1344, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 23
+        Position: [1408, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 24
+        Position: [1472, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 25
+        Position: [1536, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 26
+        Position: [1600, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 27
+        Position: [1664, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 28
+        Position: [1728, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 29
+        Position: [1792, 0]
+        Size: [64, 64]
+    - Sprite:
+        Name: 30
+        Position: [1856, 0]
+        Size: [64, 64]

@@ -56,10 +56,10 @@ namespace SW
 		public static readonly Vector3 OneVector = new Vector3(1f, 1f, 1f);
 
 		/// <summary>
-		/// C	alculates the length of the vector.
+		///		Calculates the length of the vector.
 		/// </summary>
 		/// <returns>The length of the vector.</returns>
-		public float Length() => (float)Math.Sqrt(X * X + Y * Y + Z * Z);
+		public float Length() => Mathf.Sqrt(X * X + Y * Y + Z * Z);
 
 		/// <summary>
 		/// 	Determines whether this vector is equal to another vector.

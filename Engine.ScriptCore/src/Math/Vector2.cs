@@ -52,7 +52,7 @@ namespace SW
 		///		Calculates the length of the vector.
 		/// </summary>
 		/// <returns>The length of the vector.</returns>
-		public float Length() => (float)Math.Sqrt(X * X + Y * Y);
+		public float Length() => Mathf.Sqrt(X * X + Y * Y);
 
 		/// <summary>
 		///		Determines whether this vector is equal to another vector.

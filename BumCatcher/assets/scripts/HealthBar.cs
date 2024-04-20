@@ -1,5 +1,4 @@
 ﻿using SW;
-using System;
 
 namespace BumCatcher
 {
@@ -13,7 +12,7 @@ namespace BumCatcher
 
 		private TransformComponent m_HPTransform = default!;
 
-		public Action? OnHealthBarEmpty;
+		public System.Action? OnHealthBarEmpty;
 
 		protected override void OnCreate()
 		{
@@ -43,9 +42,23 @@ namespace BumCatcher
 											  m_HPTransform.Scale.Y, m_HPTransform.Scale.Z);
 		}
 
+		// Does not heal from 0!
 		public void HealDamage(float heal)
 		{
+			float newHealth = m_Health + heal;
 
+			newHealth = Mathf.Min(newHealth, MaxHealth);
+
+			float percentage = newHealth / m_Health;
+			float increase = percentage - 1;
+
+			m_Health = newHealth;
+
+			m_HPTransform.Position = new Vector3(m_HPTransform.Position.X + (m_HPTransform.Scale.X * increase) / 2,
+												m_HPTransform.Position.Y, m_HPTransform.Position.Z);
+
+			m_HPTransform.Scale = new Vector3(m_HPTransform.Scale.X * percentage,
+											m_HPTransform.Scale.Y, m_HPTransform.Scale.Z);
 		}
 	}
 }

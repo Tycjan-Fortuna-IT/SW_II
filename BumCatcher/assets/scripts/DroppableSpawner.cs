@@ -25,11 +25,11 @@ namespace BumCatcher
 				int pref = Random.Range(0, 2);
 
 				if (pref == 0) {
-					Scene.InstantiatePrefab(BottlePrefab, new Vector3(x, 0.0f, 0.0f));
+					Scene.InstantiatePrefab(BottlePrefab, new Vector3(x, 2.0f, 0.0f));
 				} else if (pref == 1) {
-					Scene.InstantiatePrefab(DenaturePrefab, new Vector3(x, 0.0f, 0.0f));
+					Scene.InstantiatePrefab(DenaturePrefab, new Vector3(x, 2.0f, 0.0f));
 				} else {
-					Scene.InstantiatePrefab(WinePrefab, new Vector3(x, 0.0f, 0.0f));
+					Scene.InstantiatePrefab(WinePrefab, new Vector3(x, 2.0f, 0.0f));
 				}
 
 				timer = 0f;

@@ -169,6 +169,11 @@ Entities:
       RelationshipComponent:
         ParentID: 0
         ChildrenCount: 0
+      ScriptComponent:
+        ScriptID: 2287399117
+        ScriptName: BumCatcher.Rotor
+        Fields:
+          []
   - Entity:
       IDComponent:
         ID: 4336701336544463476
@@ -441,6 +446,24 @@ Entities:
         ChildrenCount: 0
   - Entity:
       IDComponent:
+        ID: 10963784001106317391
+      TagComponent:
+        Tag: Eye
+      TransformComponent:
+        Transform: [0.0525466315, 0.114650667, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      AnimatedSpriteComponent:
+        CurrentFrame: 16
+        CurrentAnimationHandle: 13543331263469011293
+        DefaultAnimationHandle: 13543331263469011293
+        Animations:
+          []
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
         ID: 10973399195842580792
       TagComponent:
         Tag: Spikes
@@ -473,6 +496,24 @@ Entities:
         Offset: [0, 0.119999997]
         Density: 1
         IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 12558525204125414419
+      TagComponent:
+        Tag: Eye
+      TransformComponent:
+        Transform: [-0.0434558801, 0.108328521, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      AnimatedSpriteComponent:
+        CurrentFrame: 24
+        CurrentAnimationHandle: 0
+        DefaultAnimationHandle: 0
+        Animations:
+          []
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
   - Entity:
       IDComponent:
         ID: 12899590937424841027
