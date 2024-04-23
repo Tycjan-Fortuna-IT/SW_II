@@ -69,7 +69,7 @@ Entities:
         Rotation: [0, 0, -3.85655267e-06]
         Scale: [3, 3, 1]
       AnimatedSpriteComponent:
-        CurrentFrame: 2
+        CurrentFrame: 3
         CurrentAnimationHandle: 650601428253319591
         DefaultAnimationHandle: 650601428253319591
         Animations:
@@ -241,7 +241,7 @@ Entities:
       TagComponent:
         Tag: Tomato
       TransformComponent:
-        Transform: [-8.49681377, -3.45208311, 2.32830644e-10]
+        Transform: [-7.08909798, 1.19549048, 0.000122069541]
         Rotation: [0, 0, 0]
         Scale: [1.9999665, 1.9999665, 1]
       SpriteComponent:
@@ -454,7 +454,7 @@ Entities:
         Rotation: [0, 0, 0]
         Scale: [2, 2, 1]
       AnimatedSpriteComponent:
-        CurrentFrame: 16
+        CurrentFrame: 17
         CurrentAnimationHandle: 13543331263469011293
         DefaultAnimationHandle: 13543331263469011293
         Animations:
@@ -561,7 +561,7 @@ Entities:
         ChildrenCount: 0
       CameraComponent:
         Primary: true
-        AspectRatio: 1.92711866
+        AspectRatio: 1.86779666
         ProjectionType: 1
         OrthographicSize: 10
         OrthographicNearClip: -1

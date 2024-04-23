@@ -162,7 +162,7 @@ Assets:
   - Handle: 5615498592752350885
     Path: assets.sw_registry
     Type: AssetRegistry
-    ModificationTime: 133581205227591189
+    ModificationTime: 133581646477868978
   - Handle: 5701594396406644582
     Path: cache\fonts\15734778512717711947_133575950551672536.cache
     Type: Unknown
@@ -406,7 +406,7 @@ Assets:
   - Handle: 15676219413988811726
     Path: scenes\main.sw_scene
     Type: Scene
-    ModificationTime: 133581144186864137
+    ModificationTime: 133581646753843096
   - Handle: 15715394190176340537
     Path: sprites\player\idle\3.sw_sprite
     Type: Sprite

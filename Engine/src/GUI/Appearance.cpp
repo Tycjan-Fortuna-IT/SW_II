@@ -136,6 +136,11 @@ namespace SW::GUI {
 		// Menubar
 		c[ImGuiCol_MenuBarBg] = s_Colors.MenuBarBackground;
 
+		// Outline highlight
+		c[ImGuiCol_DragDropTarget] = s_Colors.DragDropTarget;
+		c[ImGuiCol_NavHighlight] = s_Colors.NavHighlight;
+		c[ImGuiCol_NavWindowingHighlight] = s_Colors.NavWindowingHighlight;
+
 		ImGuizmo::Style* imguizmoStyle = &ImGuizmo::GetStyle();
 		ImVec4* gc = imguizmoStyle->Colors;
 

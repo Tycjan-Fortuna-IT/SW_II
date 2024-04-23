@@ -262,10 +262,8 @@ namespace SW::GUI {
 
 	/**
 	 * @brief Creates a dockspace with the specified name and options.
-	 *
-	 * This function creates a dockspace using the Dear ImGui library. The dockspace is created at the position of the main viewport,
-	 * and its size is set to the size of the main viewport. The window flags for the dockspace can be customized.
-	 *
+	 *		  This function creates a dockspace using the Dear ImGui library. The dockspace is created at the position of the main viewport,
+	 *		  and its size is set to the size of the main viewport. The window flags for the dockspace can be customized.
 	 * @param name The name of the dockspace. This is also used as the ID for the dockspace.
 	 * @param fn The function to call to draw the contents of the dockspace. This function should return the height of the top of the dockspace.
 	 * @param flags The window flags for the dockspace. These determine the behavior and appearance of the dockspace. Default is a combination of flags that result in a dockspace with no title bar, no collapse button, no resize handles, and no move functionality.

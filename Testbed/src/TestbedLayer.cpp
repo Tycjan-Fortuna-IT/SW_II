@@ -19,6 +19,8 @@
 #include "../../EngineEditor/src/Panels/AssetPanel.cpp"
 #include "../../EngineEditor/src/Panels/AssetPanel.hpp"
 #include "Core/Utils/FileSystem.hpp"
+#include "../GUI_V2.hpp"
+#include "imgui_combo_autoselect.hpp"
 
 namespace SW {
 
@@ -67,11 +69,40 @@ namespace SW {
 
 	void TestbedLayer::OnRender()
 	{
-		GUI::CreateDockspace("Main Dockspace", nullptr);
+		GUI2::Layout::CreateDockspace("Main Dockspace", nullptr);
 
 		AssetEditorPanelManager::OnRender();
 
 		assetPanel->OnRender();
+
+		ImGui::Begin("New GUI API");
+		static std::string search = "";
+		static std::string search2 = "";
+
+		ImGui::PushID("asdasd");
+		GUI2::Widgets::SearchInput<64>(&search);
+		ImGui::PopID();
+
+		ImGui::NewLine();
+
+		ImGui::PushID("asdasd1");
+		GUI2::Widgets::SearchInput<64>(&search2);
+		ImGui::PopID();
+
+		//ImGui::TextUnformatted(search.c_str());
+		//static bool val = false;
+		//GUI_V2::ToggleButton("Test", &val);
+		//GUI_V2::ToggleButton2("Test", &val);
+		//ImGui::Checkbox("s", &val);
+
+		//std::string text = "jksfdjkfj";
+		//Display(text);
+
+		GUI2::Components::Text("POP - POP, Inernal {}", 1);
+		GUI2::Components::ItemOutline();
+
+
+		ImGui::End();
 
 		ImGui::ShowDemoWindow();
 	}

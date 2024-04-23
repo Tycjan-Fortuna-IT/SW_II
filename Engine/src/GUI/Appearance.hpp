@@ -15,6 +15,12 @@ namespace SW {
 	namespace GUI {
 
 		namespace Theme {
+			// color of e.g. an active input's outline(border)
+			constexpr u32 ActivityOutline = IM_COL32(236, 158, 36, 255);
+			
+			// color of a casual outline(border)
+			constexpr u32 Outline = IM_COL32(60, 60, 60, 255);
+
 			constexpr u32 Accent = IM_COL32(236, 158, 36, 255);
 			constexpr u32 Highlight = IM_COL32(39, 185, 242, 255);
 			constexpr u32 NiceBlue = IM_COL32(83, 232, 254, 255);
@@ -78,7 +84,7 @@ namespace SW {
 			f32 PopupRounding = 0.0f;
 			f32 PopupBorderSize = 1.0f;
 
-			ImVec2 FramePadding = { 6.0f, 6.0f };
+			ImVec2 FramePadding = { 6.0f, 8.0f };
 			f32 FrameRounding = 2.5f;
 			f32 FrameBorderSize = 1.0f;
 
@@ -118,7 +124,7 @@ namespace SW {
 			ImVec4 ChildBackground = ImGui::ColorConvertU32ToFloat4(Theme::Background);
 			ImVec4 PopupBackground = ImGui::ColorConvertU32ToFloat4(Theme::BackgroundPopup);
 
-			ImVec4 Border = ImGui::ColorConvertU32ToFloat4(Theme::BackgroundDark);
+			ImVec4 Border = ImVec4(0.21f, 0.21f, 0.21f, 1.00f);
 
 			ImVec4 FrameBackground = ImGui::ColorConvertU32ToFloat4(Theme::PropertyField);
 			ImVec4 FrameBackgroundHovered = ImGui::ColorConvertU32ToFloat4(Theme::PropertyField);
@@ -172,10 +178,9 @@ namespace SW {
 
 			ImVec4 TextSelectedBackground = { 0.2352941185235977f, 0.2156862765550613f, 0.5960784554481506f, 1.0f };
 
-			ImVec4 DragDropTarget = { 0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f };
-
-			ImVec4 NavHighlight = { 0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f };
-			ImVec4 NavWindowingHighlight = { 0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f };
+			ImVec4 DragDropTarget = ImGui::ColorConvertU32ToFloat4(Theme::ActivityOutline);
+			ImVec4 NavHighlight = ImGui::ColorConvertU32ToFloat4(Theme::ActivityOutline);
+			ImVec4 NavWindowingHighlight = ImGui::ColorConvertU32ToFloat4(Theme::ActivityOutline);
 			ImVec4 NavWindowingDimBackground = { 0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 0.501960813999176f };
 
 			ImVec4 ModalWindowDimBackground = ImGui::ColorConvertU32ToFloat4(IM_COL32(21, 21, 21, 130));

@@ -2,6 +2,76 @@
 {
 	public static class Mathf
 	{
+        /// <summary>
+        /// 	A small positive number.
+        /// </summary>
+        public const float Epsilon = 0.00001f;
+
+        /// <summary>
+        /// 	The constant Pi.
+        /// </summary>
+        public const float PI = (float)System.Math.PI;
+
+        /// <summary>
+        /// 	Half of Pi.
+        /// </summary>
+        public const float PIonTwo = (float)(System.Math.PI / 2.0f);
+
+        /// <summary>
+        /// 	Twice the value of Pi.
+        /// </summary>
+        public const float TwoPI = (float)(System.Math.PI * 2.0);
+
+        /// <summary>
+        /// 	Conversion factor from degrees to radians.
+        /// </summary>
+        public const float Deg2Rad = PI / 180.0f;
+
+        /// <summary>
+        /// 	Conversion factor from radians to degrees.
+        /// </summary>
+        public const float Rad2Deg = 180.0f / PI;
+
+        /// <summary>
+        /// 	Returns the sine of the specified angle.
+        /// </summary>
+        public static float Sin(float value) => (float)System.Math.Sin(value);
+
+        /// <summary>
+        /// 	Returns the cosine of the specified angle.
+        /// </summary>
+        public static float Cos(float value) => (float)System.Math.Cos(value);
+
+        /// <summary>
+        /// 	Returns the tangent of the specified angle.
+        /// </summary>
+        public static float Tan(float value) => (float)System.Math.Tan(value);
+
+        /// <summary>
+        /// 	Returns the cotangent of the specified angle.
+        /// </summary>
+        public static float Cot(float value) => 1.0f / (float)System.Math.Tan(value);
+
+        /// <summary>
+        /// 	Returns the arcsine of the specified angle.
+        /// </summary>
+        public static float Asin(float value) => (float)System.Math.Asin(value);
+
+        /// <summary>
+        /// 	Returns the arccosine of the specified angle.
+        /// </summary>
+        public static float Acos(float value) => (float)System.Math.Acos(value);
+
+        /// <summary>
+        /// 	Returns the arctangent of the specified angle.
+        /// </summary>
+        public static float Atan(float value) => (float)System.Math.Atan(value);
+
+        /// <summary>
+        /// 	Returns the arccotangent of the specified angle.
+        /// </summary>
+        public static float Acot(float value) => (float)System.Math.Atan(1.0f / value);
+
 		/// <summary>
 		/// 	Returns the smaller of two floats.
 		/// </summary>

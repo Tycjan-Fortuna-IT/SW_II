@@ -81,3 +81,4 @@
 #define SW_ICON_EXPORT u8"\uF207"
 #define SW_ICON_SAVE u8"\uF193"
 #define SW_ICON_VIDEO u8"\uF567"
+#define SW_ICON_CLOSE_OCTAGON u8"\uF15C"

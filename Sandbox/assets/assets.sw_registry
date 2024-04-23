@@ -318,7 +318,7 @@ Assets:
   - Handle: 14368808741040998696
     Path: scenes\t.sw_scene
     Type: Scene
-    ModificationTime: 133581222788072396
+    ModificationTime: 133581225697608435
   - Handle: 14697240576490453688
     Path: prefabs
     Type: Directory
@@ -414,7 +414,7 @@ Assets:
   - Handle: 16891725904374815267
     Path: assets.sw_registry
     Type: Unknown
-    ModificationTime: 133581224057854581
+    ModificationTime: 133581226101475662
   - Handle: 16920539836090114160
     Path: sprites\person\run\7.sw_sprite
     Type: Sprite
