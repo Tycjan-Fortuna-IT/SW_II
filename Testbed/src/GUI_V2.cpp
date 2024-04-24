@@ -99,7 +99,7 @@ namespace SW::GUI2 {
 	namespace Components {
 
 		void ItemActivityOutline(
-			OutlineFlags flags /*= OutlineFlags_All*/, ImColor colourHighlight /*= GUI::Theme::ActivityOutline*/,
+			OutlineFlags flags /*= OutlineFlags_All*/, ImColor activeCol /*= GUI::Theme::ActivityOutline*/, ImColor hoverCol /*= GUI::Theme::Outline*/,
 			f32 rounding /*= GImGui->Style.FrameRounding*/
 		) {
 			if (IsItemDisabled())
@@ -110,10 +110,10 @@ namespace SW::GUI2 {
 
 			if ((flags & OutlineFlags_WhenActive) && ImGui::IsItemActive()) {
 				if (flags & OutlineFlags_HighlightActive) {
-					drawList->AddRect(rect.Min, rect.Max, colourHighlight, rounding, 0, 1.5f);
+					drawList->AddRect(rect.Min, rect.Max, activeCol, rounding, 0, 1.5f);
 				}
 			} else if ((flags & OutlineFlags_WhenHovered) && ImGui::IsItemHovered() && !ImGui::IsItemActive()) {
-				drawList->AddRect(rect.Min, rect.Max, ImColor(60, 60, 60), rounding, 0, 1.5f);
+				drawList->AddRect(rect.Min, rect.Max, hoverCol, rounding, 0, 1.5f);
 			}
 		}
 
@@ -140,6 +140,69 @@ namespace SW::GUI2 {
 		void ItemOutline(ImColor color /*= GUI::Theme::Outline*/, f32 thickness /*= 1.0f*/, f32 rounding /*= 0.0f*/, f32 offsetX /*= 0.0f*/, f32 offsetY /*= 0.0f */)
 		{
 			RectangleOutline(GUI2::GetItemRect(), color, thickness, rounding, offsetX, offsetX);
+		}
+
+		bool Checkbox(bool* value)
+		{
+			bool modified = false;
+			const f32 w = ImGui::GetContentRegionAvail().x;
+
+			ImGui::SetNextItemWidth(w);
+
+			f32 width = ImGui::GetIO().FontGlobalScale * ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
+
+			GUI::MoveMousePosX(w / 2 - width / 2);
+
+			modified = ImGui::Checkbox("##checkbox", value);
+
+			GUI2::Components::ItemActivityOutline(OutlineFlags_All, GUI::Theme::ActivityOutline,
+				GUI::Theme::ActivityOutline, 2.f);
+
+			return modified;
+		}
+
+		bool Toggle(bool* value)
+		{
+			ImDrawList* draw_list = ImGui::GetWindowDrawList();
+			const ImVec4* colors = ImGui::GetStyle().Colors;
+
+			const f32 height = ImGui::GetFrameHeight();
+			const f32 width = height * 2.f;
+			const f32 radius = height * 0.50f;
+			const f32 rounding = height * 0.2f;
+
+			bool modified = false;
+			const f32 w = ImGui::GetContentRegionAvail().x;
+			GUI::MoveMousePosX(w / 2 - width / 2);
+
+			const ImVec2 p = ImGui::GetCursorScreenPos();
+
+			ImGui::InvisibleButton("##toggle2", ImVec2(width, height));
+			if (ImGui::IsItemClicked()) {
+				*value = !*value;
+				modified = true;
+			}
+
+			f32 t = *value ? 1.0f : 0.0f;
+
+			ImGuiContext& g = *GImGui;
+			const f32 animSpeed = 0.03f;
+
+			if (g.LastActiveId == g.CurrentWindow->GetID("##toggle2")) {
+				f32 t_anim = ImSaturate(g.LastActiveIdTimer / animSpeed);
+
+				t = *value ? (t_anim) : (1.0f - t_anim);
+			}
+
+			ImU32 col_bg = ImGui::GetColorU32(*value ? ImGui::ColorConvertU32ToFloat4(GUI::Theme::Selection) : colors[ImGuiCol_Button]);
+
+			Components::ItemActivityOutline(Components::OutlineFlags_All, GUI::Theme::ActivityOutline,
+				GUI::Theme::ActivityOutline, rounding);
+
+			draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), col_bg, rounding);
+			draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius - 1.5f, IM_COL32(255, 255, 255, 255));
+
+			return modified;
 		}
 
 	}

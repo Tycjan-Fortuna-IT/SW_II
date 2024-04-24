@@ -313,7 +313,7 @@ namespace SW::GUI2 {
 		 * @param rounding The rounding of the outline.
 		 */
 		void ItemActivityOutline(
-			OutlineFlags flags = OutlineFlags_All, ImColor color = GUI::Theme::ActivityOutline,
+			OutlineFlags flags = OutlineFlags_All, ImColor activeCol = GUI::Theme::ActivityOutline, ImColor hoverCol = GUI::Theme::Outline,
 			f32 rounding = GImGui->Style.FrameRounding
 		);
 
@@ -360,28 +360,110 @@ namespace SW::GUI2 {
 		}
 
 		/**
-		 * @brief Draws a single line text input property in the GUI.
+		 * @brief Draws a single line text input in the GUI.
 		 * @tparam N The size of the buffer used to store the text input.
 		 * @param text The reference to the string where the entered text will be stored.
 		 * @param flags Additional ImGui input flags.
 		 * @return bool Whether something has changed
 		 */
-		template <int N = 256>
+		template <int N = 64>
 		static bool SingleLineTextInput(
 			std::string* text, ImGuiInputTextFlags flags = ImGuiInputTextFlags_None
 		) {
 			char buffer[N] = {};
 			strncpy(buffer, text->c_str(), N);
 
-			if (ImGui::InputText("##Tag", buffer, sizeof(buffer), flags)) {
-				*text = buffer;
+			const f32 w = ImGui::GetContentRegionAvail().x;
+			bool modified = false;
 
-				return true;
+			ImGui::SetNextItemWidth(w);
+
+			if (ImGui::InputText("##input_text", buffer, sizeof(buffer), flags)) {
+				*text = buffer;
+				modified = true;
 			}
 
-			return false;
+			Components::ItemActivityOutline();
+
+			return modified;
 		}
 
+		/**
+		 * @brief Draws a single line text input in the GUI.
+		 * @tparam N The size of the buffer used to store the text input.
+		 * @param text The reference to the string where the entered text will be stored.
+		 * @param flags Additional ImGui input flags.
+		 * @return bool Only when submitted using enter.
+		 */
+		template <int N = 64>
+		static bool SingleLineTextInputDeffered(
+			std::string* text, ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue
+		) {
+			return SingleLineTextInput<N>(text, flags);
+		}
+
+		/**
+		 * Draws a multiline text input in the GUI.
+		 * @tparam N The maximum size of the input buffer. Defaults to 500.
+		 * @param text The reference to the string variable that will store the input text.
+		 * @param size The desired size of the input field.
+		 * @param flags Additional ImGui input flags.
+		 * @return bool Whether something has changed
+		 */
+		template <int N = 128>
+		static bool MultiLineTextInput(
+			std::string* text, const ImVec2& size = ImVec2(0, 0), ImGuiInputTextFlags flags = ImGuiInputTextFlags_None
+		) {
+			char buffer[N] = {};
+			strncpy(buffer, text->c_str(), N);
+
+			const f32 w = ImGui::GetContentRegionAvail().x;
+			bool modified = false;
+
+			ImGui::SetNextItemWidth(w);
+
+			if (ImGui::InputTextMultiline("##input_text_multiline", buffer, sizeof(buffer), size, flags)) {
+				*text = buffer;
+				modified = true;
+			}
+
+			Components::ItemActivityOutline();
+
+			return modified;
+		}
+
+		/**
+		 * Draws a multiline text input in the GUI.
+		 * @tparam N The maximum size of the input buffer. Defaults to 500.
+		 * @param text The reference to the string variable that will store the input text.
+		 * @param size The desired size of the input field.
+		 * @param flags Additional ImGui input flags.
+		 * @return bool Only when submitted using enter.
+		 */
+		template <int N = 128>
+		static bool MultiLineTextInputDeffered(
+			std::string* text, const ImVec2& size = ImVec2(0, 0), ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue
+		) {
+			return MultiLineTextInput<N>(text, size, flags);
+		}
+
+		/**
+		 * @brief Draws a boolean checkbox in the GUI.
+		 * @param value The boolean value to represent with the checkbox.
+		 * @param label The label text to display next to the checkbox.
+		 * @param tooltip (optional) Additional information to display as a tooltip.
+		 * @return bool Whether something has changed
+		 */
+		bool Checkbox(bool* value);
+
+		/**
+		 * @brief Draws a boolean toggle in the GUI.
+		 * @param value The boolean value to represent with the checkbox.
+		 * @param label The label text to display next to the checkbox.
+		 * @param tooltip (optional) Additional information to display as a tooltip.
+		 * @return bool Whether something has changed
+		 */
+		bool Toggle(bool* value);
 	}
 
 	// --------------------------------
@@ -425,7 +507,7 @@ namespace SW::GUI2 {
 					search->clear();
 					modified = true;
 				}
-
+				
 				if (IsItemHovered())
 					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 			}
@@ -438,7 +520,11 @@ namespace SW::GUI2 {
 
 				ImGui::SetNextItemWidth(searching ? w - bw : w);
 
-				if (Components::SingleLineTextInput<N>(search, flags)) {
+				char buffer[N] = {};
+				strncpy(buffer, search->c_str(), N);
+
+				if (ImGui::InputText("##input_text", buffer, sizeof(buffer), flags)) {
+					*search = buffer;
 					modified = true;
 				}
 
@@ -457,66 +543,5 @@ namespace SW::GUI2 {
 		}
 
 	}
-
-	//static void ToggleButton(const char* str_id, bool* v)
-	//{
-	//	ImVec4* colors = ImGui::GetStyle().Colors;
-	//	ImVec2 p = ImGui::GetCursorScreenPos();
-	//	ImDrawList* draw_list = ImGui::GetWindowDrawList();
-
-	//	float height = ImGui::GetFrameHeight();
-	//	float width = height * 2.f;
-	//	float radius = height * 0.50f;
-	//	float rounding = 0.2f;
-
-	//	ImGui::InvisibleButton(str_id, ImVec2(width, height));
-	//	if (ImGui::IsItemClicked()) *v = !*v;
-	//	ImGuiContext& gg = *GImGui;
-	//	float ANIM_SPEED = 0.03f;
-	//	if (gg.LastActiveId == gg.CurrentWindow->GetID(str_id))
-	//		float t_anim = ImSaturate(gg.LastActiveIdTimer / ANIM_SPEED);
-	//	if (ImGui::IsItemHovered())
-	//		draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), ImGui::GetColorU32(*v ? colors[ImGuiCol_ButtonActive] : ImVec4(0.78f, 0.78f, 0.78f, 1.0f)), height * rounding);
-	//	else
-	//		draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), ImGui::GetColorU32(*v ? colors[ImGuiCol_Button] : ImVec4(0.85f, 0.85f, 0.85f, 1.0f)), height * rounding);
-
-	//	ImVec2 center = ImVec2(radius + (*v ? 1 : 0) * (width - radius * 2.0f), radius);
-	//	draw_list->AddRectFilled(ImVec2((p.x + center.x) - 9.0f, p.y + 1.5f),
-	//		ImVec2((p.x + (width / 2) + center.x) - 9.0f, p.y + height - 1.5f), IM_COL32(255, 255, 255, 255), height * rounding);
-	//}
-
-	//static void ToggleButton2(const char* str_id, bool* v)
-	//{
-	//	ImVec2 p = ImGui::GetCursorScreenPos();
-	//	ImDrawList* draw_list = ImGui::GetWindowDrawList();
-	//	ImVec4* colors = ImGui::GetStyle().Colors;
-
-	//	float height = ImGui::GetFrameHeight();
-	//	float width = height * 2.f;
-	//	float radius = height * 0.50f;
-
-	//	ImGui::InvisibleButton(str_id, ImVec2(width, height));
-	//	if (ImGui::IsItemClicked())
-	//		*v = !*v;
-
-	//	float t = *v ? 1.0f : 0.0f;
-
-	//	ImGuiContext& g = *GImGui;
-	//	float ANIM_SPEED = 0.03f;
-	//	if (g.LastActiveId == g.CurrentWindow->GetID(str_id))// && g.LastActiveIdTimer < ANIM_SPEED)
-	//	{
-	//		float t_anim = ImSaturate(g.LastActiveIdTimer / ANIM_SPEED);
-	//		t = *v ? (t_anim) : (1.0f - t_anim);
-	//	}
-
-	//	ImU32 col_bg;
-	//	if (ImGui::IsItemHovered())
-	//		col_bg = ImGui::GetColorU32(*v ? ImVec4(0.78f, 0.78f, 0.78f, 1.0f) : colors[ImGuiCol_ButtonActive]);
-	//	else
-	//		col_bg = ImGui::GetColorU32(*v ? ImVec4(0.85f, 0.85f, 0.85f, 1.0f) : colors[ImGuiCol_Button]);
-
-	//	draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), col_bg, height * 0.2f);
-	//	draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius - 1.5f, IM_COL32(255, 255, 255, 255));
-	//}
 
 }
