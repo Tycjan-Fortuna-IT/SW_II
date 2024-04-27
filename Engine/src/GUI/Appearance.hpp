@@ -21,6 +21,14 @@ namespace SW {
 			// color of a casual outline(border)
 			constexpr u32 Outline = IM_COL32(60, 60, 60, 255);
 
+			constexpr u32 Selection = IM_COL32(237, 192, 119, 255);
+
+			constexpr u32 SelectionMuted = IM_COL32(237, 201, 142, 23);
+			
+			constexpr u32 SelectionHalfMuted = IM_COL32(237, 201, 142, 127);
+
+			constexpr u32 SelectionDark = IM_COL32(143, 115, 73, 255);
+
 			constexpr u32 Accent = IM_COL32(236, 158, 36, 255);
 			constexpr u32 Highlight = IM_COL32(39, 185, 242, 255);
 			constexpr u32 NiceBlue = IM_COL32(83, 232, 254, 255);
@@ -39,9 +47,6 @@ namespace SW {
 			constexpr u32 Muted = IM_COL32(77, 77, 77, 255);
 			constexpr u32 Header = IM_COL32(47, 47, 47, 255);
 			constexpr u32 HeaderHovered = IM_COL32(92, 90, 90, 255);
-			constexpr u32 Selection = IM_COL32(237, 192, 119, 255);
-			constexpr u32 SelectionMuted = IM_COL32(237, 201, 142, 23);
-			constexpr u32 SelectionHalfMuted = IM_COL32(237, 201, 142, 127);
 			constexpr u32 BackgroundPopup = IM_COL32(50, 50, 50, 255);
 			constexpr u32 ValidPrefab = IM_COL32(82, 179, 222, 255);
 			constexpr u32 InvalidPrefab = IM_COL32(222, 43, 43, 255);

@@ -22,6 +22,7 @@ namespace SW {
 
 	static AssetPanel* assetPanel = nullptr;
 	static Project* newProject = nullptr;
+	static Texture2D* texture = nullptr;
 
 	void TestbedLayer::OnAttach()
 	{
@@ -42,6 +43,8 @@ namespace SW {
 
 		newProject = ProjectSerializer::Deserialize(R"(C:\Users\tycja\Desktop\SW_II\Testbed\Testbed.swproj)");
 		ProjectContext::Set(newProject); // TODO: Make projects switchable
+
+		texture = *AssetManager::GetAssetRaw<Texture2D>(17232749685889010059);
 	}
 
 	void TestbedLayer::OnDetach()
@@ -62,7 +65,12 @@ namespace SW {
 		AssetEditorPanelManager::OnUpdate(dt);
 		assetPanel->OnUpdate(dt);
 	}
-	
+
+	bool DrawFilePickerProperty(std::filesystem::path* path, const std::filesystem::path& relative);
+	{
+		return false;
+	}
+
 	void TestbedLayer::OnRender()
 	{
 		GUI2::Layout::CreateDockspace("Main Dockspace", nullptr);
@@ -72,6 +80,8 @@ namespace SW {
 		assetPanel->OnRender();
 
 		ImGui::Begin("New GUI API");
+		#pragma region 1
+
 		static std::string search;
 		static std::string search2;
 		static std::string search3;
@@ -192,13 +202,70 @@ namespace SW {
 			GUI2::Components::ScalarDrag<f64>(&val, 2.f, 1, 100);
 		}
 
+		{
+			GUI2::ScopedID id(19);
+			static glm::vec2 val = { 0, 0 };
+			GUI2::Components::Vector2Input(&val, 1.f, -30.f, 30.f);
+		}
+
+		{
+			GUI2::ScopedID id(20);
+			static glm::vec3 val = { 0, 0, 0 };
+			GUI2::Components::Vector3Input(&val, 1.f, -30.f, 30.f);
+		}
+
+		{
+			GUI2::ScopedID id(21);
+			static glm::vec3 val = { 0, 0, 0 };
+			GUI2::Components::Vector3ColorPicker(&val);
+		}
+
+		{
+			GUI2::ScopedID id(22);
+			static glm::vec4 val = { 0, 0, 0, 0 };
+			GUI2::Components::Vector4ColorPicker(&val);
+		}
+
+		{
+			GUI2::ScopedID id(23);
+			static int val = 0;
+			GUI2::Components::Selectable(&val, {
+				{ "Radio1", 0 }, { "Radio2", 1 }, { "Radisdfsdfo3", 2 }, { "Radio4", 3 }, { "Radio5", 4 }
+			}, false);
+		}
+
+		{
+			GUI2::ScopedID id(24);
+			static bool val = false;
+			GUI2::Components::ToggleButton(&val, SW_ICON_CAMERA "ON", SW_ICON_ANGLE_ACUTE "OFF");
+		}
+
+		{
+			GUI2::ScopedID id(25);
+			static bool val = false;
+			GUI2::Components::ImageButton(GUI2::GetTextureID(texture), { 64.f, 64.f });
+		}
 
 		GUI2::Components::Text(search2);
 		GUI2::Components::Text(search3);
 
 		GUI2::Components::Text("POP - POP, Inernal {}", 1);
 		GUI2::Components::ItemOutline();
+		ImGui::NewLine();
 
+#pragma endregion
+
+		{
+			GUI2::ScopedID id(26);
+			static std::filesystem::path val;
+			GUI2::Widgets::DrawFolderPickerProperty(&val, ProjectContext::Get()->GetAssetDirectory());
+		}
+
+		{
+			GUI2::ScopedID id(27);
+			static std::filesystem::path val;
+			DrawFilePickerProperty(&val, ProjectContext::Get()->GetAssetDirectory());
+		}
 
 		ImGui::End();
 

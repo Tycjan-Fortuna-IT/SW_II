@@ -205,10 +205,425 @@ namespace SW::GUI2 {
 			return modified;
 		}
 
+		bool Vector2Input(glm::vec2* vector, f32 resetValue /*= 0.f*/, f32 min /*= -FLT_MAX*/, f32 max /*= FLT_MAX*/, const std::string& format /*= "%.2f" */)
+		{
+			bool modified = false;
+
+			const ImGuiIO& io = ImGui::GetIO();
+
+			ImFont* boldFont = GUI::Appearance::GetFonts().DefaultBoldFont;
+
+			constexpr f32 spacingX = 8.0f;
+			const ImVec2 size = ImGui::GetContentRegionAvail();
+
+			GUI::ScopedStyle itemSpacing(ImGuiStyleVar_ItemSpacing, ImVec2{ spacingX, 0.0f });
+			GUI::ScopedStyle padding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 2.0f });
+
+			constexpr f32 framePadding = 2.0f;
+			const f32 lineHeight = GImGui->Font->FontSize + framePadding * 2.0f;
+			const ImVec2 buttonSize = { lineHeight + 7.0f, ImGui::GetFrameHeight() };
+			const f32 inputItemWidth = size.x / 2.0f - buttonSize.x - 4.0f;
+
+			// X
+			{
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 1.0f, 1.0f, 1.0f, 1.0f });
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+				ImGui::PushFont(boldFont);
+				if (ImGui::Button("X", buttonSize)) {
+					vector->x = resetValue;
+					modified = true;
+				}
+				ImGui::PopFont();
+				ImGui::PopStyleColor(4);
+
+				ImGui::SameLine();
+				ImGui::SetNextItemWidth(inputItemWidth);
+				if (ImGui::DragFloat("##X", &vector->x, 0.05f, min, max, format.c_str()))
+					modified = true;
+				Components::ItemActivityOutline(Components::OutlineFlags_All, GUI::Theme::ActivityOutline, GUI::Theme::ActivityOutline);
+				ImGui::PopStyleVar();
+			}
+
+			ImGui::SameLine();
+
+			// Y
+			{
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 1.0f, 1.0f, 1.0f, 1.0f });
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+				ImGui::PushFont(boldFont);
+				if (ImGui::Button("Y", buttonSize)) {
+					vector->y = resetValue;
+					modified = true;
+				}
+
+				ImGui::PopFont();
+				ImGui::PopStyleColor(4);
+
+				ImGui::SameLine();
+				ImGui::SetNextItemWidth(inputItemWidth);
+				if (ImGui::DragFloat("##Y", &vector->y, 0.05f, min, max, format.c_str()))
+					modified = true;
+				Components::ItemActivityOutline(Components::OutlineFlags_All, GUI::Theme::ActivityOutline, GUI::Theme::ActivityOutline);
+				ImGui::PopStyleVar();
+			}
+
+			return modified;
+		}
+
+		bool Vector3Input(glm::vec3* vector, f32 resetValue /*= 0.f*/, f32 min /*= -FLT_MAX*/, f32 max /*= FLT_MAX*/, const std::string& format /*= "%.2f" */)
+		{
+			bool modified = false;
+
+			const ImGuiIO& io = ImGui::GetIO();
+
+			ImFont* boldFont = GUI::Appearance::GetFonts().DefaultBoldFont;
+
+			constexpr f32 spacingX = 8.0f;
+			const ImVec2 size = ImGui::GetContentRegionAvail();
+
+			GUI::ScopedStyle itemSpacing(ImGuiStyleVar_ItemSpacing, ImVec2{ spacingX, 0.0f });
+			GUI::ScopedStyle padding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 2.0f });
+
+			constexpr f32 framePadding = 2.0f;
+			const f32 lineHeight = GImGui->Font->FontSize + framePadding * 2.0f;
+			const ImVec2 buttonSize = { lineHeight + 7.0f, ImGui::GetFrameHeight() };
+			const f32 inputItemWidth = size.x / 3.0f - buttonSize.x - 5.0f;
+
+			// X
+			{
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 1.0f, 1.0f, 1.0f, 1.0f });
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+				ImGui::PushFont(boldFont);
+				if (ImGui::Button("X", buttonSize)) {
+					vector->x = resetValue;
+					modified = true;
+				}
+				ImGui::PopFont();
+				ImGui::PopStyleColor(4);
+
+				ImGui::SameLine();
+				ImGui::SetNextItemWidth(inputItemWidth);
+				if (ImGui::DragFloat("##X", &vector->x, 0.05f, min, max, format.c_str()))
+					modified = true;
+				Components::ItemActivityOutline(Components::OutlineFlags_All, GUI::Theme::ActivityOutline, GUI::Theme::ActivityOutline);
+				ImGui::PopStyleVar();
+			}
+
+			ImGui::SameLine();
+
+			// Y
+			{
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 1.0f, 1.0f, 1.0f, 1.0f });
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+				ImGui::PushFont(boldFont);
+				if (ImGui::Button("Y", buttonSize)) {
+					vector->y = resetValue;
+					modified = true;
+				}
+				ImGui::PopFont();
+				ImGui::PopStyleColor(4);
+
+				ImGui::SameLine();
+				ImGui::SetNextItemWidth(inputItemWidth);
+				if (ImGui::DragFloat("##Y", &vector->y, 0.05f, min, max, format.c_str()))
+					modified = true;
+				Components::ItemActivityOutline(Components::OutlineFlags_All, GUI::Theme::ActivityOutline, GUI::Theme::ActivityOutline);
+				ImGui::PopStyleVar();
+			}
+
+			ImGui::SameLine();
+
+			// Z
+			{
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 1.0f, 1.0f, 1.0f, 1.0f });
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.2f, 0.35f, 0.9f, 1.0f });
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
+				ImGui::PushFont(boldFont);
+				if (ImGui::Button("Z", buttonSize)) {
+					vector->z = resetValue;
+					modified = true;
+				}
+				ImGui::PopFont();
+				ImGui::PopStyleColor(4);
+
+				ImGui::SameLine();
+				ImGui::SetNextItemWidth(inputItemWidth);
+				if (ImGui::DragFloat("##Z", &vector->z, 0.05f, min, max, format.c_str()))
+					modified = true;
+				Components::ItemActivityOutline(Components::OutlineFlags_All, GUI::Theme::ActivityOutline, GUI::Theme::ActivityOutline);
+				ImGui::PopStyleVar();
+			}
+
+			return modified;
+		}
+
+		bool Vector3ColorPicker(glm::vec3* vector, ImGuiColorEditFlags flags /*= ImGuiColorEditFlags_None */)
+		{
+			bool modified = false;
+
+			const f32 w = ImGui::GetContentRegionAvail().x;
+			ImGui::PushItemWidth(w);
+
+			modified = ImGui::ColorEdit3("##Color", glm::value_ptr(*vector), flags);
+
+			Components::ItemActivityOutline();
+
+			return modified;
+		}
+
+		bool Vector4ColorPicker(glm::vec4* vector, ImGuiColorEditFlags flags /*= ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreviewHalf */)
+		{
+			bool modified = false;
+
+			const f32 w = ImGui::GetContentRegionAvail().x;
+			ImGui::PushItemWidth(w);
+
+			modified = ImGui::ColorEdit4("##Color", glm::value_ptr(*vector), flags);
+
+			Components::ItemActivityOutline();
+
+			return modified;
+		}
+
+		bool ToggleButton(
+			bool* value, const char* whenOnLabel, const char* whenOffLabel, bool center /*= true*/,
+			ImGuiButtonFlags buttonFlags /*= ImGuiButtonFlags_None */
+		) {
+			if (*value) {
+				ImVec4 color = ImGui::ColorConvertU32ToFloat4(GUI::Theme::SelectionDark);
+
+				ImGui::PushStyleColor(ImGuiCol_Button, color);
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, color);
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, color);
+			} else {
+				ImVec4 color = ImGui::GetStyle().Colors[ImGuiCol_Button];
+				ImVec4 hoveredColor = ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered];
+				ImGui::PushStyleColor(ImGuiCol_Button, color);
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoveredColor);
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, color);
+			}
+
+			bool modified = false;
+
+			const f32 w = ImGui::GetContentRegionAvail().x;
+
+			f32 width = ImGui::GetIO().FontGlobalScale * ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
+			f32 textSize = ImGui::CalcTextSize(*value ? whenOnLabel : whenOffLabel).x;
+
+			if (center)
+				GUI::MoveMousePosX(w / 2 - textSize / 2 - width / 2);
+
+			if (ImGui::ButtonEx(*value ? whenOnLabel : whenOffLabel, { 0, 0 }, buttonFlags)) {
+				*value = !*value;
+				modified = true;
+			}
+
+			Components::ItemActivityOutline(OutlineFlags_All, GUI::Theme::ActivityOutline,
+					GUI::Theme::ActivityOutline, 2.f);
+
+			ImGui::PopStyleColor(3);
+
+			return modified;
+		}
+
+		bool ImageButton(ImTextureID textureId, const glm::vec2& size, bool center /*= true*/)
+		{
+			const f32 w = ImGui::GetContentRegionAvail().x;
+
+			if (center)
+				GUI::MoveMousePosX(w / 2 - size.x / 2);
+
+			if (ImGui::InvisibleButton("##image_button", ImVec2(size.x, size.y)))
+				return true;
+
+			ImDrawList* drawList = ImGui::GetWindowDrawList();
+			drawList->AddImage(textureId, ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), { 0, 1 }, { 1, 0 });
+
+			Components::ItemActivityOutline();
+
+			return false;
+		}
+
 	}
 
 	namespace Widgets {
 
+		bool Splitter(bool splitVertically, f32 thickness, f32* size1, f32* size2, f32 minSize1, f32 minSize2, f32 splitterLongAxisSize /*= -1.0f*/)
+		{
+			ImGuiContext& g = *GImGui;
+			ImGuiWindow* window = g.CurrentWindow;
+			ImGuiID id = window->GetID("##Splitter");
+			ImRect bb;
+
+			bb.Min = window->DC.CursorPos + (splitVertically ? ImVec2(*size1, 0.0f) : ImVec2(0.0f, *size1));
+			bb.Max = bb.Min + ImGui::CalcItemSize(splitVertically ?
+				ImVec2(thickness, splitterLongAxisSize) : ImVec2(splitterLongAxisSize, thickness), 0.0f, 0.0f);
+
+			return ImGui::SplitterBehavior(bb, id, splitVertically ? ImGuiAxis_X : ImGuiAxis_Y, size1, size2, minSize1, minSize2, 0.0f);
+		}
+
+		void DrawScale(const ImVec2& from, const ImVec2& to, f32 majorUnit, f32 minorUnit, f32 labelAlignment, f32 sign /*= 1.0f*/)
+		{
+			ImDrawList* drawList = ImGui::GetWindowDrawList();
+			ImVec2 direction = (to - from) * ImInvLength(to - from, 0.0f);
+			ImVec2 normal = ImVec2(-direction.y, direction.x);
+			f32 distance = sqrtf(ImLengthSqr(to - from));
+
+			if (ImDot(direction, direction) < FLT_EPSILON)
+				return;
+
+			f32 minorSize = 5.0f;
+			f32 majorSize = 10.0f;
+			f32 labelDistance = 8.0f;
+
+			drawList->AddLine(from, to, IM_COL32(255, 255, 255, 255));
+
+			ImVec2 p = from;
+
+			for (f32 d = 0.0f; d <= distance; d += minorUnit, p += direction * minorUnit)
+				drawList->AddLine(p - normal * minorSize, p + normal * minorSize, IM_COL32(255, 255, 255, 255));
+
+			for (f32 d = 0.0f; d <= distance + majorUnit; d += majorUnit) {
+				p = from + direction * d;
+
+				drawList->AddLine(p - normal * majorSize, p + normal * majorSize, IM_COL32(255, 255, 255, 255));
+
+				if (d == 0.0f)
+					continue;
+
+				char label[16];
+				snprintf(label, 15, "%g", d * sign);
+				ImVec2 labelSize = ImGui::CalcTextSize(label);
+
+				ImVec2 labelPosition = p + ImVec2(fabsf(normal.x), fabsf(normal.y)) * labelDistance;
+				f32 labelAlignedSize = ImDot(labelSize, direction);
+				labelPosition += direction * (-labelAlignedSize + labelAlignment * labelAlignedSize * 2.0f);
+				labelPosition = ImFloor(labelPosition + ImVec2(0.5f, 0.5f));
+
+				drawList->AddText(labelPosition, IM_COL32(255, 255, 255, 255), label);
+			}
+		}
+
+        void ClippedText(
+			ImDrawList* drawList, const ImVec2& posMin, const ImVec2& posMax, const char* text, const char* textDisplayEnd,
+			const ImVec2* textSizeIfKnown, const ImVec2& align, const ImRect* cliprect, f32 wrapWidth
+		) {
+			// Perform CPU side clipping for single clipped element to avoid using scissor state
+			ImVec2 pos = posMin;
+			const ImVec2 textSize = textSizeIfKnown ? *textSizeIfKnown : ImGui::CalcTextSize(text, textDisplayEnd, false, wrapWidth);
+
+			const ImVec2* clipMin = cliprect ? &cliprect->Min : &posMin;
+			const ImVec2* clipMax = cliprect ? &cliprect->Max : &posMax;
+
+			// Align whole block. We should defer that to the better rendering function when we'll have support for individual line alignment.
+			if (align.x > 0.0f)
+				pos.x = ImMax(pos.x, pos.x + (posMax.x - pos.x - textSize.x) * align.x);
+
+			if (align.y > 0.0f)
+				pos.y = ImMax(pos.y, pos.y + (posMax.y - pos.y - textSize.y) * align.y);
+
+			// Render
+			ImVec4 fineClipRect(clipMin->x, clipMin->y, clipMax->x, clipMax->y);
+			drawList->AddText(nullptr, 0.0f, pos, ImGui::GetColorU32(ImGuiCol_Text), text, textDisplayEnd, wrapWidth, &fineClipRect);
+		}
+
+		void ClippedText(const ImVec2& posMin, const ImVec2& posMax, const char* text, const char* textEnd, const ImVec2* textSizeIfKnown, const ImVec2& align, const ImRect* clipRect, f32 wrapWidth)
+		{
+			// Hide anything after a '##' string
+			const char* textDisplayEnd = ImGui::FindRenderedTextEnd(text, textEnd);
+			const int text_len = static_cast<int>(textDisplayEnd - text);
+			if (text_len == 0)
+				return;
+
+			ImGuiContext& g = *GImGui;
+			ImGuiWindow* window = g.CurrentWindow;
+			ClippedText(window->DrawList, posMin, posMax, text, textDisplayEnd, textSizeIfKnown, align, clipRect, wrapWidth);
+			if (g.LogEnabled)
+				ImGui::LogRenderedText(&posMin, text, textDisplayEnd);
+		}
+
+		bool DrawFolderPickerProperty(std::filesystem::path* path, const std::filesystem::path& relative)
+		{
+			const f32 posx = ImGui::GetCursorPosX();
+			const f32 framePaddingY = ImGui::GetStyle().FramePadding.y;
+			constexpr f32 bw = 28.f;
+			constexpr f32 buttonOffset = 11.f;
+			constexpr f32 searchIconOffset = 4.f;
+			constexpr f32 searchHintOffset = 28.f;
+
+			bool modified = false;
+			bool isPicked = !path->empty();
+
+			std::string tag = "None";
+
+			const f32 w = ImGui::GetContentRegionAvail().x;
+
+			if (isPicked) {
+				tag = path->string();
+
+				ImGui::SameLine(w - bw + buttonOffset);
+				ImGui::SetNextItemAllowOverlap();
+
+				GUI2::ScopedColor Border(ImGuiCol_Border, ImVec4{ 1.f, 1.f , 1.f , 0.f });
+				GUI2::ScopedColor Button(ImGuiCol_Button, ImVec4{ 1.f, 1.f , 1.f , 0.f });
+
+				if (ImGui::Button(SW_ICON_CLOSE_OCTAGON, ImVec2{ bw, ImGui::GetFrameHeight() })) {
+					path->clear();
+					modified = true;
+				}
+
+				if (GUI2::IsItemHovered())
+					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			}
+
+			ImGui::SameLine(posx);
+
+			{
+				GUI2::ScopedStyle FrameRounding(ImGuiStyleVar_FrameRounding, 3.0f);
+				GUI2::ScopedStyle FramePadding(ImGuiStyleVar_FramePadding, ImVec2(28.0f, framePaddingY));
+
+				if (ImGui::Button("##folder_picker", { isPicked ? w - bw : w , ImGui::GetFrameHeight() })) {
+					std::filesystem::path pickedPath = FileSystem::OpenFolderDialog(relative.string().c_str());
+					*path = std::filesystem::relative(pickedPath, relative);
+					modified = true;
+				}
+
+				if (ImGui::IsItemHovered() && isPicked) {
+					std::filesystem::path fullPath = relative / *path;
+
+					ImGui::BeginTooltip();
+					ImGui::TextUnformatted(fullPath.string().c_str());
+					ImGui::EndTooltip();
+				}
+
+				Components::ItemActivityOutline();
+			}
+
+			ImGui::SameLine(posx + searchIconOffset);
+
+			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::Selection);
+			ImGui::TextUnformatted(SW_ICON_FOLDER);
+			ImGui::PopStyleColor();
+
+			ImGui::SameLine(posx + searchHintOffset);
+			ImGui::TextUnformatted(tag.c_str());
+
+			return modified;
+		}
 
 	}
 

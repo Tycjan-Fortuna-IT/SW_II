@@ -74,6 +74,24 @@ namespace SW::GUI2 {
 	}
 
 	/**
+	 * @brief Get the current window's content region height.
+	 * @return The height of the current window's content region.
+	 */
+	inline f32 GetCurrentWindowContentRegionHeight()
+	{
+		return GImGui->CurrentWindow->ContentRegionRect.GetHeight();
+	}
+
+	/**
+	 * @brief Get the current window's content region width.
+	 * @return The width of the current window's content region.
+	 */
+	inline f32 GetCurrentWindowContentRegionWidth()
+	{
+		return GImGui->CurrentWindow->ContentRegionRect.GetWidth();
+	}
+
+	/**
 	 * @brief Check whether last item is in a disabled state.
 	 * @example
 	 *		ImGui::InputText(...);
@@ -490,6 +508,28 @@ namespace SW::GUI2 {
 		bool Toggle(bool* value, bool center = true);
 
 		/**
+		 * @brief Creates a toggle button with customizable appearance and behavior.
+		 * @param value The current state of the button (true for toggled, false for not toggled).
+		 * @param whenOnLabel The label to display when the button is toggled.
+		 * @param whenOffLabel The label to display when the button is not toggled.
+		 * @param buttonFlags Flags to customize the button's behavior (e.g., ImGuiButtonFlags_Repeat).
+		 * @return bool Whether something has changed
+		 */
+		bool ToggleButton(
+			bool* value, const char* whenOnLabel, const char* whenOffLabel, bool center = true,
+			ImGuiButtonFlags buttonFlags = ImGuiButtonFlags_None
+		);
+
+		/**
+		 * @brief Displays a button with an image. (centered image inside button without any text) Works best for square images.
+		 * @param texture Texture to be displayed.
+		 * @param size Size of the button (texture size).
+		 * @param center (optional) Whether the toggle should be centered in the GUI.
+		 * @return bool True if the button was pressed, false otherwise.
+		 */
+		bool ImageButton(ImTextureID textureId, const glm::vec2& size, bool center = true);
+
+		/**
 		 * @brief Single option for radio button.
 		 */
 		template <typename T>
@@ -640,6 +680,68 @@ namespace SW::GUI2 {
 			return modified;
 		}
 
+		bool Vector2Input(
+			glm::vec2* vector, f32 resetValue = 0.f,
+			f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
+		);
+
+		bool Vector3Input(
+			glm::vec3* vector, f32 resetValue = 0.f,
+			f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
+		);
+
+		bool Vector3ColorPicker(
+			glm::vec3* vector, ImGuiColorEditFlags flags = ImGuiColorEditFlags_None
+		);
+		
+		bool Vector4ColorPicker(
+			glm::vec4* vector, ImGuiColorEditFlags flags = ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreviewHalf
+		);
+
+		/**
+		 * @brief Draws a selectable widget in the GUI.
+		 * @tparam T The type of the value.
+		 * @param value The reference to the value.
+		 * @param options The vector of selectable options.
+		 * @param flags Additional ImGui flags (optional).
+		 * @return bool Whether something has changed
+		 */
+		template <typename T>
+		static bool Selectable(
+			T* value, const std::vector<SelectOption<T>>& options, ImGuiComboFlags flags = ImGuiComboFlags_None
+		) {
+			bool modified = false;
+
+			std::string chosenName = "";
+
+			for (SelectOption<T> option : options) {
+				if (*value == option.value) {
+					chosenName = option.Label;
+				}
+			}
+
+			if (ImGui::BeginCombo("##selectable_input", chosenName.data())) {
+				for (SelectOption<T> option : options) {
+					const bool isSelected = *value == option.value;
+
+					if (ImGui::Selectable(option.Label.c_str(), isSelected)) {
+						*value = option.value;
+
+						modified = true;
+					}
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+
+				ImGui::EndCombo();
+			}
+
+			Components::ItemActivityOutline(Components::OutlineFlags_All, GUI::Theme::ActivityOutline, GUI::Theme::ActivityOutline);
+
+			return modified;
+		}
+
 	}
 
 	// --------------------------------
@@ -718,6 +820,70 @@ namespace SW::GUI2 {
 			return modified;
 		}
 
+		/**
+		 * @brief Draws a file picker in the GUI.
+		 * @param path The path to the file to be selected.
+		 * @param relative The relative path to the file.
+		 * @return bool Whether the file picker was used and the value was modified.
+		 */
+		bool DrawFolderPickerProperty(std::filesystem::path* path, const std::filesystem::path& relative);
+
+		/**
+		 * @brief Draws a scale in the GUI.
+		 * @param from The starting point of the scale.
+		 * @param to The ending point of the scale.
+		 * @param majorUnit The major unit of the scale.
+		 * @param minorUnit The minor unit of the scale.
+		 * @param labelAlignment The alignment of the labels.
+		 * @param sign The sign of the scale.
+		 */
+		void DrawScale(const ImVec2& from, const ImVec2& to, f32 majorUnit, f32 minorUnit, f32 labelAlignment, f32 sign = 1.0f);
+
+		/**
+		 * @brief Draws a splitter in the GUI.
+		 * @param splitVertically Whether the splitter should split vertically.
+		 * @param thickness The thickness of the splitter.
+		 * @param size1 The size of the first split.
+		 * @param size2 The size of the second split.
+		 * @param minSize1 The minimum size of the first split.
+		 * @param minSize2 The minimum size of the second split.
+		 * @param splitterLongAxisSize The long axis size of the splitter.
+		 * @return bool Whether the splitter was used and the value was modified.
+		 */
+		bool Splitter(bool splitVertically, f32 thickness, f32* size1, f32* size2, f32 minSize1, f32 minSize2, f32 splitterLongAxisSize = -1.0f);
+
+		/**
+		 * @brief Renders clipped text on the GUI.
+		 * @param drawList Pointer to the ImDrawList object used for rendering.
+		 * @param posMin The minimum position of the text bounding box.
+		 * @param posMax The maximum position of the text bounding box.
+		 * @param text The text to render.
+		 * @param textDisplayEnd Optional pointer to the end of the text to render.
+		 * @param textSizeIfKnown Optional pointer to the known size of the text.
+		 * @param align The alignment of the text within the bounding box.
+		 * @param cliprect Optional pointer to the clipping rectangle.
+		 * @param wrapWidth The width at which the text should wrap.
+		 */
+		void ClippedText(
+			ImDrawList* drawList, const ImVec2& posMin, const ImVec2& posMax, const char* text, const char* textDisplayEnd,
+			const ImVec2* textSizeIfKnown, const ImVec2& align, const ImRect* cliprect, f32 wrapWidth
+		);
+
+		/**
+		 * @brief Renders clipped text on the GUI.
+		 * @param posMin The minimum position of the text bounding box.
+		 * @param posMax The maximum position of the text bounding box.
+		 * @param text The text to render.
+		 * @param textEnd Optional pointer to the end of the text to render.
+		 * @param textSizeIfKnown Optional pointer to the known size of the text.
+		 * @param align The alignment of the text within the bounding box.
+		 * @param clipRect Optional pointer to the clipping rectangle.
+		 * @param wrapWidth The width at which the text should wrap.
+		 */
+		void ClippedText(
+			const ImVec2& posMin, const ImVec2& posMax, const char* text, const char* textEnd, const ImVec2* textSizeIfKnown,
+			const ImVec2& align, const ImRect* clipRect, f32 wrapWidth
+		);
 	}
 
 }
