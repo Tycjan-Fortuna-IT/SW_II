@@ -142,26 +142,25 @@ namespace SW::GUI2 {
 			RectangleOutline(GUI2::GetItemRect(), color, thickness, rounding, offsetX, offsetX);
 		}
 
-		bool Checkbox(bool* value)
+		bool Checkbox(bool* value, bool center)
 		{
 			bool modified = false;
 			const f32 w = ImGui::GetContentRegionAvail().x;
 
-			ImGui::SetNextItemWidth(w);
-
 			f32 width = ImGui::GetIO().FontGlobalScale * ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
 
-			GUI::MoveMousePosX(w / 2 - width / 2);
+			if (center)
+				GUI::MoveMousePosX(w / 2 - width / 2);
 
 			modified = ImGui::Checkbox("##checkbox", value);
 
-			GUI2::Components::ItemActivityOutline(OutlineFlags_All, GUI::Theme::ActivityOutline,
+			Components::ItemActivityOutline(OutlineFlags_All, GUI::Theme::ActivityOutline,
 				GUI::Theme::ActivityOutline, 2.f);
 
 			return modified;
 		}
 
-		bool Toggle(bool* value)
+		bool Toggle(bool* value, bool center)
 		{
 			ImDrawList* draw_list = ImGui::GetWindowDrawList();
 			const ImVec4* colors = ImGui::GetStyle().Colors;
@@ -173,7 +172,8 @@ namespace SW::GUI2 {
 
 			bool modified = false;
 			const f32 w = ImGui::GetContentRegionAvail().x;
-			GUI::MoveMousePosX(w / 2 - width / 2);
+			if (center)
+				GUI::MoveMousePosX(w / 2 - width / 2);
 
 			const ImVec2 p = ImGui::GetCursorScreenPos();
 

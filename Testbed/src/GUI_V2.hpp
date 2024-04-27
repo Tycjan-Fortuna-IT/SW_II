@@ -48,6 +48,32 @@ namespace SW::GUI2 {
 	}
 
 	/**
+	 * @brief Helper function to get the ImGuiDataType for any scalar type.
+	 * @tparam T The scalar type to get the ImGuiDataType for.
+	 * @return The ImGuiDataType for the scalar type.
+	 */
+	template <typename T>
+		requires std::is_scalar_v<T>
+	static consteval ImGuiDataType GetScalarDatatype()
+	{
+		if constexpr (std::is_floating_point_v<T>)
+			if constexpr (sizeof(T) == 4) return ImGuiDataType_Float;
+			else if constexpr (sizeof(T) == 8) return ImGuiDataType_Double;
+		else if constexpr (std::is_signed_v<T>)
+			if constexpr (sizeof(T) == 1) return ImGuiDataType_S8;
+			else if constexpr (sizeof(T) == 2) return ImGuiDataType_S16;
+			else if constexpr (sizeof(T) == 4) return ImGuiDataType_S32;
+			else if constexpr (sizeof(T) == 8) return ImGuiDataType_S64;
+		else if constexpr (std::is_unsigned_v<T>)
+			if constexpr (sizeof(T) == 1) return ImGuiDataType_U8;
+			else if constexpr (sizeof(T) == 2) return ImGuiDataType_U16;
+			else if constexpr (sizeof(T) == 4) return ImGuiDataType_U32;
+			else if constexpr (sizeof(T) == 8) return ImGuiDataType_U64;
+
+		return ImGuiDataType_S32;
+	}
+
+	/**
 	 * @brief Check whether last item is in a disabled state.
 	 * @example
 	 *		ImGui::InputText(...);
@@ -450,20 +476,170 @@ namespace SW::GUI2 {
 		/**
 		 * @brief Draws a boolean checkbox in the GUI.
 		 * @param value The boolean value to represent with the checkbox.
-		 * @param label The label text to display next to the checkbox.
-		 * @param tooltip (optional) Additional information to display as a tooltip.
+		 * @param center (optional) Whether the checkbox should be centered in the GUI.
 		 * @return bool Whether something has changed
 		 */
-		bool Checkbox(bool* value);
+		bool Checkbox(bool* value, bool center = true);
 
 		/**
 		 * @brief Draws a boolean toggle in the GUI.
 		 * @param value The boolean value to represent with the checkbox.
-		 * @param label The label text to display next to the checkbox.
-		 * @param tooltip (optional) Additional information to display as a tooltip.
+		 * @param center (optional) Whether the toggle should be centered in the GUI.
 		 * @return bool Whether something has changed
 		 */
-		bool Toggle(bool* value);
+		bool Toggle(bool* value, bool center = true);
+
+		/**
+		 * @brief Single option for radio button.
+		 */
+		template <typename T>
+			requires std::is_integral_v<T>
+		struct SelectOption
+		{
+			std::string Label = "No label";
+			T value = 0;
+		};
+
+		/**
+		 * @brief Draws a radio button in the GUI.
+		 * @note Radio buttons are not idealy centered, but it's a good start.
+		 * @tparam T The type of the value to represent with the radio button.
+		 * @param value The value to represent with the radio button.
+		 * @param options The list of options to display as radio buttons.
+		 * @param center (optional) Whether the radio buttons should be centered in the GUI.
+		 * @param flags Additional ImGui combo flags.
+		 * @return bool Whether something has changed
+		 */
+		template <typename T>
+		static bool RadioButton(
+			T* value, const std::vector<SelectOption<T>>& options, bool center = true, ImGuiComboFlags flags = ImGuiComboFlags_None
+		) {
+			bool modified = false;
+			const f32 w = ImGui::GetContentRegionAvail().x;
+
+			f32 leftOffset = 0.0f;
+			for (int i = 0; i < (int)options.size(); i++) {
+				const SelectOption<T>& option = options[i];
+				leftOffset += ImGui::CalcTextSize(option.Label.c_str()).x;
+			}
+
+			f32 width = ImGui::GetIO().FontGlobalScale * ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
+		
+			leftOffset += (f32)options.size() * width;
+
+			if (center)
+				GUI2::MoveMousePosX((w - leftOffset) / 2 - 20.f);
+
+			int val = (int)(*value);
+			for (int i = 0; i < (int)options.size(); i++) {
+				const SelectOption<T>& option = options[i];
+
+				if (ImGui::RadioButton(option.Label.c_str(), &val, (int)option.value)) {
+					modified = true;
+					*value = (T)val;
+				}
+
+				Components::ItemActivityOutline(Components::OutlineFlags_All, GUI::Theme::ActivityOutline,
+					GUI::Theme::ActivityOutline, 10.f);
+
+				if (i != options.size() - 1)
+					ImGui::SameLine();
+			}
+
+			return modified;
+		}
+
+		/**
+		 * @brief Draws a scalar input field in the GUI.
+		 * @tparam T The scalar type of the value to represent with the input field.
+		 * @param value The value to represent with the input field.
+		 * @param step The step value for the input field.
+		 * @param fastStep The fast step value for the input field. Active when holding ctrl.
+		 * @param format The format string for the input field.
+		 * @param flags Additional ImGui input flags.
+		 * @return bool Whether something has changed
+		*/
+		template <typename T>
+			requires std::is_scalar_v<T>
+		static bool ScalarInput(T* value, T step = (T)1, T fastStep = (T)10, const char* format = nullptr, ImGuiInputFlags flags = ImGuiInputTextFlags_None)
+		{
+			bool modified = false;
+
+			constexpr ImGuiDataType dataType = GetScalarDatatype<T>();
+
+			const f32 w = ImGui::GetContentRegionAvail().x;
+
+			ImGui::SetNextItemWidth(w);
+
+			if (ImGui::InputScalar("##input_scalar", dataType, value, &step, &fastStep, format, flags))
+				modified = true;
+
+			Components::ItemActivityOutline();
+
+			return modified;
+		}
+
+		/**
+		 * @brief Draws a scalar slider in the GUI.
+		 * @tparam T The scalar type of the value to represent with the slider.
+		 * @param value The value to represent with the slider.
+		 * @param min The minimum value of the slider.
+		 * @param max The maximum value of the slider.
+		 * @param format The format string for the slider.
+		 * @param flags Additional ImGui input flags.
+		 * @return bool Whether something has changed
+		 */
+		template <typename T>
+			requires std::is_scalar_v<T>
+		static bool ScalarSlider(T* value, T min = (T)1, T max = (T)10, const char* format = nullptr, ImGuiInputFlags flags = ImGuiInputTextFlags_None)
+		{
+			bool modified = false;
+
+			constexpr ImGuiDataType dataType = GUI2::GetScalarDatatype<T>();
+
+			const f32 w = ImGui::GetContentRegionAvail().x;
+
+			ImGui::SetNextItemWidth(w);
+
+			if (ImGui::SliderScalar("##input_scalar", dataType, value, &min, &max, format, flags))
+				modified = true;
+
+			Components::ItemActivityOutline();
+
+			return modified;
+		}
+
+		/**
+		 * @brief Draws a scalar drag input field in the GUI.
+		 * @tparam T The scalar type of the value to represent with the drag input field.
+		 * @param value The value to represent with the drag input field.
+		 * @param speed The speed value for the drag input field.
+		 * @param min The minimum value of the drag input field.
+		 * @param max The maximum value of the drag input field.
+		 * @param format The format string for the drag input field.
+		 * @param flags Additional ImGui input flags.
+		 * @return bool Whether something has changed
+		 */
+		template <typename T>
+			requires std::is_scalar_v<T>
+		static bool ScalarDrag(T* value, float speed = 1.f, T min = (T)1, T max = (T)10, const char* format = nullptr, ImGuiInputFlags flags = ImGuiInputTextFlags_None)
+		{
+			bool modified = false;
+
+			constexpr ImGuiDataType dataType = GUI2::GetScalarDatatype<T>();
+
+			const f32 w = ImGui::GetContentRegionAvail().x;
+
+			ImGui::SetNextItemWidth(w);
+
+			if (ImGui::DragScalar("##input_scalar", dataType, value, speed, &min, &max, format, flags))
+				modified = true;
+
+			Components::ItemActivityOutline();
+
+			return modified;
+		}
+
 	}
 
 	// --------------------------------
