@@ -66,11 +66,6 @@ namespace SW {
 		assetPanel->OnUpdate(dt);
 	}
 
-	bool DrawFilePickerProperty(std::filesystem::path* path, const std::filesystem::path& relative);
-	{
-		return false;
-	}
-
 	void TestbedLayer::OnRender()
 	{
 		GUI2::Layout::CreateDockspace("Main Dockspace", nullptr);
@@ -80,8 +75,7 @@ namespace SW {
 		assetPanel->OnRender();
 
 		ImGui::Begin("New GUI API");
-		#pragma region 1
-
+#if 0
 		static std::string search;
 		static std::string search2;
 		static std::string search3;
@@ -253,18 +247,38 @@ namespace SW {
 		GUI2::Components::ItemOutline();
 		ImGui::NewLine();
 
-#pragma endregion
-
 		{
 			GUI2::ScopedID id(26);
 			static std::filesystem::path val;
 			GUI2::Widgets::DrawFolderPickerProperty(&val, ProjectContext::Get()->GetAssetDirectory());
 		}
 
+		ImGui::NewLine();
+
+
 		{
 			GUI2::ScopedID id(27);
 			static std::filesystem::path val;
-			DrawFilePickerProperty(&val, ProjectContext::Get()->GetAssetDirectory());
+			GUI2::Widgets::DrawFilePickerProperty(&val, ProjectContext::Get()->GetAssetDirectory(), {{ "Log file", "log" }});
+		}
+
+		{
+			GUI2::ScopedID id(27);
+			static std::vector<glm::vec2> val = { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } };
+			GUI2::Widgets::Vector2Table(&val, 1.f);
+		}
+
+		{
+			GUI2::ScopedID id(28);
+			static std::vector<glm::vec3> val = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
+			GUI2::Widgets::Vector3Table(&val, 1.f);
+		}
+#endif // 0
+
+		{
+			GUI2::ScopedID id(29);
+			static AssetHandle handle = 0;
+			GUI2::Widgets::DrawAssetDropdownProperty<Texture2D>(&handle);
 		}
 
 		ImGui::End();

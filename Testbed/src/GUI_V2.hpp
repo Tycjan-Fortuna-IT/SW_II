@@ -1,4 +1,28 @@
+/**
+ * @file GUI.hpp
+ * @brief SW Plugin - GUI Utility Library.
+ *
+ * This file contains declarations for utility functions, components, and widgets
+ * designed for use with the ImGui library. The library includes custom-made utilities
+ * such as ScalarInput<float>(), GetItemRect(), SearchWidget(), and more, providing enhanced
+ * functionality for creating graphical user interfaces.
+ *
+ * @author SW
+ * @version 0.3.0
+ * @date 2024-04-28
+ * @copyright Copyright (c) 2024 SW
+ *
+ * @note
+ *	This header depends on the ImGui library (https://github.com/ocornut/imgui).
+ *  This plugin does not require any additional dependencies nor being initialized.
+ * @warning
+ *  User of the components is responsible for proper unique ID handling.
+ */
 #pragma once
+
+#define USE_TEXTURE_2D_METHODS
+#define USE_ASSET_MANAGER_PLUGIN
+#define USE_FILESYSTEM_PLUGIN
 
 namespace SW::GUI2 {
 
@@ -680,6 +704,10 @@ namespace SW::GUI2 {
 			return modified;
 		}
 
+		bool TextureInput(
+			ImTextureID* texture, const ImVec2& size = ImVec2(0, 0), bool center = true
+		);
+
 		bool Vector2Input(
 			glm::vec2* vector, f32 resetValue = 0.f,
 			f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
@@ -759,8 +787,9 @@ namespace SW::GUI2 {
 		 * @return Whether search widget was used and the value was modified.
 		 */
 		template <int N = 64>
-		static bool SearchInput(std::string* search, ImGuiInputTextFlags flags = ImGuiInputTextFlags_None)
-		{
+		static bool SearchInput(
+			std::string* search, const std::string& label = "", ImGuiInputTextFlags flags = ImGuiInputTextFlags_None
+		) {
 			const f32 posx = ImGui::GetCursorPosX();
 			const f32 framePaddingY = ImGui::GetStyle().FramePadding.y;
 			constexpr f32 bw = 28.f;
@@ -774,7 +803,7 @@ namespace SW::GUI2 {
 
 			const f32 w = ImGui::GetContentRegionAvail().x;
 
-			if (searching) {
+			if (searching || !label.empty()) {
 				ImGui::SameLine(w - bw + buttonOffset);
 				ImGui::SetNextItemAllowOverlap();
 
@@ -796,7 +825,7 @@ namespace SW::GUI2 {
 				ScopedStyle FrameRounding(ImGuiStyleVar_FrameRounding, 3.0f);
 				ScopedStyle FramePadding(ImGuiStyleVar_FramePadding, ImVec2(28.0f, framePaddingY));
 
-				ImGui::SetNextItemWidth(searching ? w - bw : w);
+				ImGui::SetNextItemWidth(searching || !label.empty() ? w - bw : w);
 
 				char buffer[N] = {};
 				strncpy(buffer, search->c_str(), N);
@@ -812,9 +841,91 @@ namespace SW::GUI2 {
 			ImGui::SameLine(posx + searchIconOffset);
 			ImGui::TextUnformatted(SW_ICON_MAGNIFY);
 
-			if (!searching) {
+			if (!label.empty()) {
+				ImGui::SameLine(posx + searchHintOffset);
+				ImGui::TextUnformatted(searching ? "" : label.c_str());
+			} else if (!searching) {
 				ImGui::SameLine(posx + searchHintOffset);
 				ImGui::TextUnformatted("Search ...");
+			}
+
+			return modified;
+		}
+
+		template <typename T>
+			requires std::is_base_of_v<Asset, T>
+		static bool DrawAssetDropdownProperty(AssetHandle* handle) {
+			bool modified = false;
+
+			static std::string search;
+			std::string tag;
+			std::string fullPath;
+
+			if (*handle) {
+				if (AssetManager::IsValid(*handle)) {
+					const AssetMetaData& metadata = AssetManager::GetAssetMetaData(*handle);
+
+					tag = metadata.Path.filename().string();
+					fullPath = (ProjectContext::Get()->GetAssetDirectory() / metadata.Path).string();
+				} else {
+					tag = "Invalid";
+				}
+			}
+
+			ImRect droppable;
+			droppable.Min = { ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y };
+			droppable.Max = { ImGui::GetCursorScreenPos().x + ImGui::GetContentRegionAvail().x, ImGui::GetCursorScreenPos().y + ImGui::GetFrameHeight() };
+
+			if (GUI2::Widgets::SearchInput<128>(&search, tag)) {
+				if (search.empty()) {
+					*handle = 0;
+					modified = true;
+				}
+					
+			}
+
+			if (ImGui::BeginDragDropTargetCustom(droppable, ImGui::GetCurrentWindow()->ID)) {
+				const char* payloadName = Asset::GetStringifiedAssetType(T::GetStaticType());
+
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(payloadName)) {
+					*handle = *static_cast<u64*>(payload->Data);
+
+					modified = true;
+				}
+				ImGui::EndDragDropTarget();
+			}
+
+			if (ImGui::IsItemHovered() && *handle) {
+				ImGui::BeginTooltip();
+				ImGui::TextUnformatted(fullPath.c_str());
+				ImGui::EndTooltip();
+			}
+
+			const ImGuiID listID = ImGui::GetID("##search_list_box");
+
+			if (!search.empty()) {
+				if (ImGui::BeginListBox("##search_list_box", ImVec2(-FLT_MIN, 0.0f))) {
+					const AssetRegistry& registry = AssetManager::GetRegistry();
+
+					for (auto& [id, metadata] : registry.GetAvailableAssets()) {
+						GUI2::ScopedID ID((int)id);
+
+						if (metadata.Type != T::GetStaticType())
+							continue;
+
+						if (metadata.Path.filename().string().find(search) != std::string::npos) {
+							const bool isSelected = *handle == id;
+
+							if (ImGui::Selectable(metadata.Path.filename().string().c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns)) {
+								*handle = id;
+								search.clear();
+								modified = true;
+							}
+						}
+					}
+				}
+
+				ImGui::EndListBox();
 			}
 
 			return modified;
@@ -827,6 +938,33 @@ namespace SW::GUI2 {
 		 * @return bool Whether the file picker was used and the value was modified.
 		 */
 		bool DrawFolderPickerProperty(std::filesystem::path* path, const std::filesystem::path& relative);
+
+		/**
+		 * @brief Draws a file picker in the GUI.
+		 * @param path The path to the file to be selected.
+		 * @param relative The relative path to the file.
+		 * @param filters The list of filters to apply to the file picker. eg. { { "All Files", "*" } } or { { "Text Files", "txt" } }
+		 * @return bool Whether the file picker was used and the value was modified.
+		 */
+		bool DrawFilePickerProperty(
+			std::filesystem::path* path, const std::filesystem::path& relative, const std::initializer_list<FileDialogFilterItem> filters
+		);
+
+		/**
+		 * @brief Draws a table of Vector2 values in the GUI.
+		 * @param vector The vector of Vector2 values to display in the table.
+		 * @param defaultValue The default value to use for empty cells in the table.
+		 * @return bool Whether the table was used and the value was modified.
+		 */
+		bool Vector2Table(std::vector<glm::vec2>* vector, f32 defaultValue = 0.f);
+
+		/**
+		 * @brief Draws a table of Vector3 values in the GUI.
+		 * @param vector The vector of Vector3 values to display in the table.
+		 * @param defaultValue The default value to use for empty cells in the table.
+		 * @return bool Whether the table was used and the value was modified.
+		 */
+		bool Vector3Table(std::vector<glm::vec3>* vector, f32 defaultValue = 0.f);
 
 		/**
 		 * @brief Draws a scale in the GUI.

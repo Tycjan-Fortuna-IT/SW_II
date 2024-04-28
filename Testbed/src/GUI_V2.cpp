@@ -598,8 +598,11 @@ namespace SW::GUI2 {
 
 				if (ImGui::Button("##folder_picker", { isPicked ? w - bw : w , ImGui::GetFrameHeight() })) {
 					std::filesystem::path pickedPath = FileSystem::OpenFolderDialog(relative.string().c_str());
-					*path = std::filesystem::relative(pickedPath, relative);
-					modified = true;
+
+					if (!pickedPath.empty()) {
+						*path = std::filesystem::relative(pickedPath, relative);
+						modified = true;
+					}
 				}
 
 				if (ImGui::IsItemHovered() && isPicked) {
@@ -621,6 +624,190 @@ namespace SW::GUI2 {
 
 			ImGui::SameLine(posx + searchHintOffset);
 			ImGui::TextUnformatted(tag.c_str());
+
+			return modified;
+		}
+
+		bool DrawFilePickerProperty(std::filesystem::path* path, const std::filesystem::path& relative, const std::initializer_list<FileDialogFilterItem> filters)
+		{
+			const f32 posx = ImGui::GetCursorPosX();
+			const f32 framePaddingY = ImGui::GetStyle().FramePadding.y;
+			constexpr f32 bw = 28.f;
+			constexpr f32 buttonOffset = 11.f;
+			constexpr f32 searchIconOffset = 4.f;
+			constexpr f32 searchHintOffset = 28.f;
+
+			bool modified = false;
+			bool isPicked = !path->empty();
+
+			std::string tag = "None";
+
+			const f32 w = ImGui::GetContentRegionAvail().x;
+
+			if (isPicked) {
+				tag = path->string();
+
+				ImGui::SameLine(w - bw + buttonOffset);
+				ImGui::SetNextItemAllowOverlap();
+
+				GUI2::ScopedColor Border(ImGuiCol_Border, ImVec4{ 1.f, 1.f , 1.f , 0.f });
+				GUI2::ScopedColor Button(ImGuiCol_Button, ImVec4{ 1.f, 1.f , 1.f , 0.f });
+
+				if (ImGui::Button(SW_ICON_CLOSE_OCTAGON, ImVec2{ bw, ImGui::GetFrameHeight() })) {
+					path->clear();
+					modified = true;
+				}
+
+				if (GUI2::IsItemHovered())
+					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			}
+
+			ImGui::SameLine(posx);
+
+			{
+				GUI2::ScopedStyle FrameRounding(ImGuiStyleVar_FrameRounding, 3.0f);
+				GUI2::ScopedStyle FramePadding(ImGuiStyleVar_FramePadding, ImVec2(28.0f, framePaddingY));
+
+				if (ImGui::Button("##file_picker", { isPicked ? w - bw : w , ImGui::GetFrameHeight() })) {
+					std::filesystem::path pickedPath = FileSystem::OpenFileDialog(filters);
+
+					if (!pickedPath.empty()) {
+						*path = std::filesystem::relative(pickedPath, relative);
+						modified = true;
+					}
+				}
+
+				if (ImGui::IsItemHovered() && isPicked) {
+					std::filesystem::path fullPath = relative / *path;
+
+					ImGui::BeginTooltip();
+					ImGui::TextUnformatted(fullPath.string().c_str());
+					ImGui::EndTooltip();
+				}
+
+				Components::ItemActivityOutline();
+			}
+
+			ImGui::SameLine(posx + searchIconOffset);
+
+			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::Selection);
+			ImGui::TextUnformatted(SW_ICON_FILE);
+			ImGui::PopStyleColor();
+
+			ImGui::SameLine(posx + searchHintOffset);
+			ImGui::TextUnformatted(tag.c_str());
+
+			return modified;
+		}
+
+        bool Vector2Table(std::vector<glm::vec2>* vector, f32 defaultValue /*= 0.f*/)
+		{
+			u64 pointsCount = vector->size();
+			bool modified = false;
+
+			GUI2::Components::ScalarInput<u64>(&pointsCount, 1u, 1u);
+
+			if (pointsCount > vector->size()) {
+				vector->emplace_back(defaultValue, defaultValue);
+				modified = true;
+			}
+			else if (pointsCount < vector->size()) {
+				vector->pop_back();
+				modified = true;
+			}
+
+			constexpr ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit
+				| ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
+
+			int removeAt = -1;
+
+			if (ImGui::BeginTable("##table_vector2", 2, flags)) {
+				ImGui::TableSetupColumn("Vector");
+				ImGui::TableSetupColumn("Action");
+				ImGui::TableHeadersRow();
+
+				for (int i = 0; i < (int)vector->size(); i++) {
+					glm::vec2& point = vector->at(i);
+
+					ImGui::TableNextRow();
+					ImGui::TableNextColumn();
+
+					const std::string vectorId = "##table_vector2_element" + i;
+
+					ImGui::PushID(vectorId.c_str());
+					GUI2::Components::Vector2Input(&point, defaultValue);
+
+					ImGui::TableNextColumn();
+
+					if (ImGui::Button(SW_ICON_CLOSE_OCTAGON, { ImGui::GetFrameHeight(), ImGui::GetFrameHeight() }))
+						removeAt = i;
+
+					ImGui::PopID();
+				}
+
+				ImGui::EndTable();
+			}
+
+			if (removeAt > -1) {
+				vector->erase(vector->begin() + removeAt);
+				modified = true;
+			}
+
+			return modified;
+		}
+
+		bool Vector3Table(std::vector<glm::vec3>* vector, f32 defaultValue /*= 0.f*/)
+		{
+			u64 pointsCount = vector->size();
+			bool modified = false;
+
+			GUI2::Components::ScalarInput<u64>(&pointsCount, 1u, 1u);
+
+			if (pointsCount > vector->size()) {
+				vector->emplace_back(defaultValue, defaultValue, defaultValue);
+				modified = true;
+			}
+			else if (pointsCount < vector->size()) {
+				vector->pop_back();
+				modified = true;
+			}
+
+			constexpr ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit
+				| ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
+
+			int removeAt = -1;
+
+			if (ImGui::BeginTable("##table_vector3", 2, flags)) {
+				ImGui::TableSetupColumn("Vector");
+				ImGui::TableSetupColumn("Action");
+				ImGui::TableHeadersRow();
+
+				for (int i = 0; i < (int)vector->size(); i++) {
+					glm::vec3& point = vector->at(i);
+
+					ImGui::TableNextRow();
+					ImGui::TableNextColumn();
+
+					const std::string vectorId = "##table_vector3_element" + i;
+
+					ImGui::PushID(vectorId.c_str());
+					GUI2::Components::Vector3Input(&point, defaultValue);
+
+					ImGui::TableNextColumn();
+
+					if (ImGui::Button(SW_ICON_CLOSE_OCTAGON, { ImGui::GetFrameHeight(), ImGui::GetFrameHeight() }))
+						removeAt = i;
+
+					ImGui::PopID();
+				}
+
+				ImGui::EndTable();
+			}
+
+			if (removeAt > -1) {
+				vector->erase(vector->begin() + removeAt);
+				modified = true;
+			}
 
 			return modified;
 		}

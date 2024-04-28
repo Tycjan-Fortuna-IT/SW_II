@@ -10,12 +10,9 @@
 
 #include "Core/OpenGL/Texture2D.hpp"
 #include "Colors.hpp"
-#include "Core/Utils/Utils.hpp"
-#include "GUI/Icons.hpp"
 #include "Appearance.hpp"
 #include "Asset/AssetManager.hpp"
 #include "Core/ECS/Entity.hpp"
-#include "Asset/Font.hpp"
 #include "Core/Renderer/Renderer2D.hpp"
 #include "Core/Utils/FileSystem.hpp"
 
