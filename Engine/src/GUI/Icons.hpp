@@ -82,3 +82,7 @@
 #define SW_ICON_SAVE u8"\uF193"
 #define SW_ICON_VIDEO u8"\uF567"
 #define SW_ICON_CLOSE_OCTAGON u8"\uF15C"
+#define SW_ICON_ARROW_UP u8"\uF05D"
+#define SW_ICON_ARROW_UP_BOLD u8"\uF736"
+#define SW_ICON_ARROW_DOWN u8"\uF045"
+#define SW_ICON_ARROW_DOWN_BOLD u8"\uF72D"

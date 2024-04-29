@@ -704,10 +704,6 @@ namespace SW::GUI2 {
 			return modified;
 		}
 
-		bool TextureInput(
-			ImTextureID* texture, const ImVec2& size = ImVec2(0, 0), bool center = true
-		);
-
 		bool Vector2Input(
 			glm::vec2* vector, f32 resetValue = 0.f,
 			f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
@@ -773,6 +769,53 @@ namespace SW::GUI2 {
 	}
 
 	// --------------------------------
+	//			  PROPERTIES
+	// --------------------------------
+
+	namespace Properties {
+
+		inline static void BeginProperties(const char* name)
+		{
+			constexpr ImGuiTableFlags flags = ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingStretchProp |
+				ImGuiTableFlags_BordersInner;
+
+			ImGui::BeginTable(name, 2, flags);
+			ImGui::TableSetupColumn("PropertyName", 0, 0.5f);
+			ImGui::TableSetupColumn("Property");
+		}
+
+		inline static void EndProperties()
+		{
+			ImGui::EndTable();
+		}
+
+		inline static void BeginPropertyGrid(const char* label, const char* tooltip = nullptr)
+		{
+			ImGui::TableNextRow();
+			ImGui::TableNextColumn();
+
+			ImGui::PushID(label);
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + ImGui::GetStyle().FramePadding.y * 0.5f);
+			ImGui::TextUnformatted(label);
+			if (tooltip && ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
+				ImGui::BeginTooltip();
+				ImGui::TextUnformatted(tooltip);
+				ImGui::EndTooltip();
+			}
+
+			ImGui::TableNextColumn();
+
+			ImGui::SetNextItemWidth(-FLT_MIN);
+		}
+	
+		inline static void EndPropertyGrid()
+		{
+			ImGui::PopID();
+		}
+
+	}
+
+	// --------------------------------
 	//			  WIDGETS
 	// --------------------------------
 
@@ -795,7 +838,7 @@ namespace SW::GUI2 {
 			constexpr f32 bw = 28.f;
 			constexpr f32 buttonOffset = 11.f;
 			constexpr f32 searchIconOffset = 4.f;
-			constexpr f32 searchHintOffset = 28.f;
+			constexpr f32 searchHintOffset = 20.f;
 
 			bool modified = false;
 
@@ -803,23 +846,7 @@ namespace SW::GUI2 {
 
 			const f32 w = ImGui::GetContentRegionAvail().x;
 
-			if (searching || !label.empty()) {
-				ImGui::SameLine(w - bw + buttonOffset);
-				ImGui::SetNextItemAllowOverlap();
-
-				ScopedColor Border(ImGuiCol_Border, ImVec4{ 1.f, 1.f , 1.f , 0.f });
-				ScopedColor Button(ImGuiCol_Button, ImVec4{ 1.f, 1.f , 1.f , 0.f });
-
-				if (ImGui::Button(SW_ICON_CLOSE_OCTAGON, ImVec2{ bw, ImGui::GetFrameHeight() })) {
-					search->clear();
-					modified = true;
-				}
-				
-				if (IsItemHovered())
-					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			}
-
-			ImGui::SameLine(posx);
+			f32 inputWidth = 0.0f;
 
 			{
 				ScopedStyle FrameRounding(ImGuiStyleVar_FrameRounding, 3.0f);
@@ -834,27 +861,53 @@ namespace SW::GUI2 {
 					*search = buffer;
 					modified = true;
 				}
+				inputWidth = ImGui::GetItemRectSize().x;
 
 				Components::ItemActivityOutline();
 			}
 
-			ImGui::SameLine(posx + searchIconOffset);
+			if (searching || !label.empty()) {
+				ImGui::SameLine(w - bw + buttonOffset);
+				ImGui::SetNextItemAllowOverlap();
+
+				ScopedColor Border(ImGuiCol_Border, ImVec4{ 1.f, 1.f , 1.f , 0.f });
+				ScopedColor Button(ImGuiCol_Button, ImVec4{ 1.f, 1.f , 1.f , 0.f });
+
+				if (ImGui::Button(SW_ICON_CLOSE_OCTAGON, ImVec2{ bw, ImGui::GetFrameHeight() })) {
+					search->clear();
+					modified = true;
+				}
+
+				if (IsItemHovered())
+					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			}
+
+			bool additionalOffset = searching || !label.empty();
+
+			ImGui::SameLine(w - inputWidth - searchIconOffset + additionalOffset ? searchHintOffset : 0.f);
 			ImGui::TextUnformatted(SW_ICON_MAGNIFY);
 
 			if (!label.empty()) {
-				ImGui::SameLine(posx + searchHintOffset);
+				ImGui::SameLine(posx + searchHintOffset + additionalOffset ? 0.f : searchHintOffset);
 				ImGui::TextUnformatted(searching ? "" : label.c_str());
 			} else if (!searching) {
-				ImGui::SameLine(posx + searchHintOffset);
-				ImGui::TextUnformatted("Search ...");
+				ImGui::SameLine(posx + searchHintOffset + additionalOffset ? 0.f : searchHintOffset);
+				ImGui::TextUnformatted("Type and search ...");
 			}
 
 			return modified;
 		}
 
+		/**
+		* @brief Search for assets in the GUI.
+		* @tparam T The type of the asset to search for.
+		* @param handle The handle to the asset to search for.
+		* @return bool Whether the asset was modified.
+		 */
 		template <typename T>
 			requires std::is_base_of_v<Asset, T>
-		static bool DrawAssetDropdownProperty(AssetHandle* handle) {
+		static bool AssetSearch(AssetHandle* handle)
+		{
 			bool modified = false;
 
 			static std::string search;
@@ -931,13 +984,258 @@ namespace SW::GUI2 {
 			return modified;
 		}
 
+		/*
+		 * @brief Draws a dropdown for selecting an entity in the GUI.
+		 * @param ID The ID of the entity to select.
+		 * @param scene The scene to select the entity from.
+		 * @return bool Whether the entity was modified.
+		 */
+		static bool EntityDropdown(u64* ID, Scene* scene) {
+			bool modified = false;
+
+			const f32 framePaddingY = ImGui::GetStyle().FramePadding.y;
+			constexpr f32 bw = 28.f;
+			constexpr f32 buttonOffset = 11.f;
+			const f32 w = ImGui::GetContentRegionAvail().x;
+			constexpr f32 hintOffset = 28.f;
+
+			Entity entity;
+			std::string tag = "none";
+
+			if (*ID) {
+				entity = scene->TryGetEntityByID(*ID);
+				tag = entity.GetTag();
+			}
+
+			f32 inputWidth = 0.f;
+
+			{
+				GUI2::ScopedStyle FrameRounding(ImGuiStyleVar_FrameRounding, 3.0f);
+				GUI2::ScopedStyle FramePadding(ImGuiStyleVar_FramePadding, ImVec2(28.0f, framePaddingY));
+
+				ImGui::Button("##entity_dropdown_property", { (*ID ? w - bw : w) - 2.f , ImGui::GetFrameHeight() });
+				inputWidth = ImGui::GetItemRectSize().x;
+
+				if (ImGui::BeginDragDropTarget()) {
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity")) {
+						Entity* payloadEntity = static_cast<Entity*>(payload->Data);
+
+						*ID = payloadEntity->GetID();
+
+						modified = true;
+					}
+					ImGui::EndDragDropTarget();
+				}
+
+				if (ImGui::IsItemHovered() && entity) {
+					ImGui::BeginTooltip();
+					ImGui::Text("ID: %llu", *ID);
+					ImGui::Text("Tag: %s", tag.c_str());
+					ImGui::EndTooltip();
+				}
+
+				GUI2::Components::ItemActivityOutline();
+			}
+
+			if (*ID) {
+				ImGui::SameLine(w - bw + buttonOffset);
+				ImGui::SetNextItemAllowOverlap();
+
+				GUI2::ScopedColor Border(ImGuiCol_Border, ImVec4{ 1.f, 1.f , 1.f , 0.f });
+				GUI2::ScopedColor Button(ImGuiCol_Button, ImVec4{ 1.f, 1.f , 1.f , 0.f });
+
+				if (ImGui::Button(SW_ICON_CLOSE_OCTAGON, ImVec2{ bw, ImGui::GetFrameHeight() })) {
+					*ID = 0;
+					modified = true;
+				}
+
+				if (GUI2::IsItemHovered())
+					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			}
+
+			if (entity) {
+				ImGui::SameLine(w - inputWidth);
+				ImGui::TextUnformatted(tag.c_str());
+			} else {
+				ImGui::SameLine(w - inputWidth + hintOffset);
+				ImGui::TextUnformatted("None");
+			}
+
+			return modified;
+		}
+
+		/**
+		 * @brief Draws a dropdown table for a vector of assets in the GUI.
+		 * @tparam T The type of the asset to display in the dropdown table.
+		 * @param vector The vector of assets to display in the dropdown table.
+		 * @return bool Whether the dropdown table was used and the value was modified.
+		 */
+		template <typename T>
+			requires std::is_base_of_v<Asset, T>
+		static bool AssetDropdownTable(
+			std::vector<T**>* vector
+		) {
+			bool modified = false;
+
+			constexpr ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit
+				| ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
+
+			int removeAt = -1;
+
+			if (ImGui::BeginTable("asset_dropdown_table", 2, flags)) {
+				ImGui::TableSetupColumn(Asset::GetStringifiedAssetType(T::GetStaticType()));
+				ImGui::TableSetupColumn("Action");
+				ImGui::TableHeadersRow();
+
+				for (int i = 0; i < (int)vector->size(); i++) {
+					T** element = vector->at(i);
+
+					ImGui::TableNextRow();
+					ImGui::TableNextColumn();
+
+					const std::string id = "##table_element" + i;
+
+					const AssetMetaData& metadata = AssetManager::GetAssetMetaData((*element)->GetHandle());
+
+					ImGui::PushID(id.c_str());
+
+					ImGui::Text("%s", metadata.Path.string().c_str());
+
+					ImGui::TableNextColumn();
+
+					if (ImGui::Button(SW_ICON_CLOSE_OCTAGON, { ImGui::GetFrameHeight(), ImGui::GetFrameHeight() }))
+						removeAt = i;
+
+					ImGui::SameLine();
+
+					if (i > 0) {
+						if (ImGui::Button(SW_ICON_ARROW_UP_BOLD, { ImGui::GetFrameHeight(), ImGui::GetFrameHeight() })) {
+							std::swap(vector->at(i), vector->at(i - 1));
+							modified = true;
+						}
+					} else {
+						ImGui::Dummy({ ImGui::GetFrameHeight(), ImGui::GetFrameHeight() });
+					}
+
+					ImGui::SameLine();
+
+					if (i < (int)vector->size() - 1) {
+						if (ImGui::Button(SW_ICON_ARROW_DOWN_BOLD, { ImGui::GetFrameHeight(), ImGui::GetFrameHeight() })) {
+							std::swap(vector->at(i), vector->at(i + 1));
+							modified = true;
+						}
+					} else {
+						ImGui::Dummy({ ImGui::GetFrameHeight(), ImGui::GetFrameHeight() });
+					}
+
+					ImGui::PopID();
+				}
+
+				ImGui::EndTable();
+			}
+
+			if (ImGui::BeginDragDropTarget()) {
+				const char* payloadName = Asset::GetStringifiedAssetType(T::GetStaticType());
+
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(payloadName)) {
+					u64 handle = *static_cast<u64*>(payload->Data);
+
+					T** newElement = AssetManager::GetAssetRaw<T>(handle);
+					vector->emplace_back(newElement);
+
+					modified = true;
+				}
+				ImGui::EndDragDropTarget();
+			}
+
+			if (removeAt > -1) {
+				vector->erase(vector->begin() + removeAt);
+				modified = true;
+			}
+
+			return modified;
+		}
+
+		template <typename K, typename V>
+			requires std::is_base_of_v<Asset, V>
+		static bool AssetDropdownTableMap(
+			std::unordered_map<K, V**>& map
+		) {
+			bool modified = false;
+
+			constexpr ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit
+				| ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
+
+			if (ImGui::BeginTable("##asset_dropdown_table_map", 3, flags)) {
+				ImGui::TableSetupColumn("Key");
+				ImGui::TableSetupColumn(Asset::GetStringifiedAssetType(V::GetStaticType()));
+				ImGui::TableSetupColumn("Actions");
+				ImGui::TableHeadersRow();
+
+				for (auto it = map.begin(); it != map.end(); /* no increment here */) {
+					ImGui::TableNextRow();
+					ImGui::TableNextColumn();
+
+					std::string key = it->first;
+
+					ImGui::PushID(it->first.c_str());
+					if (GUI2::Components::SingleLineTextInputDeffered<64>(&key)) {
+						auto value = it->second;
+						it = map.erase(it);
+						map[key] = value;
+						modified = true;
+						ImGui::PopID();
+						continue; // Skip the increment because we've modified the map
+					}
+
+					ImGui::TableNextColumn();
+
+					const AssetMetaData& metadata = AssetManager::GetAssetMetaData((*it->second)->GetHandle());
+
+					ImGui::Text("%s", metadata.Path.string().c_str());
+
+					ImGui::TableNextColumn();
+
+					if (ImGui::Button(SW_ICON_CLOSE_OCTAGON, { ImGui::GetFrameHeight(), ImGui::GetFrameHeight() })) {
+						auto value = it->second;
+						it = map.erase(it);
+						modified = true;
+						ImGui::PopID();
+						continue; // Skip the increment because we've modified the map
+					}
+
+					ImGui::PopID();
+
+					++it;
+				}
+
+				ImGui::EndTable();
+			}
+
+			if (ImGui::BeginDragDropTarget()) {
+				const char* payloadName = Asset::GetStringifiedAssetType(V::GetStaticType());
+
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(payloadName)) {
+					u64 handle = *static_cast<u64*>(payload->Data);
+
+					V** newElement = AssetManager::GetAssetRaw<V>(handle);
+					map[std::to_string(rand())] = newElement;
+
+					modified = true;
+				}
+				ImGui::EndDragDropTarget();
+			}
+
+			return modified;
+		}
+
 		/**
 		 * @brief Draws a file picker in the GUI.
 		 * @param path The path to the file to be selected.
 		 * @param relative The relative path to the file.
 		 * @return bool Whether the file picker was used and the value was modified.
 		 */
-		bool DrawFolderPickerProperty(std::filesystem::path* path, const std::filesystem::path& relative);
+		bool DrawFolderPicker(std::filesystem::path* path, const std::filesystem::path& relative);
 
 		/**
 		 * @brief Draws a file picker in the GUI.
@@ -946,7 +1244,7 @@ namespace SW::GUI2 {
 		 * @param filters The list of filters to apply to the file picker. eg. { { "All Files", "*" } } or { { "Text Files", "txt" } }
 		 * @return bool Whether the file picker was used and the value was modified.
 		 */
-		bool DrawFilePickerProperty(
+		bool DrawFilePicker(
 			std::filesystem::path* path, const std::filesystem::path& relative, const std::initializer_list<FileDialogFilterItem> filters
 		);
 

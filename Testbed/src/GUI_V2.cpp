@@ -284,7 +284,7 @@ namespace SW::GUI2 {
 
 			ImFont* boldFont = GUI::Appearance::GetFonts().DefaultBoldFont;
 
-			constexpr f32 spacingX = 8.0f;
+			constexpr f32 spacingX = 7.0f;
 			const ImVec2 size = ImGui::GetContentRegionAvail();
 
 			GUI::ScopedStyle itemSpacing(ImGuiStyleVar_ItemSpacing, ImVec2{ spacingX, 0.0f });
@@ -451,12 +451,20 @@ namespace SW::GUI2 {
 				return true;
 
 			ImDrawList* drawList = ImGui::GetWindowDrawList();
-			drawList->AddImage(textureId, ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), { 0, 1 }, { 1, 0 });
+			ImVec2 min = ImGui::GetItemRectMin() + ImVec2(2.0f, 2.0f);
+			ImVec2 max = ImGui::GetItemRectMax() - ImVec2(2.0f, 2.0f);
+
+			drawList->AddImage(textureId, min, max, { 0, 1 }, { 1, 0 });
 
 			Components::ItemActivityOutline();
 
 			return false;
 		}
+
+	}
+
+	namespace Properties {
+
 
 	}
 
@@ -556,14 +564,14 @@ namespace SW::GUI2 {
 				ImGui::LogRenderedText(&posMin, text, textDisplayEnd);
 		}
 
-		bool DrawFolderPickerProperty(std::filesystem::path* path, const std::filesystem::path& relative)
+		bool DrawFolderPicker(std::filesystem::path* path, const std::filesystem::path& relative)
 		{
 			const f32 posx = ImGui::GetCursorPosX();
 			const f32 framePaddingY = ImGui::GetStyle().FramePadding.y;
 			constexpr f32 bw = 28.f;
 			constexpr f32 buttonOffset = 11.f;
-			constexpr f32 searchIconOffset = 4.f;
-			constexpr f32 searchHintOffset = 28.f;
+			constexpr f32 iconOffset = 4.f;
+			constexpr f32 hintOffset = 28.f;
 
 			bool modified = false;
 			bool isPicked = !path->empty();
@@ -616,26 +624,26 @@ namespace SW::GUI2 {
 				Components::ItemActivityOutline();
 			}
 
-			ImGui::SameLine(posx + searchIconOffset);
+			ImGui::SameLine(posx + iconOffset);
 
 			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::Selection);
 			ImGui::TextUnformatted(SW_ICON_FOLDER);
 			ImGui::PopStyleColor();
 
-			ImGui::SameLine(posx + searchHintOffset);
+			ImGui::SameLine(posx + hintOffset);
 			ImGui::TextUnformatted(tag.c_str());
 
 			return modified;
 		}
 
-		bool DrawFilePickerProperty(std::filesystem::path* path, const std::filesystem::path& relative, const std::initializer_list<FileDialogFilterItem> filters)
+		bool DrawFilePicker(std::filesystem::path* path, const std::filesystem::path& relative, const std::initializer_list<FileDialogFilterItem> filters)
 		{
 			const f32 posx = ImGui::GetCursorPosX();
 			const f32 framePaddingY = ImGui::GetStyle().FramePadding.y;
 			constexpr f32 bw = 28.f;
 			constexpr f32 buttonOffset = 11.f;
-			constexpr f32 searchIconOffset = 4.f;
-			constexpr f32 searchHintOffset = 28.f;
+			constexpr f32 iconOffset = 4.f;
+			constexpr f32 hintOffset = 28.f;
 
 			bool modified = false;
 			bool isPicked = !path->empty();
@@ -688,13 +696,13 @@ namespace SW::GUI2 {
 				Components::ItemActivityOutline();
 			}
 
-			ImGui::SameLine(posx + searchIconOffset);
+			ImGui::SameLine(posx + iconOffset);
 
 			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::Selection);
 			ImGui::TextUnformatted(SW_ICON_FILE);
 			ImGui::PopStyleColor();
 
-			ImGui::SameLine(posx + searchHintOffset);
+			ImGui::SameLine(posx + hintOffset);
 			ImGui::TextUnformatted(tag.c_str());
 
 			return modified;
