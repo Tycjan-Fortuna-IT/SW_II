@@ -769,53 +769,6 @@ namespace SW::GUI2 {
 	}
 
 	// --------------------------------
-	//			  PROPERTIES
-	// --------------------------------
-
-	namespace Properties {
-
-		inline static void BeginProperties(const char* name)
-		{
-			constexpr ImGuiTableFlags flags = ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingStretchProp |
-				ImGuiTableFlags_BordersInner;
-
-			ImGui::BeginTable(name, 2, flags);
-			ImGui::TableSetupColumn("PropertyName", 0, 0.5f);
-			ImGui::TableSetupColumn("Property");
-		}
-
-		inline static void EndProperties()
-		{
-			ImGui::EndTable();
-		}
-
-		inline static void BeginPropertyGrid(const char* label, const char* tooltip = nullptr)
-		{
-			ImGui::TableNextRow();
-			ImGui::TableNextColumn();
-
-			ImGui::PushID(label);
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + ImGui::GetStyle().FramePadding.y * 0.5f);
-			ImGui::TextUnformatted(label);
-			if (tooltip && ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
-				ImGui::BeginTooltip();
-				ImGui::TextUnformatted(tooltip);
-				ImGui::EndTooltip();
-			}
-
-			ImGui::TableNextColumn();
-
-			ImGui::SetNextItemWidth(-FLT_MIN);
-		}
-	
-		inline static void EndPropertyGrid()
-		{
-			ImGui::PopID();
-		}
-
-	}
-
-	// --------------------------------
 	//			  WIDGETS
 	// --------------------------------
 
@@ -1319,6 +1272,520 @@ namespace SW::GUI2 {
 		void ClippedText(
 			const ImVec2& posMin, const ImVec2& posMax, const char* text, const char* textEnd, const ImVec2* textSizeIfKnown,
 			const ImVec2& align, const ImRect* clipRect, f32 wrapWidth
+		);
+	}
+
+	// --------------------------------
+//			  PROPERTIES
+// --------------------------------
+
+	namespace Properties {
+
+		/**
+		 * Begins a table for displaying properties in the GUI.
+		 * @warning This function must always be paired with a call to EndProperties(). Failure to do so will result in undefined behavior.
+		 *
+		 * @param name The name of the table.
+		 * @param flags The flags to customize the table's behavior (optional).
+		 */
+		inline static void BeginProperties(const char* name)
+		{
+			constexpr ImGuiTableFlags flags = ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingStretchProp |
+				ImGuiTableFlags_BordersInner;
+
+			ImGui::BeginTable(name, 2, flags);
+			ImGui::TableSetupColumn("PropertyName", 0, 0.5f);
+			ImGui::TableSetupColumn("Property");
+		}
+
+		/**
+		 * Ends a table for displaying properties in the GUI.
+		 * @warning This function must always be paired with a call to BeginProperties(). Failure to do so will result in undefined behavior.
+		 */
+		inline static void EndProperties()
+		{
+			ImGui::EndTable();
+		}
+
+		/**
+		 * @brief Begins a property grid section in the GUI. This function starts a new row in the ImGui table
+		 * 		  and sets up the necessary layout for a property grid.
+		 * @warning This function must always be paired with a call to EndPropertyGrid(). Failure to do so will result in undefined behavior.
+		 * @param label The label for the property grid section.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param rightAlignNextColumn Whether to right-align the next column in the table.
+		 */
+		inline static void BeginPropertyGrid(const char* label, const char* tooltip = nullptr)
+		{
+			ImGui::TableNextRow();
+			ImGui::TableNextColumn();
+
+			ImGui::PushID(label);
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + ImGui::GetStyle().FramePadding.y * 0.5f);
+			ImGui::TextUnformatted(label);
+			if (tooltip && ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
+				ImGui::BeginTooltip();
+				ImGui::TextUnformatted(tooltip);
+				ImGui::EndTooltip();
+			}
+
+			ImGui::TableNextColumn();
+
+			ImGui::SetNextItemWidth(-FLT_MIN);
+		}
+
+		/**
+		 * @brief Ends a property grid section in the GUI. This function ends the current row in the ImGui table.
+		 * @warning This function must always be paired with a call to BeginPropertyGrid(). Failure to do so will result in undefined behavior.
+		 */
+		inline static void EndPropertyGrid()
+		{
+			ImGui::PopID();
+		}
+
+		/**
+		 * @brief Draws a single-line text input property in the GUI.
+		 * @tparam N The maximum length of the text input.
+		 * @param text The text to modify.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param flags Additional ImGui flags (optional).
+		 * @returns bool Whether the text was modified.
+		 */
+		template <int N = 64>
+		static bool SingleLineTextInputProperty(
+			std::string* text, const char* label, const char* toooltip = nullptr, ImGuiInputTextFlags flags = ImGuiInputTextFlags_None
+		) {
+			Properties::BeginPropertyGrid(label, toooltip);
+
+			bool modified = Components::SingleLineTextInput<N>(text, flags);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		/**
+		 * @brief Draws a single-line text input property in the GUI with deferred input.
+		 * @tparam N The maximum length of the text input.
+		 * @param text The text to modify.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param flags Additional ImGui flags (optional).
+		 * @returns bool Whether the text was modified.
+		 */
+		template <int N = 64>
+		static bool SingleLineTextInputDefferedProperty(
+			std::string* text, const char* label, const char* tooltip = nullptr, ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Components::SingleLineTextInput<N>(text, flags);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		/**
+		 * @brief Draws a multi-line text input property in the GUI.
+		 * @tparam N The maximum length of the text input.
+		 * @param text The text to modify.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param size The size of the text input box.
+		 * @param flags Additional ImGui flags (optional).
+		 * @returns bool Whether the text was modified.
+		 */
+		template <int N = 128>
+		static bool MultiLineTextInputProperty(
+			std::string* text, const char* label, const char* tooltip = nullptr, const ImVec2& size = ImVec2(0, 0),
+			ImGuiInputTextFlags flags = ImGuiInputTextFlags_None
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Components::MultiLineTextInput<N>(text, size, flags);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		/**
+		 * @brief Draws a multi-line text input property in the GUI with deferred input.
+		 * @tparam N The maximum length of the text input.
+		 * @param text The text to modify.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param size The size of the text input box.
+		 * @param flags Additional ImGui flags (optional).
+		 * @returns bool Whether the text was modified.
+		 */
+		template <int N = 128>
+		static bool MultiLineTextInputDefferedProperty(
+			std::string* text, const char* label, const char* tooltip = nullptr, const ImVec2& size = ImVec2(0, 0),
+			ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Components::MultiLineTextInput<N>(text, size, flags);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		/**
+		 * @brief Draws a checkbox property in the GUI.
+		 * @param value The value to modify.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param center Whether to center the checkbox.
+		 * @returns bool Whether the checkbox was modified.
+		 */
+		bool CheckboxProperty(bool* value, const char* label, const char* tooltip = nullptr, bool center = true);
+
+		/**
+		 * @brief Draws a toggle property in the GUI.
+		 * @param value The value to modify.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param center Whether to center the toggle.
+		 * @returns bool Whether the toggle was modified.
+		 */
+		bool ToggleProperty(bool* value, const char* label, const char* tooltip = nullptr, bool center = true);
+
+		/**
+		 * @brief Draws a toggle button property in the GUI.
+		 * @param value The value to modify.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param whenOnLabel The label to display when the toggle is on.
+		 * @param whenOffLabel The label to display when the toggle is off.
+		 * @param center Whether to center the toggle button.
+		 * @param buttonFlags Additional ImGui button flags (optional).
+		 * @returns bool Whether the toggle button was modified.
+		 */
+		bool ToggleButtonProperty(
+			bool* value, const char* label, const char* tooltip = nullptr, const char* whenOnLabel = nullptr,
+			const char* whenOffLabel = nullptr, bool center = true, ImGuiButtonFlags buttonFlags = ImGuiButtonFlags_None
+		);
+
+		/**
+		 * @brief Draws a radio button property in the GUI.
+		 * @tparam T The type of the value to modify.
+		 * @param value The value to modify.
+		 * @param options The list of options to display in the radio button.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param center Whether to center the radio button.
+		 * @param flags Additional ImGui combo flags (optional).
+		 * @returns bool Whether the radio button was modified.
+		 */
+		template <typename T>
+		static bool RadioButtonProperty(
+			T* value, const std::vector<Components::SelectOption<T>>& options, const char* label, const char* tooltip = nullptr,
+			bool center = true, ImGuiComboFlags flags = ImGuiComboFlags_None
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Components::RadioButton(value, options, center, flags);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		/**
+		 * @brief Draws a scalar input property in the GUI.
+		 * @tparam T The type of the value to modify.
+		 * @param value The value to modify.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param step The step value for the scalar input.
+		 * @param fastStep The fast step value for the scalar input.
+		 * @param format The format string for the scalar input.
+		 * @param flags Additional ImGui input flags (optional).
+		 * @returns bool Whether the scalar input was modified.
+		 */
+		template <typename T>
+			requires std::is_scalar_v<T>
+		static bool ScalarInputProperty(
+			T* value, const char* label, const char* tooltip = nullptr, T step = (T)1, T fastStep = (T)10,
+			const char* format = nullptr, ImGuiInputFlags flags = ImGuiInputTextFlags_None
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Components::ScalarInput(value, step, fastStep, format, flags);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		/**
+		 * @brief Draws a scalar slider property in the GUI.
+		 * @tparam T The type of the value to modify.
+		 * @param value The value to modify.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param min The minimum value for the scalar slider.
+		 * @param max The maximum value for the scalar slider.
+		 * @param format The format string for the scalar slider.
+		 * @param flags Additional ImGui input flags (optional).
+		 * @returns bool Whether the scalar slider was modified.
+		 */
+		template <typename T>
+			requires std::is_scalar_v<T>
+		static bool ScalarSliderProperty(
+			T* value, const char* label, const char* tooltip = nullptr, T min = (T)1, T max = (T)10,
+			const char* format = nullptr, ImGuiInputFlags flags = ImGuiInputTextFlags_None
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Components::ScalarSlider(value, min, max, format, flags);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		/**
+		 * @brief Draws a scalar drag property in the GUI.
+		 * @tparam T The type of the value to modify.
+		 * @param value The value to modify.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param speed The speed value for the scalar drag.
+		 * @param min The minimum value for the scalar drag.
+		 * @param max The maximum value for the scalar drag.
+		 * @param format The format string for the scalar drag.
+		 * @param flags Additional ImGui input flags (optional).
+		 * @returns bool Whether the scalar drag was modified.
+		 */
+		template <typename T>
+			requires std::is_scalar_v<T>
+		static bool ScalarDragProperty(
+			T* value, const char* label, const char* tooltip = nullptr, float speed = 1.f, T min = (T)1, T max = (T)10,
+			const char* format = nullptr, ImGuiInputFlags flags = ImGuiInputTextFlags_None
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Components::ScalarDrag(value, speed, min, max, format, flags);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		/**
+		 * @brief Draws a vector2 input property in the GUI.
+		 * @param vector The vector to modify.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param resetValue The reset value for the vector input.
+		 * @param min The minimum value for the vector input.
+		 * @param max The maximum value for the vector input.
+		 * @param format The format string for the vector input.
+		 * @returns bool Whether the vector input was modified.
+		 */
+		bool Vector2InputProperty(
+			glm::vec2* vector, const char* label, const char* tooltip = nullptr, f32 resetValue = 0.f,
+			f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
+		);
+
+		/**
+		 * @brief Draws a vector3 input property in the GUI.
+		 * @param vector The vector to modify.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param resetValue The reset value for the vector input.
+		 * @param min The minimum value for the vector input.
+		 * @param max The maximum value for the vector input.
+		 * @param format The format string for the vector input.
+		 * @returns bool Whether the vector input was modified.
+		 */
+		bool Vector3InputProperty(
+			glm::vec3* vector, const char* label, const char* tooltip = nullptr, f32 resetValue = 0.f,
+			f32 min = -FLT_MAX, f32 max = FLT_MAX, const std::string& format = "%.2f"
+		);
+
+		/**
+		 * @brief Draws a vector4 input property in the GUI.
+		 * @param vector The vector to modify.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param resetValue The reset value for the vector input.
+		 * @param min The minimum value for the vector input.
+		 * @param max The maximum value for the vector input.
+		 * @param format The format string for the vector input.
+		 * @returns bool Whether the vector input was modified.
+		 */
+		bool Vector3ColorPickerProperty(
+			glm::vec3* vector, const char* label, const char* tooltip = nullptr, ImGuiColorEditFlags flags = ImGuiColorEditFlags_None
+		);
+
+		/**
+		 * @brief Draws a vector4 input property in the GUI.
+		 * @param vector The vector to modify.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param flags Additional ImGui color edit flags (optional).
+		 * @returns bool Whether the vector input was modified.
+		 */
+		bool Vector4ColorPickerProperty(
+			glm::vec4* vector, const char* label, const char* tooltip = nullptr,
+			ImGuiColorEditFlags flags = ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreviewHalf
+		);
+
+		/**
+		 * @brief Draws a selectable property in the GUI.
+		 * @tparam T The type of the value to modify.
+		 * @param value The value to modify.
+		 * @param options The list of options to display in the selectable.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param flags Additional ImGui combo flags (optional).
+		 * @returns bool Whether the selectable was modified.
+		 */
+		template <typename T>
+		static bool SelectableProperty(
+			T* value, const std::vector<Components::SelectOption<T>>& options, const char* label, const char* tooltip = nullptr,
+			ImGuiComboFlags flags = ImGuiComboFlags_None
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Components::Selectable<T>(value, options, flags);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		/**
+		 * @brief Draws an asset search property in the GUI.
+		 * @tparam T The type of the asset to search for.
+		 * @param handle The handle to the asset to modify.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @returns bool Whether the asset search was modified.
+		 */
+		template <typename T>
+			requires std::is_base_of_v<Asset, T>
+		static bool AssetSearchProperty(AssetHandle* handle, const char* label, const char* tooltip = nullptr)
+		{
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Widgets::AssetSearch<T>(handle);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		/**
+		 * @brief Draws an entity dropdown property in the GUI.
+		 * @param ID The ID of the entity to modify.
+		 * @param scene The scene to search for the entity.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @returns bool Whether the entity dropdown was modified.
+		 */
+		bool EntityDropdownProperty(u64* ID, Scene* scene, const char* label, const char* tooltip = nullptr);
+
+		/**
+		 * @brief Draws an entity dropdown table property in the GUI.
+		 * @param vector The vector of entity IDs to display in the dropdown table.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @returns bool Whether the entity dropdown table was modified.
+		 */
+		template <typename T>
+			requires std::is_base_of_v<Asset, T>
+		static bool AssetDropdownTableProperty(
+			std::vector<T**>* vector, const char* label, const char* tooltip = nullptr
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Widgets::AssetDropdownTable<T>(vector);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		/**
+		 * @brief Draws an asset dropdown table map property in the GUI.
+		 * @tparam K The type of the key in the map.
+		 * @tparam V The type of the value in the map.
+		 * @param map The map of asset pointers to display in the dropdown table.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @returns bool Whether the asset dropdown table map was modified.
+		 */
+		template <typename K, typename V>
+			requires std::is_base_of_v<Asset, V>
+		static bool AssetDropdownTableMapProperty(
+			std::unordered_map<K, V**>& map, const char* label, const char* tooltip = nullptr
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Widgets::AssetDropdownTableMap<K, V>(map);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		/**
+		 * @brief Draws a folder picker property in the GUI.
+		 * @param path The path to the folder to modify.
+		 * @param relative The relative path to the folder.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @returns bool Whether the folder picker was modified.
+		 */
+		bool DrawFolderPickerProperty(
+			std::filesystem::path* path, const std::filesystem::path& relative,
+			const char* label = "Folder", const char* tooltip = nullptr
+		);
+
+		/**
+		 * @brief Draws a file picker property in the GUI.
+		 * @param path The path to the file to modify.
+		 * @param relative The relative path to the file.
+		 * @param filters The list of filters to apply to the file picker.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @returns bool Whether the file picker was modified.
+		 */
+		bool DrawFilePickerProperty(
+			std::filesystem::path* path, const std::filesystem::path& relative, const std::initializer_list<FileDialogFilterItem> filters,
+			const char* label = "File", const char* tooltip = nullptr
+		);
+
+		/**
+		 * @brief Draws a table of Vector2 values in the GUI.
+		 * @param vector The vector of Vector2 values to display in the table.
+		 * @param defaultValue The default value to use for empty cells in the table.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @returns bool Whether the table was modified.
+		 */
+		bool Vector2TableProperty(
+			std::vector<glm::vec2>* vector, const char* label = "File", const char* tooltip = nullptr, f32 defaultValue = 0.f
+		);
+
+		/**
+		 * @brief Draws a table of Vector3 values in the GUI.
+		 * @param vector The vector of Vector3 values to display in the table.
+		 * @param defaultValue The default value to use for empty cells in the table.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @returns bool Whether the table was modified.
+		 */
+		bool Vector3TableProperty(
+			std::vector<glm::vec3>* vector, const char* label = "File", const char* tooltip = nullptr, f32 defaultValue = 0.f
 		);
 	}
 

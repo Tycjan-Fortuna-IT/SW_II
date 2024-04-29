@@ -463,11 +463,6 @@ namespace SW::GUI2 {
 
 	}
 
-	namespace Properties {
-
-
-	}
-
 	namespace Widgets {
 
 		bool Splitter(bool splitVertically, f32 thickness, f32* size1, f32* size2, f32 minSize1, f32 minSize2, f32 splitterLongAxisSize /*= -1.0f*/)
@@ -570,7 +565,7 @@ namespace SW::GUI2 {
 			const f32 framePaddingY = ImGui::GetStyle().FramePadding.y;
 			constexpr f32 bw = 28.f;
 			constexpr f32 buttonOffset = 11.f;
-			constexpr f32 iconOffset = 4.f;
+			constexpr f32 iconOffset = 6.f;
 			constexpr f32 hintOffset = 28.f;
 
 			bool modified = false;
@@ -579,26 +574,7 @@ namespace SW::GUI2 {
 			std::string tag = "None";
 
 			const f32 w = ImGui::GetContentRegionAvail().x;
-
-			if (isPicked) {
-				tag = path->string();
-
-				ImGui::SameLine(w - bw + buttonOffset);
-				ImGui::SetNextItemAllowOverlap();
-
-				GUI2::ScopedColor Border(ImGuiCol_Border, ImVec4{ 1.f, 1.f , 1.f , 0.f });
-				GUI2::ScopedColor Button(ImGuiCol_Button, ImVec4{ 1.f, 1.f , 1.f , 0.f });
-
-				if (ImGui::Button(SW_ICON_CLOSE_OCTAGON, ImVec2{ bw, ImGui::GetFrameHeight() })) {
-					path->clear();
-					modified = true;
-				}
-
-				if (GUI2::IsItemHovered())
-					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			}
-
-			ImGui::SameLine(posx);
+			f32 inputWidth = 0.0f;
 
 			{
 				GUI2::ScopedStyle FrameRounding(ImGuiStyleVar_FrameRounding, 3.0f);
@@ -612,6 +588,7 @@ namespace SW::GUI2 {
 						modified = true;
 					}
 				}
+				inputWidth = ImGui::GetItemRectSize().x;
 
 				if (ImGui::IsItemHovered() && isPicked) {
 					std::filesystem::path fullPath = relative / *path;
@@ -623,34 +600,6 @@ namespace SW::GUI2 {
 
 				Components::ItemActivityOutline();
 			}
-
-			ImGui::SameLine(posx + iconOffset);
-
-			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::Selection);
-			ImGui::TextUnformatted(SW_ICON_FOLDER);
-			ImGui::PopStyleColor();
-
-			ImGui::SameLine(posx + hintOffset);
-			ImGui::TextUnformatted(tag.c_str());
-
-			return modified;
-		}
-
-		bool DrawFilePicker(std::filesystem::path* path, const std::filesystem::path& relative, const std::initializer_list<FileDialogFilterItem> filters)
-		{
-			const f32 posx = ImGui::GetCursorPosX();
-			const f32 framePaddingY = ImGui::GetStyle().FramePadding.y;
-			constexpr f32 bw = 28.f;
-			constexpr f32 buttonOffset = 11.f;
-			constexpr f32 iconOffset = 4.f;
-			constexpr f32 hintOffset = 28.f;
-
-			bool modified = false;
-			bool isPicked = !path->empty();
-
-			std::string tag = "None";
-
-			const f32 w = ImGui::GetContentRegionAvail().x;
 
 			if (isPicked) {
 				tag = path->string();
@@ -670,7 +619,33 @@ namespace SW::GUI2 {
 					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 			}
 
-			ImGui::SameLine(posx);
+			ImGui::SameLine(w - inputWidth - iconOffset + isPicked ? hintOffset : 0.f);
+			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::Selection);
+			ImGui::TextUnformatted(SW_ICON_FOLDER);
+			ImGui::PopStyleColor();
+
+			ImGui::SameLine(w - inputWidth - iconOffset + isPicked ? 0.f : hintOffset);
+			ImGui::TextUnformatted(tag.c_str());
+
+			return modified;
+		}
+
+		bool DrawFilePicker(std::filesystem::path* path, const std::filesystem::path& relative, const std::initializer_list<FileDialogFilterItem> filters)
+		{
+			const f32 posx = ImGui::GetCursorPosX();
+			const f32 framePaddingY = ImGui::GetStyle().FramePadding.y;
+			constexpr f32 bw = 28.f;
+			constexpr f32 buttonOffset = 11.f;
+			constexpr f32 iconOffset = 6.f;
+			constexpr f32 hintOffset = 28.f;
+
+			bool modified = false;
+			bool isPicked = !path->empty();
+
+			std::string tag = "None";
+
+			const f32 w = ImGui::GetContentRegionAvail().x;
+			f32 inputWidth = 0.0f;
 
 			{
 				GUI2::ScopedStyle FrameRounding(ImGuiStyleVar_FrameRounding, 3.0f);
@@ -684,6 +659,7 @@ namespace SW::GUI2 {
 						modified = true;
 					}
 				}
+				inputWidth = ImGui::GetItemRectSize().x;
 
 				if (ImGui::IsItemHovered() && isPicked) {
 					std::filesystem::path fullPath = relative / *path;
@@ -696,13 +672,30 @@ namespace SW::GUI2 {
 				Components::ItemActivityOutline();
 			}
 
-			ImGui::SameLine(posx + iconOffset);
+			if (isPicked) {
+				tag = path->string();
 
+				ImGui::SameLine(w - bw + buttonOffset);
+				ImGui::SetNextItemAllowOverlap();
+
+				GUI2::ScopedColor Border(ImGuiCol_Border, ImVec4{ 1.f, 1.f , 1.f , 0.f });
+				GUI2::ScopedColor Button(ImGuiCol_Button, ImVec4{ 1.f, 1.f , 1.f , 0.f });
+
+				if (ImGui::Button(SW_ICON_CLOSE_OCTAGON, ImVec2{ bw, ImGui::GetFrameHeight() })) {
+					path->clear();
+					modified = true;
+				}
+
+				if (GUI2::IsItemHovered())
+					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			}
+
+			ImGui::SameLine(w - inputWidth - iconOffset + isPicked ? hintOffset : 0.f);
 			ImGui::PushStyleColor(ImGuiCol_Text, GUI::Theme::Selection);
 			ImGui::TextUnformatted(SW_ICON_FILE);
 			ImGui::PopStyleColor();
 
-			ImGui::SameLine(posx + hintOffset);
+			ImGui::SameLine(w - inputWidth - iconOffset + isPicked ? 0.f : hintOffset);
 			ImGui::TextUnformatted(tag.c_str());
 
 			return modified;
@@ -816,6 +809,158 @@ namespace SW::GUI2 {
 				vector->erase(vector->begin() + removeAt);
 				modified = true;
 			}
+
+			return modified;
+		}
+
+	}
+
+	namespace Properties {
+
+		bool CheckboxProperty(bool* value, const char* label, const char* tooltip /*= nullptr*/, bool center /*= true*/)
+		{
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Components::Checkbox(value, center);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		bool ToggleProperty(bool* value, const char* label, const char* tooltip /*= nullptr*/, bool center /*= true*/)
+		{
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Components::Toggle(value, center);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		bool ToggleButtonProperty(
+			bool* value, const char* label, const char* tooltip /*= nullptr*/, const char* whenOnLabel /*= nullptr*/, const char* whenOffLabel /*= nullptr*/,
+			bool center /*= true*/, ImGuiButtonFlags buttonFlags /*= ImGuiButtonFlags_None */
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Components::ToggleButton(value, whenOnLabel, whenOffLabel, center, buttonFlags);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		bool Vector2InputProperty(
+			glm::vec2* vector, const char* label, const char* tooltip /*= nullptr*/, f32 resetValue /*= 0.f*/,
+			f32 min /*= -FLT_MAX*/, f32 max /*= FLT_MAX*/, const std::string& format /*= "%.2f" */
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Components::Vector2Input(vector, resetValue, min, max, format);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		bool Vector3InputProperty(
+			glm::vec3* vector, const char* label, const char* tooltip /*= nullptr*/, f32 resetValue /*= 0.f*/,
+			f32 min /*= -FLT_MAX*/, f32 max /*= FLT_MAX*/, const std::string& format /*= "%.2f" */
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Components::Vector3Input(vector, resetValue, min, max, format);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		bool Vector3ColorPickerProperty(glm::vec3* vector, const char* label, const char* tooltip /*= nullptr*/, ImGuiColorEditFlags flags /*= ImGuiColorEditFlags_None */)
+		{
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Components::Vector3ColorPicker(vector, flags);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		bool Vector4ColorPickerProperty(
+			glm::vec4* vector, const char* label, const char* tooltip /*= nullptr*/,
+			ImGuiColorEditFlags flags /*= ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreviewHalf */
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Components::Vector4ColorPicker(vector, flags);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		bool EntityDropdownProperty(u64* ID, Scene* scene, const char* label, const char* tooltip /*= nullptr*/)
+		{
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Widgets::EntityDropdown(ID, scene);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		bool DrawFolderPickerProperty(
+			std::filesystem::path* path, const std::filesystem::path& relative,
+			const char* label /*= "Folder"*/, const char* tooltip /*= nullptr */
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Widgets::DrawFolderPicker(path, relative);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		bool DrawFilePickerProperty(
+			std::filesystem::path* path, const std::filesystem::path& relative,
+			const std::initializer_list<FileDialogFilterItem> filters, const char* label /*= "File"*/, const char* tooltip /*= nullptr */
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Widgets::DrawFilePicker(path, relative, filters);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		bool Vector2TableProperty(
+			std::vector<glm::vec2>* vector, const char* label /*= "File"*/, const char* tooltip /*= nullptr*/,
+			f32 defaultValue /*= 0.f */
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Widgets::Vector2Table(vector, defaultValue);
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
+		bool Vector3TableProperty(
+			std::vector<glm::vec3>* vector, const char* label /*= "File"*/, const char* tooltip /*= nullptr*/,
+			f32 defaultValue /*= 0.f */
+		) {
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			bool modified = Widgets::Vector3Table(vector, defaultValue);
+
+			Properties::EndPropertyGrid();
 
 			return modified;
 		}
