@@ -19,6 +19,8 @@
  *  User of the components is responsible for proper unique ID handling.
  */
 #pragma once
+#include "Core/OpenGL/Texture2D.hpp"
+#include "GUI.hpp" // temp
 
 #define USE_TEXTURE_2D_METHODS
 #define USE_ASSET_MANAGER_PLUGIN
@@ -545,19 +547,19 @@ namespace SW::GUI2 {
 		);
 
 		/**
-		 * @brief Displays a button with an image. (centered image inside button without any text) Works best for square images.
+		 * @brief Displays a button with an image. (centered image inside button without any text)
+		 *
 		 * @param texture Texture to be displayed.
-		 * @param size Size of the button (texture size).
-		 * @param center (optional) Whether the toggle should be centered in the GUI.
+		 * @param size Size of the button.
+		 * @param tintHovered Color of the button's icon when hovered.
 		 * @return bool True if the button was pressed, false otherwise.
 		 */
-		bool ImageButton(ImTextureID textureId, const glm::vec2& size, bool center = true);
+		bool ImageButton(const Texture2D& texture, const glm::vec2& size, ImU32 tintHovered = Color::DarkGray);
 
 		/**
 		 * @brief Single option for radio button.
 		 */
 		template <typename T>
-			requires std::is_integral_v<T>
 		struct SelectOption
 		{
 			std::string Label = "No label";
@@ -625,8 +627,10 @@ namespace SW::GUI2 {
 		*/
 		template <typename T>
 			requires std::is_scalar_v<T>
-		static bool ScalarInput(T* value, T step = (T)1, T fastStep = (T)10, const char* format = nullptr, ImGuiInputFlags flags = ImGuiInputTextFlags_None)
-		{
+		static bool ScalarInput(
+			T* value, T step = (T)1, T fastStep = (T)10, T min = std::numeric_limits<T>::lowest(), T max = std::numeric_limits<T>::max(),
+			const char* format = nullptr, ImGuiInputFlags flags = ImGuiInputTextFlags_None
+		) {
 			bool modified = false;
 
 			constexpr ImGuiDataType dataType = GetScalarDatatype<T>();
@@ -635,8 +639,12 @@ namespace SW::GUI2 {
 
 			ImGui::SetNextItemWidth(w);
 
-			if (ImGui::InputScalar("##input_scalar", dataType, value, &step, &fastStep, format, flags))
+			T temp = *value;
+			if (ImGui::InputScalar("##input_scalar", dataType, &temp, &step, &fastStep, format, flags)) {
 				modified = true;
+
+				*value = std::clamp(temp, min, max);
+			}
 
 			Components::ItemActivityOutline();
 
@@ -686,8 +694,10 @@ namespace SW::GUI2 {
 		 */
 		template <typename T>
 			requires std::is_scalar_v<T>
-		static bool ScalarDrag(T* value, float speed = 1.f, T min = (T)1, T max = (T)10, const char* format = nullptr, ImGuiInputFlags flags = ImGuiInputTextFlags_None)
-		{
+		static bool ScalarDrag(
+			T* value, float speed = 1.f, T min = std::numeric_limits<T>::lowest(), T max = std::numeric_limits<T>::max(),
+			const char* format = nullptr, ImGuiInputFlags flags = ImGuiInputTextFlags_None
+		) {
 			bool modified = false;
 
 			constexpr ImGuiDataType dataType = GUI2::GetScalarDatatype<T>();
@@ -790,7 +800,7 @@ namespace SW::GUI2 {
 			const f32 framePaddingY = ImGui::GetStyle().FramePadding.y;
 			constexpr f32 bw = 28.f;
 			constexpr f32 buttonOffset = 11.f;
-			constexpr f32 searchIconOffset = 4.f;
+			constexpr f32 searchIconOffset = 1.f;
 			constexpr f32 searchHintOffset = 20.f;
 
 			bool modified = false;
@@ -1112,7 +1122,7 @@ namespace SW::GUI2 {
 		template <typename K, typename V>
 			requires std::is_base_of_v<Asset, V>
 		static bool AssetDropdownTableMap(
-			std::unordered_map<K, V**>& map
+			std::unordered_map<K, V**>* map
 		) {
 			bool modified = false;
 
@@ -1125,7 +1135,7 @@ namespace SW::GUI2 {
 				ImGui::TableSetupColumn("Actions");
 				ImGui::TableHeadersRow();
 
-				for (auto it = map.begin(); it != map.end(); /* no increment here */) {
+				for (auto it = map->begin(); it != map->end(); /* no increment here */) {
 					ImGui::TableNextRow();
 					ImGui::TableNextColumn();
 
@@ -1134,8 +1144,8 @@ namespace SW::GUI2 {
 					ImGui::PushID(it->first.c_str());
 					if (GUI2::Components::SingleLineTextInputDeffered<64>(&key)) {
 						auto value = it->second;
-						it = map.erase(it);
-						map[key] = value;
+						it = map->erase(it);
+						(*map)[key] = value;
 						modified = true;
 						ImGui::PopID();
 						continue; // Skip the increment because we've modified the map
@@ -1145,13 +1155,21 @@ namespace SW::GUI2 {
 
 					const AssetMetaData& metadata = AssetManager::GetAssetMetaData((*it->second)->GetHandle());
 
-					ImGui::Text("%s", metadata.Path.string().c_str());
+					ImGui::Text("%s", metadata.Path.stem().string().c_str());
+
+					if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
+						GUI2::ScopedStyle Padding(ImGuiStyleVar_WindowPadding, ImVec2(4.0f, 4.0f));
+						ImGui::BeginTooltip();
+						ImGui::Text("ID: %llu", metadata.Handle);
+						ImGui::Text("Path: %s", metadata.Path.string().c_str());
+						ImGui::EndTooltip();
+					}
 
 					ImGui::TableNextColumn();
 
 					if (ImGui::Button(SW_ICON_CLOSE_OCTAGON, { ImGui::GetFrameHeight(), ImGui::GetFrameHeight() })) {
 						auto value = it->second;
-						it = map.erase(it);
+						it = map->erase(it);
 						modified = true;
 						ImGui::PopID();
 						continue; // Skip the increment because we've modified the map
@@ -1172,7 +1190,7 @@ namespace SW::GUI2 {
 					u64 handle = *static_cast<u64*>(payload->Data);
 
 					V** newElement = AssetManager::GetAssetRaw<V>(handle);
-					map[std::to_string(rand())] = newElement;
+					(*map)[std::to_string(rand())] = newElement;
 
 					modified = true;
 				}
@@ -1456,6 +1474,16 @@ namespace SW::GUI2 {
 		bool ToggleProperty(bool* value, const char* label, const char* tooltip = nullptr, bool center = true);
 
 		/**
+		 * @brief Draws a button property in the GUI.
+		 * @param icon The icon to display on the button.
+		 * @param label The label for the property.
+		 * @param tooltip An optional tooltip to display when hovering over the label.
+		 * @param size The size of the button.
+		 * @returns bool Whether the button was modified.
+		 */
+		bool ButtonProperty(const char* icon, const char* label, const char* tooltip = nullptr, glm::vec2 size = glm::vec2(40.0f));
+
+		/**
 		 * @brief Draws a toggle button property in the GUI.
 		 * @param value The value to modify.
 		 * @param label The label for the property.
@@ -1512,11 +1540,12 @@ namespace SW::GUI2 {
 			requires std::is_scalar_v<T>
 		static bool ScalarInputProperty(
 			T* value, const char* label, const char* tooltip = nullptr, T step = (T)1, T fastStep = (T)10,
+			T min = std::numeric_limits<T>::lowest(), T max = std::numeric_limits<T>::max(),
 			const char* format = nullptr, ImGuiInputFlags flags = ImGuiInputTextFlags_None
 		) {
 			Properties::BeginPropertyGrid(label, tooltip);
 
-			bool modified = Components::ScalarInput(value, step, fastStep, format, flags);
+			bool modified = Components::ScalarInput(value, step, fastStep, min, max, format, flags);
 
 			Properties::EndPropertyGrid();
 
@@ -1566,7 +1595,8 @@ namespace SW::GUI2 {
 		template <typename T>
 			requires std::is_scalar_v<T>
 		static bool ScalarDragProperty(
-			T* value, const char* label, const char* tooltip = nullptr, float speed = 1.f, T min = (T)1, T max = (T)10,
+			T* value, const char* label, const char* tooltip = nullptr, float speed = 1.f,
+			T min = std::numeric_limits<T>::lowest(), T max = std::numeric_limits<T>::max(),
 			const char* format = nullptr, ImGuiInputFlags flags = ImGuiInputTextFlags_None
 		) {
 			Properties::BeginPropertyGrid(label, tooltip);
@@ -1726,7 +1756,7 @@ namespace SW::GUI2 {
 		template <typename K, typename V>
 			requires std::is_base_of_v<Asset, V>
 		static bool AssetDropdownTableMapProperty(
-			std::unordered_map<K, V**>& map, const char* label, const char* tooltip = nullptr
+			std::unordered_map<K, V**>* map, const char* label, const char* tooltip = nullptr
 		) {
 			Properties::BeginPropertyGrid(label, tooltip);
 
@@ -1786,6 +1816,23 @@ namespace SW::GUI2 {
 		 */
 		bool Vector3TableProperty(
 			std::vector<glm::vec3>* vector, const char* label = "File", const char* tooltip = nullptr, f32 defaultValue = 0.f
+		);
+
+		/**
+		 * @brief Draws a part of an image with customizable properties.
+		 *
+		 * @param wholeImage Pointer to the Texture2D object representing the whole image.
+		 * @param label The label for the property grid.
+		 * @param tooltip Optional tooltip for the property grid.
+		 * @param offset The offset of the image part within the whole image.
+		 * @param size The size of the image part.
+		 * @param tint The tint color of the image part.
+		 * @param showBorder Show border around the image.
+		 */
+		void DrawImagePartProperty(
+			Texture2D* wholeImage, const char* label, const char* tooltip = nullptr,
+			glm::vec2 offset = glm::vec2(0.0f), glm::vec2 size = glm::vec2(0.0f), glm::vec4 tint = glm::vec4(1.0f),
+			bool showBorder = false
 		);
 	}
 

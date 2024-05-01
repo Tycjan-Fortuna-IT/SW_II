@@ -15,7 +15,7 @@
 #include "../../EngineEditor/src/Panels/AssetPanel.cpp"
 #include "../../EngineEditor/src/Panels/AssetPanel.hpp"
 #include "Core/Utils/FileSystem.hpp"
-#include "GUI_V2.hpp"
+#include "GUI/GUI_V2.hpp"
 
 namespace SW {
 
@@ -297,6 +297,7 @@ namespace SW {
 		}
 #endif // 0
 
+#if 0
 		{
 			GUI2::Properties::BeginProperties("##tag_property");
 			
@@ -314,11 +315,11 @@ namespace SW {
 				{ "Radio1", 0 }, { "Radio2", 1 }
 			}, "Radio", "Tooltip");
 			static int scalar = 0;
-			GUI2::Properties::ScalarInputProperty<int>(&scalar, "Scalar", "Tooltip", 1, 10);
+			GUI2::Properties::ScalarInputProperty<int>(&scalar, "Scalar", "Tooltip", 1, 10, 0, 20);
 			static f32 scalar2 = 0.0f;
-			GUI2::Properties::ScalarInputProperty<f32>(&scalar2, "Scalar2", "Tooltip", 1, 10);
+			GUI2::Properties::ScalarInputProperty<f32>(&scalar2, "Scalar2", "Tooltip", 1, 10, 0, 20);
 			static f64 scalar3 = 0.0;
-			GUI2::Properties::ScalarInputProperty<f64>(&scalar3, "Scalar3", "Tooltip", 1, 10);
+			GUI2::Properties::ScalarInputProperty<f64>(&scalar3, "Scalar3", "Tooltip", 1, 10, 0, 20);
 
 			static int slider = 0;
 			GUI2::Properties::ScalarSliderProperty<int>(&slider, "Slider", "Tooltip", 1, 10);
@@ -359,7 +360,7 @@ namespace SW {
 			GUI2::Properties::AssetDropdownTableProperty<Texture2D>(&textures, "Texture Table", "Tooltip");
 
 			static std::unordered_map<std::string, Texture2D**> texturesMap;
-			GUI2::Properties::AssetDropdownTableMapProperty<std::string, Texture2D>(texturesMap, "Texture Table Map", "Tooltip");
+			GUI2::Properties::AssetDropdownTableMapProperty<std::string, Texture2D>(&texturesMap, "Texture Table Map", "Tooltip");
 
 			static std::filesystem::path folder;
 			GUI2::Properties::DrawFolderPickerProperty(&folder, ProjectContext::Get()->GetAssetDirectory(), "Folder", "Tooltip");
@@ -375,8 +376,7 @@ namespace SW {
 
 			GUI2::Properties::EndProperties();
 		}
-		
-
+#endif
 		ImGui::End();
 
 		ImGui::ShowDemoWindow();

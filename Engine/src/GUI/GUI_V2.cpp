@@ -16,7 +16,7 @@ namespace SW::GUI2 {
 
 			const ImVec2 padding = window->WindowPadding;
 
-			ImRect bar = GUI::RectOffset(barRectangle, 0.0f, padding.y);
+			ImRect bar = GUI2::RectOffset(barRectangle, 0.0f, padding.y);
 
 			ImRect clip(
 				IM_ROUND(
@@ -150,7 +150,7 @@ namespace SW::GUI2 {
 			f32 width = ImGui::GetIO().FontGlobalScale * ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
 
 			if (center)
-				GUI::MoveMousePosX(w / 2 - width / 2);
+				GUI2::MoveMousePosX(w / 2 - width / 2);
 
 			modified = ImGui::Checkbox("##checkbox", value);
 
@@ -173,7 +173,7 @@ namespace SW::GUI2 {
 			bool modified = false;
 			const f32 w = ImGui::GetContentRegionAvail().x;
 			if (center)
-				GUI::MoveMousePosX(w / 2 - width / 2);
+				GUI2::MoveMousePosX(w / 2 - width / 2);
 
 			const ImVec2 p = ImGui::GetCursorScreenPos();
 
@@ -216,8 +216,8 @@ namespace SW::GUI2 {
 			constexpr f32 spacingX = 8.0f;
 			const ImVec2 size = ImGui::GetContentRegionAvail();
 
-			GUI::ScopedStyle itemSpacing(ImGuiStyleVar_ItemSpacing, ImVec2{ spacingX, 0.0f });
-			GUI::ScopedStyle padding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 2.0f });
+			GUI2::ScopedStyle itemSpacing(ImGuiStyleVar_ItemSpacing, ImVec2{ spacingX, 0.0f });
+			GUI2::ScopedStyle padding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 2.0f });
 
 			constexpr f32 framePadding = 2.0f;
 			const f32 lineHeight = GImGui->Font->FontSize + framePadding * 2.0f;
@@ -287,8 +287,8 @@ namespace SW::GUI2 {
 			constexpr f32 spacingX = 7.0f;
 			const ImVec2 size = ImGui::GetContentRegionAvail();
 
-			GUI::ScopedStyle itemSpacing(ImGuiStyleVar_ItemSpacing, ImVec2{ spacingX, 0.0f });
-			GUI::ScopedStyle padding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 2.0f });
+			GUI2::ScopedStyle itemSpacing(ImGuiStyleVar_ItemSpacing, ImVec2{ spacingX, 0.0f });
+			GUI2::ScopedStyle padding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 2.0f });
 
 			constexpr f32 framePadding = 2.0f;
 			const f32 lineHeight = GImGui->Font->FontSize + framePadding * 2.0f;
@@ -425,7 +425,7 @@ namespace SW::GUI2 {
 			f32 textSize = ImGui::CalcTextSize(*value ? whenOnLabel : whenOffLabel).x;
 
 			if (center)
-				GUI::MoveMousePosX(w / 2 - textSize / 2 - width / 2);
+				GUI2::MoveMousePosX(w / 2 - textSize / 2 - width / 2);
 
 			if (ImGui::ButtonEx(*value ? whenOnLabel : whenOffLabel, { 0, 0 }, buttonFlags)) {
 				*value = !*value;
@@ -440,23 +440,23 @@ namespace SW::GUI2 {
 			return modified;
 		}
 
-		bool ImageButton(ImTextureID textureId, const glm::vec2& size, bool center /*= true*/)
+		bool ImageButton(const Texture2D& texture, const glm::vec2& size, ImU32 tintHovered /*= Color::DarkGray*/)
 		{
-			const f32 w = ImGui::GetContentRegionAvail().x;
+			const f32 padding = (size.y - (f32)texture.GetHeight()) / 2.0f;
 
-			if (center)
-				GUI::MoveMousePosX(w / 2 - size.x / 2);
-
-			if (ImGui::InvisibleButton("##image_button", ImVec2(size.x, size.y)))
+			if (ImGui::InvisibleButton(std::to_string(texture.GetTexHandle()).c_str(), ImVec2(size.x, size.y)))
 				return true;
 
 			ImDrawList* drawList = ImGui::GetWindowDrawList();
-			ImVec2 min = ImGui::GetItemRectMin() + ImVec2(2.0f, 2.0f);
-			ImVec2 max = ImGui::GetItemRectMax() - ImVec2(2.0f, 2.0f);
 
-			drawList->AddImage(textureId, min, max, { 0, 1 }, { 1, 0 });
+			const ImRect rect = GUI::RectExpanded(GUI::GetItemRect(), -padding, -padding);
 
-			Components::ItemActivityOutline();
+			const ImTextureID ID = GUI::GetTextureID(texture);
+
+			if (ImGui::IsItemHovered())
+				drawList->AddImage(ID, rect.Min, rect.Max, { 0, 1 }, { 1, 0 }, tintHovered);
+			else
+				drawList->AddImage(ID, rect.Min, rect.Max, { 0, 1 }, { 1, 0 });
 
 			return false;
 		}
@@ -839,6 +839,22 @@ namespace SW::GUI2 {
 			return modified;
 		}
 
+		bool ButtonProperty(
+			const char* icon, const char* label, const char* tooltip /*= nullptr*/, glm::vec2 size /*= glm::vec2(40.0f)*/
+		) {
+			bool modified = false;
+
+			Properties::BeginPropertyGrid(label, tooltip);
+
+			GUI2::MoveMousePosX(ImGui::GetColumnWidth() / 2.0f - ImGui::GetStyle().FramePadding.x - 7.5f);
+
+			modified = ImGui::Button(icon, { size.x, size.y });
+
+			Properties::EndPropertyGrid();
+
+			return modified;
+		}
+
 		bool ToggleButtonProperty(
 			bool* value, const char* label, const char* tooltip /*= nullptr*/, const char* whenOnLabel /*= nullptr*/, const char* whenOffLabel /*= nullptr*/,
 			bool center /*= true*/, ImGuiButtonFlags buttonFlags /*= ImGuiButtonFlags_None */
@@ -963,6 +979,42 @@ namespace SW::GUI2 {
 			Properties::EndPropertyGrid();
 
 			return modified;
+		}
+
+		void DrawImagePartProperty(
+			Texture2D* wholeImage, const char* label, const char* tooltip /*= nullptr*/,
+			glm::vec2 offset /*= glm::vec2(0.0f)*/, glm::vec2 size /*= glm::vec2(0.0f)*/, glm::vec4 tint /*= glm::vec4(1.0f)*/,
+			bool showBorder /*= false */
+		) {
+			f32 width = (f32)wholeImage->GetWidth();
+			f32 height = (f32)wholeImage->GetHeight();
+
+			GUI2::Properties::BeginPropertyGrid(label, tooltip);
+
+			ImVec2 uv0 = ImVec2(offset.x / width, (height - offset.y) / height);
+			ImVec2 uv1 = ImVec2((offset.x + size.x) / width, (height - offset.y - (size.y)) / height);
+
+			f32 originalImageWidth = size.x;
+			f32 originalImageHeight = size.y;
+
+			ImVec2 space = ImGui::GetContentRegionAvail();
+			ImVec2 imagePartSize = ImVec2(originalImageWidth, originalImageHeight);
+
+			// if image is smaller than the space, scale it up
+			// this nasty way, because of variations and flickering of ImGui::GetContentRegionAvail() at certain column sizes.
+			if (originalImageHeight < space.x) {
+				f32 scale = std::floor(space.x / originalImageWidth);
+				imagePartSize = ImVec2(originalImageWidth * scale, originalImageHeight * scale);
+			}
+
+			const ImVec4 borderCol = showBorder ?
+				ImGui::ColorConvertU32ToFloat4(GUI::Theme::TextBrighter) : ImVec4(0.f, 0.f, 0.f, 0.f);
+
+			ImGui::Image(
+				GUI2::GetTextureID(wholeImage->GetTexHandle()), imagePartSize, uv0, uv1, { tint.r, tint.g, tint.b, tint.a }, borderCol
+			);
+
+			GUI2::Properties::EndPropertyGrid();
 		}
 
 	}

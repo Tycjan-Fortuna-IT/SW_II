@@ -414,7 +414,7 @@ Assets:
   - Handle: 16891725904374815267
     Path: assets.sw_registry
     Type: Unknown
-    ModificationTime: 133581226101475662
+    ModificationTime: 133590615652197969
   - Handle: 16920539836090114160
     Path: sprites\person\run\7.sw_sprite
     Type: Sprite

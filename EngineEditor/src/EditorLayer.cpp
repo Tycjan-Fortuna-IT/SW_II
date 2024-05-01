@@ -15,7 +15,7 @@
 #include "Core/Scripting/ScriptingCore.hpp"
 #include "GUI/Editor/EditorResources.hpp"
 #include "AssetPanels/AssetEditorPanelManager.hpp"
-#include "Asset/AssetLoader.hpp"
+#include "GUI/GUI_V2.hpp"
 
 namespace SW {
 
@@ -125,7 +125,7 @@ namespace SW {
 			const ImVec2 logoRectStart = { ImGui::GetItemRectMin().x + logoOffset.x, ImGui::GetItemRectMin().y + logoOffset.y };
 			const ImVec2 logoRectMax = { logoRectStart.x + logoWidth, logoRectStart.y + logoHeight };
 
-			drawList->AddImage(GUI::GetTextureID(EditorResources::SW_Icon), logoRectStart, logoRectMax, { 0, 1 }, { 1, 0 });
+			drawList->AddImage(GUI2::GetTextureID(EditorResources::SW_Icon), logoRectStart, logoRectMax, { 0, 1 }, { 1, 0 });
 		}
 
 		const f32 w = ImGui::GetContentRegionAvail().x;
@@ -147,8 +147,8 @@ namespace SW {
 
 		{
 			if (ProjectContext::Get()) {
-				GUI::ScopedColor TextColor(ImGuiCol_Text, Color::TextDarker);
-				GUI::ScopedColor BorderColor(ImGuiCol_Border, Color::BorderDarker);
+				GUI2::ScopedColor TextColor(ImGuiCol_Text, Color::TextDarker);
+				GUI2::ScopedColor BorderColor(ImGuiCol_Border, Color::BorderDarker);
 
 				const std::string projectName = ProjectContext::Get()->GetConfig().Name;
 				const ImVec2 textSize = ImGui::CalcTextSize(projectName.c_str());
@@ -161,13 +161,14 @@ namespace SW {
 
 				ImGui::Text(projectName.c_str());
 
-				GUI::DrawBorder(GUI::RectExpanded(GUI::GetItemRect(), 24.0f, 68.0f), 1.0f, 3.0f, 0.0f, -60.0f);
+				GUI2::Components::RectangleOutline(GUI2::RectExpanded(GUI2::GetItemRect(), 24.0f, 68.0f), GUI::Theme::Outline,
+					1.0f, 3.0f, 0.0f, -60.0f);
 			}
 		}
 
 		{
-			GUI::ScopedColor TextColor(ImGuiCol_Text, Color::TextDarker);
-			GUI::ScopedColor BorderColor(ImGuiCol_Border, Color::BorderDarker);
+			GUI2::ScopedColor TextColor(ImGuiCol_Text, Color::TextDarker);
+			GUI2::ScopedColor BorderColor(ImGuiCol_Border, Color::BorderDarker);
 
 			const std::string memoryText = "MEM: " + String::GetAllocatedMemoryString();
 			const ImVec2 textSize = ImGui::CalcTextSize(memoryText.c_str());
@@ -179,7 +180,8 @@ namespace SW {
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f + windowPadding.y);
 			ImGui::Text(memoryText.c_str());
 
-			GUI::DrawBorder(GUI::RectExpanded(GUI::GetItemRect(), 24.0f, 68.0f), 1.0f, 3.0f, 0.0f, -60.0f);
+			GUI2::Components::RectangleOutline(GUI2::RectExpanded(GUI2::GetItemRect(), 24.0f, 68.0f), GUI::Theme::Outline, 
+				1.0f, 3.0f, 0.0f, -60.0f);
 
 			if (ImGui::IsItemHovered()) {
 				ImGui::BeginTooltip();
@@ -196,7 +198,7 @@ namespace SW {
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
 			ImGui::SetItemAllowOverlap();
 
-			if (GUI::ImageButton(*EditorResources::MinimizeIcon, { 40.f, 40.f })) {
+			if (GUI2::Components::ImageButton(*EditorResources::MinimizeIcon, { 40.f, 40.f })) {
 				Application::Get()->GetWindow()->Minimize();
 			}
 		}
@@ -211,11 +213,11 @@ namespace SW {
 			ImGui::SetItemAllowOverlap();
 
 			if (m_WindowMaximized) {
-				if (GUI::ImageButton(*EditorResources::RestoreIcon, { 40.f, 40.f })) {
+				if (GUI2::Components::ImageButton(*EditorResources::RestoreIcon, { 40.f, 40.f })) {
 					Application::Get()->GetWindow()->Restore();
 				}
 			} else {
-				if (GUI::ImageButton(*EditorResources::MaximizeIcon, { 40.f, 40.f })) {
+				if (GUI2::Components::ImageButton(*EditorResources::MaximizeIcon, { 40.f, 40.f })) {
 					Application::Get()->GetWindow()->Maximize();
 				}
 			}
@@ -229,7 +231,7 @@ namespace SW {
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
 			ImGui::SetItemAllowOverlap();
 
-			if (GUI::ImageButton(*EditorResources::CloseIcon, { 40.f, 40.f })) {
+			if (GUI2::Components::ImageButton(*EditorResources::CloseIcon, { 40.f, 40.f })) {
 				Application::Get()->Close();
 			}
 		}
@@ -249,9 +251,9 @@ namespace SW {
 
 		ImGui::BeginGroup();
 
-		if (GUI::BeginMenuBar(menuBarRect)) {
-			GUI::ScopedColor HeaderColor(ImGuiCol_Header, Color::DarkGray);
-			GUI::ScopedColor HeaderHoveredColor(ImGuiCol_HeaderHovered, Color::DarkGray);
+		if (GUI2::Layout::BeginMenuBar(menuBarRect)) {
+			GUI2::ScopedColor HeaderColor(ImGuiCol_Header, Color::DarkGray);
+			GUI2::ScopedColor HeaderHoveredColor(ImGuiCol_HeaderHovered, Color::DarkGray);
 
 			if (ImGui::BeginMenu("File")) {
 				if (ProjectContext::HasContext()) { // project must be opened to create new scene
@@ -291,7 +293,7 @@ namespace SW {
 				ImGui::EndMenu();
 			}
 		}
-		GUI::EndMenuBar();
+		GUI2::Layout::EndMenuBar();
 
 
 		ImGui::EndGroup();
@@ -306,7 +308,7 @@ namespace SW {
 		window->RegisterOverTitlebar(false);
 		m_WindowMaximized = window->IsCurrentlyMaximized();
 		
-		GUI::CreateDockspace("Main dockspace", [this]() -> f32 {
+		GUI2::Layout::CreateDockspace("Main dockspace", [this]() -> f32 {
 			return DrawTitleBar();
 		});
 
@@ -331,9 +333,9 @@ namespace SW {
 
 			static std::string newProjectName;
 
-			GUI::BeginProperties("##new_scene_name");
-			GUI::DrawSingleLineTextInputProperty<256>(newProjectName, "Name");
-			GUI::EndProperties();
+			GUI2::Properties::BeginProperties("##new_scene_name");
+			GUI2::Properties::SingleLineTextInputProperty<128>(&newProjectName, "Name");
+			GUI2::Properties::EndProperties();
 
 			if (!newProjectName.empty()) { // TODO fixme - NEW BETTER POPUP
 				if (ImGui::Button("Create", ImVec2(100.f, 0))) {

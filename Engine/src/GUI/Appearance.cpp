@@ -132,6 +132,7 @@ namespace SW::GUI {
 		// Tables
 		c[ImGuiCol_TableHeaderBg] = s_Colors.TableHeaderBackground;
 		c[ImGuiCol_TableBorderLight] = s_Colors.TableBorderLight;
+		c[ImGuiCol_TableBorderStrong] = s_Colors.TableBorderStrong;
 
 		// Menubar
 		c[ImGuiCol_MenuBarBg] = s_Colors.MenuBarBackground;

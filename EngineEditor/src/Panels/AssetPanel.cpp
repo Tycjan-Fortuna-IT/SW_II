@@ -1,11 +1,7 @@
 #include "AssetPanel.hpp"
 
-#include "Core/Utils/Utils.hpp"
 #include "GUI/Icons.hpp"
-#include "Core/Debug/LogSystem.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
-#include "GUI/GUI.hpp"
-#include "GUI/Colors.hpp"
 #include "GUI/Appearance.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Utils/FileSystem.hpp"
@@ -20,7 +16,7 @@
 #include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.hpp" // TODO - remove (because of Testbed)
 #include "Asset/Animation2D.hpp"
 #include "Asset/Prefab.hpp"
-#include "Asset/AssetLoader.hpp"
+#include "GUI/GUI_V2.hpp"
 
 namespace SW {
 
@@ -58,8 +54,8 @@ namespace SW {
 
 	void AssetPanel::OnRender()
 	{
-		GUI::ScopedColor PanelBackground(ImGuiCol_WindowBg, GUI::Colors::Darken(GUI::Appearance::GetColors().ChildBackground, 0.02f));
-		GUI::ScopedStyle CellPadding(ImGuiStyleVar_CellPadding, ImVec2{ 0.0f, 0.0f });
+		GUI2::ScopedColor PanelBackground(ImGuiCol_WindowBg, GUI::Colors::Darken(GUI::Appearance::GetColors().ChildBackground, 0.02f));
+		GUI2::ScopedStyle CellPadding(ImGuiStyleVar_CellPadding, ImVec2{ 0.0f, 0.0f });
 
 		if (OnBegin()) {
 			if (ProjectContext::HasContext()) {
@@ -121,15 +117,15 @@ namespace SW {
 		ImGui::SameLine();
 
 		if (ImGui::BeginPopup("SettingsPopup")) {
-			GUI::BeginProperties("##thumbnail_size");
-			GUI::DrawIntegralProperty(m_ThumbnailSize, "Thumbnail Size", nullptr, 200, 400);
-			if (GUI::DrawButtonProperty(SW_ICON_DELETE, "Clear thumbnail cache", nullptr, { 34.f, 34.f })) {
+			GUI2::Properties::BeginProperties("##thumbnail_size");
+			GUI2::Properties::ScalarSliderProperty<int>(&m_ThumbnailSize, "Thumbnail Size", nullptr, 200, 400);
+			if (GUI2::Properties::ButtonProperty(SW_ICON_DELETE, "Clear thumbnail cache", nullptr, { 34.f, 34.f })) {
 				m_Cache.Clear();
 
 				LoadDirectoryEntries();
 			}
 
-			GUI::EndProperties();
+			GUI2::Properties::EndProperties();
 
 			ImGui::EndPopup();
 		}
@@ -353,9 +349,9 @@ namespace SW {
 			| ImGuiTableFlags_BordersOuterV
 			| ImGuiTableFlags_SizingFixedFit;
 
-		GUI::ScopedStyle CellPadding(ImGuiStyleVar_CellPadding, ImVec2(4.f, 1.f));
+		GUI2::ScopedStyle CellPadding(ImGuiStyleVar_CellPadding, ImVec2(4.f, 1.f));
 
-		ImTextureID whiteTexId = GUI::GetTextureID(Renderer2D::WhiteTexture->GetTexHandle());
+		ImTextureID whiteTexId = GUI2::GetTextureID(Renderer2D::WhiteTexture->GetTexHandle());
 
 		bool isAnyItemHovered = false;
 
@@ -542,7 +538,7 @@ namespace SW {
 
 				// Thumbnail Image
 				const ImVec2 thumbSize = { item->Thumbnail.Width, item->Thumbnail.Height };
-				const ImTextureID texId = item->Thumbnail ? GUI::GetTextureID(*item->Thumbnail.Texture) : 0;
+				const ImTextureID texId = item->Thumbnail ? GUI2::GetTextureID(*item->Thumbnail.Texture) : 0;
 				const ImVec2 uv0 = item->Thumbnail.TexCoordMin;
 				const ImVec2 uv1 = item->Thumbnail.TexCoordMax;
 				const f32 aspectRatio = thumbSize.x / thumbSize.y;
@@ -560,10 +556,10 @@ namespace SW {
 				if (thumbSize.x != thumbSize.y) {
 					if (aspectRatio > 1.0f) { // Image is wider than it is tall
 						displaySize = { thumbnailSize, thumbnailSize / aspectRatio };
-						GUI::MoveMousePosY(leftSpaceY);
+						GUI2::MoveMousePosY(leftSpaceY);
 					} else { // Image is taller than it is wide
 						displaySize = { thumbnailSize * aspectRatio, thumbnailSize };
-						GUI::MoveMousePosX(leftSpaceX);
+						GUI2::MoveMousePosX(leftSpaceX);
 					}
 				}
 
@@ -579,7 +575,7 @@ namespace SW {
 				const ImVec2 rectSize = ImGui::GetItemRectSize();
 				const ImRect clipRect = ImRect({ rectMin.x + padding * 1.0f, rectMin.y + padding * (m_ThumbnailSize / 100.f)},
 					{ rectMin.x + rectSize.x, rectMin.y + scaledThumbnailSizeX - GUI::Appearance::GetFonts().SmallFont->FontSize - padding * 4.0f });
-				GUI::ClippedText(clipRect.Min, clipRect.Max, filename.c_str(), filenameEnd, nullptr, { 0, 0 }, nullptr, clipRect.GetSize().x);
+				GUI2::Widgets::ClippedText(clipRect.Min, clipRect.Max, filename.c_str(), filenameEnd, nullptr, { 0, 0 }, nullptr, clipRect.GetSize().x);
 
 				ImGui::SetCursorPos({ cursorPos.x + padding * 2.0f, cursorPos.y + backgroundThumbnailSize.y - GUI::Appearance::GetFonts().DefaultBoldFont->FontSize - padding * 2.0f });
 				ImGui::BeginDisabled();

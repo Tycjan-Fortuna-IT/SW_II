@@ -4,8 +4,8 @@
 
 #include "GUI/Editor/EditorResources.hpp"
 #include "Asset/AssetLoader.hpp"
-#include "Core/Utils/FileSystem.hpp"
 #include "Core/Project/ProjectContext.hpp"
+#include "GUI/GUI_V2.hpp"
 #include "Core/Utils/SerializationUtils.hpp"
 
 namespace SW {
@@ -71,11 +71,8 @@ namespace SW {
 		static ImVec2 drawStartPoint;
 		static bool isDragging = false;
 
-		constexpr ImGuiTableFlags flags = ImGuiTableFlags_NoPadInnerX
-			| ImGuiTableFlags_NoPadOuterX
-			| ImGuiTableFlags_Resizable
-			| ImGuiTableFlags_BordersInnerH
-			| ImGuiTableFlags_ScrollY;
+        constexpr ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit
+            | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
 
 		f32 wz = (*m_Spritesheet)->ViewZoom;
 
@@ -83,16 +80,16 @@ namespace SW {
 			ImGui::TableNextRow();
 			ImGui::TableNextColumn();
 
-			GUI::BeginProperties("##spritesheet_editor_properties");
+			GUI2::Properties::BeginProperties("##spritesheet_editor_properties");
 
-			GUI::DrawFloatingPointProperty((*m_Spritesheet)->ViewZoom, "View Zoom", nullptr, 0.1f, 15.0f);
-			GUI::DrawFloatingPointProperty((*m_Spritesheet)->GridSize, "Grid Size", nullptr, 16.f, 4000.f);
-			GUI::DrawVector2ControlProperty((*m_Spritesheet)->CenterOffset, "Center Offset");
-			GUI::DrawBooleanProperty((*m_Spritesheet)->ShowImageBorders, "Show Image Borders");
-			GUI::DrawFolderPickerProperty((*m_Spritesheet)->ExportPath, "Export Path");
+			GUI2::Properties::ScalarSliderProperty(&(*m_Spritesheet)->ViewZoom, "View Zoom", nullptr, 0.1f, 15.0f);
+			GUI2::Properties::ScalarSliderProperty(&(*m_Spritesheet)->GridSize, "Grid Size", nullptr, 16.f, 4000.f);
+			GUI2::Properties::Vector2InputProperty(&(*m_Spritesheet)->CenterOffset, "Center Offset");
+			GUI2::Properties::CheckboxProperty(&(*m_Spritesheet)->ShowImageBorders, "Show Image Borders");
+			GUI2::Properties::DrawFolderPickerProperty(&(*m_Spritesheet)->ExportPath, "Export Path");
 
 			AssetHandle handle = (*m_Spritesheet)->GetSpritesheetTexture() ? (*m_Spritesheet)->GetSpritesheetTexture()->GetHandle() : 0u;
-			if (GUI::DrawAssetDropdownProperty<Texture2D>(handle, "Spritesheet")) {
+			if (GUI2::Properties::AssetSearchProperty<Texture2D>(&handle, "Spritesheet")) {
 				Texture2D** texture = handle ? AssetManager::GetAssetRaw<Texture2D>(handle) : nullptr;
 
 				(*m_Spritesheet)->SetSpritesheetTexture(texture);
@@ -100,9 +97,9 @@ namespace SW {
 
 			(*m_Spritesheet)->ViewPos = glm::vec2{ viewOrigin.x, viewOrigin.y };
 
-			GUI::EndProperties();
+			GUI2::Properties::EndProperties();
 
-			RenderSpriteCards((*m_Spritesheet)->GridSize);
+			//RenderSpriteCards((*m_Spritesheet)->GridSize);
 
 			ImGui::TableNextColumn();
 
@@ -156,7 +153,7 @@ namespace SW {
 				const ImVec2 texSize = { (f32)spritesheetTexture->GetWidth(), (f32)spritesheetTexture->GetHeight() };
 
 				ImGui::Image(
-					GUI::GetTextureID(spritesheetTexture->GetTexHandle()), texSize,
+					GUI2::GetTextureID(spritesheetTexture->GetTexHandle()), texSize,
 					{ 0, 1 }, { 1, 0 }
 				);
 
@@ -234,14 +231,9 @@ namespace SW {
 			}
 		}
 
-		ImGui::SameLine();
-
-		static GUI::TextFilter spriteFilter;
-
 		const f32 availableWidth = ImGui::GetContentRegionAvail().x - 16.f;
 
-		ImGui::SetNextItemWidth(availableWidth);
-		spriteFilter.OnRender("  " SW_ICON_MAGNIFY "  Search ... ");
+		GUI2::Widgets::SearchInput(&m_SearchString);
 
 		if (ImGui::BeginTable("SideViewTable", 1, flags, ImGui::GetContentRegionAvail())) {
 			ImGui::TableNextRow();
@@ -250,7 +242,7 @@ namespace SW {
 			int indexToRemove = -1;
 
 			if (!(*m_Spritesheet)->GetSpritesheetTexture()) {
-				GUI::MoveMousePosX(16.f);
+				GUI2::MoveMousePosX(16.f);
 				ImGui::TextUnformatted("Choose texture to proceed!");
 				ImGui::EndTable();
 				return;
@@ -262,7 +254,7 @@ namespace SW {
 
 				SpriteData& sprite = sprites[i];
 
-				if (!spriteFilter.FilterPass(sprite.Name))
+				if (!m_SearchString.empty() && sprite.Name.find(m_SearchString))
 					continue;
 
 				ImGui::TableNextRow();
@@ -297,18 +289,18 @@ namespace SW {
 				}
 
 				if (opened) {
-					GUI::BeginProperties(uidc);
+					GUI2::Properties::BeginProperties(uidc);
 
-					GUI::DrawSingleLineTextInputProperty(sprite.Name, "Sprite name");
-					GUI::DrawVector2ControlProperty(sprite.Position, "Position", nullptr, 0.f, 0.f, FLT_MAX, "%1.f");
-					GUI::DrawVector2ControlProperty(sprite.Size, "Size", nullptr, (*m_Spritesheet)->GridSize, 1.f, 1024.f, "%1.f");
+					GUI2::Properties::SingleLineTextInputProperty<128>(&sprite.Name, "Sprite name");
+					GUI2::Properties::Vector2InputProperty(&sprite.Position, "Position", nullptr, 0.f, 0.f, FLT_MAX, "%1.f");
+					GUI2::Properties::Vector2InputProperty(&sprite.Size, "Size", nullptr, (*m_Spritesheet)->GridSize, 1.f, 1024.f, "%1.f");
 					glm::vec2 position = sprite.Position + (*m_Spritesheet)->CenterOffset;
-					GUI::DrawImagePartProperty(
+					GUI2::Properties::DrawImagePartProperty(
 						(*m_Spritesheet)->GetSpritesheetTexture(), "Sprite", nullptr, position, sprite.Size, glm::vec4(1.0f),
 						(*m_Spritesheet)->ShowImageBorders
 					);
-					
-					GUI::EndProperties();
+
+					GUI2::Properties::EndProperties();
 
 					ImGui::TreePop();
 				}

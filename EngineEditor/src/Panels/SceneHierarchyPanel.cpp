@@ -1,11 +1,10 @@
 #include "SceneHierarchyPanel.hpp"
 
-#include "Core/Utils/Utils.hpp"
 #include "Core/ECS/EntityRegistry.hpp"
 #include "Managers/SelectionManager.hpp"
 #include "GUI/Icons.hpp"
 #include "SceneViewportPanel.hpp"
-#include "Core/Project/ProjectContext.hpp"
+#include "GUI/GUI_V2.hpp"
 
 namespace SW {
 
@@ -28,7 +27,7 @@ namespace SW {
 	{
 		PROFILE_FUNCTION();
 
-		GUI::ScopedStyle CellPadding(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
+		GUI2::ScopedStyle CellPadding(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
 
 		if (OnBegin(ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar)) {
 			if (m_SceneViewportPanel->IsSceneLoaded()) {
@@ -37,13 +36,11 @@ namespace SW {
 
 				Scene* currentScene = m_SceneViewportPanel->GetCurrentScene();
 
-				m_SearchFilter.OnRender("  " SW_ICON_MAGNIFY "  Search ... ");
-
-				ImGui::SameLine();
-
-				if (GUI::Button("{} Add", { 90.f, 30.f }, SW_ICON_PLUS)) {
+				if (ImGui::Button(SW_ICON_PLUS " Add", { 90.f, 30.f })) {
 					ImGui::OpenPopup("AddEntity_Popup");
 				}
+
+				GUI2::Widgets::SearchInput(&m_SearchString);
 
 				if (ImGui::BeginPopup("AddEntity_Popup")) {
 					DrawEntityCreateMenu(currentScene);
@@ -132,7 +129,7 @@ namespace SW {
 
 	ImRect SceneHierarchyPanel::RenderEntityNode(Entity entity, u64 id, TagComponent& tc, const RelationshipComponent& rsc, u32 depth)
 	{
-		if (!entity || !m_SearchFilter.FilterPass(tc.Tag))
+		if (!entity || (!m_SearchString.empty() && tc.Tag.find(m_SearchString) == std::string::npos))
 			return { 0,0,0,0 };
 
 		ImGui::TableNextRow();

@@ -85,8 +85,7 @@ namespace SW {
 			static constexpr ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen
 				| ImGuiTreeNodeFlags_SpanAvailWidth
 				| ImGuiTreeNodeFlags_AllowItemOverlap
-				| ImGuiTreeNodeFlags_Framed
-				| ImGuiTreeNodeFlags_FramePadding;
+				| ImGuiTreeNodeFlags_Framed;
 
 			T& component = entity.GetComponent<T>();
 
@@ -103,7 +102,7 @@ namespace SW {
 
 			const f32 frameHeight = ImGui::GetFrameHeight();
 
-			ImGui::SameLine(ImGui::GetContentRegionMax().x - frameHeight * 1.2f);
+			ImGui::SameLine(ImGui::GetContentRegionMax().x - frameHeight * 1.f);
 
 			if (ImGui::Button(SW_ICON_SETTINGS, ImVec2{ frameHeight * 1.2f, frameHeight }))
 				ImGui::OpenPopup("ComponentSettings");

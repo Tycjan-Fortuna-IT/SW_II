@@ -5,6 +5,7 @@
 #include "Core/Renderer/Renderer2D.hpp"
 #include "GUI/Icons.hpp"
 #include "GUI/GUI.hpp"
+#include "GUI/GUI_V2.hpp"
 #include "Core/Editor/EditorSettings.hpp"
 
 namespace SW {
@@ -14,7 +15,7 @@ namespace SW {
 
 	void StatisticsPanel::OnRender()
 	{
-		GUI::ScopedColor PanelBackground(ImGuiCol_WindowBg, GUI::Appearance::GetColors().ChildBackground);
+		GUI2::ScopedColor PanelBackground(ImGuiCol_WindowBg, GUI::Appearance::GetColors().ChildBackground);
 
 		if (OnBegin()) {
 			f32 avg = 0.0f;
@@ -41,29 +42,41 @@ namespace SW {
 				| ImGuiTreeNodeFlags_SpanAvailWidth
 				| ImGuiTreeNodeFlags_AllowItemOverlap
 				| ImGuiTreeNodeFlags_Framed
-				| ImGuiTreeNodeFlags_FramePadding
 				| ImGuiTreeNodeFlags_Bullet;
 
 			if (ImGui::TreeNodeEx("##stats_tree_node", treeFlags, "%s", SW_ICON_CHART_BAR "  Statistics")) {
-				GUI::BeginProperties("##renderer2d_properties");
-				GUI::DrawReadonlyTextProperty(std::to_string(static_cast<f64>(avg)).c_str(), "FPS");
-				GUI::DrawReadonlyTextProperty(std::to_string((1.0 / static_cast<f64>(avg)) * 1000.0f).c_str(), "Frame time (ms)");
-				GUI::DrawReadonlyTextProperty(std::to_string(Renderer2D::GetStats().DrawCalls).c_str(), "2D Draw Calls");
-				GUI::DrawReadonlyTextProperty(std::to_string(Renderer2D::GetStats().QuadCount).c_str(), "Quads");
-				GUI::DrawReadonlyTextProperty(std::to_string(Renderer2D::GetStats().GetTotalVertexCount()).c_str(), "Vertices");
-				GUI::DrawReadonlyTextProperty(std::to_string(Renderer2D::GetStats().GetTotalIndexCount()).c_str(), "Indices");
-				GUI::EndProperties();
+				GUI2::Properties::BeginProperties("##renderer2d_properties");
+
+				std::string averageFps = std::to_string(static_cast<f64>(avg));
+				GUI2::Properties::SingleLineTextInputProperty(&averageFps, "FPS", nullptr, ImGuiInputTextFlags_ReadOnly);
+				
+				std::string frameTime = std::to_string((1.0 / static_cast<f64>(avg)) * 1000.0f);
+				GUI2::Properties::SingleLineTextInputProperty(&frameTime, "Frame time (ms)", nullptr, ImGuiInputTextFlags_ReadOnly);
+
+				std::string drawCalls = std::to_string(Renderer2D::GetStats().DrawCalls);
+				GUI2::Properties::SingleLineTextInputProperty(&drawCalls, "2D Draw Calls", nullptr, ImGuiInputTextFlags_ReadOnly);
+
+				std::string quadCount = std::to_string(Renderer2D::GetStats().QuadCount);
+				GUI2::Properties::SingleLineTextInputProperty(&quadCount, "Quads", nullptr, ImGuiInputTextFlags_ReadOnly);
+
+				std::string vertexCount = std::to_string(Renderer2D::GetStats().GetTotalVertexCount());
+				GUI2::Properties::SingleLineTextInputProperty(&vertexCount, "Vertices", nullptr, ImGuiInputTextFlags_ReadOnly);
+
+				std::string indexCount = std::to_string(Renderer2D::GetStats().GetTotalIndexCount());
+				GUI2::Properties::SingleLineTextInputProperty(&indexCount, "Indices", nullptr, ImGuiInputTextFlags_ReadOnly);
+				
+				GUI2::Properties::EndProperties();
 
 				ImGui::TreePop();
 			}
 
 			if (ImGui::TreeNodeEx("##settings_tree_node", treeFlags, "%s", SW_ICON_SETTINGS_OUTLINE "  Editor Settings")) {
-				GUI::BeginProperties("##editor_settings");
-				if (GUI::DrawBooleanProperty(EditorSettings::Get().VSync, "Enable / Disable VSync")) {
+				GUI2::Properties::BeginProperties("##editor_settings");
+				if (GUI2::Properties::CheckboxProperty(&EditorSettings::Get().VSync, "Enable / Disable VSync")) {
 					Application::Get()->GetWindow()->SetVSync(EditorSettings::Get().VSync);
 				}
-				GUI::DrawBooleanProperty(EditorSettings::Get().ShowPhysicsColliders, "Show Physics Colliders");
-				GUI::EndProperties();
+				GUI2::Properties::CheckboxProperty(&EditorSettings::Get().ShowPhysicsColliders, "Show Physics Colliders");
+				GUI2::Properties::EndProperties();
 				
 				ImGui::TreePop();
 			}

@@ -1,20 +1,16 @@
 #include "SceneViewportPanel.hpp"
 
 #include <ImGuizmo.h>
-#include <glm/ext/matrix_transform.hpp>
-
-#include "Core/Utils/Utils.hpp"
 #include "GUI/Icons.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Editor/EditorSettings.hpp"
 #include "Managers/SelectionManager.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Core/Project/ProjectContext.hpp"
-#include "Core/Project/Project.hpp"
-#include "Asset/Font.hpp"
 #include "Core/Scripting/ScriptingCore.hpp"
 #include "Asset/AssetManager.hpp"
 #include "Asset/Prefab.hpp"
+#include "GUI/GUI_V2.hpp"
 
 namespace SW {
 
@@ -430,7 +426,7 @@ namespace SW {
 	{
 		PROFILE_FUNCTION();
 
-		GUI::ScopedStyle NoWindowPadding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.f , 0.f });
+		GUI2::ScopedStyle NoWindowPadding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.f , 0.f });
 
 		if (OnBegin(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse)) {
 			ImVec2 startCursorPos = ImGui::GetCursorPos();
@@ -441,7 +437,7 @@ namespace SW {
 			m_ViewportSize.x = currentViewportSize.x;
 			m_ViewportSize.y = currentViewportSize.y;
 
-			const ImTextureID textureID = GUI::GetTextureID(m_Framebuffer->GetColorAttachmentRendererID());
+			const ImTextureID textureID = GUI2::GetTextureID(m_Framebuffer->GetColorAttachmentRendererID());
 			ImGui::Image(textureID, currentViewportSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
 			const bool isSceneLoaded = IsSceneLoaded();
@@ -659,9 +655,9 @@ namespace SW {
 		const ImVec2 gizmoPosition = { m_ViewportBoundsMin.x + m_ViewportSize.x / 2.f + m_ToolbarPosition.x, m_ViewportBoundsMin.y + m_ToolbarPosition.y };
 		const ImRect bb(
 			gizmoPosition.x - ((buttonSize.x + 1.f) * (buttonCount / 2.f + 0.5f)), 
-			gizmoPosition.y + 8.f,
+			gizmoPosition.y + 16.f,
 			gizmoPosition.x + ((buttonSize.x + 1.f) * (buttonCount / 2.f + 0.5f)), 
-			gizmoPosition.y + (buttonSize.y + 2.f) + 8.f
+			gizmoPosition.y + (buttonSize.y + 2.f) + 16.f
 		);
 		
 		ImVec4 frameColor = ImGui::GetStyleColorVec4(ImGuiCol_Tab);
@@ -672,7 +668,7 @@ namespace SW {
 
 		glm::vec2 tempGizmoPosition = m_ToolbarPosition;
 
-		ImGui::SetCursorPos({ m_ViewportSize.x / 2.f + m_ToolbarPosition.x - (buttonSize.x * (buttonCount / 2.f + 0.5f)), startCursorPos.y + tempGizmoPosition.y + 14.f });
+		ImGui::SetCursorPos({ m_ViewportSize.x / 2.f + m_ToolbarPosition.x - (buttonSize.x * (buttonCount / 2.f + 0.75f)), startCursorPos.y + tempGizmoPosition.y + 20.f });
 		ImGui::BeginGroup();
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
@@ -705,10 +701,11 @@ namespace SW {
 			constexpr f32 alpha = 0.6f;
 
 			ImGui::SameLine();
-			GUI::MoveMousePosX(-12.f);
-			GUI::MoveMousePosY(-6.5f);
 
-			if (GUI::ToggleButton(SW_ICON_PLAY, currentState == SceneState::Play, { buttonSize.x + 2.f, buttonSize.y + 2.f }, alpha, alpha)) {
+			ImGui::SetCursorPosX(draggerCursorPos.x + draggerSize.x + framePadding.x - 10.f);
+
+			bool isPlaying = currentState == SceneState::Play;
+			if (GUI2::Components::ToggleButton(&isPlaying, SW_ICON_PLAY, SW_ICON_PLAY, false)) {
 				if (currentState != SceneState::Play) {
 					if (currentState == SceneState::Pause) {
 						m_ActiveScene->SetNewState(SceneState::Play);
@@ -729,18 +726,20 @@ namespace SW {
 			}
 
 			ImGui::SameLine();
-			GUI::MoveMousePosY(-6.5f);
+			GUI2::MoveMousePosX(4.f);
 
-			if (GUI::ToggleButton(SW_ICON_PAUSE, currentState == SceneState::Pause, { buttonSize.x + 2.f, buttonSize.y + 2.f }, alpha, alpha)) {
+			bool isPaused = currentState == SceneState::Pause;
+			if (GUI2::Components::ToggleButton(&isPaused, SW_ICON_PAUSE, SW_ICON_PAUSE, false)) {
 				if (currentState == SceneState::Play) {
 					m_ActiveScene->SetNewState(SceneState::Pause);
 				}
 			}
 
 			ImGui::SameLine();
-			GUI::MoveMousePosY(-6.5f);
+			GUI2::MoveMousePosX(4.f);
 
-			if (GUI::ToggleButton(SW_ICON_STOP, currentState == SceneState::Edit, { buttonSize.x + 2.f, buttonSize.y + 2.f }, alpha, alpha)) {
+			bool isStopped = currentState == SceneState::Edit;
+			if (GUI2::Components::ToggleButton(&isStopped, SW_ICON_STOP, SW_ICON_STOP, false)) {
 				if (currentState != SceneState::Edit) {
 
 					m_ActiveScene->OnRuntimeStop();
@@ -816,13 +815,26 @@ namespace SW {
 
 			constexpr f32 alpha = 0.6f;
 
-			if (GUI::ToggleButton(SW_ICON_ROTATE_3D, m_GizmoType == ImGuizmo::ROTATE, buttonSize, alpha, alpha))
+			bool isRotate = m_GizmoType == ImGuizmo::ROTATE;
+			if (GUI2::Components::ToggleButton(&isRotate, SW_ICON_ROTATE_3D, SW_ICON_ROTATE_3D, false))
 				m_GizmoType = ImGuizmo::ROTATE;
-			if (GUI::ToggleButton(SW_ICON_AXIS_ARROW, m_GizmoType == ImGuizmo::TRANSLATE, buttonSize, alpha, alpha))
+
+			GUI2::MoveMousePosY(7.f);
+
+			bool isTranslate = m_GizmoType == ImGuizmo::TRANSLATE;
+			if (GUI2::Components::ToggleButton(&isTranslate, SW_ICON_AXIS_ARROW, SW_ICON_AXIS_ARROW, false))
 				m_GizmoType = ImGuizmo::TRANSLATE;
-			if (GUI::ToggleButton(SW_ICON_ARROW_EXPAND, m_GizmoType == ImGuizmo::SCALE, buttonSize, alpha, alpha))
+
+			GUI2::MoveMousePosY(7.f);
+
+			bool isScale = m_GizmoType == ImGuizmo::SCALE;
+			if (GUI2::Components::ToggleButton(&isScale, SW_ICON_ARROW_EXPAND, SW_ICON_ARROW_EXPAND, false))
 				m_GizmoType = ImGuizmo::SCALE;
-			if (GUI::ToggleButton(SW_ICON_SELECT_OFF, m_GizmoType == ImGuizmo::BOUNDS, buttonSize, alpha, alpha))
+
+			GUI2::MoveMousePosY(7.f);
+
+			bool isBounds = m_GizmoType == ImGuizmo::BOUNDS;
+			if (GUI2::Components::ToggleButton(&isBounds, SW_ICON_SELECT_OFF, SW_ICON_SELECT_OFF, false))
 				m_GizmoType = ImGuizmo::BOUNDS;
 
 			ImGui::PopStyleVar(2);

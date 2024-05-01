@@ -4,6 +4,7 @@
 #include "Asset/Sprite.hpp"
 #include "Asset/AssetManager.hpp"
 #include "Asset/AssetLoader.hpp"
+#include "GUI/GUI_V2.hpp"
 
 namespace SW {
 
@@ -46,11 +47,8 @@ namespace SW {
 
 	void AnimationEditor::Render()
 	{
-		constexpr ImGuiTableFlags flags = ImGuiTableFlags_NoPadInnerX
-			| ImGuiTableFlags_NoPadOuterX
-			| ImGuiTableFlags_Resizable
-			| ImGuiTableFlags_BordersInnerH
-			| ImGuiTableFlags_ScrollY;
+		constexpr ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit
+			| ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
 
 		if (ImGui::BeginTable("AnimationEditor_MainViewTable", 2, flags, ImGui::GetContentRegionAvail())) {
 			ImGui::TableNextRow();
@@ -62,22 +60,22 @@ namespace SW {
 				AssetLoader::Serialize(metadata);
 			}
 
-			GUI::BeginProperties("##animation_editor_properties");
+			GUI2::Properties::BeginProperties("##animation_editor_properties");
 
-			if (GUI::DrawFloatingPointProperty((*m_Animation)->Speed, "Speed", nullptr, -25.f, 25.f, 0.5f)) {
+			if (GUI2::Properties::ScalarSliderProperty(&(*m_Animation)->Speed, "Speed", nullptr, -25.f, 25.f)) {
 				m_CurrentFrame = 0;
 			}
-			GUI::DrawBooleanProperty((*m_Animation)->ReverseAlongX, "Flip X");
-			GUI::DrawBooleanProperty((*m_Animation)->ReverseAlongY, "Flip Y");
+			GUI2::Properties::CheckboxProperty(&(*m_Animation)->ReverseAlongX, "Flip X");
+			GUI2::Properties::CheckboxProperty(&(*m_Animation)->ReverseAlongY, "Flip Y");
 
-			GUI::DrawAssetTableDropdownList<Sprite>((*m_Animation)->Sprites, "Sprites");
+			GUI2::Properties::AssetDropdownTableProperty<Sprite>(&(*m_Animation)->Sprites, "Sprites");
 
-			GUI::EndProperties();
+			GUI2::Properties::EndProperties();
 
 			ImGui::TableNextColumn();
 
-			GUI::MoveMousePosX(20.f);
-			GUI::MoveMousePosY(10.f);
+			GUI2::MoveMousePosX(20.f);
+			GUI2::MoveMousePosY(10.f);
 
 			// Display animation
 			if (m_FramesCount) {
@@ -109,14 +107,14 @@ namespace SW {
 				if (sprWidth != sprHeight) {
 					if (aspectRatio > 1.0f) { // Image is wider than it is tall
 						displaySize = { thumbnailSize, thumbnailSize / aspectRatio };
-						GUI::MoveMousePosY(leftSpaceY);
+						GUI2::MoveMousePosY(leftSpaceY);
 					} else { // Image is taller than it is wide
 						displaySize = { thumbnailSize * aspectRatio, thumbnailSize };
-						GUI::MoveMousePosX(leftSpaceX);
+						GUI2::MoveMousePosX(leftSpaceX);
 					}
 				}
 
-				ImGui::Image(GUI::GetTextureID((*current)->GetTexture()), displaySize, uv0, uv1);
+				ImGui::Image(GUI2::GetTextureID((*current)->GetTexture()), displaySize, uv0, uv1);
 			}
 
 			ImGui::EndTable();
