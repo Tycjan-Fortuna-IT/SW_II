@@ -17,11 +17,15 @@ namespace SW {
 
 		ImGui::SetNextWindowSizeConstraints(m_MinSize, m_MaxSize);
 
-		//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 2.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.f);
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.f, 0.f, 0.f, 1.f));
+
 		OnWindowStylePush();
 		ImGui::Begin(m_ID.c_str(), &m_IsOpen);
 		OnWindowStylePop();
-		//ImGui::PopStyleVar();
+
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
 
 		Render();
 

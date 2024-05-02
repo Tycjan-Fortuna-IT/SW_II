@@ -8,9 +8,7 @@
  */
 #pragma once
 
-#include "Core/Scene/SceneCamera.hpp"
 #include "Core/Timestep.hpp"
-#include "Core/Math/Vector2.hpp"
 #include "Core/ECS/EntityRegistry.hpp"
 #include "Core/ECS/Components.hpp"
 #include "Core/Scripting/ScriptStorage.hpp"

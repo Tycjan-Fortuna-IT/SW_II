@@ -1,6 +1,6 @@
 #include "Popups.hpp"
 
-#include "GUI_v2.hpp"
+#include "GUI.hpp"
 #include "Core/Utils/FileSystem.hpp"
 
 #define EMPTY_SCENE_CONTENT \
@@ -45,7 +45,7 @@ namespace SW::GUI::Popups {
 			ImGui::TextUnformatted("Choose file type to create: ");
 			ImGui::SameLine();
 
-			GUI2::Components::Selectable<AssetType>(&filetype, {
+			GUI::Components::Selectable<AssetType>(&filetype, {
 				{ "Directory",		AssetType::Directory		},
 				{ "Scene",			AssetType::Scene			},
 				{ "Spritesheet",	AssetType::Spritesheet		},
@@ -59,7 +59,7 @@ namespace SW::GUI::Popups {
 				ImGui::TextUnformatted("Type the file name:              ");
 				ImGui::SameLine();
 
-				GUI2::Components::SingleLineTextInput<64>(&filename);
+				GUI::Components::SingleLineTextInput<64>(&filename);
 
 				switch (filetype) {
 					case AssetType::Scene:
@@ -199,7 +199,7 @@ namespace SW::GUI::Popups {
 
 			static std::string filename = currentName;
 
-			GUI2::Components::SingleLineTextInput<64>(&filename);
+			GUI::Components::SingleLineTextInput<64>(&filename);
 
 			if (ImGui::Button("OK", ImVec2(120, 0))) {
 				if (!FileSystem::RenameFile(filepath, filename))
@@ -245,8 +245,8 @@ namespace SW::GUI::Popups {
 			| ImGuiTreeNodeFlags_Framed
 			| ImGuiTreeNodeFlags_FramePadding;
 
-		GUI2::ScopedStyle WindowPadding(ImGuiStyleVar_WindowPadding, ImVec2(4.0f, 4.0f));
-		GUI2::ScopedStyle FramePadding(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 8.0f));
+		GUI::ScopedStyle WindowPadding(ImGuiStyleVar_WindowPadding, ImVec2(4.0f, 4.0f));
+		GUI::ScopedStyle FramePadding(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 8.0f));
 		
 		bool closeable = true;
 
@@ -258,13 +258,13 @@ namespace SW::GUI::Popups {
 			const bool generalOpen = ImGui::TreeNodeEx("FontImport_General", treeFlags, "%s", "General Import Options");
 			
 			if (generalOpen) {
-				GUI2::Properties::BeginProperties("##font_import_general_property");
+				GUI::Properties::BeginProperties("##font_import_general_property");
 
-				GUI2::Properties::DrawFilePickerProperty(
+				GUI::Properties::DrawFilePickerProperty(
 					&m_Data.OutputPath, ProjectContext::Get()->GetAssetDirectory(), { { "SW Font file", "sw_font" } },
 					"Font output file");
 
-				GUI2::Properties::EndProperties();
+				GUI::Properties::EndProperties();
 			
 				ImGui::TreePop();
 			}
@@ -272,14 +272,14 @@ namespace SW::GUI::Popups {
 			const bool advancedOpen = ImGui::TreeNodeEx("FontImport_Advanced", treeFlags, "%s", "Advanced Import Options");
 			
 			if (advancedOpen) {
-				GUI2::Properties::BeginProperties("##font_import_advanced_property");
+				GUI::Properties::BeginProperties("##font_import_advanced_property");
 
-				GUI2::Properties::RadioButtonProperty<FontCharsetType>(&m_Data.CharsetType, {
+				GUI::Properties::RadioButtonProperty<FontCharsetType>(&m_Data.CharsetType, {
 					{ "ASCII", FontCharsetType::ASCII },
 					{ "ALL", FontCharsetType::ALL }
 				}, "Charset Type", "Define which set of characters to use (ALL is much more memory intensive than ASCII)");
 
-				GUI2::Properties::EndProperties();
+				GUI::Properties::EndProperties();
 				
 				ImGui::TreePop();
 			}

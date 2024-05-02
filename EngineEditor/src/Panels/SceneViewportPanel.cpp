@@ -10,7 +10,7 @@
 #include "Core/Scripting/ScriptingCore.hpp"
 #include "Asset/AssetManager.hpp"
 #include "Asset/Prefab.hpp"
-#include "GUI/GUI_V2.hpp"
+#include "GUI/GUI.hpp"
 
 namespace SW {
 
@@ -426,7 +426,7 @@ namespace SW {
 	{
 		PROFILE_FUNCTION();
 
-		GUI2::ScopedStyle NoWindowPadding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.f , 0.f });
+		GUI::ScopedStyle NoWindowPadding(ImGuiStyleVar_WindowPadding, ImVec2{ 0.f , 0.f });
 
 		if (OnBegin(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse)) {
 			ImVec2 startCursorPos = ImGui::GetCursorPos();
@@ -437,7 +437,7 @@ namespace SW {
 			m_ViewportSize.x = currentViewportSize.x;
 			m_ViewportSize.y = currentViewportSize.y;
 
-			const ImTextureID textureID = GUI2::GetTextureID(m_Framebuffer->GetColorAttachmentRendererID());
+			const ImTextureID textureID = GUI::GetTextureID(m_Framebuffer->GetColorAttachmentRendererID());
 			ImGui::Image(textureID, currentViewportSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
 			const bool isSceneLoaded = IsSceneLoaded();
@@ -705,7 +705,7 @@ namespace SW {
 			ImGui::SetCursorPosX(draggerCursorPos.x + draggerSize.x + framePadding.x - 10.f);
 
 			bool isPlaying = currentState == SceneState::Play;
-			if (GUI2::Components::ToggleButton(&isPlaying, SW_ICON_PLAY, SW_ICON_PLAY, false)) {
+			if (GUI::Components::ToggleButton(&isPlaying, SW_ICON_PLAY, SW_ICON_PLAY, false)) {
 				if (currentState != SceneState::Play) {
 					if (currentState == SceneState::Pause) {
 						m_ActiveScene->SetNewState(SceneState::Play);
@@ -726,20 +726,20 @@ namespace SW {
 			}
 
 			ImGui::SameLine();
-			GUI2::MoveMousePosX(4.f);
+			GUI::MoveMousePosX(4.f);
 
 			bool isPaused = currentState == SceneState::Pause;
-			if (GUI2::Components::ToggleButton(&isPaused, SW_ICON_PAUSE, SW_ICON_PAUSE, false)) {
+			if (GUI::Components::ToggleButton(&isPaused, SW_ICON_PAUSE, SW_ICON_PAUSE, false)) {
 				if (currentState == SceneState::Play) {
 					m_ActiveScene->SetNewState(SceneState::Pause);
 				}
 			}
 
 			ImGui::SameLine();
-			GUI2::MoveMousePosX(4.f);
+			GUI::MoveMousePosX(4.f);
 
 			bool isStopped = currentState == SceneState::Edit;
-			if (GUI2::Components::ToggleButton(&isStopped, SW_ICON_STOP, SW_ICON_STOP, false)) {
+			if (GUI::Components::ToggleButton(&isStopped, SW_ICON_STOP, SW_ICON_STOP, false)) {
 				if (currentState != SceneState::Edit) {
 
 					m_ActiveScene->OnRuntimeStop();
@@ -816,25 +816,25 @@ namespace SW {
 			constexpr f32 alpha = 0.6f;
 
 			bool isRotate = m_GizmoType == ImGuizmo::ROTATE;
-			if (GUI2::Components::ToggleButton(&isRotate, SW_ICON_ROTATE_3D, SW_ICON_ROTATE_3D, false))
+			if (GUI::Components::ToggleButton(&isRotate, SW_ICON_ROTATE_3D, SW_ICON_ROTATE_3D, false))
 				m_GizmoType = ImGuizmo::ROTATE;
 
-			GUI2::MoveMousePosY(7.f);
+			GUI::MoveMousePosY(7.f);
 
 			bool isTranslate = m_GizmoType == ImGuizmo::TRANSLATE;
-			if (GUI2::Components::ToggleButton(&isTranslate, SW_ICON_AXIS_ARROW, SW_ICON_AXIS_ARROW, false))
+			if (GUI::Components::ToggleButton(&isTranslate, SW_ICON_AXIS_ARROW, SW_ICON_AXIS_ARROW, false))
 				m_GizmoType = ImGuizmo::TRANSLATE;
 
-			GUI2::MoveMousePosY(7.f);
+			GUI::MoveMousePosY(7.f);
 
 			bool isScale = m_GizmoType == ImGuizmo::SCALE;
-			if (GUI2::Components::ToggleButton(&isScale, SW_ICON_ARROW_EXPAND, SW_ICON_ARROW_EXPAND, false))
+			if (GUI::Components::ToggleButton(&isScale, SW_ICON_ARROW_EXPAND, SW_ICON_ARROW_EXPAND, false))
 				m_GizmoType = ImGuizmo::SCALE;
 
-			GUI2::MoveMousePosY(7.f);
+			GUI::MoveMousePosY(7.f);
 
 			bool isBounds = m_GizmoType == ImGuizmo::BOUNDS;
-			if (GUI2::Components::ToggleButton(&isBounds, SW_ICON_SELECT_OFF, SW_ICON_SELECT_OFF, false))
+			if (GUI::Components::ToggleButton(&isBounds, SW_ICON_SELECT_OFF, SW_ICON_SELECT_OFF, false))
 				m_GizmoType = ImGuizmo::BOUNDS;
 
 			ImGui::PopStyleVar(2);

@@ -9,7 +9,7 @@
 #include "Core/Scripting/ScriptStorage.hpp"
 #include "Asset/Sprite.hpp"
 #include "Asset/Prefab.hpp"
-#include "GUI/GUI_V2.hpp"
+#include "GUI/GUI.hpp"
 
 namespace SW {
 
@@ -91,85 +91,85 @@ namespace SW {
 				ImGui::EndPopup();
 			}
 
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 4.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(6.0f, 4.0f));
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 2.0f));
 			ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
 
 			DrawComponent<TagComponent>(entity, [](TagComponent& component) {
-				GUI2::Properties::BeginProperties("##tag_property");
-				GUI2::Properties::SingleLineTextInputProperty<64>(&component.Tag, "Tag ");
-				GUI2::Properties::EndProperties();
+				GUI::Properties::BeginProperties("##tag_property");
+				GUI::Properties::SingleLineTextInputProperty<64>(&component.Tag, "Tag ");
+				GUI::Properties::EndProperties();
 			}, false);
 
 			DrawComponent<TransformComponent>(entity, [](TransformComponent& component) {
-				GUI2::Properties::BeginProperties("##transform_property");
-				GUI2::Properties::Vector3InputProperty(&component.Position, "Position ", "Position of the entity");
+				GUI::Properties::BeginProperties("##transform_property");
+				GUI::Properties::Vector3InputProperty(&component.Position, "Position ", "Position of the entity");
 
 				glm::vec3 rotation = glm::degrees(component.Rotation);
-				GUI2::Properties::Vector3InputProperty(&rotation, "Rotation ", "Rotation of the entity in degrees");
+				GUI::Properties::Vector3InputProperty(&rotation, "Rotation ", "Rotation of the entity in degrees");
 				component.Rotation = glm::radians(rotation);
 
-				GUI2::Properties::Vector3InputProperty(&component.Scale, "Scale ", "Scale of the entity", 1.f);
-				GUI2::Properties::EndProperties();
+				GUI::Properties::Vector3InputProperty(&component.Scale, "Scale ", "Scale of the entity", 1.f);
+				GUI::Properties::EndProperties();
 			}, false);
 
 			DrawComponent<SpriteComponent>(entity, [](SpriteComponent& component) {
-				GUI2::Properties::BeginProperties("##sprite_property");
-				GUI2::Properties::Vector4ColorPickerProperty(&component.Color, "Color", "Color of the sprite");
+				GUI::Properties::BeginProperties("##sprite_property");
+				GUI::Properties::Vector4ColorPickerProperty(&component.Color, "Color", "Color of the sprite");
 
 				AssetHandle handle = component.Handle;
-				if (GUI2::Properties::AssetSearchProperty<Sprite>(&handle, "Sprite", "Sprite to be used (transparency is supported)")) {
+				if (GUI::Properties::AssetSearchProperty<Sprite>(&handle, "Sprite", "Sprite to be used (transparency is supported)")) {
 					component.Handle = handle;
 				}
-				GUI2::Properties::ScalarInputProperty<f32>(&component.TilingFactor, "Tiling", "Tiling factor of the texture (how many times the texture should be repeated)", 1.f, 5.f, 0.f, 20.f);
-				GUI2::Properties::EndProperties();
+				GUI::Properties::ScalarInputProperty<f32>(&component.TilingFactor, "Tiling", "Tiling factor of the texture (how many times the texture should be repeated)", 1.f, 5.f, 0.f, 20.f);
+				GUI::Properties::EndProperties();
 			}, true);
 
 			DrawComponent<AnimatedSpriteComponent>(entity, [](AnimatedSpriteComponent& component) {
-				GUI2::Properties::BeginProperties("##sprite_property");
+				GUI::Properties::BeginProperties("##sprite_property");
 
 				AssetHandle handle = component.DefaultAnimation ? (*component.DefaultAnimation)->GetHandle() : 0u;
-				if (GUI2::Properties::AssetSearchProperty<Animation2D>(&handle, "Default", "Default animation to be used if nothing is being played (if not specified - nothing will be visible)")) {
+				if (GUI::Properties::AssetSearchProperty<Animation2D>(&handle, "Default", "Default animation to be used if nothing is being played (if not specified - nothing will be visible)")) {
 					component.DefaultAnimation = AssetManager::GetAssetRaw<Animation2D>(handle);
 					component.CurrentAnimation = component.DefaultAnimation;
 				}
-				GUI2::Properties::AssetDropdownTableMapProperty<std::string, Animation2D>(&component.Animations, "Animations");
+				GUI::Properties::AssetDropdownTableMapProperty<std::string, Animation2D>(&component.Animations, "Animations");
 
-				GUI2::Properties::EndProperties();
+				GUI::Properties::EndProperties();
 			}, true);
 
 			DrawComponent<CircleComponent>(entity, [](CircleComponent& component) {
-				GUI2::Properties::BeginProperties("##circle_property");
-				GUI2::Properties::Vector4ColorPickerProperty(&component.Color, "Color", "Color of the circle");
-				GUI2::Properties::ScalarSliderProperty<f32>(&component.Thickness, "Thickness", "Decreasing thickness will start to create a ring inside", 0.f, 1.f);
-				GUI2::Properties::ScalarSliderProperty<f32>(&component.Fade, "Fade", "How much the circle starts to fade from outside", 0.f, 4.f);
-				GUI2::Properties::EndProperties();
+				GUI::Properties::BeginProperties("##circle_property");
+				GUI::Properties::Vector4ColorPickerProperty(&component.Color, "Color", "Color of the circle");
+				GUI::Properties::ScalarSliderProperty<f32>(&component.Thickness, "Thickness", "Decreasing thickness will start to create a ring inside", 0.f, 1.f);
+				GUI::Properties::ScalarSliderProperty<f32>(&component.Fade, "Fade", "How much the circle starts to fade from outside", 0.f, 4.f);
+				GUI::Properties::EndProperties();
 			}, true);
 
 			DrawComponent<TextComponent>(entity, [](TextComponent& component) {
-				GUI2::Properties::BeginProperties("##text_property");
+				GUI::Properties::BeginProperties("##text_property");
 
 				AssetHandle handle = component.Handle;
-				if (GUI2::Properties::AssetSearchProperty<Font>(&handle, "Font", "Font to be used")) {
+				if (GUI::Properties::AssetSearchProperty<Font>(&handle, "Font", "Font to be used")) {
 					component.Handle = handle;
 				}
 				if (component.Handle) {
-					GUI2::Properties::MultiLineTextInputProperty<500>(&component.TextString, "Text", "Text to display (max 500 characters)");
-					GUI2::Properties::Vector4ColorPickerProperty(&component.Color, "Color", "Color of the text");
-					GUI2::Properties::ScalarDragProperty<f32>(&component.Kerning, "Kerning", "The space between the characters", 1.f, 0.f);
-					GUI2::Properties::ScalarDragProperty<f32>(&component.LineSpacing, "Line Spacing", "The space between the lines", 1.f, 0.f);
+					GUI::Properties::MultiLineTextInputProperty<500>(&component.TextString, "Text", "Text to display (max 500 characters)");
+					GUI::Properties::Vector4ColorPickerProperty(&component.Color, "Color", "Color of the text");
+					GUI::Properties::ScalarDragProperty<f32>(&component.Kerning, "Kerning", "The space between the characters", 1.f, 0.f);
+					GUI::Properties::ScalarDragProperty<f32>(&component.LineSpacing, "Line Spacing", "The space between the lines", 1.f, 0.f);
 				}
-				GUI2::Properties::EndProperties();
+				GUI::Properties::EndProperties();
 			}, true);
 
 			DrawComponent<CameraComponent>(entity, [](CameraComponent& component) {
-				GUI2::Properties::BeginProperties("##camera_property");
-				GUI2::Properties::CheckboxProperty(&component.Primary, "Primary", "Whether this camera is the primary camera (only one camera can be primary)");
+				GUI::Properties::BeginProperties("##camera_property");
+				GUI::Properties::CheckboxProperty(&component.Primary, "Primary", "Whether this camera is the primary camera (only one camera can be primary)");
 
 				ProjectionType type = component.Camera.GetProjectionType();
 
 				if (
-					GUI2::Properties::SelectableProperty<ProjectionType>(&type, {
+					GUI::Properties::SelectableProperty<ProjectionType>(&type, {
 						{ "Perspective", ProjectionType::Perspective },
 						{ "Orthographic", ProjectionType::Orthographic },
 					}, "Projection Type")
@@ -180,45 +180,45 @@ namespace SW {
 				if (type == ProjectionType::Orthographic) {
 
 					f32 orthoSize = component.Camera.GetOrthographicSize();
-					if (GUI2::Properties::ScalarDragProperty<f32>(&orthoSize, "Size", "Size of the camera", 1.f, 0.f))
+					if (GUI::Properties::ScalarDragProperty<f32>(&orthoSize, "Size", "Size of the camera", 1.f, 0.f))
 						component.Camera.SetOrthographicSize(orthoSize);
 
 					f32 orthoNear = component.Camera.GetOrthographicNearClip();
-					if (GUI2::Properties::ScalarDragProperty<f32>(&orthoNear, "Near Clip", "The near clip of the camera", 1.f, 0.f))
+					if (GUI::Properties::ScalarDragProperty<f32>(&orthoNear, "Near Clip", "The near clip of the camera", 1.f, 0.f))
 						component.Camera.SetOrthographicNearClip(orthoNear);
 
 					f32 orthoFar = component.Camera.GetOrthographicFarClip();
-					if (GUI2::Properties::ScalarDragProperty<f32>(&orthoFar, "Far Clip", "The far clip of the camera", 1.f, 0.f))
+					if (GUI::Properties::ScalarDragProperty<f32>(&orthoFar, "Far Clip", "The far clip of the camera", 1.f, 0.f))
 						component.Camera.SetOrthographicFarClip(orthoFar);
 
 				} else if (type == ProjectionType::Perspective) {
 
 					f32 verticalFov = glm::degrees(component.Camera.GetPerspectiveVerticalFOV());
-					if (GUI2::Properties::ScalarSliderProperty<f32>(&verticalFov, "Vertical FOV", "Vertical field of view of the camera in degrees", 0.f, 180.f))
+					if (GUI::Properties::ScalarSliderProperty<f32>(&verticalFov, "Vertical FOV", "Vertical field of view of the camera in degrees", 0.f, 180.f))
 						component.Camera.SetPerspectiveVerticalFOV(glm::radians(verticalFov));
 
 					f32 perspectiveNear = component.Camera.GetPerspectiveNearClip();
-					if (GUI2::Properties::ScalarDragProperty<f32>(&perspectiveNear, "Near Clip", "The near clip of the camera", 1.f, 0.f))
+					if (GUI::Properties::ScalarDragProperty<f32>(&perspectiveNear, "Near Clip", "The near clip of the camera", 1.f, 0.f))
 						component.Camera.SetPerspectiveNearClip(perspectiveNear);
 
 					f32 perspectiveFar = component.Camera.GetPerspectiveFarClip();
-					if (GUI2::Properties::ScalarDragProperty<f32>(&perspectiveFar, "Far Clip", "The far clip of the camera", 1.f, 0.f))
+					if (GUI::Properties::ScalarDragProperty<f32>(&perspectiveFar, "Far Clip", "The far clip of the camera", 1.f, 0.f))
 						component.Camera.SetPerspectiveFarClip(perspectiveFar);
 
 				}
 
-				GUI2::Properties::EndProperties();
+				GUI::Properties::EndProperties();
 			}, true);
 
 			DrawComponent<ScriptComponent>(entity, [=](ScriptComponent& component) {
-				GUI2::Properties::BeginProperties("##script_property");
+				GUI::Properties::BeginProperties("##script_property");
 				ScriptingCore& scriptingCore = ScriptingCore::Get();
 
 				static bool once = false;
 
 				const std::unordered_map<u64, ScriptMetadata>& allScripts = scriptingCore.GetAllScripts();
 
-				std::vector<GUI2::Components::SelectOption<u64>> scripts;
+				std::vector<GUI::Components::SelectOption<u64>> scripts;
 
 				scripts.push_back({ "Invalid or no script", 0 });
 
@@ -230,7 +230,7 @@ namespace SW {
 
 				u64 currentId = component.ScriptID;
 
-				if (GUI2::Properties::SelectableProperty<u64>(&component.ScriptID, scripts, "Scripts")) {
+				if (GUI::Properties::SelectableProperty<u64>(&component.ScriptID, scripts, "Scripts")) {
 					if (scriptingCore.IsValidScript(component.ScriptID)) {
 						if (currentId != component.ScriptID) {
 							if (currentId != 0) {
@@ -289,7 +289,7 @@ namespace SW {
 								{
 									f32 value = fieldStorage.GetValue<f32>();
 									
-									if (GUI2::Properties::ScalarInputProperty<f32>(&value, fieldStorage.GetName().data())) {
+									if (GUI::Properties::ScalarInputProperty<f32>(&value, fieldStorage.GetName().data())) {
 										fieldStorage.SetValue(value);
 									}
 
@@ -304,7 +304,7 @@ namespace SW {
 									if (!m_SceneViewportPanel->GetCurrentScene()->IsPlaying()) {
 										u64 value = fieldStorage.GetValue<u64>();
 
-										if (GUI2::Properties::EntityDropdownProperty(&value, m_SceneViewportPanel->GetCurrentScene(), std::string(fieldStorage.GetName()).c_str(), "Entity to be used")) {
+										if (GUI::Properties::EntityDropdownProperty(&value, m_SceneViewportPanel->GetCurrentScene(), std::string(fieldStorage.GetName()).c_str(), "Entity to be used")) {
 											fieldStorage.SetValue(value);
 										}
 									}
@@ -314,7 +314,7 @@ namespace SW {
 									if (!m_SceneViewportPanel->GetCurrentScene()->IsPlaying()) {
 										AssetHandle value = fieldStorage.GetValue<u64>();
 										
-										if (GUI2::Properties::AssetSearchProperty<Prefab>(&value, std::string(fieldStorage.GetName()).c_str(), "Prefab to be used")) {
+										if (GUI::Properties::AssetSearchProperty<Prefab>(&value, std::string(fieldStorage.GetName()).c_str(), "Prefab to be used")) {
 											fieldStorage.SetValue(value);
 										}
 									}
@@ -327,174 +327,174 @@ namespace SW {
 					}
 				}
 
-				GUI2::Properties::EndProperties();
+				GUI::Properties::EndProperties();
 			}, true);
 
 			DrawComponent<RigidBody2DComponent>(entity, [](RigidBody2DComponent& component) {
-				GUI2::Properties::BeginProperties("##rigid_body_2d_property");
-				GUI2::Properties::SelectableProperty<PhysicBodyType>(&component.Type, {
+				GUI::Properties::BeginProperties("##rigid_body_2d_property");
+				GUI::Properties::SelectableProperty<PhysicBodyType>(&component.Type, {
 					{ "Static", PhysicBodyType::Static },
 					{ "Kinematic", PhysicBodyType::Kinematic },
 					{ "Dynamic", PhysicBodyType::Dynamic }
 				}, "Body Type", "The type of the body, static bodies are immovable, kinematic bodies are movable but not affected by forces, dynamic bodies are movable and affected by forces");
 				if (component.Type == PhysicBodyType::Kinematic || component.Type == PhysicBodyType::Dynamic) {
-					GUI2::Properties::CheckboxProperty(&component.AutoMass, "Auto mass", "Whether the body's mass should be determined automatically or based on set mass");
+					GUI::Properties::CheckboxProperty(&component.AutoMass, "Auto mass", "Whether the body's mass should be determined automatically or based on set mass");
 					if (!component.AutoMass) {
-						GUI2::Properties::ScalarDragProperty<f32>(&component.Mass, "Mass", "The mass of the body", 1.f, 0.f);
+						GUI::Properties::ScalarDragProperty<f32>(&component.Mass, "Mass", "The mass of the body", 1.f, 0.f);
 					}
 				}
 				if (component.Type == PhysicBodyType::Dynamic) {
-					GUI2::Properties::ScalarInputProperty<f32>(&component.GravityScale, "Gravity Scale", "The gravity scale of the body", 1, 5);
-					GUI2::Properties::ScalarSliderProperty<f32>(&component.Friction, "Friction", "The friction of the body (how much it resists movement)", 0.f, 1.f);
-					GUI2::Properties::ScalarSliderProperty<f32>(&component.Restitution, "Restitution", "The restitution of the body (how much it bounces)", 0.f, 1.f);
-					GUI2::Properties::ScalarSliderProperty<f32>(&component.RestitutionThreshold, "Restitution Threshold", "The velocity threshold for the restitution", 0.f, 1.f);
-					GUI2::Properties::ScalarSliderProperty<f32>(&component.LinearDamping, "Linear Damping", "The linear damping of the body (how much it resists movement)", 0.f, 1.f);
-					GUI2::Properties::ScalarSliderProperty<f32>(&component.AngularDamping, "Angular Damping", "The angular damping of the body (how much it resists rotation)", 0.f, 1.f);
-					GUI2::Properties::CheckboxProperty(&component.FixedRotation, "Fixed Rotation", "Whether the body should not be rotated by the physics system");
-					GUI2::Properties::CheckboxProperty(&component.AllowSleep, "Allow Sleep", "Whether the body should be allowed to sleep");
-					GUI2::Properties::CheckboxProperty(&component.InitiallyAwake, "Initially Awake", "Whether the body should be allowed to sleep");
-					GUI2::Properties::CheckboxProperty(&component.IsBullet, "Is Bullet", "Is this a fast moving body that should be prevented from tunneling through other moving bodies?");
+					GUI::Properties::ScalarInputProperty<f32>(&component.GravityScale, "Gravity Scale", "The gravity scale of the body", 1, 5);
+					GUI::Properties::ScalarSliderProperty<f32>(&component.Friction, "Friction", "The friction of the body (how much it resists movement)", 0.f, 1.f);
+					GUI::Properties::ScalarSliderProperty<f32>(&component.Restitution, "Restitution", "The restitution of the body (how much it bounces)", 0.f, 1.f);
+					GUI::Properties::ScalarSliderProperty<f32>(&component.RestitutionThreshold, "Restitution Threshold", "The velocity threshold for the restitution", 0.f, 1.f);
+					GUI::Properties::ScalarSliderProperty<f32>(&component.LinearDamping, "Linear Damping", "The linear damping of the body (how much it resists movement)", 0.f, 1.f);
+					GUI::Properties::ScalarSliderProperty<f32>(&component.AngularDamping, "Angular Damping", "The angular damping of the body (how much it resists rotation)", 0.f, 1.f);
+					GUI::Properties::CheckboxProperty(&component.FixedRotation, "Fixed Rotation", "Whether the body should not be rotated by the physics system");
+					GUI::Properties::CheckboxProperty(&component.AllowSleep, "Allow Sleep", "Whether the body should be allowed to sleep");
+					GUI::Properties::CheckboxProperty(&component.InitiallyAwake, "Initially Awake", "Whether the body should be allowed to sleep");
+					GUI::Properties::CheckboxProperty(&component.IsBullet, "Is Bullet", "Is this a fast moving body that should be prevented from tunneling through other moving bodies?");
 				}
-				GUI2::Properties::EndProperties();
+				GUI::Properties::EndProperties();
 			}, true);
 
 			DrawComponent<BoxCollider2DComponent>(entity, [](BoxCollider2DComponent& component) {
-				GUI2::Properties::BeginProperties("##box_collider_2d_property");
-				GUI2::Properties::Vector2InputProperty(&component.Size, "Size", "Size of the collider", 0.5f);
-				GUI2::Properties::Vector2InputProperty(&component.Offset, "Offset", "Offset of the collider from origin");
-				GUI2::Properties::ScalarInputProperty<f32>(&component.Density, "Density", "Density of the collider (mass = density * area)", 1.f, 10.f, 0.f);
-				GUI2::Properties::CheckboxProperty(&component.IsSensor, "Is Sensor?", "Whether to react to the collision or just sense it.");
-				GUI2::Properties::EndProperties();
+				GUI::Properties::BeginProperties("##box_collider_2d_property");
+				GUI::Properties::Vector2InputProperty(&component.Size, "Size", "Size of the collider", 0.5f);
+				GUI::Properties::Vector2InputProperty(&component.Offset, "Offset", "Offset of the collider from origin");
+				GUI::Properties::ScalarInputProperty<f32>(&component.Density, "Density", "Density of the collider (mass = density * area)", 1.f, 10.f, 0.f);
+				GUI::Properties::CheckboxProperty(&component.IsSensor, "Is Sensor?", "Whether to react to the collision or just sense it.");
+				GUI::Properties::EndProperties();
 			}, true);
 
 			DrawComponent<CircleCollider2DComponent>(entity, [](CircleCollider2DComponent& component) {
-				GUI2::Properties::BeginProperties("##circle_collider_2d_property");
-				GUI2::Properties::ScalarInputProperty<f32>(&component.Radius, "Radius", "Radius of the collider", 1.f, 5.f, 0.1f);
-				GUI2::Properties::Vector2InputProperty(&component.Offset, "Offset", "Offset of the collider from origin");
-				GUI2::Properties::ScalarInputProperty<f32>(&component.Density, "Density", "Density of the collider (mass = density * area)", 1.f, 10.f, 0.f);
-				GUI2::Properties::CheckboxProperty(&component.IsSensor, "Is Sensor?", "Whether to react to the collision or just sense it.");
-				GUI2::Properties::EndProperties();
+				GUI::Properties::BeginProperties("##circle_collider_2d_property");
+				GUI::Properties::ScalarInputProperty<f32>(&component.Radius, "Radius", "Radius of the collider", 1.f, 5.f, 0.1f);
+				GUI::Properties::Vector2InputProperty(&component.Offset, "Offset", "Offset of the collider from origin");
+				GUI::Properties::ScalarInputProperty<f32>(&component.Density, "Density", "Density of the collider (mass = density * area)", 1.f, 10.f, 0.f);
+				GUI::Properties::CheckboxProperty(&component.IsSensor, "Is Sensor?", "Whether to react to the collision or just sense it.");
+				GUI::Properties::EndProperties();
 			}, true);
 
 			DrawComponent<PolygonCollider2DComponent>(entity, [](PolygonCollider2DComponent& component) {
-				GUI2::Properties::BeginProperties("##polygon_collider_2d_property");
-				GUI2::Properties::Vector2TableProperty(&component.Vertices, "Edges", "List of all of the edges of the polygon collider (minimum 3 edges!)");
-				GUI2::Properties::Vector2InputProperty(&component.Offset, "Offset", "Offset of the collider from origin");
-				GUI2::Properties::ScalarInputProperty<f32>(&component.Density, "Density", "Density of the collider (mass = density * area)", 1.f, 10.f, 0.f);
-				GUI2::Properties::CheckboxProperty(&component.IsSensor, "Is Sensor?", "Whether to react to the collision or just sense it.");
-				GUI2::Properties::EndProperties();
+				GUI::Properties::BeginProperties("##polygon_collider_2d_property");
+				GUI::Properties::Vector2TableProperty(&component.Vertices, "Edges", "List of all of the edges of the polygon collider (minimum 3 edges!)");
+				GUI::Properties::Vector2InputProperty(&component.Offset, "Offset", "Offset of the collider from origin");
+				GUI::Properties::ScalarInputProperty<f32>(&component.Density, "Density", "Density of the collider (mass = density * area)", 1.f, 10.f, 0.f);
+				GUI::Properties::CheckboxProperty(&component.IsSensor, "Is Sensor?", "Whether to react to the collision or just sense it.");
+				GUI::Properties::EndProperties();
 			}, true);
 
 			DrawComponent<BuoyancyEffector2DComponent>(entity, [](BuoyancyEffector2DComponent& component) {
-				GUI2::Properties::BeginProperties("##buoancy_effector_2d_property");
-				GUI2::Properties::ScalarDragProperty<f32>(&component.DragMultiplier, "Drag Multiplier", "The drag multiplier of the effector (how much it resists movement)");
-				GUI2::Properties::ScalarDragProperty<f32>(&component.FlowMagnitude, "Flow Magnitude", "The magnitude of the flow force in Newtons");
+				GUI::Properties::BeginProperties("##buoancy_effector_2d_property");
+				GUI::Properties::ScalarDragProperty<f32>(&component.DragMultiplier, "Drag Multiplier", "The drag multiplier of the effector (how much it resists movement)");
+				GUI::Properties::ScalarDragProperty<f32>(&component.FlowMagnitude, "Flow Magnitude", "The magnitude of the flow force in Newtons");
 				f32 angle = glm::degrees(component.FlowAngle);
-				GUI2::Properties::ScalarDragProperty<f32>(&angle, "Flow Angle", "The angle of the flow force in degrees");
+				GUI::Properties::ScalarDragProperty<f32>(&angle, "Flow Angle", "The angle of the flow force in degrees");
 				component.FlowAngle = glm::radians(angle);
-				GUI2::Properties::ScalarInputProperty<f32>(&component.Density, "Density", "Density of the collider (mass = density * area)", 1.f, 10.f, 0.f);
-				GUI2::Properties::EndProperties();
+				GUI::Properties::ScalarInputProperty<f32>(&component.Density, "Density", "Density of the collider (mass = density * area)", 1.f, 10.f, 0.f);
+				GUI::Properties::EndProperties();
 			}, true);
 
 			DrawComponent<DistanceJoint2DComponent>(entity, [this](DistanceJoint2DComponent& component) {
-				GUI2::Properties::BeginProperties("##distance_joint_2d_property");
-				GUI2::Properties::EntityDropdownProperty(&component.ConnectedEntityID, m_SceneViewportPanel->GetCurrentScene(), "Connected entity", "The joint will connect to this entity's rigid body");
-				GUI2::Properties::Vector2InputProperty(&component.OriginAnchor, "Origin Anchor", "The anchor point of this body");
-				GUI2::Properties::Vector2InputProperty(&component.ConnectedAnchor, "Connected Anchor", "The anchor point of the connected body");
-				GUI2::Properties::ScalarDragProperty<f32>(&component.BreakingForce, "Breaking Force", "The force acting on the joint to break it in Newtons", 1.f, 0.f, MaxFloatValue);
-				GUI2::Properties::CheckboxProperty(&component.EnableCollision, "Enable collision", "Whether connected by joint bodies should collide with each other");
-				GUI2::Properties::CheckboxProperty(&component.AutoLength, "Auto length", "Whether the distance should be automatically calculated");
+				GUI::Properties::BeginProperties("##distance_joint_2d_property");
+				GUI::Properties::EntityDropdownProperty(&component.ConnectedEntityID, m_SceneViewportPanel->GetCurrentScene(), "Connected entity", "The joint will connect to this entity's rigid body");
+				GUI::Properties::Vector2InputProperty(&component.OriginAnchor, "Origin Anchor", "The anchor point of this body");
+				GUI::Properties::Vector2InputProperty(&component.ConnectedAnchor, "Connected Anchor", "The anchor point of the connected body");
+				GUI::Properties::ScalarDragProperty<f32>(&component.BreakingForce, "Breaking Force", "The force acting on the joint to break it in Newtons", 1.f, 0.f, MaxFloatValue);
+				GUI::Properties::CheckboxProperty(&component.EnableCollision, "Enable collision", "Whether connected by joint bodies should collide with each other");
+				GUI::Properties::CheckboxProperty(&component.AutoLength, "Auto length", "Whether the distance should be automatically calculated");
 				if (!component.AutoLength) {
-					GUI2::Properties::ScalarDragProperty<f32>(&component.Length, "Length", "The distance between the two bodies", 1.f, 0.f);
+					GUI::Properties::ScalarDragProperty<f32>(&component.Length, "Length", "The distance between the two bodies", 1.f, 0.f);
 				}
-				GUI2::Properties::ScalarDragProperty<f32>(&component.MinLength, "Min Length", "The minimum distance between the two bodies", 1.f, 0.f, component.MaxLength);
-				GUI2::Properties::ScalarDragProperty<f32>(&component.MaxLength, "Max Length", "The maximum distance between the two bodies", 1.f, component.MinLength);
-				GUI2::Properties::EndProperties();
+				GUI::Properties::ScalarDragProperty<f32>(&component.MinLength, "Min Length", "The minimum distance between the two bodies", 1.f, 0.f, component.MaxLength);
+				GUI::Properties::ScalarDragProperty<f32>(&component.MaxLength, "Max Length", "The maximum distance between the two bodies", 1.f, component.MinLength);
+				GUI::Properties::EndProperties();
 			}, true);
 
 			DrawComponent<RevolutionJoint2DComponent>(entity, [this](RevolutionJoint2DComponent& component) {
-				GUI2::Properties::BeginProperties("##revolution_joint_2d_property");
-				GUI2::Properties::EntityDropdownProperty(&component.ConnectedEntityID, m_SceneViewportPanel->GetCurrentScene(), "Connected entity", "The joint will connect to this entity's rigid body");
-				GUI2::Properties::Vector2InputProperty(&component.OriginAnchor, "Origin Anchor", "The anchor point of this body");
-				GUI2::Properties::CheckboxProperty(&component.EnableCollision, "Enable collision", "Whether connected by joint bodies should collide with each other");
-				GUI2::Properties::CheckboxProperty(&component.EnableLimit, "Limit Enabled", "Whether the joint should have a limit");
+				GUI::Properties::BeginProperties("##revolution_joint_2d_property");
+				GUI::Properties::EntityDropdownProperty(&component.ConnectedEntityID, m_SceneViewportPanel->GetCurrentScene(), "Connected entity", "The joint will connect to this entity's rigid body");
+				GUI::Properties::Vector2InputProperty(&component.OriginAnchor, "Origin Anchor", "The anchor point of this body");
+				GUI::Properties::CheckboxProperty(&component.EnableCollision, "Enable collision", "Whether connected by joint bodies should collide with each other");
+				GUI::Properties::CheckboxProperty(&component.EnableLimit, "Limit Enabled", "Whether the joint should have a limit");
 				if (component.EnableLimit) {
 					f32 lowerAngle = glm::degrees(component.LowerAngle);
-					GUI2::Properties::ScalarDragProperty<f32>(&lowerAngle, "Lower Angle", "The lower angle for the joint limit (in degrees)");
+					GUI::Properties::ScalarDragProperty<f32>(&lowerAngle, "Lower Angle", "The lower angle for the joint limit (in degrees)");
 					component.LowerAngle = glm::radians(lowerAngle);
 
 					f32 upperAngle = glm::degrees(component.UpperAngle);
-					GUI2::Properties::ScalarDragProperty<f32>(&upperAngle, "Upper Angle", "The upper angle for the joint limit (in degrees)");
+					GUI::Properties::ScalarDragProperty<f32>(&upperAngle, "Upper Angle", "The upper angle for the joint limit (in degrees)");
 					component.UpperAngle = glm::radians(upperAngle);
 				}
-				GUI2::Properties::CheckboxProperty(&component.EnableMotor, "Enable Motor", "Whether the joint should have a motor");
+				GUI::Properties::CheckboxProperty(&component.EnableMotor, "Enable Motor", "Whether the joint should have a motor");
 				if (component.EnableMotor) {
-					GUI2::Properties::ScalarDragProperty<f32>(&component.MotorSpeed, "Motor Speed", "The speed of the motor in radians per second");
-					GUI2::Properties::ScalarDragProperty<f32>(&component.MaxMotorTorque, "Max Motor Torque", "The maximum torque of the motor in Newtons");
+					GUI::Properties::ScalarDragProperty<f32>(&component.MotorSpeed, "Motor Speed", "The speed of the motor in radians per second");
+					GUI::Properties::ScalarDragProperty<f32>(&component.MaxMotorTorque, "Max Motor Torque", "The maximum torque of the motor in Newtons");
 				}
-				GUI2::Properties::ScalarDragProperty<f32>(&component.BreakingTorque, "Breaking Torque", "The torque acting on the joint to break it in Newtons", 1.f, 0.f);
-				GUI2::Properties::ScalarDragProperty<f32>(&component.BreakingForce, "Breaking Force", "The force acting on the joint to break it in Newtons", 1.f, 0.f);
+				GUI::Properties::ScalarDragProperty<f32>(&component.BreakingTorque, "Breaking Torque", "The torque acting on the joint to break it in Newtons", 1.f, 0.f);
+				GUI::Properties::ScalarDragProperty<f32>(&component.BreakingForce, "Breaking Force", "The force acting on the joint to break it in Newtons", 1.f, 0.f);
 
-				GUI2::Properties::EndProperties();
+				GUI::Properties::EndProperties();
 			}, true);
 
 			DrawComponent<PrismaticJoint2DComponent>(entity, [this](PrismaticJoint2DComponent& component) {
-				GUI2::Properties::BeginProperties("##prismatic_joint_2d_property");
-				GUI2::Properties::EntityDropdownProperty(&component.ConnectedEntityID, m_SceneViewportPanel->GetCurrentScene(), "Connected entity", "The joint will connect to this entity's rigid body");
-				GUI2::Properties::Vector2InputProperty(&component.OriginAnchor, "Origin Anchor", "The anchor point of this body");
-				GUI2::Properties::CheckboxProperty(&component.EnableCollision, "Enable collision", "Whether connected by joint bodies should collide with each other");
-				GUI2::Properties::CheckboxProperty(&component.EnableLimit, "Limit Enabled", "Whether the joint should have a limit");
+				GUI::Properties::BeginProperties("##prismatic_joint_2d_property");
+				GUI::Properties::EntityDropdownProperty(&component.ConnectedEntityID, m_SceneViewportPanel->GetCurrentScene(), "Connected entity", "The joint will connect to this entity's rigid body");
+				GUI::Properties::Vector2InputProperty(&component.OriginAnchor, "Origin Anchor", "The anchor point of this body");
+				GUI::Properties::CheckboxProperty(&component.EnableCollision, "Enable collision", "Whether connected by joint bodies should collide with each other");
+				GUI::Properties::CheckboxProperty(&component.EnableLimit, "Limit Enabled", "Whether the joint should have a limit");
 				if (component.EnableLimit) {
 					f32 angle = glm::degrees(component.Angle);
-					GUI2::Properties::ScalarDragProperty<f32>(&angle, "Angle", "The constrained angle between the bodies (in degrees)");
+					GUI::Properties::ScalarDragProperty<f32>(&angle, "Angle", "The constrained angle between the bodies (in degrees)");
 					component.Angle = glm::radians(angle);
-					GUI2::Properties::ScalarDragProperty<f32>(&component.LowerTranslation, "Lower Translation");
-					GUI2::Properties::ScalarDragProperty<f32>(&component.UpperTranslation, "Upper Translation");
+					GUI::Properties::ScalarDragProperty<f32>(&component.LowerTranslation, "Lower Translation");
+					GUI::Properties::ScalarDragProperty<f32>(&component.UpperTranslation, "Upper Translation");
 				}
-				GUI2::Properties::CheckboxProperty(&component.EnableMotor, "Enable Motor", "Whether the joint should have a motor");
+				GUI::Properties::CheckboxProperty(&component.EnableMotor, "Enable Motor", "Whether the joint should have a motor");
 				if (component.EnableMotor) {
-					GUI2::Properties::ScalarDragProperty<f32>(&component.MotorSpeed, "Motor Speed", "The speed of the motor in radians per second", 1.f, 0.f);
-					GUI2::Properties::ScalarDragProperty<f32>(&component.MaxMotorForce, "Max Motor Force", "The maximum force of the motor in Newtons", 1.f, 0.f);
+					GUI::Properties::ScalarDragProperty<f32>(&component.MotorSpeed, "Motor Speed", "The speed of the motor in radians per second", 1.f, 0.f);
+					GUI::Properties::ScalarDragProperty<f32>(&component.MaxMotorForce, "Max Motor Force", "The maximum force of the motor in Newtons", 1.f, 0.f);
 				}
-				GUI2::Properties::EndProperties();
+				GUI::Properties::EndProperties();
 			}, true);
 
 			DrawComponent<SpringJoint2DComponent>(entity, [this](SpringJoint2DComponent& component) {
-				GUI2::Properties::BeginProperties("##spring_joint_2d_property");
-				GUI2::Properties::EntityDropdownProperty(&component.ConnectedEntityID, m_SceneViewportPanel->GetCurrentScene(), "Connected entity", "The joint will connect to this entity's rigid body");
-				GUI2::Properties::Vector2InputProperty(&component.OriginAnchor, "Origin Anchor", "The anchor point of this body");
-				GUI2::Properties::Vector2InputProperty(&component.ConnectedAnchor, "Connected Anchor", "The anchor point of the connected body");
-				GUI2::Properties::ScalarDragProperty<f32>(&component.BreakingForce, "Breaking Force", "The force acting on the joint to break it in Newtons", 1.f, 0.f);
-				GUI2::Properties::CheckboxProperty(&component.EnableCollision, "Enable collision", "Whether connected by joint bodies should collide with each other");
-				GUI2::Properties::CheckboxProperty(&component.AutoLength, "Auto length", "Whether the distance should be automatically calculated");
+				GUI::Properties::BeginProperties("##spring_joint_2d_property");
+				GUI::Properties::EntityDropdownProperty(&component.ConnectedEntityID, m_SceneViewportPanel->GetCurrentScene(), "Connected entity", "The joint will connect to this entity's rigid body");
+				GUI::Properties::Vector2InputProperty(&component.OriginAnchor, "Origin Anchor", "The anchor point of this body");
+				GUI::Properties::Vector2InputProperty(&component.ConnectedAnchor, "Connected Anchor", "The anchor point of the connected body");
+				GUI::Properties::ScalarDragProperty<f32>(&component.BreakingForce, "Breaking Force", "The force acting on the joint to break it in Newtons", 1.f, 0.f);
+				GUI::Properties::CheckboxProperty(&component.EnableCollision, "Enable collision", "Whether connected by joint bodies should collide with each other");
+				GUI::Properties::CheckboxProperty(&component.AutoLength, "Auto length", "Whether the distance should be automatically calculated");
 				if (!component.AutoLength) {
-					GUI2::Properties::ScalarDragProperty<f32>(&component.Length, "Length", "The distance between the two bodies", 1.f, 0.f);
+					GUI::Properties::ScalarDragProperty<f32>(&component.Length, "Length", "The distance between the two bodies", 1.f, 0.f);
 				}
-				GUI2::Properties::ScalarDragProperty<f32>(&component.MinLength, "Min Length", "The minimum distance between the two bodies", 1.f, 0.f, component.MaxLength);
-				GUI2::Properties::ScalarDragProperty<f32>(&component.MaxLength, "Max Length", "The maximum distance between the two bodies", 1.f, component.MinLength, MaxFloatValue);
-				GUI2::Properties::ScalarDragProperty<f32>(&component.Frequency, "Frequency", "The linear stiffness in N/m.");
-				GUI2::Properties::ScalarSliderProperty(&component.DampingRatio, "Damping Ratio", "The linear damping in N*s/m.", 0.0f, 1.0f);
-				GUI2::Properties::EndProperties();
+				GUI::Properties::ScalarDragProperty<f32>(&component.MinLength, "Min Length", "The minimum distance between the two bodies", 1.f, 0.f, component.MaxLength);
+				GUI::Properties::ScalarDragProperty<f32>(&component.MaxLength, "Max Length", "The maximum distance between the two bodies", 1.f, component.MinLength, MaxFloatValue);
+				GUI::Properties::ScalarDragProperty<f32>(&component.Frequency, "Frequency", "The linear stiffness in N/m.");
+				GUI::Properties::ScalarSliderProperty(&component.DampingRatio, "Damping Ratio", "The linear damping in N*s/m.", 0.0f, 1.0f);
+				GUI::Properties::EndProperties();
 			}, true);
 
 			DrawComponent<WheelJoint2DComponent>(entity, [this](WheelJoint2DComponent& component) {
-				GUI2::Properties::BeginProperties("##wheel_joint_2d_property");
-				GUI2::Properties::EntityDropdownProperty(&component.ConnectedEntityID, m_SceneViewportPanel->GetCurrentScene(), "Connected entity", "The joint will connect to this entity's rigid body");
-				GUI2::Properties::Vector2InputProperty(&component.OriginAnchor, "Origin Anchor", "The anchor point of this body");
-				GUI2::Properties::CheckboxProperty(&component.EnableCollision, "Enable collision", "Whether connected by joint bodies should collide with each other");
-				GUI2::Properties::CheckboxProperty(&component.EnableLimit, "Limit Enabled", "Whether the joint should have a limit");
+				GUI::Properties::BeginProperties("##wheel_joint_2d_property");
+				GUI::Properties::EntityDropdownProperty(&component.ConnectedEntityID, m_SceneViewportPanel->GetCurrentScene(), "Connected entity", "The joint will connect to this entity's rigid body");
+				GUI::Properties::Vector2InputProperty(&component.OriginAnchor, "Origin Anchor", "The anchor point of this body");
+				GUI::Properties::CheckboxProperty(&component.EnableCollision, "Enable collision", "Whether connected by joint bodies should collide with each other");
+				GUI::Properties::CheckboxProperty(&component.EnableLimit, "Limit Enabled", "Whether the joint should have a limit");
 				if (component.EnableLimit) {
-					GUI2::Properties::ScalarDragProperty<f32>(&component.LowerTranslation, "Lower Translation");
-					GUI2::Properties::ScalarDragProperty<f32>(&component.UpperTranslation, "Upper Translation");
+					GUI::Properties::ScalarDragProperty<f32>(&component.LowerTranslation, "Lower Translation");
+					GUI::Properties::ScalarDragProperty<f32>(&component.UpperTranslation, "Upper Translation");
 				}
-				GUI2::Properties::CheckboxProperty(&component.EnableMotor, "Enable Motor", "Whether the joint should have a motor");
+				GUI::Properties::CheckboxProperty(&component.EnableMotor, "Enable Motor", "Whether the joint should have a motor");
 				if (component.EnableMotor) {
-					GUI2::Properties::ScalarDragProperty<f32>(&component.MotorSpeed, "Motor Speed", "The speed of the motor in radians per second");
-					GUI2::Properties::ScalarDragProperty<f32>(&component.MaxMotorTorque, "Max Motor Torque", "The maximum torque of the motor in Newtons");
+					GUI::Properties::ScalarDragProperty<f32>(&component.MotorSpeed, "Motor Speed", "The speed of the motor in radians per second");
+					GUI::Properties::ScalarDragProperty<f32>(&component.MaxMotorTorque, "Max Motor Torque", "The maximum torque of the motor in Newtons");
 				}
-				GUI2::Properties::ScalarDragProperty<f32>(&component.Frequency, "Frequency", "The linear stiffness in N/m.");
-				GUI2::Properties::ScalarDragProperty<f32>(&component.DampingRatio, "Damping Ratio", "The linear damping in N*s/m.", 1.f, 0.0f, 1.0f);
-				GUI2::Properties::EndProperties();
+				GUI::Properties::ScalarDragProperty<f32>(&component.Frequency, "Frequency", "The linear stiffness in N/m.");
+				GUI::Properties::ScalarDragProperty<f32>(&component.DampingRatio, "Damping Ratio", "The linear damping in N*s/m.", 1.f, 0.0f, 1.0f);
+				GUI::Properties::EndProperties();
 			}, true);
 
 			ImGui::PopStyleVar(3);

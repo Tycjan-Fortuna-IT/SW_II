@@ -31,16 +31,16 @@ namespace SW {
 
 			constexpr u32 Border = IM_COL32(28, 28, 28, 255);
 
+			constexpr u32 Titlebar = IM_COL32(43, 43, 43, 255);
+
+			constexpr u32 TitlebarActive = IM_COL32(56, 56, 56, 255);
+
 			constexpr u32 Accent = IM_COL32(236, 158, 36, 255);
 			constexpr u32 Highlight = IM_COL32(39, 185, 242, 255);
 			constexpr u32 NiceBlue = IM_COL32(83, 232, 254, 255);
 			constexpr u32 Compliment = IM_COL32(78, 151, 166, 255);
 			constexpr u32 Background = IM_COL32(36, 36, 36, 255);
 			constexpr u32 BackgroundDark = IM_COL32(26, 26, 26, 255);
-			constexpr u32 Titlebar = IM_COL32(43, 43, 43, 255);
-			constexpr u32 TitlebarOrange = IM_COL32(186, 66, 30, 255);
-			constexpr u32 TitlebarGreen = IM_COL32(18, 88, 30, 255);
-			constexpr u32 TitlebarRed = IM_COL32(185, 30, 30, 255);
 			constexpr u32 PropertyField = IM_COL32(15, 15, 15, 255);
 			constexpr u32 Text = IM_COL32(192, 192, 192, 255);
 			constexpr u32 TextBrighter = IM_COL32(210, 210, 210, 255);
@@ -138,7 +138,7 @@ namespace SW {
 			ImVec4 FrameBackgroundActive = ImGui::ColorConvertU32ToFloat4(Theme::PropertyField);
 
 			ImVec4 TitleBackground = ImGui::ColorConvertU32ToFloat4(Theme::Titlebar);
-			ImVec4 TitleBackgroundActive = ImGui::ColorConvertU32ToFloat4(Theme::Titlebar);
+			ImVec4 TitleBackgroundActive = ImGui::ColorConvertU32ToFloat4(Theme::TitlebarActive);
 			ImVec4 TitleBackgroundCollapsed = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 
 			ImVec4 MenuBarBackground = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -175,7 +175,7 @@ namespace SW {
 			ImVec4 TabUnfocused = ImGui::ColorConvertU32ToFloat4(IM_COL32(47, 47, 47, 255));
 			ImVec4 TabUnfocusedActive = ImGui::ColorConvertU32ToFloat4(IM_COL32(53, 53, 53, 255));
 
-			ImVec4 PlotLines = { 0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f };
+			ImVec4 PlotLines = ImGui::ColorConvertU32ToFloat4(IM_COL32(255, 255, 0, 255));
 			ImVec4 PlotLinesHovered = { 0.8702952265739441f, 0.8969957232475281f, 0.06929580867290497f, 1.0f };
 			ImVec4 PlotHistogram = { 0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f };
 			ImVec4 PlotHistogramHovered = { 0.8705882430076599f, 0.8980392217636108f, 0.07058823853731155f, 1.0f };

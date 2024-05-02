@@ -4,7 +4,7 @@
 #include "Managers/SelectionManager.hpp"
 #include "GUI/Icons.hpp"
 #include "SceneViewportPanel.hpp"
-#include "GUI/GUI_V2.hpp"
+#include "GUI/GUI.hpp"
 
 namespace SW {
 
@@ -27,7 +27,7 @@ namespace SW {
 	{
 		PROFILE_FUNCTION();
 
-		GUI2::ScopedStyle CellPadding(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
+		GUI::ScopedStyle CellPadding(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
 
 		if (OnBegin(ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar)) {
 			if (m_SceneViewportPanel->IsSceneLoaded()) {
@@ -40,7 +40,7 @@ namespace SW {
 					ImGui::OpenPopup("AddEntity_Popup");
 				}
 
-				GUI2::Widgets::SearchInput(&m_SearchString);
+				GUI::Widgets::SearchInput(&m_SearchString);
 
 				if (ImGui::BeginPopup("AddEntity_Popup")) {
 					DrawEntityCreateMenu(currentScene);
@@ -48,9 +48,8 @@ namespace SW {
 					ImGui::EndPopup();
 				}
 
-				constexpr ImGuiTableFlags tableFlags = ImGuiTableFlags_ContextMenuInBody
-					| ImGuiTableFlags_BordersInner
-					| ImGuiTableFlags_ScrollY;
+				constexpr ImGuiTableFlags tableFlags = ImGuiTableFlags_SizingFixedFit
+					| ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
 
 				if (ImGui::BeginTable("HierarchyTable", 3, tableFlags)) {
 					ImGui::TableSetupColumn(" Label", ImGuiTableColumnFlags_NoHide | ImGuiTableColumnFlags_NoClip);
@@ -142,8 +141,8 @@ namespace SW {
 			| ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAllColumns | ImGuiTreeNodeFlags_AllowOverlap;
 
 		if (selected) {
-			ImGui::PushStyleColor(ImGuiCol_Header, ImGui::ColorConvertU32ToFloat4(GUI::Theme::TabActive));
-			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImGui::ColorConvertU32ToFloat4(GUI::Theme::TabActive));
+			ImGui::PushStyleColor(ImGuiCol_Header, ImGui::ColorConvertU32ToFloat4(GUI::Theme::SelectionDark));
+			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImGui::ColorConvertU32ToFloat4(GUI::Theme::SelectionDark));
 		}
 
 		const u64 childrenSize = rsc.ChildrenIDs.size();
