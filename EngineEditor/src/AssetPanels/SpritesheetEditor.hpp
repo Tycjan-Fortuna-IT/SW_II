@@ -1,8 +1,8 @@
 /**
  * @file SpritesheetEditor.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.0
- * @date 2024-03-17
+ * @version 0.2.0
+ * @date 2024-05-02
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -39,16 +39,20 @@ namespace SW {
 		ImGuiEx::Canvas m_Canvas;
 
 		Spritesheet** m_Spritesheet = nullptr;
+		std::string m_Name;
 		
 		bool m_IsCanvasHovered = false;
 
 		std::string m_SearchString;		/**< The search string used to filter entities in the scene hierarchy. */
+
+		bool m_OpenGenerateFromGridModal = false;
 
 	private:
 		void DrawRectOnCanvas(ImDrawList* drawList, const glm::vec2& position, const glm::vec2& size, u32 color) const;
 		void RenderSpriteCards(f32 vscale);
 		void AddNewSprite();
 		void ExportSprites() const;
+		void GenerateFromGridPopup(bool* opened);
 	};
 
 }
