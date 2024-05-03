@@ -114,15 +114,15 @@ namespace SW {
 		}
 
 		if (entity.HasComponent<TextComponent>()) {
-			const TextComponent& tc = entity.GetComponent<TextComponent>();
+			const TextComponent& textc = entity.GetComponent<TextComponent>();
 
 			output << YAML::Key << "TextComponent";
 			output << YAML::BeginMap;
-			output << YAML::Key << "AssetHandle" << YAML::Value << tc.Handle;
-			output << YAML::Key << "TextString" << YAML::Value << tc.TextString;
-			output << YAML::Key << "Color" << YAML::Value << tc.Color;
-			output << YAML::Key << "Kerning" << YAML::Value << tc.Kerning;
-			output << YAML::Key << "LineSpacing" << YAML::Value << tc.LineSpacing;
+			output << YAML::Key << "AssetHandle" << YAML::Value << textc.Handle;
+			output << YAML::Key << "TextString" << YAML::Value << textc.TextString;
+			output << YAML::Key << "Color" << YAML::Value << textc.Color;
+			output << YAML::Key << "Kerning" << YAML::Value << textc.Kerning;
+			output << YAML::Key << "LineSpacing" << YAML::Value << textc.LineSpacing;
 
 			output << YAML::EndMap;
 		}

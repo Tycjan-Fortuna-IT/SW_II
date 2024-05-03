@@ -32,23 +32,23 @@ namespace SW {
 		 */
 		static std::string BytesToString(u32 bytes)
 		{
-			constexpr f32 GB = 1024 * 1024 * 1024;
-			constexpr f32 MB = 1024 * 1024;
-			constexpr f32 KB = 1024;
+			constexpr u32 GB = 1024 * 1024 * 1024;
+			constexpr u32 MB = 1024 * 1024;
+			constexpr u32 KB = 1024;
 
-			char buffer[32 + 1]{};
+			std::string result;
 
 			if (bytes >= GB) {
-				snprintf(buffer, 32, "%.2f GB", (f32)bytes / GB);
+				result = std::format("{:.2f} GB", static_cast<float>(bytes) / GB);
 			} else if (bytes >= MB) {
-				snprintf(buffer, 32, "%.2f MB", (f32)bytes / MB);
+				result = std::format("{:.2f} MB", static_cast<float>(bytes) / MB);
 			} else if (bytes >= KB) {
-				snprintf(buffer, 32, "%.2f KB", (f32)bytes / KB);
+				result = std::format("{:.2f} KB", static_cast<float>(bytes) / KB);
 			} else {
-				snprintf(buffer, 32, "%.2f bytes", (f32)bytes);
+				result = std::format("{} bytes", bytes);
 			}
 
-			return std::string(buffer);
+			return result;
 		}
 
 		/**

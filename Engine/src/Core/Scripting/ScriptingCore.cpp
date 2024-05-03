@@ -72,7 +72,7 @@ namespace SW {
 
 	void ScriptingCore::Initialize()
 	{
-		m_AssemblyContext = new Coral::AssemblyLoadContext(std::move(m_Host->CreateAssemblyLoadContext("MainLoadContext")));
+		m_AssemblyContext = new Coral::AssemblyLoadContext(m_Host->CreateAssemblyLoadContext("MainLoadContext"));
 
 		// TODO: Improve this
 		std::string scriptCorePath = (std::filesystem::current_path() / "assets" / "dotnet" / "Engine.ScriptCore.dll").string();

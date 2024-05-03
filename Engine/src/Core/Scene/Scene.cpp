@@ -63,7 +63,7 @@ namespace SW {
 	}
 
 	template <typename T>
-	static void RemoveReferencedConnections(entt::registry& registry, entt::entity handle, u64 id)
+	static void RemoveReferencedConnections(entt::registry& registry, u64 id)
 	{
 		for (entt::entity handle : registry.view<T>()) {
 			T& component = registry.get<T>(handle);
@@ -91,11 +91,11 @@ namespace SW {
 
 		entt::registry& registry = m_Registry.GetRegistryHandle();
 
-		RemoveReferencedConnections<DistanceJoint2DComponent>(registry, entity, id);
-		RemoveReferencedConnections<RevolutionJoint2DComponent>(registry, entity, id);
-		RemoveReferencedConnections<PrismaticJoint2DComponent>(registry, entity, id);
-		RemoveReferencedConnections<SpringJoint2DComponent>(registry, entity, id);
-		RemoveReferencedConnections<WheelJoint2DComponent>(registry, entity, id);
+		RemoveReferencedConnections<DistanceJoint2DComponent>(registry, id);
+		RemoveReferencedConnections<RevolutionJoint2DComponent>(registry, id);
+		RemoveReferencedConnections<PrismaticJoint2DComponent>(registry, id);
+		RemoveReferencedConnections<SpringJoint2DComponent>(registry, id);
+		RemoveReferencedConnections<WheelJoint2DComponent>(registry, id);
 
 		if (IsPlaying() &&entity.HasComponent<RigidBody2DComponent>()) {
 			b2Body* body = (b2Body*)entity.GetComponent<RigidBody2DComponent>().Handle;
@@ -628,7 +628,7 @@ namespace SW {
 			entt::entity destEntity = enttMap.at(srcRegistry.get<IDComponent>(srcEntity).ID);
 
 			T& srcComponent = srcRegistry.get<T>(srcEntity);
-			T& destComponent = dstRegistry.emplace_or_replace<T>(destEntity, srcComponent);
+			dstRegistry.emplace_or_replace<T>(destEntity, srcComponent);
 		}
 	}
 
@@ -765,7 +765,7 @@ namespace SW {
 		}
 
 		if (entity.HasComponent<PolygonCollider2DComponent>()) {
-			CreatePolygonCollider2D(entity, tc, rbc, entity.GetComponent<PolygonCollider2DComponent>());
+			CreatePolygonCollider2D(entity, rbc, entity.GetComponent<PolygonCollider2DComponent>());
 		}
 	}
 
@@ -810,7 +810,7 @@ namespace SW {
 		ccc.Handle = fixture;
 	}
 
-	void Scene::CreatePolygonCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, PolygonCollider2DComponent& pcc)
+	void Scene::CreatePolygonCollider2D(Entity entity, const RigidBody2DComponent& rbc, PolygonCollider2DComponent& pcc)
 	{
 		if (pcc.Vertices.size() < 3) {
 			SW_ERROR("Cannot create polygon collider with less than 3 vertices! Currently: {}", pcc.Vertices.size());

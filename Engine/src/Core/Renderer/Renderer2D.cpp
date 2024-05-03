@@ -685,8 +685,8 @@ namespace SW {
 			quadMin += glm::vec2(x, y);
 			quadMax += glm::vec2(x, y);
 
-			f32 texelWidth = 1.0f / atlasTexture->GetWidth();
-			f32 texelHeight = 1.0f / atlasTexture->GetHeight();
+			f32 texelWidth = 1.0f / (f32)atlasTexture->GetWidth();
+			f32 texelHeight = 1.0f / (f32)atlasTexture->GetHeight();
 			texCoordMin *= glm::vec2(texelWidth, texelHeight);
 			texCoordMax *= glm::vec2(texelWidth, texelHeight);
 

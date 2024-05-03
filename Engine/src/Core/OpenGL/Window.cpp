@@ -55,7 +55,7 @@ namespace SW {
 			stbi_image_free(icon.pixels);
 		}
 
-        const int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+        const int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
 
         ASSERT(status, "Failed to initialize GLAD");
         ASSERT(GLVersion.major == 4 && GLVersion.minor >= 5, "Engine requires at least OpenGL version 4.6!")
@@ -73,13 +73,13 @@ namespace SW {
 
         this->SetVSync(m_Specification.VSync);
 
-        glfwSetWindowCloseCallback(m_Handle, [](GLFWwindow* window) {
+        glfwSetWindowCloseCallback(m_Handle, []([[maybe_unused]] GLFWwindow* window) {
             EventSystem::Emit({
                 .Code = EVENT_CODE_APPLICATION_QUIT
             }, nullptr);
         });
 
-        glfwSetKeyCallback(m_Handle, [](GLFWwindow* window, i32 key, i32 scancode, i32 action, i32 mods) {
+        glfwSetKeyCallback(m_Handle, []([[maybe_unused]] GLFWwindow* window, i32 key, i32 scancode, i32 action, i32 mods) {
             switch (action)
 			{
 				case GLFW_RELEASE:
@@ -126,7 +126,7 @@ namespace SW {
             }
         });
 
-		glfwSetMouseButtonCallback(m_Handle, [](GLFWwindow* window, int button, int action, int mods) {
+		glfwSetMouseButtonCallback(m_Handle, []([[maybe_unused]] GLFWwindow* window, int button, int action, int mods) {
 			switch (action)
 			{
 				case GLFW_RELEASE:
@@ -174,7 +174,7 @@ namespace SW {
 			}, nullptr);
 		});
 
-		glfwSetScrollCallback(m_Handle, [](GLFWwindow* window, f64 xOffset, f64 yOffset) {
+		glfwSetScrollCallback(m_Handle, []([[maybe_unused]] GLFWwindow* window, f64 xOffset, f64 yOffset) {
 			EventSystem::Emit({
 				.Code = EVENT_CODE_MOUSE_WHEEL,
 				.Payload = {
@@ -183,7 +183,7 @@ namespace SW {
 			}, nullptr);
 		});
 
-		glfwSetTitlebarHitTestCallback(m_Handle, [](GLFWwindow* window, int xPos, int yPos, int* hit) {
+		glfwSetTitlebarHitTestCallback(m_Handle, [](GLFWwindow* window, [[maybe_unused]] int xPos, [[maybe_unused]] int yPos, int* hit) {
 			*hit = static_cast<WindowSpecification*>(glfwGetWindowUserPointer(window))->OverTitlebar ? 1 : 0;
 		});
     }
