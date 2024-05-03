@@ -8,7 +8,20 @@ workspace "SW_II"
     language "C++"
 	cppdialect "C++20"
 	staticruntime "Off"
-	externalwarnings "off"
+
+    externalwarnings "Off"
+    warnings "Off"
+    externalanglebrackets "On"
+
+    -- using all warnings with those exceptions:
+    disablewarnings {
+        "4820", -- disable padding warnings
+        "4505", -- unreferenced inline function has been removed
+        "4514", -- unreferenced inline function has been removed
+        "5045", -- Spectre mitigation warning
+        "4868", -- compiler may not enforce left-to-right evaluation order in braced initializer list
+    }
+
 	-- rtti "off"
 
     defines {
