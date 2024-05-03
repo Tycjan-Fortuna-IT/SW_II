@@ -601,6 +601,9 @@ namespace SW {
 			mouseX >= 0 && mouseY >= 0 &&
 			mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y
 		) {
+			if (ImGuizmo::IsUsing() || ImGuizmo::IsOver())
+				return false;
+
 			int pickedID = m_Framebuffer->ReadPixel(1, (int)mouseX, (int)mouseY);
 
 			if (pickedID != -1) {
