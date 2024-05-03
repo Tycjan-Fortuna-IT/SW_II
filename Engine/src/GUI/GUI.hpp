@@ -596,12 +596,11 @@ namespace SW::GUI {
 		 * @param value The value to represent with the radio button.
 		 * @param options The list of options to display as radio buttons.
 		 * @param center (optional) Whether the radio buttons should be centered in the GUI.
-		 * @param flags Additional ImGui combo flags.
 		 * @return bool Whether something has changed
 		 */
 		template <typename T>
 		static bool RadioButton(
-			T* value, const std::vector<SelectOption<T>>& options, bool center = true, ImGuiComboFlags flags = ImGuiComboFlags_None
+			T* value, const std::vector<SelectOption<T>>& options, bool center = true
 		) {
 			bool modified = false;
 			const f32 w = ImGui::GetContentRegionAvail().x;
@@ -631,7 +630,7 @@ namespace SW::GUI {
 				Components::ItemActivityOutline(Components::OutlineFlags_All, GUI::Theme::ActivityOutline,
 					GUI::Theme::ActivityOutline, 10.f);
 
-				if (i != options.size() - 1)
+				if (i != (int)options.size() - 1)
 					ImGui::SameLine();
 			}
 
@@ -1530,17 +1529,16 @@ namespace SW::GUI {
 		 * @param label The label for the property.
 		 * @param tooltip An optional tooltip to display when hovering over the label.
 		 * @param center Whether to center the radio button.
-		 * @param flags Additional ImGui combo flags (optional).
 		 * @returns bool Whether the radio button was modified.
 		 */
 		template <typename T>
 		static bool RadioButtonProperty(
 			T* value, const std::vector<Components::SelectOption<T>>& options, const char* label, const char* tooltip = nullptr,
-			bool center = true, ImGuiComboFlags flags = ImGuiComboFlags_None
+			bool center = true
 		) {
 			Properties::BeginPropertyGrid(label, tooltip);
 
-			bool modified = Components::RadioButton(value, options, center, flags);
+			bool modified = Components::RadioButton(value, options, center);
 
 			Properties::EndPropertyGrid();
 

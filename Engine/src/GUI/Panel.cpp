@@ -5,7 +5,7 @@ namespace SW {
 	Panel::Panel(const char* name, const char* icon, bool defaultShow)
 		: m_Name(name), m_Icon(icon), m_Showing(defaultShow)
 	{
-		m_ID = fmt::format(" {} {}\t\t###{}", icon, m_Name, m_Name);
+		m_ID = std::format(" {} {}\t\t###{}", icon, m_Name, m_Name);
 	}
 
 	bool Panel::OnBegin(i32 flags)

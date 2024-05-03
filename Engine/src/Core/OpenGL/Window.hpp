@@ -24,7 +24,7 @@ namespace SW {
 	/**
 	 * @brief Window specification structure.
 	 */
-    struct WindowSpecification final
+    struct WindowSpecification
     {
         std::string Title = "No title";		/** @brief Window title. */
         u16 Width = 1280;					/** @brief Window width. */

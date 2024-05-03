@@ -114,9 +114,7 @@ namespace SW {
         SpriteComponent(const glm::vec4& color)
             : Color(color) {}
 		SpriteComponent(AssetHandle handle, const glm::vec4& tint = glm::vec4(1.f), f32 tilingFactor = 1.f)
-			: Handle(handle), Color(tint), TilingFactor(tilingFactor) {}
-
-        ~SpriteComponent() = default;
+			: Color(tint), Handle(handle), TilingFactor(tilingFactor) {}
     };
 
 	struct AnimatedSpriteComponent final

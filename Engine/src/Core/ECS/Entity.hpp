@@ -33,12 +33,6 @@ namespace SW {
         Entity(entt::entity entity, Scene* scene);
 	
 		/**
-		 * @brief Copy constructor.
-		 * @param other The other Entity object to copy from.
-		 */
-        Entity(const Entity& other) = default;
-
-		/**
 		 * @brief Checks if the entity has a component of type T.
 		 * @tparam T The component type.
 		 * @return True if the entity has the component, false otherwise.
@@ -285,7 +279,8 @@ namespace SW {
 			if (Entity parent = GetParent())
 				transform = parent.GetWorldSpaceTransformMatrix();
 
-			return std::move(transform * GetTransform().GetTransform());
+			//return std::move(transform * GetTransform().GetTransform()); copy elision? TODO: BENCHMARK
+			return transform * GetTransform().GetTransform();
 		}
 
 		/**

@@ -50,6 +50,12 @@ namespace SW {
 		 */
 		~Scene();
 
+		/**
+		 * @warning Use DeepCopy instead!
+		 */
+		Scene(const Scene&) = delete;
+		Scene& operator=(const Scene&) = delete;
+
 		static AssetType GetStaticType() { return AssetType::Scene; }
 		AssetType GetAssetType() const override { return AssetType::Scene; }
 

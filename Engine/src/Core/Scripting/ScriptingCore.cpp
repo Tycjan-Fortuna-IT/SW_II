@@ -142,7 +142,7 @@ namespace SW {
 				if (fieldNameStr == "ID")
 					continue;
 
-				std::string fullFieldName = fmt::format("{}.{}", fullName, fieldNameStr);
+				std::string fullFieldName = std::format("{}.{}", fullName, fieldNameStr);
 				u32 fieldID = Hash::GenerateFNVHash(fullFieldName);
 
 				FieldMetadata& fieldMetadata = metadata.Fields[fieldID];

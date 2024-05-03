@@ -24,12 +24,10 @@ namespace SW {
 		AssetDirectoryTree& operator=(AssetDirectoryTree&& other) = delete;
 
 		/**
-		 * @brief Traverse the directory and map the assets.
+		 * @brief Traverse the asset directory and map the assets.
 		 * 		  Scans the directory and maps the assets to the tree.
-		 * 
-		 * @param dir The directory to traverse.
 		 */
-		void TraverseDirectoryAndMapAssets(const std::filesystem::path& dir);
+		void TraverseDirectoryAndMapAssets();
 
 		/**
 		 * @brief Get the root item of the tree.
@@ -54,7 +52,7 @@ namespace SW {
 		 * 
 		 * @param dir The directory to refetch.
 		 */
-		void RefetchChanges(const std::filesystem::path& dir);
+		void RefetchChanges();
 
 	private:
 		AssetSourceItem* m_Root = nullptr;

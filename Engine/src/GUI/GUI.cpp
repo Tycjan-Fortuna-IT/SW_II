@@ -144,12 +144,12 @@ namespace SW::GUI {
 			max.y += offsetY;
 
 			ImDrawList* drawList = ImGui::GetWindowDrawList();
-			drawList->AddRect(min, max, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_Border)), rounding, 0, thickness);
+			drawList->AddRect(min, max, ImGui::ColorConvertFloat4ToU32(color), rounding, 0, thickness);
 		}
 
 		void ItemOutline(ImColor color /*= GUI::Theme::Outline*/, f32 thickness /*= 1.0f*/, f32 rounding /*= 0.0f*/, f32 offsetX /*= 0.0f*/, f32 offsetY /*= 0.0f */)
 		{
-			RectangleOutline(GUI::GetItemRect(), color, thickness, rounding, offsetX, offsetX);
+			RectangleOutline(GUI::GetItemRect(), color, thickness, rounding, offsetX, offsetY);
 		}
 
 		bool Checkbox(bool* value, bool center)
@@ -219,8 +219,6 @@ namespace SW::GUI {
 		{
 			bool modified = false;
 
-			const ImGuiIO& io = ImGui::GetIO();
-
 			ImFont* boldFont = GUI::Appearance::GetFonts().DefaultBoldFont;
 
 			constexpr f32 spacingX = 8.0f;
@@ -289,8 +287,6 @@ namespace SW::GUI {
 		bool Vector3Input(glm::vec3* vector, f32 resetValue /*= 0.f*/, f32 min /*= -FLT_MAX*/, f32 max /*= FLT_MAX*/, const std::string& format /*= "%.2f" */)
 		{
 			bool modified = false;
-
-			const ImGuiIO& io = ImGui::GetIO();
 
 			ImFont* boldFont = GUI::Appearance::GetFonts().DefaultBoldFont;
 

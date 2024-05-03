@@ -121,7 +121,7 @@ namespace SW {
 		 * 
 		 * @return bool True if the assets are equal, false otherwise.
 		 */
-		virtual bool operator==(const Asset& other) const
+		bool operator==(const Asset& other) const
 		{
 			return m_Handle == other.m_Handle;
 		}
@@ -132,7 +132,7 @@ namespace SW {
 		 * 
 		 * @return bool True if the assets are not equal, false otherwise.
 		 */
-		virtual bool operator!=(const Asset& other) const
+		bool operator!=(const Asset& other) const
 		{
 			return !(*this == other);
 		}
