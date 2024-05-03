@@ -4,7 +4,7 @@
 #include "Asset/Sprite.hpp"
 #include "Asset/AssetManager.hpp"
 #include "Asset/AssetLoader.hpp"
-#include "GUI/GUI_V2.hpp"
+#include "GUI/GUI.hpp"
 
 namespace SW {
 
@@ -33,6 +33,9 @@ namespace SW {
 	void AnimationEditor::SetAssetHandle(AssetHandle handle)
 	{
 		m_Animation = AssetManager::GetAssetRaw<Animation2D>(handle);
+
+		AssetMetaData metadata = AssetManager::GetAssetMetaData(handle);
+		m_Name = metadata.Path.filename().string();
 	}
 
 	void AnimationEditor::OnOpen()
@@ -50,6 +53,14 @@ namespace SW {
 		constexpr ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit
 			| ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
 
+		ImGui::PushFont(GUI::Appearance::GetFonts().BigBoldFont);
+		ImGui::Text(
+			"Currently editing: %s  %llu frames",
+			m_Name.c_str(),
+			(*m_Animation)->Sprites.size()
+		);
+		ImGui::PopFont();
+
 		if (ImGui::BeginTable("AnimationEditor_MainViewTable", 2, flags, ImGui::GetContentRegionAvail())) {
 			ImGui::TableNextRow();
 			ImGui::TableNextColumn();
@@ -60,22 +71,22 @@ namespace SW {
 				AssetLoader::Serialize(metadata);
 			}
 
-			GUI2::Properties::BeginProperties("##animation_editor_properties");
+			GUI::Properties::BeginProperties("##animation_editor_properties");
 
-			if (GUI2::Properties::ScalarSliderProperty(&(*m_Animation)->Speed, "Speed", nullptr, -25.f, 25.f)) {
+			if (GUI::Properties::ScalarSliderProperty(&(*m_Animation)->Speed, "Speed", nullptr, -25.f, 25.f)) {
 				m_CurrentFrame = 0;
 			}
-			GUI2::Properties::CheckboxProperty(&(*m_Animation)->ReverseAlongX, "Flip X");
-			GUI2::Properties::CheckboxProperty(&(*m_Animation)->ReverseAlongY, "Flip Y");
+			GUI::Properties::CheckboxProperty(&(*m_Animation)->ReverseAlongX, "Flip X");
+			GUI::Properties::CheckboxProperty(&(*m_Animation)->ReverseAlongY, "Flip Y");
 
-			GUI2::Properties::AssetDropdownTableProperty<Sprite>(&(*m_Animation)->Sprites, "Sprites");
+			GUI::Properties::AssetDropdownTableProperty<Sprite>(&(*m_Animation)->Sprites, "Sprites");
 
-			GUI2::Properties::EndProperties();
+			GUI::Properties::EndProperties();
 
 			ImGui::TableNextColumn();
 
-			GUI2::MoveMousePosX(20.f);
-			GUI2::MoveMousePosY(10.f);
+			GUI::MoveMousePosX(20.f);
+			GUI::MoveMousePosY(10.f);
 
 			// Display animation
 			if (m_FramesCount) {
@@ -107,14 +118,14 @@ namespace SW {
 				if (sprWidth != sprHeight) {
 					if (aspectRatio > 1.0f) { // Image is wider than it is tall
 						displaySize = { thumbnailSize, thumbnailSize / aspectRatio };
-						GUI2::MoveMousePosY(leftSpaceY);
+						GUI::MoveMousePosY(leftSpaceY);
 					} else { // Image is taller than it is wide
 						displaySize = { thumbnailSize * aspectRatio, thumbnailSize };
-						GUI2::MoveMousePosX(leftSpaceX);
+						GUI::MoveMousePosX(leftSpaceX);
 					}
 				}
 
-				ImGui::Image(GUI2::GetTextureID((*current)->GetTexture()), displaySize, uv0, uv1);
+				ImGui::Image(GUI::GetTextureID((*current)->GetTexture()), displaySize, uv0, uv1);
 			}
 
 			ImGui::EndTable();

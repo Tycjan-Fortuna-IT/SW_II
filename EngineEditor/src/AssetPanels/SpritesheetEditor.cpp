@@ -47,17 +47,6 @@ namespace SW {
 
 	}
 
-	// TODO move to GUI.hpp
-	static bool BeginHeaderCollapse(
-		const char* name, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None
-	) {
-		return ImGui::TreeNodeEx(name, flags | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed, "%s", name);
-	}
-
-	static void EndHeaderCollapse() {
-		ImGui::TreePop();
-	}
-
 	void SpritesheetEditor::Render()
 	{
 		const glm::vec2 vo = (*m_Spritesheet)->ViewPos;
@@ -92,7 +81,7 @@ namespace SW {
 			ImGui::TableNextColumn();
 
 			ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
-			if (BeginHeaderCollapse("General Options", ImGuiTreeNodeFlags_DefaultOpen)) {
+			if (GUI::Layout::BeginHeaderCollapse("General Options", ImGuiTreeNodeFlags_DefaultOpen)) {
 				GUI::Properties::BeginProperties("##spritesheet_editor_general_options");
 
 				GUI::Properties::ScalarSliderProperty(&(*m_Spritesheet)->GridSize, "Grid Size", nullptr, MIN_GRID_SIZE, MAX_GRID_SIZE);
@@ -108,10 +97,10 @@ namespace SW {
 
 				GUI::Properties::EndProperties();
 
-				EndHeaderCollapse();
+				GUI::Layout::EndHeaderCollapse();
 			}
 
-			if (BeginHeaderCollapse("Advanced Options")) {
+			if (GUI::Layout::BeginHeaderCollapse("Advanced Options")) {
 				GUI::Properties::BeginProperties("##spritesheet_editor_advanced_options");
 
 				if (GUI::Properties::ScalarSliderProperty(&(*m_Spritesheet)->ViewZoom, "View Zoom", nullptr, MIN_ZOOM, MAX_ZOOM)) {
@@ -122,7 +111,7 @@ namespace SW {
 
 				GUI::Properties::EndProperties();
 
-				EndHeaderCollapse();
+				GUI::Layout::EndHeaderCollapse();
 			}
 			ImGui::PopStyleVar();
 

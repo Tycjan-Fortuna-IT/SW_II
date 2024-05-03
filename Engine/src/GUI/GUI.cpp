@@ -94,6 +94,16 @@ namespace SW::GUI {
 			window->DC.MenuBarAppending = false;
 		}
 
+		bool BeginHeaderCollapse(const char* name, ImGuiTreeNodeFlags flags /*= ImGuiTreeNodeFlags_None */)
+		{
+			return ImGui::TreeNodeEx(name, flags | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed, "%s", name);
+		}
+
+        void EndHeaderCollapse()
+		{
+			ImGui::TreePop();
+		}
+
 	}
 
 	namespace Components {

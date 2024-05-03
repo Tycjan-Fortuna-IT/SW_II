@@ -359,6 +359,22 @@ namespace SW::GUI {
 		 */
 		void EndMenuBar();
 
+		/**
+		 * @brief Begins a new collapsible header with the specified name.
+		 * @warning This function must always be paired with a call to EndHeaderCollapse(). Failure to do so will result in undefined behavior.
+		 * @param name The name of the collapsible header. This name is used as the label for the header and as the ID for the header.
+		 * @param flags Additional ImGuiTreeNodeFlags to customize the behavior and appearance of the header.
+		 * @return bool True if the header is open and ready for items to be added, false otherwise.
+		 */
+		bool BeginHeaderCollapse(
+			const char* name, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None
+		);
+
+		/**
+		 * @brief Ends the current collapsible header.
+		 * @warning This function must always be paired with a call to BeginHeaderCollapse(). Failure to do so will result in undefined behavior.
+		 */
+		void EndHeaderCollapse();
 	}
 
 	// --------------------------------
@@ -1048,13 +1064,13 @@ namespace SW::GUI {
 			bool modified = false;
 
 			constexpr ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit
-				| ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
+				| ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY;
 
 			int removeAt = -1;
 
 			if (ImGui::BeginTable("asset_dropdown_table", 2, flags)) {
 				ImGui::TableSetupColumn(Asset::GetStringifiedAssetType(T::GetStaticType()));
-				ImGui::TableSetupColumn("Action");
+				ImGui::TableSetupColumn("");
 				ImGui::TableHeadersRow();
 
 				for (int i = 0; i < (int)vector->size(); i++) {
@@ -1139,7 +1155,7 @@ namespace SW::GUI {
 			if (ImGui::BeginTable("##asset_dropdown_table_map", 3, flags)) {
 				ImGui::TableSetupColumn("Key");
 				ImGui::TableSetupColumn(Asset::GetStringifiedAssetType(V::GetStaticType()));
-				ImGui::TableSetupColumn("Actions");
+				ImGui::TableSetupColumn("");
 				ImGui::TableHeadersRow();
 
 				for (auto it = map->begin(); it != map->end(); /* no increment here */) {

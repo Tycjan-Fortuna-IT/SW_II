@@ -176,7 +176,7 @@ namespace SW {
 			ImVec4 TabUnfocusedActive = ImGui::ColorConvertU32ToFloat4(IM_COL32(53, 53, 53, 255));
 
 			ImVec4 PlotLines = ImGui::ColorConvertU32ToFloat4(IM_COL32(255, 255, 0, 255));
-			ImVec4 PlotLinesHovered = { 0.8702952265739441f, 0.8969957232475281f, 0.06929580867290497f, 1.0f };
+			ImVec4 PlotLinesHovered = ImGui::ColorConvertU32ToFloat4(IM_COL32(255, 255, 0, 255));
 			ImVec4 PlotHistogram = { 0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f };
 			ImVec4 PlotHistogramHovered = { 0.8705882430076599f, 0.8980392217636108f, 0.07058823853731155f, 1.0f };
 

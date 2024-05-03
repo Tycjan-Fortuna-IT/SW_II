@@ -31,6 +31,7 @@ namespace SW {
 
 	private:
 		Animation2D** m_Animation = nullptr;
+		std::string m_Name;
 
 		f32 m_CurrentTime = 0.f;
 		int m_CurrentFrame = 0;
