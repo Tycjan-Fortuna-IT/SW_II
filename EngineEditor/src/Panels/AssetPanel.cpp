@@ -28,7 +28,7 @@ namespace SW {
 		EventSystem::Register(EVENT_CODE_PROJECT_LOADED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
 			m_AssetsDirectory = ProjectContext::Get()->GetAssetDirectory();
 
-			m_AssetTree->TraverseDirectoryAndMapAssets(m_AssetsDirectory);
+			m_AssetTree->TraverseDirectoryAndMapAssets();
 			m_SelectedItem = m_AssetTree->GetRootItem();
 
 			return false;
@@ -99,7 +99,7 @@ namespace SW {
 	{
 		const std::filesystem::path oldSelectedPath = m_SelectedItem->Path;
 
-		m_AssetTree->RefetchChanges(m_AssetsDirectory);
+		m_AssetTree->RefetchChanges();
 
 		AssetSourceItem* newSelectedItem = m_AssetTree->FindChildItemByPath(m_AssetTree->GetRootItem(), oldSelectedPath);
 

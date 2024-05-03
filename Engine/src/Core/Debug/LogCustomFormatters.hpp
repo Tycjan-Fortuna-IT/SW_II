@@ -1,97 +1,124 @@
+/**
+ * @file LogCustomFormatters.hpp
+ * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
+ * @version 0.2.0
+ * @date 2024-05-03
+ *
+ * @copyright Copyright (c) 2024 Tycjan Fortuna
+ */
 #pragma once
 
 #include <glm/glm.hpp>
 
-namespace fmt {
-
-	template<>
-	struct formatter<glm::vec2>
+template<>
+struct std::formatter<glm::vec2, char> {
+	constexpr std::format_parse_context::iterator parse(std::format_parse_context& ctx)
 	{
-		char presentation = 'f';
+		std::format_parse_context::iterator it = ctx.begin(), end = ctx.end();
 
-		constexpr auto parse(format_parse_context& ctx) -> decltype(ctx.begin())
-		{
-			auto it = ctx.begin(), end = ctx.end();
-			if (it != end && (*it == 'f' || *it == 'e')) presentation = *it++;
+		if (it != end && *it != '}')
+			throw std::format_error("invalid format");
 
-			if (it != end && *it != '}') throw format_error("invalid format");
+		return it;
+	}
 
-			return it;
-		}
-
-		template <typename FormatContext>
-		auto format(const glm::vec2& vec, FormatContext& ctx) const -> decltype(ctx.out())
-		{
-			return presentation == 'f'
-				? fmt::format_to(ctx.out(), "({:.3f}, {:.3f})", vec.x, vec.y)
-				: fmt::format_to(ctx.out(), "({:.3e}, {:.3e})", vec.x, vec.y);
-		}
-	};
-
-	template<>
-	struct formatter<glm::vec3>
+	std::format_context::iterator format(glm::vec2 s, std::format_context& ctx) const
 	{
-		char presentation = 'f';
+		std::format_context::iterator it = ctx.out();
 
-		constexpr auto parse(format_parse_context& ctx) -> decltype(ctx.begin())
-		{
-			auto it = ctx.begin(), end = ctx.end();
-			if (it != end && (*it == 'f' || *it == 'e')) presentation = *it++;
+		*it++ = '(';
+		it = std::formatter<float, char>().format(s.x, ctx);
+		*it++ = ',';
+		*it++ = ' ';
+		it = std::formatter<float, char>().format(s.y, ctx);
+		*it++ = ')';
 
-			if (it != end && *it != '}') throw format_error("invalid format");
+		return it;
+	}
+};
 
-			return it;
-		}
-
-		template <typename FormatContext>
-		auto format(const glm::vec3& vec, FormatContext& ctx) const -> decltype(ctx.out())
-		{
-			return presentation == 'f'
-				? fmt::format_to(ctx.out(), "({:.3f}, {:.3f}, {:.3f})", vec.x, vec.y, vec.z)
-				: fmt::format_to(ctx.out(), "({:.3e}, {:.3e}, {:.3e})", vec.x, vec.y, vec.z);
-		}
-	};
-
-	template<>
-	struct formatter<glm::vec4>
+template<>
+struct std::formatter<glm::vec3, char> {
+	constexpr std::format_parse_context::iterator parse(std::format_parse_context& ctx)
 	{
-		char presentation = 'f';
+		std::format_parse_context::iterator it = ctx.begin(), end = ctx.end();
 
-		constexpr auto parse(format_parse_context& ctx) -> decltype(ctx.begin())
-		{
-			auto it = ctx.begin(), end = ctx.end();
-			if (it != end && (*it == 'f' || *it == 'e')) presentation = *it++;
+		if (it != end && *it != '}')
+			throw std::format_error("invalid format");
 
-			if (it != end && *it != '}') throw format_error("invalid format");
+		return it;
+	}
 
-			return it;
-		}
-
-		template <typename FormatContext>
-		auto format(const glm::vec4& vec, FormatContext& ctx) const -> decltype(ctx.out())
-		{
-			return presentation == 'f'
-				? fmt::format_to(ctx.out(), "({:.3f}, {:.3f}, {:.3f}, {:.3f})", vec.x, vec.y, vec.z, vec.w)
-				: fmt::format_to(ctx.out(), "({:.3e}, {:.3e}, {:.3e}, {:.3e})", vec.x, vec.y, vec.z, vec.w);
-		}
-	};
-
-	template<>
-	struct formatter<std::filesystem::path>
+	std::format_context::iterator format(glm::vec3 s, std::format_context& ctx) const
 	{
-		constexpr auto parse(format_parse_context& ctx) -> decltype(ctx.begin())
-		{
-			auto it = ctx.begin(), end = ctx.end();
-			if (it != end && *it != '}') throw format_error("invalid format");
+		std::format_context::iterator it = ctx.out();
 
-			return it;
-		}
+		*it++ = '(';
+		it = std::formatter<float, char>().format(s.x, ctx);
+		*it++ = ',';
+		*it++ = ' ';
+		it = std::formatter<float, char>().format(s.y, ctx);
+		*it++ = ',';
+		*it++ = ' ';
+		it = std::formatter<float, char>().format(s.z, ctx);
+		*it++ = ')';
 
-		template <typename FormatContext>
-		auto format(const std::filesystem::path& path, FormatContext& ctx) const -> decltype(ctx.out())
-		{
-			return fmt::format_to(ctx.out(), "{}", path.string());
-		}
-	};
+		return it;
+	}
+};
 
-}
+template<>
+struct std::formatter<glm::vec4, char> {
+	constexpr std::format_parse_context::iterator parse(std::format_parse_context& ctx)
+	{
+		std::format_parse_context::iterator it = ctx.begin(), end = ctx.end();
+
+		if (it != end && *it != '}')
+			throw std::format_error("invalid format");
+
+		return it;
+	}
+
+	std::format_context::iterator format(glm::vec4 s, std::format_context& ctx) const
+	{
+		std::format_context::iterator it = ctx.out();
+
+		*it++ = '(';
+		it = std::formatter<float, char>().format(s.x, ctx);
+		*it++ = ',';
+		*it++ = ' ';
+		it = std::formatter<float, char>().format(s.y, ctx);
+		*it++ = ',';
+		*it++ = ' ';
+		it = std::formatter<float, char>().format(s.z, ctx);
+		*it++ = ',';
+		*it++ = ' ';
+		it = std::formatter<float, char>().format(s.w, ctx);
+		*it++ = ')';
+
+		return it;
+	}
+};
+
+template<>
+struct std::formatter<std::filesystem::path, char> {
+	constexpr std::format_parse_context::iterator parse(std::format_parse_context& ctx)
+	{
+		std::format_parse_context::iterator it = ctx.begin(), end = ctx.end();
+
+		if (it != end && *it != '}')
+			throw std::format_error("invalid format");
+
+		return it;
+	}
+
+	std::format_context::iterator format(std::filesystem::path s, std::format_context& ctx) const
+	{
+		std::format_context::iterator it = ctx.out();
+
+		std::string path = s.string();
+		std::copy(path.begin(), path.end(), it);
+
+		return it;
+	}
+};
