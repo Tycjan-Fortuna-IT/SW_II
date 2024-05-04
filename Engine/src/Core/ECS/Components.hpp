@@ -15,6 +15,7 @@
 #include "Asset/Font.hpp"
 #include "Core/Scripting/CSharpObject.hpp"
 #include "Asset/Asset.hpp"
+#include "Asset/Animation2D.hpp"
 
 namespace SW {
 
@@ -113,10 +114,19 @@ namespace SW {
         SpriteComponent(const glm::vec4& color)
             : Color(color) {}
 		SpriteComponent(AssetHandle handle, const glm::vec4& tint = glm::vec4(1.f), f32 tilingFactor = 1.f)
-			: Handle(handle), Color(tint), TilingFactor(tilingFactor) {}
-
-        ~SpriteComponent() = default;
+			: Color(tint), Handle(handle), TilingFactor(tilingFactor) {}
     };
+
+	struct AnimatedSpriteComponent final
+	{
+		int CurrentFrame = 0u;
+
+		Animation2D** DefaultAnimation = nullptr;
+
+		Animation2D** CurrentAnimation = nullptr;
+
+		std::unordered_map<std::string, Animation2D**> Animations;
+	};
 
 	/**
 	 * @struct CircleComponent

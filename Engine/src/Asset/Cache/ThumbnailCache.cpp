@@ -192,11 +192,11 @@ namespace SW {
 
 		if (originalWidth > originalHeight) {
 			newWidth = clampedSize;
-			newHeight = (i32)(clampedSize * (f32)originalHeight / (f32)originalWidth);
+			newHeight = (i32)(clampedSize * originalHeight / originalWidth);
 		}
 		else {
 			newHeight = clampedSize;
-			newWidth = (i32)(clampedSize * (f32)originalWidth / (f32)originalHeight);
+			newWidth = (i32)(clampedSize * originalWidth / originalHeight);
 		}
 
 		texture->ChangeSize(newWidth, newHeight);

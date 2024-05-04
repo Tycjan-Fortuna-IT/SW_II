@@ -76,7 +76,7 @@ namespace SW {
 		{
 			const std::shared_ptr<spdlog::logger>& logger = type == LogType::ENGINE ? s_EngineLogger : s_AppLogger;
 
-			std::string message = fmt::vformat(format, fmt::make_format_args(std::forward<Args>(args)...));
+			std::string message = std::vformat(format, std::make_format_args(std::forward<Args>(args)...));
 
 			switch (level) {
 				case LOG_LEVEL_TRACE:

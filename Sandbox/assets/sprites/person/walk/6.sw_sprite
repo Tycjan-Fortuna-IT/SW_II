@@ -1,0 +1,6 @@
+Sprite:
+  SpritesheetTextureHandle: 9383798946519536564
+  TexCordLeftDown: [0.620117188, 0.939903855]
+  TexCordRightDown: [0.745117188, 0.939903855]
+  TexCordUpRight: [0.745117188, 0.632211566]
+  TexCordUpLeft: [0.620117188, 0.632211566]

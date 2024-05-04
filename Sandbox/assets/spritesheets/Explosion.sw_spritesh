@@ -1,0 +1,57 @@
+Spritesheet:
+  TextureHandle: 1607516040653568952
+  ViewZoom: 0.599999905
+  GridSize: 128
+  CenterOffset: [0, 0]
+  ViewPos: [122.000015, 336]
+  ShowImageBorders: true
+  ExportPath: sprites\explosion
+  Sprites:
+    - Sprite:
+        Name: 1
+        Position: [0, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 2
+        Position: [128, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 3
+        Position: [256, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 4
+        Position: [384, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 5
+        Position: [512, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 6
+        Position: [640, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 7
+        Position: [768, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 8
+        Position: [896, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 9
+        Position: [1024, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 10
+        Position: [1152, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 11
+        Position: [1280, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 12
+        Position: [1408, 0]
+        Size: [128, 128]

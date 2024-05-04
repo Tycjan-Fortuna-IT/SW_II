@@ -7,7 +7,7 @@ namespace SW {
 	Physics2DContactListener::Physics2DContactListener(Scene* scene)
 		: m_Scene(scene) {}
 
-	void Physics2DContactListener::Step(Timestep dt)
+	void Physics2DContactListener::Step(UNUSED Timestep dt)
 	{
 		for (auto& [fluid, fixture] : m_BuoyancyFluidFixturePairs) {
 			Entity fluidEntity = { static_cast<entt::entity>(static_cast<uint32_t>(fluid->GetUserData().pointer)), m_Scene };
@@ -45,6 +45,18 @@ namespace SW {
 		) {
 			m_BuoyancyFluidFixturePairs.insert(std::make_pair(secondFixture, firstFixture));
 		}
+
+		const auto onContactBegin = [](Entity entity, Entity other) {
+			if (!entity.HasComponent<ScriptComponent>())
+				return;
+
+			ScriptComponent& sc = entity.GetComponent<ScriptComponent>();
+
+			sc.Instance.Invoke<u64>("OnCollision2DBeginInternal", other.GetID());
+		};
+
+		onContactBegin(firstEntity, secondEntity);
+		onContactBegin(secondEntity, firstEntity);
 	}
 
 	void Physics2DContactListener::EndContact(b2Contact* contact)
@@ -72,6 +84,18 @@ namespace SW {
 		) {
 			m_BuoyancyFluidFixturePairs.erase(std::make_pair(secondFixture, firstFixture));
 		}
+
+		const auto onContactEnd = [](Entity entity, Entity other) {
+			if (!entity.HasComponent<ScriptComponent>())
+				return;
+
+			ScriptComponent& sc = entity.GetComponent<ScriptComponent>();
+
+			sc.Instance.Invoke<u64>("OnCollision2DEndInternal", other.GetID());
+		};
+
+		onContactEnd(firstEntity, secondEntity);
+		onContactEnd(secondEntity, firstEntity);
 	}
 
 	void Physics2DContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)

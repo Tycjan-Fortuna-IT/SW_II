@@ -8,13 +8,9 @@
  */
 #pragma once
 
-#define ENABLE_PROFILING SW_RELEASE_BUILD
+#ifdef ENABLE_PROFILING
 
-#if ENABLE_PROFILING 
 #include <tracy/Tracy.hpp>
-#endif
-
-#if ENABLE_PROFILING
 
 #define HZ_PROFILE_MARK_FRAME			FrameMark;
 #define PROFILE_FUNCTION(...)			ZoneScoped##__VA_OPT__(N(__VA_ARGS__))

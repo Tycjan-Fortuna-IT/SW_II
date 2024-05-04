@@ -1,0 +1,66 @@
+Prefab:
+  RootEntityHandle: 6562731830483759400
+  Entities:
+    - Entity:
+        IDComponent:
+          ID: 6562731830483759400
+        TagComponent:
+          Tag: Player
+        TransformComponent:
+          Transform: [0.0859026462, 1.83075476, 0]
+          Rotation: [0, 0, 0]
+          Scale: [3, 3, 1]
+        AnimatedSpriteComponent:
+          CurrentFrame: 1
+          CurrentAnimationHandle: 1813557045535702317
+          DefaultAnimationHandle: 1813557045535702317
+          Animations:
+            - Animation:
+                Name: Walk_Left
+                AnimationHandle: 11255812980316828840
+            - Animation:
+                Name: Walk_Right
+                AnimationHandle: 15723322973065492980
+            - Animation:
+                Name: Run_Left
+                AnimationHandle: 3431305099052702633
+            - Animation:
+                Name: Run_Right
+                AnimationHandle: 10089294134779026993
+        RelationshipComponent:
+          ParentID: 0
+          ChildrenCount: 0
+        ScriptComponent:
+          ScriptID: 3044585441
+          ScriptName: Sandbox.PlayerController
+          Fields:
+            - ID: 3418902686
+              Name: Speed
+              Type: Float
+              Value: 12
+            - ID: 3974404665
+              Name: Score
+              Type: Float
+              Value: 0
+            - ID: 99773847
+              Name: BottlePrefab
+              Type: Prefab
+              Value: 15467445196544102368
+        RigidBody2DComponent:
+          Type: 2
+          AutoMass: false
+          Mass: 1
+          GravityScale: 1
+          Friction: 0.5
+          Restitution: 0
+          RestitutionThreshold: 0.5
+          LinearDamping: 0
+          AngularDamping: 0
+          AllowSleep: true
+          InitiallyAwake: true
+          IsBullet: false
+        BoxCollider2DComponent:
+          Size: [0.140000001, 0.25]
+          Offset: [0.0399999991, -0.0500000007]
+          Density: 1
+          IsSensor: false

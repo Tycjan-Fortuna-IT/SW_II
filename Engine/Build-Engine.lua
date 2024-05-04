@@ -2,6 +2,8 @@ project "Engine"
     kind "StaticLib"
     architecture "x86_64"
 
+    warnings "Everything"
+
     targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 
@@ -24,6 +26,8 @@ project "Engine"
     defines {
         "GLFW_INCLUDE_NONE",
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
+        "SPDLOG_COMPILED_LIB",
+        "SPDLOG_USE_STD_FORMAT",
         "YAML_CPP_STATIC_DEFINE",
         "TRACY_ENABLE",
 		"TRACY_ON_DEMAND",
@@ -40,7 +44,7 @@ project "Engine"
     filter "system:windows"
         buildoptions {
             -- This option enables the compiler to generate code that's compliant with the C++20 for char8_t literals.
-            "/Zc:char8_t-"
+            "/Zc:char8_t-",
         }
 
     filter "system:linux"

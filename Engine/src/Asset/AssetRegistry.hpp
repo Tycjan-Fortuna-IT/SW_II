@@ -30,11 +30,15 @@ namespace SW {
 		const AssetMetaData& GetAssetMetaData(AssetHandle handle) const;
 		const std::map<AssetHandle, AssetMetaData>& GetAvailableAssets() const { return m_AvailableAssets; }
 
+		std::map<AssetHandle, AssetMetaData>& GetAvailableAssetsRaw() { return m_AvailableAssets; }
+
 	private:
 		std::map<AssetHandle, AssetMetaData> m_AvailableAssets;
 
 	private:
 		void FetchAvailableAssets();
+
+		void SaveRegistryToFile();
 	};
 
 }

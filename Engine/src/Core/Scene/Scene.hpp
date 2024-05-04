@@ -1,19 +1,19 @@
 /**
  * @file Scene.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.7
- * @date 2024-03-14
+ * @version 0.2.0
+ * @date 2024-04-13
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
 #pragma once
 
-#include "Core/Scene/SceneCamera.hpp"
 #include "Core/Timestep.hpp"
-#include "Core/Math/Vector2.hpp"
 #include "Core/ECS/EntityRegistry.hpp"
 #include "Core/ECS/Components.hpp"
 #include "Core/Scripting/ScriptStorage.hpp"
+#include "Asset/Asset.hpp"
+#include <queue>
 
 class b2World;
 
@@ -22,7 +22,8 @@ namespace SW {
 	class Entity;
 	class EditorCamera;
 	class Physics2DContactListener;
-	
+	class Prefab;
+
 	/**
 	 * @brief Represents the state of the scene.
 	 */
@@ -36,18 +37,27 @@ namespace SW {
 	/**
 	 * @brief Represents a scene in the game engine.
 	 */
-	class Scene final
+	class Scene final : public Asset
 	{
 	public:
 		/**
 		 * @brief Default constructor.
 		 */
-		Scene(const std::string& filepath);
+		Scene();
 
 		/**
 		 * @brief Destructor.
 		 */
 		~Scene();
+
+		/**
+		 * @warning Use DeepCopy instead!
+		 */
+		Scene(const Scene&) = delete;
+		Scene& operator=(const Scene&) = delete;
+
+		static AssetType GetStaticType() { return AssetType::Scene; }
+		AssetType GetAssetType() const override { return AssetType::Scene; }
 
 		/**
 		 * @brief Creates a new entity in the scene with an optional tag.
@@ -67,8 +77,15 @@ namespace SW {
 		/**
 		 * @brief Destroys the specified entity in the scene.
 		 * @param entity The entity to destroy.
+		 * @warning DO NOT use this to destroy entities during the runtime! Use DestroyEntityInRuntime instead!
 		 */
 		void DestroyEntity(Entity entity);
+
+		/**
+		 * @brief Destroys the specified entity in the scene during the runtime (SAFE).
+		 * @param entity The entity to destroy.
+		 */
+		void DestroyEntityInRuntime(u64 id);
 
 		/**
 		 * @brief Destroys all present entities in the scene.
@@ -150,18 +167,6 @@ namespace SW {
 		Entity TryGetEntityByTag(const std::string& tag);
 
 		/**
-		 * @brief Retrieves the filepath to the serialized scene.
-		 * @return The filepath to the serialized scene.
-		 */
-		const std::string& GetFilePath() const { return m_FilePath; }
-
-		/**
-		 * @brief Retrieves the name of the serialized scene.
-		 * @return The name of the serialized scene.
-		 */
-		const std::string& GetName() const { return m_Name; }
-
-		/**
 		 * @brief Retrieves current state of the scene.
 		 * 
 		 * @return SceneState The current state of the scene.
@@ -200,14 +205,14 @@ namespace SW {
 		Scene* DeepCopy();
 
 		/**
-		 * @brief Duplicates the entity. (deep copy with all components)
+		 * @brief Duplicates the entity. (deep copy with all components and children)
 		 * 
 		 * @param entity The entity to duplicate.
 		 * @param duplicatedEntities The map of already duplicated entities.
 		 * 
 		 * @return Entity The duplicated entity.
 		 */
-		Entity DuplicateEntity(Entity entity, std::unordered_map<u64, Entity>& duplicatedEntities);
+		Entity DuplicateEntity(Entity src, std::unordered_map<u64, Entity>& duplicatedEntities);
 
 		/**
 		 * @brief Get the width of the viewport.
@@ -265,21 +270,35 @@ namespace SW {
 		}
 
 		/**
+		 * @brief Whether the scene is currently playing. 
+		 */
+		bool IsPlaying() const { return m_SceneState != SceneState::Edit; }
+
+		/**
 		 * @brief Gets the script storage associated with the scene.
 		 * 
 		 * @return A reference to the script storage.
 		 */
 		ScriptStorage& GetScriptStorage() { return m_ScriptStorage; }
 
+		const ScriptStorage& GetScriptStorageC() const { return m_ScriptStorage; }
+
+		Entity InstantiatePrefab(const Prefab* prefab, const glm::vec3* position = nullptr, const glm::vec3* rotation = nullptr,
+			const glm::vec3* scale = nullptr);
+
+	private:
+		Entity CreatePrefabricatedEntity(Entity src, std::unordered_map<u64, Entity>& duplicatedEntities, const glm::vec3* position = nullptr,
+			const glm::vec3* rotation = nullptr, const glm::vec3* scale = nullptr);
+
+	public:
 		glm::vec2 Gravity = { 0.0f, -9.80665f };	/**< The gravity of the scene. */
 
 	private:
 		EntityRegistry m_Registry; /**< The entity registry of the scene. */
 
-		std::string m_FilePath;		/**< The filepath to the serialized scene file. */
-		std::string m_Name;			/**< The filename of the serialized scene file. */
-
 		std::unordered_map<u64, Entity> m_EntityMap = {}; /**< Map of entity IDs to entt::entity handles. (cache) */
+
+		std::queue<u64> m_EntitiesToDelete;
 
 		u32 m_ViewportWidth = 0; /**< The width of the viewport. */
 		u32 m_ViewportHeight = 0; /**< The height of the viewport. */
@@ -288,7 +307,7 @@ namespace SW {
 
 		SceneState m_SceneState = SceneState::Edit;	/**< The current state of the scene. */
 
-		b2World* m_PhysicsWorld2D;		/**< The physics world of the scene. */
+		b2World* m_PhysicsWorld2D = nullptr;		/**< The physics world of the scene. */
 		Physics2DContactListener* m_PhysicsContactListener2D = nullptr;
 
 		u32 m_VelocityIterations = 8;			/**< The number of velocity iterations for the physics simulation. */
@@ -296,6 +315,8 @@ namespace SW {
 		f32 m_PhysicsFrameAccumulator = 0.0f;	/**< The frame accumulator for the physics simulation. */
 
 		ScriptStorage m_ScriptStorage;			/**< The script storage of the scene. */
+
+		f32 m_AnimationTime = 0.f;			/**< The time elapsed since the last frame. Used for proper 2D animation display. */
 
 		/**
 		 * @brief Register entity's rigidbody component in the physics world.
@@ -331,56 +352,59 @@ namespace SW {
 		 * @brief Creates a polygon collider for a given entity.
 		 *
 		 * @param entity The entity for which to create the polygon collider.
-		 * @param tc The transform component of the entity.
 		 * @param rbc The rigid body component of the entity.
 		 * @param ccc The polygon collider component to be created.
 		 */
-		void CreatePolygonCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, PolygonCollider2DComponent& pcc);
+		void CreatePolygonCollider2D(Entity entity, const RigidBody2DComponent& rbc, PolygonCollider2DComponent& pcc);
 	
 		/**
 		 * @brief Creates a distance joint between an entity and a rigid body component.
 		 * 
-		 * @param entity The entity to create the distance joint with.
 		 * @param rbc The rigid body component of the entity.
 		 * @param djc The distance joint component to be created.
 		 */
-		void CreateDistanceJoint2D(Entity entity, const RigidBody2DComponent& rbc, DistanceJoint2DComponent& djc);
+		void CreateDistanceJoint2D(const RigidBody2DComponent& rbc, DistanceJoint2DComponent& djc);
 
 		/**
 		 * @brief Creates a 2D revolution joint between an entity and a rigid body.
 		 * 
-		 * @param entity The entity to create the revolution joint for.
 		 * @param rbc The rigid body component of the entity.
 		 * @param rjc The revolution joint component to be created and attached to the entity.
 		 */
-		void CreateRevolutionJoint2D(Entity entity, const RigidBody2DComponent& rbc, RevolutionJoint2DComponent& rjc);
+		void CreateRevolutionJoint2D(const RigidBody2DComponent& rbc, RevolutionJoint2DComponent& rjc);
 
 		/**
 		 * @brief Creates a prismatic joint between an entity and a rigid body component.
 		 * 
-		 * @param entity The entity to create the prismatic joint for.
 		 * @param rbc The rigid body component of the entity.
 		 * @param pjc The prismatic joint component to be created.
 		 */
-		void CreatePrismaticJoint2D(Entity entity, const RigidBody2DComponent& rbc, PrismaticJoint2DComponent& pjc);
+		void CreatePrismaticJoint2D(const RigidBody2DComponent& rbc, PrismaticJoint2DComponent& pjc);
 		
 		/**
 		 * @brief Creates a spring joint between an entity and a rigid body component.
 		 *
-		 * @param entity The entity to create the spring joint for.
 		 * @param rbc The rigid body component of the entity.
 		 * @param sjc The spring joint component to be created.
 		 */
-		void CreateSpringJoint2D(Entity entity, const RigidBody2DComponent& rbc, SpringJoint2DComponent& sjc);
+		void CreateSpringJoint2D(const RigidBody2DComponent& rbc, SpringJoint2DComponent& sjc);
 
 		/**
 		 * @brief Creates a wheel joint between an entity and a rigid body component.
 		 *
-		 * @param entity The entity to create the wheel joint for.
 		 * @param rbc The rigid body component of the entity.
 		 * @param wjc The wheel joint component to be created.
 		 */
-		void CreateWheelJoint2D(Entity entity, const RigidBody2DComponent& rbc, WheelJoint2DComponent& wjc);
+		void CreateWheelJoint2D(const RigidBody2DComponent& rbc, WheelJoint2DComponent& wjc);
+
+		/**
+		 * @brief Function bound to the event of creating a rigidbody2D component.
+		 * 		  Used to register the rigidbody2D component in the physics world at runtime.
+		 *
+		 * @param registry The registry of the scene.
+		 * @param handle The entity handle of the entity with the rigidbody2D component.
+		 */
+		//void OnRigidBody2DComponentCreated(entt::registry& registry, entt::entity handle);
 	};
 
 }

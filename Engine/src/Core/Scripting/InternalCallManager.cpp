@@ -8,6 +8,7 @@
 #include "Core/Application.hpp"
 #include "Core/Utils/TypeInfo.hpp"
 #include "Core/Utils/Input.hpp"
+#include "Asset/AssetManager.hpp"
 
 #ifdef SW_WINDOWS
 	#define SW_FUNCTION_NAME __func__
@@ -81,6 +82,9 @@ namespace SW {
 	{
 		RegisterManagedComponent<TagComponent>(coreAssembly);
 		RegisterManagedComponent<TransformComponent>(coreAssembly);
+		RegisterManagedComponent<AnimatedSpriteComponent>(coreAssembly);
+		RegisterManagedComponent<TextComponent>(coreAssembly);
+		RegisterManagedComponent<ScriptComponent>(coreAssembly);
 		RegisterManagedComponent<RigidBody2DComponent>(coreAssembly);
     }
 
@@ -134,6 +138,11 @@ namespace SW {
 		APP_ERROR(message);
 
 		Coral::String::Free(msg);
+	}
+
+	bool AssetHandle_IsValid(u64 assetID)
+	{
+		return AssetManager::IsValid(assetID);
 	}
 
 	bool Entity_HasComponent(u64 entityID, Coral::ReflectionType componentType)
@@ -208,6 +217,21 @@ namespace SW {
 		s_RemoveComponentFuncs.at(type.GetTypeId())(entity);
 	}
 
+	u64 Scene_CreateEntity(Coral::String tag)
+	{
+		Scene* scene = ScriptingCore::Get().GetCurrentScene();
+
+		ASSERT(scene, "No active scene!");
+
+		return scene->CreateEntity(tag).GetID();
+	}
+
+	void Scene_DestroyEntity(u64 entityID)
+	{
+		Scene* scene = ScriptingCore::Get().GetCurrentScene();
+		scene->DestroyEntityInRuntime(entityID);
+	}
+
 	u64 Scene_TryGetEntityByID(u64 id)
 	{
 		Entity entity = GetEntityById(id);
@@ -224,6 +248,38 @@ namespace SW {
 		Coral::String::Free(tag);
 
 		return entity ? entity.GetID() : 0;
+	}
+
+	u64 Scene_InstantiatePrefab(u64 prefabID)
+	{
+		Prefab* prefab = *AssetManager::GetAssetRaw<Prefab>(prefabID);
+		Scene* scene = ScriptingCore::Get().GetCurrentScene();
+		
+		return scene->InstantiatePrefab(prefab).GetID();
+	}
+
+	u64 Scene_InstantiatePrefabWithPosition(u64 prefabID, glm::vec3* inPosition)
+	{
+		Prefab* prefab = *AssetManager::GetAssetRaw<Prefab>(prefabID);
+		Scene* scene = ScriptingCore::Get().GetCurrentScene();
+
+		return scene->InstantiatePrefab(prefab, inPosition).GetID();
+	}
+
+	u64 Scene_InstantiatePrefabWithPositionRotation(u64 prefabID, glm::vec3* inPosition, glm::vec3* inRotation)
+	{
+		Prefab* prefab = *AssetManager::GetAssetRaw<Prefab>(prefabID);
+		Scene* scene = ScriptingCore::Get().GetCurrentScene();
+
+		return scene->InstantiatePrefab(prefab, inPosition, inRotation).GetID();
+	}
+
+	u64 Scene_InstantiatePrefabWithPositionRotationScale(u64 prefabID, glm::vec3* inPosition, glm::vec3* inRotation, glm::vec3* inScale)
+	{
+		Prefab* prefab = *AssetManager::GetAssetRaw<Prefab>(prefabID);
+		Scene* scene = ScriptingCore::Get().GetCurrentScene();
+
+		return scene->InstantiatePrefab(prefab, inPosition, inRotation, inScale).GetID();
 	}
 
 	Coral::String TagComponent_GetTag(u64 entityID)
@@ -317,7 +373,134 @@ namespace SW {
 
 		entity.GetComponent<TransformComponent>().Scale = *inScale;
 	}
-	
+
+	void AnimatedSpriteComponent_Play(u64 entityID, Coral::String name)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		AnimatedSpriteComponent& asc = entity.GetComponent<AnimatedSpriteComponent>();
+
+		std::string animationName = name;
+
+		Coral::String::Free(name);
+
+		auto it = asc.Animations.find(animationName);
+		if (it == asc.Animations.end()) {
+			APP_ERROR("Could not find animation {} for entity {}", animationName, entityID);
+			return;
+		}
+
+		asc.CurrentFrame = 0;
+		asc.CurrentAnimation = it->second;
+	}
+
+	void AnimatedSpriteComponent_Stop(u64 entityID)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		AnimatedSpriteComponent& asc = entity.GetComponent<AnimatedSpriteComponent>();
+
+		asc.CurrentFrame = 0;
+		asc.CurrentAnimation = asc.DefaultAnimation;
+	}
+
+	Coral::String TextComponent_GetText(u64 entityID)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		TextComponent& tc = entity.GetComponent<TextComponent>();
+
+		return Coral::String::New(tc.TextString);
+	}
+
+	void TextComponent_SetText(u64 entityID, Coral::String text)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		std::string newText = text;
+
+		TextComponent& tc = entity.GetComponent<TextComponent>();
+
+		tc.TextString = text;
+	}
+
+	void TextComponent_GetColor(u64 entityID, glm::vec4* outColor)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		*outColor = entity.GetComponent<TextComponent>().Color;
+	}
+
+	void TextComponent_SetColor(u64 entityID, glm::vec4* inColor)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		entity.GetComponent<TextComponent>().Color = *inColor;
+	}
+
+	f32 TextComponent_GetKerning(u64 entityID)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		return entity.GetComponent<TextComponent>().Kerning;
+	}
+
+	void TextComponent_SetKerning(u64 entityID, f32 kerning)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		entity.GetComponent<TextComponent>().Kerning = kerning;
+	}
+
+
+	f32 TextComponent_GetLineSpacing(u64 entityID)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		return entity.GetComponent<TextComponent>().LineSpacing;
+	}
+
+	void TextComponent_SetLineSpacing(u64 entityID, f32 LineSpacing)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		entity.GetComponent<TextComponent>().LineSpacing = LineSpacing;
+	}
+
+	Coral::ManagedObject ScriptComponent_GetInstance(u64 entityID)
+	{
+		Entity entity = GetEntityById(entityID);
+		
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+		ASSERT(entity.HasComponent<ScriptComponent>());
+
+		const ScriptComponent& component = entity.GetComponent<ScriptComponent>();
+
+		ASSERT(component.Instance.IsValid());
+
+		return *component.Instance.GetHandle();
+	}
+
 	void Rigidbody2DComponent_GetVelocity(u64 entityID, glm::vec2* outVelocity)
 	{
 		Entity entity = GetEntityById(entityID);
@@ -415,15 +598,25 @@ namespace SW {
 		ADD_INTERNAL_CALL(Log_ErrorMessage);
 
 
+		ADD_INTERNAL_CALL(AssetHandle_IsValid);
+
+
 		ADD_INTERNAL_CALL(Entity_HasComponent);
 		ADD_INTERNAL_CALL(Entity_AddComponent);
 		ADD_INTERNAL_CALL(Entity_RemoveComponent);
 
 
+		ADD_INTERNAL_CALL(Scene_CreateEntity);
+		ADD_INTERNAL_CALL(Scene_DestroyEntity);
 		ADD_INTERNAL_CALL(Scene_TryGetEntityByID);
 		ADD_INTERNAL_CALL(Scene_TryGetEntityByTag);
 
-		
+		ADD_INTERNAL_CALL(Scene_InstantiatePrefab);
+		ADD_INTERNAL_CALL(Scene_InstantiatePrefabWithPosition);
+		ADD_INTERNAL_CALL(Scene_InstantiatePrefabWithPositionRotation);
+		ADD_INTERNAL_CALL(Scene_InstantiatePrefabWithPositionRotationScale);
+
+
 		ADD_INTERNAL_CALL(TagComponent_GetTag);
 		ADD_INTERNAL_CALL(TagComponent_SetTag);
 
@@ -437,6 +630,26 @@ namespace SW {
 		ADD_INTERNAL_CALL(TransformComponent_GetScale);
 		ADD_INTERNAL_CALL(TransformComponent_SetScale);
 		
+
+		ADD_INTERNAL_CALL(AnimatedSpriteComponent_Play);
+		ADD_INTERNAL_CALL(AnimatedSpriteComponent_Stop);
+
+
+		ADD_INTERNAL_CALL(TextComponent_GetText);
+		ADD_INTERNAL_CALL(TextComponent_SetText);
+
+		ADD_INTERNAL_CALL(TextComponent_GetColor);
+		ADD_INTERNAL_CALL(TextComponent_SetColor);
+
+		ADD_INTERNAL_CALL(TextComponent_GetKerning);
+		ADD_INTERNAL_CALL(TextComponent_SetKerning);
+
+		ADD_INTERNAL_CALL(TextComponent_GetLineSpacing);
+		ADD_INTERNAL_CALL(TextComponent_SetLineSpacing);
+
+
+		ADD_INTERNAL_CALL(ScriptComponent_GetInstance);
+
 
 		ADD_INTERNAL_CALL(Rigidbody2DComponent_GetVelocity);
 		ADD_INTERNAL_CALL(Rigidbody2DComponent_SetVelocity);

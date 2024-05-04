@@ -9,7 +9,6 @@
 #pragma once
 
 #include "Core/Renderer/Camera.hpp"
-#include "Core/Timestep.hpp"
 
 namespace SW {
 
@@ -39,11 +38,6 @@ namespace SW {
 		 * @param aspectRatio The aspect ratio of the camera.
 		 */
 		SceneCamera(f32 aspectRatio);
-
-		/**
-		 * @brief Destructor.
-		 */
-		~SceneCamera() override = default;
 
 		/**
 		 * @brief Sets the size of the viewport.

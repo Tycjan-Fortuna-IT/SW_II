@@ -15,6 +15,7 @@
 #include "Core/Scripting/ScriptingCore.hpp"
 #include "GUI/Editor/EditorResources.hpp"
 #include "AssetPanels/AssetEditorPanelManager.hpp"
+#include "GUI/GUI.hpp"
 
 namespace SW {
 
@@ -29,7 +30,7 @@ namespace SW {
 		GUI::Appearance::ApplyColors(GUI::Colors());
 		GUI::Appearance::ApplyFonts(fontSpec);
 
-		EventSystem::Register(EVENT_CODE_KEY_PRESSED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+		EventSystem::Register(EVENT_CODE_KEY_PRESSED, [this](Event event) -> bool {
 			KeyCode code = (KeyCode)event.Payload.u16[0];
 
 			return OnKeyPressed(code);
@@ -158,15 +159,10 @@ namespace SW {
 				ImGui::SetCursorPosX(rightOffset - windowPadding.x);
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f + windowPadding.y);
 
-				std::string label = projectName;
+				ImGui::Text(projectName.c_str());
 
-				if (m_Viewport->IsSceneLoaded()) {
-					label = projectName + "  |  " + m_Viewport->GetCurrentScene()->GetName();
-				}
-
-				ImGui::Text(label.c_str());
-
-				GUI::DrawBorder(GUI::RectExpanded(GUI::GetItemRect(), 24.0f, 68.0f), 1.0f, 3.0f, 0.0f, -60.0f);
+				GUI::Components::RectangleOutline(GUI::RectExpanded(GUI::GetItemRect(), 24.0f, 68.0f), GUI::Theme::Outline,
+					1.0f, 3.0f, 0.0f, -60.0f);
 			}
 		}
 
@@ -184,7 +180,8 @@ namespace SW {
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f + windowPadding.y);
 			ImGui::Text(memoryText.c_str());
 
-			GUI::DrawBorder(GUI::RectExpanded(GUI::GetItemRect(), 24.0f, 68.0f), 1.0f, 3.0f, 0.0f, -60.0f);
+			GUI::Components::RectangleOutline(GUI::RectExpanded(GUI::GetItemRect(), 24.0f, 68.0f), GUI::Theme::Outline, 
+				1.0f, 3.0f, 0.0f, -60.0f);
 
 			if (ImGui::IsItemHovered()) {
 				ImGui::BeginTooltip();
@@ -201,7 +198,7 @@ namespace SW {
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
 			ImGui::SetItemAllowOverlap();
 
-			if (GUI::ImageButton(*EditorResources::MinimizeIcon, { 40.f, 40.f })) {
+			if (GUI::Components::ImageButton(*EditorResources::MinimizeIcon, { 40.f, 40.f })) {
 				Application::Get()->GetWindow()->Minimize();
 			}
 		}
@@ -216,11 +213,11 @@ namespace SW {
 			ImGui::SetItemAllowOverlap();
 
 			if (m_WindowMaximized) {
-				if (GUI::ImageButton(*EditorResources::RestoreIcon, { 40.f, 40.f })) {
+				if (GUI::Components::ImageButton(*EditorResources::RestoreIcon, { 40.f, 40.f })) {
 					Application::Get()->GetWindow()->Restore();
 				}
 			} else {
-				if (GUI::ImageButton(*EditorResources::MaximizeIcon, { 40.f, 40.f })) {
+				if (GUI::Components::ImageButton(*EditorResources::MaximizeIcon, { 40.f, 40.f })) {
 					Application::Get()->GetWindow()->Maximize();
 				}
 			}
@@ -234,7 +231,7 @@ namespace SW {
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
 			ImGui::SetItemAllowOverlap();
 
-			if (GUI::ImageButton(*EditorResources::CloseIcon, { 40.f, 40.f })) {
+			if (GUI::Components::ImageButton(*EditorResources::CloseIcon, { 40.f, 40.f })) {
 				Application::Get()->Close();
 			}
 		}
@@ -254,7 +251,7 @@ namespace SW {
 
 		ImGui::BeginGroup();
 
-		if (GUI::BeginMenuBar(menuBarRect)) {
+		if (GUI::Layout::BeginMenuBar(menuBarRect)) {
 			GUI::ScopedColor HeaderColor(ImGuiCol_Header, Color::DarkGray);
 			GUI::ScopedColor HeaderHoveredColor(ImGuiCol_HeaderHovered, Color::DarkGray);
 
@@ -296,7 +293,7 @@ namespace SW {
 				ImGui::EndMenu();
 			}
 		}
-		GUI::EndMenuBar();
+		GUI::Layout::EndMenuBar();
 
 
 		ImGui::EndGroup();
@@ -311,7 +308,7 @@ namespace SW {
 		window->RegisterOverTitlebar(false);
 		m_WindowMaximized = window->IsCurrentlyMaximized();
 		
-		GUI::CreateDockspace("Main dockspace", [this]() -> f32 {
+		GUI::Layout::CreateDockspace("Main dockspace", [this]() -> f32 {
 			return DrawTitleBar();
 		});
 
@@ -329,27 +326,28 @@ namespace SW {
 			ImGui::OpenPopup("NewSceneModal");
 		}
 
-		if (ImGui::BeginPopupModal("NewSceneModal", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		//ImGui::ShowStyleEditor();
+
+		if (ImGui::BeginPopupModal("NewSceneModal", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 			ImGui::Text("Input the desired scene name with .sw extension!");
 
 			ImGui::Separator();
 
-			static std::string newProjectName = "";
+			static std::string newProjectName;
 
-			GUI::BeginProperties("##new_scene_name");
-			GUI::DrawSingleLineTextInputProperty<256>(newProjectName, "Name");
-			GUI::EndProperties();
+			GUI::Properties::BeginProperties("##new_scene_name");
+			GUI::Properties::SingleLineTextInputProperty<128>(&newProjectName, "Name");
+			GUI::Properties::EndProperties();
 
-			if (newProjectName != "") { // TODO fixme
+			if (!newProjectName.empty()) { // TODO fixme - NEW BETTER POPUP
 				if (ImGui::Button("Create", ImVec2(100.f, 0))) {
 					if (SelectionManager::IsSelected())
 						SelectionManager::Deselect();
 
-					std::filesystem::path newScenePath = ProjectContext::Get()->GetAssetDirectory() / "scenes" / newProjectName;
+					Scene* newScene = new Scene();
 
-					Scene* newScene = new Scene(newScenePath.string());
-
-					SceneSerializer::Serialize(newScene, newScenePath);
+					// TODO
+					SceneSerializer::Serialize(newScene, ProjectContext::Get()->GetAssetDirectory() / "scenes" / newProjectName);
 
 					delete m_Viewport->GetCurrentScene();
 					m_Viewport->SetCurrentScene(newScene);
@@ -368,15 +366,13 @@ namespace SW {
 
 			ImGui::EndPopup();
 		}
-
-		//ImGui::ShowDemoWindow();
 	}
 
 	bool EditorLayer::OnKeyPressed(KeyCode code)
 	{
 		const bool shift = Input::IsKeyDown(KeyCode::LeftShift) || Input::IsKeyDown(KeyCode::RightShift);
 		const bool ctrl = Input::IsKeyDown(KeyCode::LeftControl) || Input::IsKeyDown(KeyCode::RightControl);
-		const bool alt = Input::IsKeyDown(KeyCode::LeftAlt) || Input::IsKeyDown(KeyCode::RightAlt);
+		//const bool alt = Input::IsKeyDown(KeyCode::LeftAlt) || Input::IsKeyDown(KeyCode::RightAlt);
 
 		switch (code) {
 			case KeyCode::Escape:
@@ -409,7 +405,10 @@ namespace SW {
 	void EditorLayer::SaveCurrentScene()
 	{
 		Scene* currentScene = m_Viewport->GetCurrentScene();
-		SceneSerializer::Serialize(currentScene, currentScene->GetFilePath());
+
+		const AssetMetaData& metadata = AssetManager::GetAssetMetaData(currentScene->GetHandle());
+		//AssetLoader::Serialize(metadata);// reload after ?
+		SceneSerializer::Serialize(currentScene, ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
 	}
 
 	void EditorLayer::OpenProject()
@@ -421,6 +420,9 @@ namespace SW {
 				SelectionManager::Deselect();
 
 			Project* currentProject = ProjectContext::Get();
+			if (currentProject)
+				ScriptingCore::Get().Shutdown();
+
 			delete currentProject;
 
 			std::string path = filepath.string();
@@ -443,7 +445,10 @@ namespace SW {
 			ProjectSerializer::Serialize(ProjectContext::Get(), filepath.string());
 
 			Scene* currentScene = m_Viewport->GetCurrentScene();
-			SceneSerializer::Serialize(currentScene, currentScene->GetFilePath());
+
+			const AssetMetaData& metadata = AssetManager::GetAssetMetaData(currentScene->GetHandle());
+
+			SceneSerializer::Serialize(currentScene, ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
 		}
 	}
 

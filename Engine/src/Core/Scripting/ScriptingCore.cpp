@@ -20,7 +20,8 @@ namespace SW {
 		{ "System.Single", DataType::Float },
 		{ "System.Double", DataType::Double },
 		{ "System.Boolean", DataType::Bool },
-		{ "Hazel.Entity", DataType::Entity },
+		{ "SW.Entity", DataType::Entity },
+		{ "SW.Prefab", DataType::Prefab },
 	};
 
 	static void OnCoralMessage(std::string_view message, Coral::MessageLevel level)
@@ -71,7 +72,7 @@ namespace SW {
 
 	void ScriptingCore::Initialize()
 	{
-		m_AssemblyContext = new Coral::AssemblyLoadContext(std::move(m_Host->CreateAssemblyLoadContext("MainLoadContext")));
+		m_AssemblyContext = new Coral::AssemblyLoadContext(m_Host->CreateAssemblyLoadContext("MainLoadContext"));
 
 		// TODO: Improve this
 		std::string scriptCorePath = (std::filesystem::current_path() / "assets" / "dotnet" / "Engine.ScriptCore.dll").string();
@@ -141,7 +142,7 @@ namespace SW {
 				if (fieldNameStr == "ID")
 					continue;
 
-				std::string fullFieldName = fmt::format("{}.{}", fullName, fieldNameStr);
+				std::string fullFieldName = std::format("{}.{}", fullName, fieldNameStr);
 				u32 fieldID = Hash::GenerateFNVHash(fullFieldName);
 
 				FieldMetadata& fieldMetadata = metadata.Fields[fieldID];
@@ -178,8 +179,8 @@ namespace SW {
 						fieldMetadata.SetDefaultValue<f64>(temp);
 						break;
 					case DataType::Bool:
-						break;
 					case DataType::Entity:
+					case DataType::Prefab:
 						break;
 					default:
 						break;

@@ -32,8 +32,8 @@ namespace SW {
 		m_InternalFormat = GL_RGBA8;
 		m_DataFormat = GL_RGBA;
 
-		m_Width = width;
-		m_Height = height;
+		m_Width = (i32)width;
+		m_Height = (i32)height;
 		m_Channels = 0;
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_Handle);
@@ -67,8 +67,8 @@ namespace SW {
 			}
 		}
 
-		m_Width = spec.Width;
-		m_Height = spec.Height;
+		m_Width = (i32)spec.Width;
+		m_Height = (i32)spec.Height;
 		m_Channels = DataFormatToChannels(m_DataFormat);
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_Handle);

@@ -1,8 +1,8 @@
 /**
  * @file AssetManager.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.1
- * @date 2024-04-07
+ * @version 0.1.2
+ * @date 2024-04-14
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -39,8 +39,26 @@ namespace SW {
 		static const AssetMetaData& GetAssetMetaData(AssetHandle handle) { return GetRegistry().GetAssetMetaData(handle); }
 
 		/**
+		 * @brief Creates a new instance of an asset of type T and returns a pointer to it.
+		 * 		  The asset is created using the provided path and optional arguments.
+		 * @warning Path is expected to be valid!
+		 * 
+		 * @tparam T The type of asset to create. Must be derived from Asset.
+		 * @tparam Args The types of the optional arguments.
+		 * @param path The path to the asset.
+		 * @param args The optional arguments to pass to the asset constructor.
+		 * @return A pointer to the newly created asset.
+		 */
+		template <typename T, typename... Args>
+			requires std::is_base_of_v<Asset, T> && std::is_constructible_v<T, Args...>
+		static T** CreateNew(const std::filesystem::path& path, Args&&... args)
+		{
+			return ProjectContext::Get()->GetEditorAssetManager()->CreateNew<T>(path, std::forward<Args>(args)...);
+		}
+
+		/**
 		 * @brief Get the asset metadata.
-		 * @warning If the asset is not available, the placeholder will be returned.
+		 * @warning If the asset is not available, the nullptr will be returned.
 		 * 
 		 * @param handle The handle of the asset.
 		 * @return const AssetMetaData& The metadata of the asset.
@@ -52,7 +70,7 @@ namespace SW {
 
 		/**
 		 * @brief Get the asset metadata.
-		 * @warning If the asset is not available, the placeholder will be returned.
+		 * @warning If the asset is not available, the nullptr will be returned.
 		 * 
 		 * @param handle The handle of the asset.
 		 * @return const AssetMetaData& The metadata of the asset.
@@ -65,7 +83,7 @@ namespace SW {
 
 		/**
 		 * @brief Get the asset metadata.
-		 * @warning If the asset is not available, the placeholder will be returned.
+		 * @warning If the asset is not available, the nullptr will be returned.
 		 * 
 		 * @param handle The handle of the asset.
 		 * @return const AssetMetaData& The metadata of the asset.
@@ -77,7 +95,7 @@ namespace SW {
 
 		/**
 		 * @brief Get the asset metadata.
-		 * @warning If the asset is not available, the placeholder will be returned.
+		 * @warning If the asset is not available, the nullptr will be returned.
 		 * 
 		 * @param handle The handle of the asset.
 		 * @return const AssetMetaData& The metadata of the asset.

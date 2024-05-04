@@ -42,7 +42,7 @@ namespace SW {
 		if (m_Specification.EnableCSharpSupport)
 			ScriptingCore::Get().InitializeHost();
 
-		EventSystem::Register(EventCode::EVENT_CODE_APPLICATION_QUIT, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+		EventSystem::Register(EventCode::EVENT_CODE_APPLICATION_QUIT, [this](UNUSED Event event) -> bool {
 			Application::Close();
 
 			return true;

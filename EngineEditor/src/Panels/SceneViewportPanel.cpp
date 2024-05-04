@@ -1,26 +1,23 @@
 #include "SceneViewportPanel.hpp"
 
 #include <ImGuizmo.h>
-#include <glm/ext/matrix_transform.hpp>
-
-#include "Core/Utils/Utils.hpp"
 #include "GUI/Icons.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Editor/EditorSettings.hpp"
 #include "Managers/SelectionManager.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Core/Project/ProjectContext.hpp"
-#include "Core/Project/Project.hpp"
-#include "Asset/Font.hpp"
 #include "Core/Scripting/ScriptingCore.hpp"
 #include "Asset/AssetManager.hpp"
+#include "Asset/Prefab.hpp"
+#include "GUI/GUI.hpp"
 
 namespace SW {
 
 	SceneViewportPanel::SceneViewportPanel(const char* name)
 		: Panel(name, SW_ICON_TERRAIN, true)
 	{
-		EventSystem::Register(EVENT_CODE_WINDOW_RESIZED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+		EventSystem::Register(EVENT_CODE_WINDOW_RESIZED, [this](Event event) -> bool {
 			const i32 width = event.Payload.i32[0];
 			const i32 height = event.Payload.i32[1];
 
@@ -31,13 +28,13 @@ namespace SW {
 			return false;
 		});
 
-		EventSystem::Register(EVENT_CODE_MOUSE_BUTTON_PRESSED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+		EventSystem::Register(EVENT_CODE_MOUSE_BUTTON_PRESSED, [this](Event event) -> bool {
 			MouseCode code = (MouseCode)event.Payload.u16[0];
 
 			return OnMouseButtonPressed(code);
 		});
 
-		EventSystem::Register(EVENT_CODE_KEY_PRESSED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+		EventSystem::Register(EVENT_CODE_KEY_PRESSED, [this](Event event) -> bool {
 			KeyCode code = (KeyCode)event.Payload.u16[0];
 
 			return OnKeyPressed(code);
@@ -59,8 +56,6 @@ namespace SW {
 	{
 		delete m_EditorCamera;
 		delete m_Framebuffer;
-		delete m_ActiveScene;
-		delete m_SceneCopy;
 	}
 
 	void SceneViewportPanel::OnUpdate(Timestep dt)
@@ -452,20 +447,30 @@ namespace SW {
 			) {
 				if (ImGui::BeginDragDropTarget()) {
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Scene")) {
-						u64* handle = static_cast<u64*>(payload->Data);
+						u64 handle = *static_cast<u64*>(payload->Data);
 
-						const AssetMetaData& metadata = AssetManager::GetAssetMetaData(*handle);
-					
+						const AssetMetaData& metadata = AssetManager::GetAssetMetaData(handle);
+
 						if (SelectionManager::IsSelected())
 							SelectionManager::Deselect();
 
 						delete GetCurrentScene();
 
 						Scene* newScene = SceneSerializer::Deserialize(ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
+						newScene->SetHandle(handle);
 
 						SetCurrentScene(newScene);
-					
+
 						newScene->SortEntities();
+					}
+
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Prefab")) {
+						u64 handle = *static_cast<u64*>(payload->Data);
+						const Prefab* prefab = *AssetManager::GetAsset<Prefab>(handle);
+
+						Entity prefabEntity = m_ActiveScene->InstantiatePrefab(prefab);
+
+						SelectionManager::SelectByID(prefabEntity.GetID());
 					}
 
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FontSource")) {
@@ -514,7 +519,6 @@ namespace SW {
 			}
 
 			ImVec2 framePadding = ImGui::GetStyle().FramePadding;
-			f32 frameHeight = 1.3f * ImGui::GetFrameHeight();
 
 			ImGui::SetNextItemAllowOverlap();
 			{
@@ -594,14 +598,22 @@ namespace SW {
 
 		if (
 			mouseX >= 0 && mouseY >= 0 &&
-			mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y
+			mouseX < viewportSize.x && mouseY < viewportSize.y
 		) {
+			if (ImGuizmo::IsUsing() || ImGuizmo::IsOver())
+				return false;
+
 			int pickedID = m_Framebuffer->ReadPixel(1, (int)mouseX, (int)mouseY);
 
 			if (pickedID != -1) {
-				const IDComponent& idc = m_ActiveScene->GetRegistry().GetRegistryHandle().get<IDComponent>((entt::entity)pickedID);
+				Entity picked = { (entt::entity)pickedID, m_ActiveScene };
 				
-				SelectionManager::SelectByID(idc.ID);
+				if (Input::IsKeyDown(KeyCode::LeftControl)) {
+					Entity root = picked.GetRootParent();
+					SelectionManager::SelectByID(root.GetID());
+				} else {
+					SelectionManager::SelectByID(picked.GetID());
+				}
 			} else {
 				if (!ImGuizmo::IsOver() && !ImGuizmo::IsUsingAny() && !m_IsGizmoBarHovered && !m_IsToolbarHovered)
 					SelectionManager::Deselect();
@@ -645,9 +657,9 @@ namespace SW {
 		const ImVec2 gizmoPosition = { m_ViewportBoundsMin.x + m_ViewportSize.x / 2.f + m_ToolbarPosition.x, m_ViewportBoundsMin.y + m_ToolbarPosition.y };
 		const ImRect bb(
 			gizmoPosition.x - ((buttonSize.x + 1.f) * (buttonCount / 2.f + 0.5f)), 
-			gizmoPosition.y + 8.f,
+			gizmoPosition.y + 16.f,
 			gizmoPosition.x + ((buttonSize.x + 1.f) * (buttonCount / 2.f + 0.5f)), 
-			gizmoPosition.y + (buttonSize.y + 2.f) + 8.f
+			gizmoPosition.y + (buttonSize.y + 2.f) + 16.f
 		);
 		
 		ImVec4 frameColor = ImGui::GetStyleColorVec4(ImGuiCol_Tab);
@@ -658,7 +670,7 @@ namespace SW {
 
 		glm::vec2 tempGizmoPosition = m_ToolbarPosition;
 
-		ImGui::SetCursorPos({ m_ViewportSize.x / 2.f + m_ToolbarPosition.x - (buttonSize.x * (buttonCount / 2.f + 0.5f)), startCursorPos.y + tempGizmoPosition.y + 14.f });
+		ImGui::SetCursorPos({ m_ViewportSize.x / 2.f + m_ToolbarPosition.x - (buttonSize.x * (buttonCount / 2.f + 0.75f)), startCursorPos.y + tempGizmoPosition.y + 20.f });
 		ImGui::BeginGroup();
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
@@ -688,13 +700,12 @@ namespace SW {
 
 			const SceneState currentState = m_ActiveScene->GetCurrentState();
 
-			constexpr f32 alpha = 0.6f;
-
 			ImGui::SameLine();
-			GUI::MoveMousePosX(-12.f);
-			GUI::MoveMousePosY(-6.5f);
 
-			if (GUI::ToggleButton(SW_ICON_PLAY, currentState == SceneState::Play, { buttonSize.x + 2.f, buttonSize.y + 2.f }, alpha, alpha)) {
+			ImGui::SetCursorPosX(draggerCursorPos.x + draggerSize.x + framePadding.x - 10.f);
+
+			bool isPlaying = currentState == SceneState::Play;
+			if (GUI::Components::ToggleButton(&isPlaying, SW_ICON_PLAY, SW_ICON_PLAY, false)) {
 				if (currentState != SceneState::Play) {
 					if (currentState == SceneState::Pause) {
 						m_ActiveScene->SetNewState(SceneState::Play);
@@ -715,25 +726,32 @@ namespace SW {
 			}
 
 			ImGui::SameLine();
-			GUI::MoveMousePosY(-6.5f);
+			GUI::MoveMousePosX(4.f);
 
-			if (GUI::ToggleButton(SW_ICON_PAUSE, currentState == SceneState::Pause, { buttonSize.x + 2.f, buttonSize.y + 2.f }, alpha, alpha)) {
+			bool isPaused = currentState == SceneState::Pause;
+			if (GUI::Components::ToggleButton(&isPaused, SW_ICON_PAUSE, SW_ICON_PAUSE, false)) {
 				if (currentState == SceneState::Play) {
 					m_ActiveScene->SetNewState(SceneState::Pause);
 				}
 			}
 
 			ImGui::SameLine();
-			GUI::MoveMousePosY(-6.5f);
+			GUI::MoveMousePosX(4.f);
 
-			if (GUI::ToggleButton(SW_ICON_STOP, currentState == SceneState::Edit, { buttonSize.x + 2.f, buttonSize.y + 2.f }, alpha, alpha)) {
+			bool isStopped = currentState == SceneState::Edit;
+			if (GUI::Components::ToggleButton(&isStopped, SW_ICON_STOP, SW_ICON_STOP, false)) {
 				if (currentState != SceneState::Edit) {
+
 					m_ActiveScene->OnRuntimeStop();
 
 					delete m_ActiveScene;
 					m_ActiveScene = nullptr;
 
 					m_ActiveScene = m_SceneCopy->DeepCopy();
+
+					if (SelectionManager::IsSelected()) // If entity was created during run time and was selected within the editor
+						if (!m_ActiveScene->TryGetEntityByID(SelectionManager::GetSelectionID()))
+							SelectionManager::Deselect();
 
 					ScriptingCore::Get().SetCurrentScene(m_ActiveScene);
 
@@ -795,15 +813,26 @@ namespace SW {
 
 			lastMousePosition = mousePos;
 
-			constexpr f32 alpha = 0.6f;
-
-			if (GUI::ToggleButton(SW_ICON_ROTATE_3D, m_GizmoType == ImGuizmo::ROTATE, buttonSize, alpha, alpha))
+			bool isRotate = m_GizmoType == ImGuizmo::ROTATE;
+			if (GUI::Components::ToggleButton(&isRotate, SW_ICON_ROTATE_3D, SW_ICON_ROTATE_3D, false))
 				m_GizmoType = ImGuizmo::ROTATE;
-			if (GUI::ToggleButton(SW_ICON_AXIS_ARROW, m_GizmoType == ImGuizmo::TRANSLATE, buttonSize, alpha, alpha))
+
+			GUI::MoveMousePosY(7.f);
+
+			bool isTranslate = m_GizmoType == ImGuizmo::TRANSLATE;
+			if (GUI::Components::ToggleButton(&isTranslate, SW_ICON_AXIS_ARROW, SW_ICON_AXIS_ARROW, false))
 				m_GizmoType = ImGuizmo::TRANSLATE;
-			if (GUI::ToggleButton(SW_ICON_ARROW_EXPAND, m_GizmoType == ImGuizmo::SCALE, buttonSize, alpha, alpha))
+
+			GUI::MoveMousePosY(7.f);
+
+			bool isScale = m_GizmoType == ImGuizmo::SCALE;
+			if (GUI::Components::ToggleButton(&isScale, SW_ICON_ARROW_EXPAND, SW_ICON_ARROW_EXPAND, false))
 				m_GizmoType = ImGuizmo::SCALE;
-			if (GUI::ToggleButton(SW_ICON_SELECT_OFF, m_GizmoType == ImGuizmo::BOUNDS, buttonSize, alpha, alpha))
+
+			GUI::MoveMousePosY(7.f);
+
+			bool isBounds = m_GizmoType == ImGuizmo::BOUNDS;
+			if (GUI::Components::ToggleButton(&isBounds, SW_ICON_SELECT_OFF, SW_ICON_SELECT_OFF, false))
 				m_GizmoType = ImGuizmo::BOUNDS;
 
 			ImGui::PopStyleVar(2);

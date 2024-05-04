@@ -1,0 +1,35 @@
+Entities:
+  - Entity:
+      IDComponent:
+        ID: 17211296675787881338
+      TagComponent:
+        Tag: Platform
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [7.55000019, 1, 1]
+      SpriteComponent:
+        Color: [0.807486653, 0.700111151, 0.159770086, 1]
+        AssetHandle: 0
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 2
+        AutoMass: true
+        Mass: 1
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        FixedRotation: false
+        AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
+      BoxCollider2DComponent:
+        Size: [0.5, 0.5]
+        Offset: [0, 0]
+        Density: 1
+        IsSensor: false

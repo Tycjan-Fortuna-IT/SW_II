@@ -1,11 +1,7 @@
 #include "AssetPanel.hpp"
 
-#include "Core/Utils/Utils.hpp"
 #include "GUI/Icons.hpp"
-#include "Core/Debug/LogSystem.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
-#include "GUI/GUI.hpp"
-#include "GUI/Colors.hpp"
 #include "GUI/Appearance.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Utils/FileSystem.hpp"
@@ -18,6 +14,9 @@
 #include "Asset/Spritesheet.hpp"
 #include "GUI/Editor/EditorResources.hpp"
 #include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.hpp" // TODO - remove (because of Testbed)
+#include "Asset/Animation2D.hpp"
+#include "Asset/Prefab.hpp"
+#include "GUI/GUI.hpp"
 
 namespace SW {
 
@@ -26,16 +25,16 @@ namespace SW {
 	{
 		m_AssetTree = new AssetDirectoryTree();
 
-		EventSystem::Register(EVENT_CODE_PROJECT_LOADED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+		EventSystem::Register(EVENT_CODE_PROJECT_LOADED, [this](Event event) -> bool {
 			m_AssetsDirectory = ProjectContext::Get()->GetAssetDirectory();
 
-			m_AssetTree->TraverseDirectoryAndMapAssets(m_AssetsDirectory);
+			m_AssetTree->TraverseDirectoryAndMapAssets();
 			m_SelectedItem = m_AssetTree->GetRootItem();
 
 			return false;
 		});
 
-		EventSystem::Register(EVENT_CODE_ASSET_DIR_CONTENT_CHANGED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+		EventSystem::Register(EVENT_CODE_ASSET_DIR_CONTENT_CHANGED, [this](Event event) -> bool {
 			LoadDirectoryEntries();
 
 			return true;
@@ -50,7 +49,7 @@ namespace SW {
 
 	void AssetPanel::OnUpdate(Timestep dt)
 	{
-
+		m_CurrentTime += dt;
 	}
 
 	void AssetPanel::OnRender()
@@ -100,7 +99,7 @@ namespace SW {
 	{
 		const std::filesystem::path oldSelectedPath = m_SelectedItem->Path;
 
-		m_AssetTree->RefetchChanges(m_AssetsDirectory);
+		m_AssetTree->RefetchChanges();
 
 		AssetSourceItem* newSelectedItem = m_AssetTree->FindChildItemByPath(m_AssetTree->GetRootItem(), oldSelectedPath);
 
@@ -118,15 +117,15 @@ namespace SW {
 		ImGui::SameLine();
 
 		if (ImGui::BeginPopup("SettingsPopup")) {
-			GUI::BeginProperties("##thumbnail_size");
-			GUI::DrawIntegralProperty(m_ThumbnailSize, "Thumbnail Size", nullptr, 200, 400);
-			if (GUI::DrawButtonProperty(SW_ICON_DELETE, "Clear thumbnail cache", nullptr, { 34.f, 34.f })) {
+			GUI::Properties::BeginProperties("##thumbnail_size");
+			GUI::Properties::ScalarSliderProperty<int>(&m_ThumbnailSize, "Thumbnail Size", nullptr, 200, 400);
+			if (GUI::Properties::ButtonProperty(SW_ICON_DELETE, "Clear thumbnail cache", nullptr, { 34.f, 34.f })) {
 				m_Cache.Clear();
 
 				LoadDirectoryEntries();
 			}
 
-			GUI::EndProperties();
+			GUI::Properties::EndProperties();
 
 			ImGui::EndPopup();
 		}
@@ -246,7 +245,7 @@ namespace SW {
 
 			const f32 charWidth = ImGui::CalcTextSize("A").x;
 			const f32 colWidth = ImGui::GetColumnWidth();
-			const int maxChars = (int)(colWidth / charWidth) - 4;
+			const f32 maxChars = colWidth / charWidth - 4;
 			if (ImGui::CalcTextSize(filename.c_str()).x > maxChars * charWidth) {
 				filename = filename.substr(0, maxChars) + "...";
 			}
@@ -328,7 +327,7 @@ namespace SW {
 		bool refreshDirectory = false;
 
 		constexpr f32 padding = 4.0f;
-		const f32 scaledThumbnailSize = m_ThumbnailSize * ImGui::GetIO().FontGlobalScale;
+		const f32 scaledThumbnailSize = (f32)m_ThumbnailSize * ImGui::GetIO().FontGlobalScale;
 		const f32 scaledThumbnailSizeX = scaledThumbnailSize * 0.65f;
 		const f32 cellSize = scaledThumbnailSizeX + 2 * padding;
 
@@ -357,7 +356,7 @@ namespace SW {
 		bool isAnyItemHovered = false;
 
 		if (ImGui::BeginTable("BodyTable", columnCount, flags)) {
-			for (u32 i = 0; i < (u32)m_SelectedItem->Children.size(); i++) {
+			for (int i = 0; i < (int)m_SelectedItem->Children.size(); i++) {
 				AssetSourceItem* item = m_SelectedItem->Children[i];
 
 				ImGui::TableNextColumn();
@@ -426,7 +425,6 @@ namespace SW {
 					ImGui::Text("Path: %s", item->Path.string().c_str());
 					ImGui::Spacing();
 
-					const f32 tooltipSize = ImGui::GetFrameHeight() * 11.0f;
 					ImGui::EndDragDropSource();
 				}
 
@@ -445,8 +443,8 @@ namespace SW {
 						Texture2D* texture = (*spriteAsset)->GetTexture();
 
 						Thumbnail thumbnail; // I keep an eye you - std::roundf!
-						thumbnail.Width = std::roundf(abs((*spriteAsset)->TexCordUpRight.x - (*spriteAsset)->TexCordLeftDown.x) * texture->GetWidth());
-						thumbnail.Height = std::roundf(abs((*spriteAsset)->TexCordUpRight.y - (*spriteAsset)->TexCordLeftDown.y) * texture->GetHeight());
+						thumbnail.Width = std::roundf(abs((*spriteAsset)->TexCordUpRight.x - (*spriteAsset)->TexCordLeftDown.x) * (f32)texture->GetWidth());
+						thumbnail.Height = std::roundf(abs((*spriteAsset)->TexCordUpRight.y - (*spriteAsset)->TexCordLeftDown.y) * (f32)texture->GetHeight());
 						thumbnail.TexCoordMin = { (*spriteAsset)->TexCordLeftDown.x, (*spriteAsset)->TexCordLeftDown.y };
 						thumbnail.TexCoordMax = { (*spriteAsset)->TexCordUpRight.x, (*spriteAsset)->TexCordUpRight.y };
 						thumbnail.Texture = (*spriteAsset)->GetTextureRaw();
@@ -489,8 +487,52 @@ namespace SW {
 						thumbnail.Texture = texture;
 
 						item->Thumbnail = thumbnail;
+					} else if (item->Type == AssetType::Animation2D) {
+						Texture2D** texture = &EditorResources::MissingAssetIcon;
+
+						Thumbnail thumbnail;
+						thumbnail.Width = (f32)(*texture)->GetWidth();
+						thumbnail.Height = (f32)(*texture)->GetHeight();
+						thumbnail.Texture = texture;
+
+						item->Thumbnail = thumbnail;
 					}
 
+				}
+				
+				if (item->Type == AssetType::Animation2D) {
+					Animation2D** animation = AssetManager::GetAssetRaw<Animation2D>(item->Handle);
+					Texture2D** texture = nullptr;
+
+					u64 framesCount = (*animation)->Sprites.size();
+
+					if (framesCount) {
+						item->Thumbnail.CurrentFrame = (int)(m_CurrentTime * (*animation)->Speed) % framesCount;
+
+						if (item->Thumbnail.CurrentFrame >= framesCount) {
+							item->Thumbnail.CurrentFrame = 0;
+						}
+
+						Sprite** sprite = (*animation)->Sprites[item->Thumbnail.CurrentFrame];
+
+						texture = (*sprite)->GetTextureRaw();
+						item->Thumbnail.Width = std::roundf(abs((*sprite)->TexCordUpRight.x - (*sprite)->TexCordLeftDown.x) * (f32)(*texture)->GetWidth());
+						item->Thumbnail.Height = std::roundf(abs((*sprite)->TexCordUpRight.y - (*sprite)->TexCordLeftDown.y) * (f32)(*texture)->GetHeight());
+						
+						item->Thumbnail.TexCoordMin = {
+							(*animation)->ReverseAlongX ? (*sprite)->TexCordUpRight.x : (*sprite)->TexCordLeftDown.x,
+							(*animation)->ReverseAlongY ? (*sprite)->TexCordUpRight.y : (*sprite)->TexCordLeftDown.y
+						};
+
+						item->Thumbnail.TexCoordMax = {
+							(*animation)->ReverseAlongX ? (*sprite)->TexCordLeftDown.x : (*sprite)->TexCordUpRight.x,
+							(*animation)->ReverseAlongY ? (*sprite)->TexCordLeftDown.y : (*sprite)->TexCordUpRight.y
+						};
+					} else {
+						texture = &EditorResources::MissingAssetIcon;
+					}
+						
+					item->Thumbnail.Texture = texture;
 				}
 
 				// Thumbnail Image
@@ -498,7 +540,7 @@ namespace SW {
 				const ImTextureID texId = item->Thumbnail ? GUI::GetTextureID(*item->Thumbnail.Texture) : 0;
 				const ImVec2 uv0 = item->Thumbnail.TexCoordMin;
 				const ImVec2 uv1 = item->Thumbnail.TexCoordMax;
-				const float aspectRatio = thumbSize.x / thumbSize.y;
+				const f32 aspectRatio = thumbSize.x / thumbSize.y;
 
 				ImVec2 displaySize = { thumbnailSize, thumbnailSize };
 				const f32 minSpace = 0.0f;
@@ -530,9 +572,9 @@ namespace SW {
 
 				const ImVec2 rectMin = ImGui::GetItemRectMin();
 				const ImVec2 rectSize = ImGui::GetItemRectSize();
-				const ImRect clipRect = ImRect({ rectMin.x + padding * 1.0f, rectMin.y + padding * (m_ThumbnailSize / 100.f)},
+				const ImRect clipRect = ImRect({ rectMin.x + padding * 1.0f, rectMin.y + padding * ((f32)m_ThumbnailSize / 100.f)},
 					{ rectMin.x + rectSize.x, rectMin.y + scaledThumbnailSizeX - GUI::Appearance::GetFonts().SmallFont->FontSize - padding * 4.0f });
-				GUI::ClippedText(clipRect.Min, clipRect.Max, filename.c_str(), filenameEnd, nullptr, { 0, 0 }, nullptr, clipRect.GetSize().x);
+				GUI::Widgets::ClippedText(clipRect.Min, clipRect.Max, filename.c_str(), filenameEnd, nullptr, { 0, 0 }, nullptr, clipRect.GetSize().x);
 
 				ImGui::SetCursorPos({ cursorPos.x + padding * 2.0f, cursorPos.y + backgroundThumbnailSize.y - GUI::Appearance::GetFonts().DefaultBoldFont->FontSize - padding * 2.0f });
 				ImGui::BeginDisabled();
@@ -547,6 +589,21 @@ namespace SW {
 			ImGui::EndTable();
 
 			m_IsTableHovered = ImGui::IsItemHovered();
+
+			if (ImGui::BeginDragDropTarget()) {
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity")) {
+					Entity entity = *static_cast<Entity*>(payload->Data);
+
+					// Creating a prefab from the entity.
+					std::filesystem::path newFilePath = 
+						FileSystem::GetUniqueFilename(ProjectContext::Get()->GetAssetDirectory() / m_SelectedItem->Path / (entity.GetTag() + ".sw_prefab"));
+
+					AssetManager::CreateNew<Prefab>(std::filesystem::relative(newFilePath, ProjectContext::Get()->GetAssetDirectory()), entity);
+
+					LoadDirectoryEntries();
+				}
+				ImGui::EndDragDropTarget();
+			}
 
 			if (!isAnyItemHovered)
 				DrawAssetPanelPopup();
@@ -604,10 +661,9 @@ namespace SW {
 			return;
 		}
 
-		if (item->Type == AssetType::Spritesheet) {
+		if (item->Type == AssetType::Spritesheet || item->Type == AssetType::Animation2D) {
 			AssetEditorPanelManager::OpenEditor(item->Handle, item->Type);
-		}
-		else {
+		} else {
 			FileSystem::OpenExternally(m_AssetsDirectory / item->Path);
 		}
 	}

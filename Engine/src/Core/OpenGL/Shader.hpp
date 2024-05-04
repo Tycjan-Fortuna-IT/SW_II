@@ -47,7 +47,7 @@ namespace SW {
 		 * @brief Gets the handle of the shader.
 		 * @return The handle of the shader.
 		 */
-		const u32 GetHandle() const;
+		u32 GetHandle() const;
 
 		/**
 		 * @brief Uploads an integer uniform to the shader.

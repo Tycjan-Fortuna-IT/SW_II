@@ -41,7 +41,7 @@ namespace SW {
 		 * 
 		 * @param timestep The timestep value.
 		 */
-		void OnUpdate([[maybe_unused]] Timestep timestep);
+		void OnUpdate(UNUSED Timestep timestep);
 
 		/**
 		 * @brief Sets the viewport size of the camera.

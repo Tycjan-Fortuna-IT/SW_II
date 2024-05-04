@@ -8,7 +8,26 @@ workspace "SW_II"
     language "C++"
 	cppdialect "C++20"
 	staticruntime "Off"
-	externalwarnings "off"
+
+    externalwarnings "Off"
+    warnings "Off"
+    externalanglebrackets "On"
+
+    -- using all warnings with those exceptions:
+    -- they are disabled because they are not relevant for the project and are too noisy
+    disablewarnings {
+        "4820", -- disable padding warnings (might be useful to enable in the future)
+        "4505", -- unreferenced inline function has been removed
+        "4514", -- unreferenced inline function has been removed
+        "5045", -- Spectre mitigation warning
+        "4868", -- compiler may not enforce left-to-right evaluation order in braced initializer list
+        "4061", -- enumerator in switch of enum is not explicitly handled by a case label
+        "4062", -- enumerator in switch of enum is not handled
+        "5039", -- pointer or reference to potentially throwing function passed to extern C function under -EHc
+        "4625", -- copy constructor was implicitly defined as deleted
+        "4626", -- assignment operator was implicitly defined as deleted
+    }
+
 	-- rtti "off"
 
     defines {

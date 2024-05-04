@@ -9,6 +9,8 @@
 #pragma once
 
 #include "AssetManagerBase.hpp"
+#include "Core/Utils/Random.hpp"
+#include "AssetLoader.hpp"
 
 namespace SW {
 	
@@ -18,8 +20,42 @@ namespace SW {
 		~EditorAssetManager() override;
 
 		/**
+		 * @brief Creates a new instance of an asset of type T and returns a pointer to it.
+		 * 		  The asset is created using the provided path and optional arguments.
+		 * @warning Path is expected to be valid!
+		 * 
+		 * @tparam T The type of asset to create. Must be derived from Asset.
+		 * @tparam Args The types of the optional arguments.
+		 * @param path The path to the asset.
+		 * @param args The optional arguments to pass to the asset constructor.
+		 * @return A pointer to the newly created asset.
+		 */
+		template <typename T, typename... Args>
+			requires std::is_base_of_v<Asset, T>&& std::is_constructible_v<T, Args...>
+		T** CreateNew(const std::filesystem::path& path, Args&&... args)
+		{
+			Asset* newAsset = new T(std::forward<Args>(args)...);
+
+			std::map<AssetHandle, AssetMetaData>& avail = m_AvailRegistry.GetAvailableAssetsRaw();
+
+			AssetMetaData metadata;
+			metadata.Handle = Random::CreateID();
+			metadata.Path = path;
+			metadata.Type = T::GetStaticType();
+
+			avail[metadata.Handle] = metadata;
+			m_Registry[metadata.Handle] = newAsset;
+
+			newAsset->m_Handle = metadata.Handle;
+
+			AssetLoader::Serialize(metadata);
+
+			return (T**)&m_Registry[metadata.Handle];
+		}
+
+		/**
 		 * @brief Get the asset.
-		 * @warning If the asset is not available, the placeholder will be returned.
+		 * @warning If the asset is not available, the nullptr will be returned.
 		 * 
 		 * @param handle The handle of the asset.
 		 * @return Asset** The asset.
@@ -28,7 +64,7 @@ namespace SW {
 		
 		/**
 		 * @brief Get the asset.
-		 * @warning If the asset is not available, the placeholder will be returned.
+		 * @warning If the asset is not available, the nullptr will be returned.
 		 * 
 		 * @param handle The handle of the asset.
 		 * @return const Asset* The asset.

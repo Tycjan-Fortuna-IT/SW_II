@@ -1,0 +1,41 @@
+Spritesheet:
+  TextureHandle: 831715547930304519
+  ViewZoom: 1.4000001
+  GridSize: 128
+  CenterOffset: [0, 128]
+  ViewPos: [-881.000061, 162]
+  ShowImageBorders: true
+  ExportPath: sprites\player\walk
+  Sprites:
+    - Sprite:
+        Name: 1
+        Position: [0, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 2
+        Position: [128, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 3
+        Position: [256, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 4
+        Position: [384, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 5
+        Position: [512, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: 6
+        Position: [640, 1]
+        Size: [128, 128]
+    - Sprite:
+        Name: 7
+        Position: [768, 1]
+        Size: [128, 128]
+    - Sprite:
+        Name: 8
+        Position: [896, 0]
+        Size: [128, 128]

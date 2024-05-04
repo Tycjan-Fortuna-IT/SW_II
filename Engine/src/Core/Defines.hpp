@@ -24,7 +24,9 @@ typedef signed long long i64;
 typedef float f32;
 typedef double f64;
 
-typedef char char8_t; // Filthy disgusting way to disable char8_t from used libraries since we use /Zc:char8_t- flag!
+#ifndef char8_t
+	typedef char char8_t; // Filthy disgusting way to disable char8_t from used libraries since we use /Zc:char8_t- flag!
+#endif
 
 // Ensure all types are of the correct size.
 static_assert(sizeof(u8) == 1, "Expected u8 to be 1 byte.");
@@ -42,6 +44,8 @@ static_assert(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 
 #define EXPAND_MACRO(x) x
 #define STRINGIFY_MACRO(x) #x
+
+#define UNUSED [[maybe_unused]]
 
 #ifdef EXPORT
     // Exports

@@ -5,7 +5,7 @@ namespace SW {
 	AssetEditorPanel::AssetEditorPanel(const char* name = "Unnamed Panel", const char* icon = "")
 		: m_Name(name), m_Icon(icon), m_MinSize(200, 400), m_MaxSize(2000, 2000)
 	{
-		m_ID = fmt::format(" {} {}\t\t###{}", icon, m_Name, m_Name);
+		m_ID = std::format(" {} {}\t\t###{}", icon, m_Name, m_Name);
 	}
 
 	void AssetEditorPanel::OnRender()
@@ -17,9 +17,15 @@ namespace SW {
 
 		ImGui::SetNextWindowSizeConstraints(m_MinSize, m_MaxSize);
 
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.f);
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.f, 0.f, 0.f, 1.f));
+
 		OnWindowStylePush();
 		ImGui::Begin(m_ID.c_str(), &m_IsOpen);
 		OnWindowStylePop();
+
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
 
 		Render();
 

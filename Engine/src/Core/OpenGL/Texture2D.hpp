@@ -140,7 +140,7 @@ namespace SW {
 		 *
 		 * @return u32
 		 */
-		u32 GetEstimatedSize() const { return m_Width * m_Height * 4; }
+		u32 GetEstimatedSize() const { return (u32)m_Width * m_Height * 4; }
 
 		/**
 		 * @brief Set the texture data

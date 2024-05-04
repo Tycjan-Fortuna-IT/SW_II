@@ -33,12 +33,6 @@ namespace SW {
         Entity(entt::entity entity, Scene* scene);
 	
 		/**
-		 * @brief Copy constructor.
-		 * @param other The other Entity object to copy from.
-		 */
-        Entity(const Entity& other) = default;
-
-		/**
 		 * @brief Checks if the entity has a component of type T.
 		 * @tparam T The component type.
 		 * @return True if the entity has the component, false otherwise.
@@ -88,6 +82,11 @@ namespace SW {
 
 			m_Scene->GetRegistry().GetRegistryHandle().remove<T>(m_Handle);
         }
+
+		/**
+		 * @brief Gets scene to which the entity belongs.
+		 */
+		Scene* GetScene() const { return m_Scene; }
 
 		/**
 		 * @brief Gets the entity ID.
@@ -186,6 +185,25 @@ namespace SW {
 		}
 
 		/**
+		 * @brief Retrieves the root parent entity of the current entity.
+		 * 
+		 * This function retrieves the root parent entity of the current entity by traversing the parent-child hierarchy
+		 * until the root parent is found. The root parent is the entity that has no parent.
+		 * 
+		 * @return The root parent entity.
+		 */
+		Entity GetRootParent()
+		{
+			RelationshipComponent& rc = GetComponent<RelationshipComponent>();
+
+			if (rc.ParentID) {
+				return m_Scene->GetEntityByID(rc.ParentID).GetRootParent();
+			} else {
+				return *this;
+			}
+		}
+
+		/**
 		 * Sets the parent of the entity.
 		 * @warning If the entity already has a parent, the old parent will be replaced by the new one.
 		 * @warning DO NOT pass invalid entities to this function. like {}.
@@ -261,7 +279,8 @@ namespace SW {
 			if (Entity parent = GetParent())
 				transform = parent.GetWorldSpaceTransformMatrix();
 
-			return std::move(transform * GetTransform().GetTransform());
+			//return std::move(transform * GetTransform().GetTransform()); copy elision? TODO: BENCHMARK
+			return transform * GetTransform().GetTransform();
 		}
 
 		/**

@@ -1,0 +1,45 @@
+Spritesheet:
+  TextureHandle: 831715547930304519
+  ViewZoom: 1.90000021
+  GridSize: 128
+  CenterOffset: [0, 0]
+  ViewPos: [-273.000214, 143.000061]
+  ShowImageBorders: true
+  ExportPath: sprites
+  Sprites:
+    - Sprite:
+        Name: beer
+        Position: [0, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: spikes
+        Position: [384, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: banana
+        Position: [512, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: tomato
+        Position: [640, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: block
+        Position: [770, 1]
+        Size: [124, 125]
+    - Sprite:
+        Name: armor powerup
+        Position: [897, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: pentagram
+        Position: [1026, 1]
+        Size: [124, 125]
+    - Sprite:
+        Name: denature
+        Position: [128, 0]
+        Size: [128, 128]
+    - Sprite:
+        Name: wine
+        Position: [256, 0]
+        Size: [128, 128]

@@ -2,6 +2,9 @@ project "EngineEditor"
     kind "ConsoleApp"
     architecture "x86_64"
 
+    debuggertype "NativeWithManagedCore"
+    warnings "Everything"
+
     targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 
@@ -20,6 +23,8 @@ project "EngineEditor"
     defines { 
         "GLFW_INCLUDE_NONE",
         "IMGUI_DEFINE_MATH_OPERATORS",
+        "SPDLOG_COMPILED_LIB",
+        "SPDLOG_USE_STD_FORMAT",
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
         "YAML_CPP_STATIC_DEFINE",
         "TRACY_ENABLE",

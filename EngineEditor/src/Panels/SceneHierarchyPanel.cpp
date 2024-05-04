@@ -1,27 +1,21 @@
 #include "SceneHierarchyPanel.hpp"
 
-#include "Core/Utils/Utils.hpp"
 #include "Core/ECS/EntityRegistry.hpp"
 #include "Managers/SelectionManager.hpp"
 #include "GUI/Icons.hpp"
 #include "SceneViewportPanel.hpp"
-#include "Core/Project/ProjectContext.hpp"
+#include "GUI/GUI.hpp"
 
 namespace SW {
 
 	SceneHierarchyPanel::SceneHierarchyPanel(SceneViewportPanel* sceneViewportPanel)
 		: Panel("Scene Hierarchy", SW_ICON_VIEW_LIST, true), m_SceneViewportPanel(sceneViewportPanel)
 	{
-		EventSystem::Register(EVENT_CODE_KEY_PRESSED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+		EventSystem::Register(EVENT_CODE_KEY_PRESSED, [this](Event event) -> bool {
 			KeyCode code = (KeyCode)event.Payload.u16[0];
 
 			return OnKeyPressed(code);
 		});
-	}
-
-	void SceneHierarchyPanel::OnUpdate(Timestep dt)
-	{
-
 	}
 
 	void SceneHierarchyPanel::OnRender()
@@ -37,13 +31,11 @@ namespace SW {
 
 				Scene* currentScene = m_SceneViewportPanel->GetCurrentScene();
 
-				m_SearchFilter.OnRender("  " SW_ICON_MAGNIFY "  Search ... ");
-
-				ImGui::SameLine();
-
-				if (GUI::Button("{} Add", { 90.f, 30.f }, SW_ICON_PLUS)) {
+				if (ImGui::Button(SW_ICON_PLUS " Add", { 90.f, 30.f })) {
 					ImGui::OpenPopup("AddEntity_Popup");
 				}
+
+				GUI::Widgets::SearchInput(&m_SearchString);
 
 				if (ImGui::BeginPopup("AddEntity_Popup")) {
 					DrawEntityCreateMenu(currentScene);
@@ -51,14 +43,13 @@ namespace SW {
 					ImGui::EndPopup();
 				}
 
-				constexpr ImGuiTableFlags tableFlags = ImGuiTableFlags_ContextMenuInBody
-					| ImGuiTableFlags_BordersInner
-					| ImGuiTableFlags_ScrollY;
+				constexpr ImGuiTableFlags tableFlags = ImGuiTableFlags_SizingFixedFit
+					| ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY;
 
 				if (ImGui::BeginTable("HierarchyTable", 3, tableFlags)) {
 					ImGui::TableSetupColumn(" Label", ImGuiTableColumnFlags_NoHide | ImGuiTableColumnFlags_NoClip);
-					ImGui::TableSetupColumn(" Type", ImGuiTableColumnFlags_WidthFixed, lineHeight * 3.0f);
-					ImGui::TableSetupColumn("  " SW_ICON_EYE, ImGuiTableColumnFlags_WidthFixed, lineHeight * 2.0f);
+					ImGui::TableSetupColumn("   Type", ImGuiTableColumnFlags_WidthFixed, lineHeight * 3.0f);
+					ImGui::TableSetupColumn(" " SW_ICON_EYE, ImGuiTableColumnFlags_WidthFixed, lineHeight);
 
 					ImGui::TableSetupScrollFreeze(0, 1);
 
@@ -132,7 +123,7 @@ namespace SW {
 
 	ImRect SceneHierarchyPanel::RenderEntityNode(Entity entity, u64 id, TagComponent& tc, const RelationshipComponent& rsc, u32 depth)
 	{
-		if (!entity || !m_SearchFilter.FilterPass(tc.Tag))
+		if (!entity || (!m_SearchString.empty() && tc.Tag.find(m_SearchString) == std::string::npos))
 			return { 0,0,0,0 };
 
 		ImGui::TableNextRow();
@@ -145,8 +136,8 @@ namespace SW {
 			| ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAllColumns | ImGuiTreeNodeFlags_AllowOverlap;
 
 		if (selected) {
-			ImGui::PushStyleColor(ImGuiCol_Header, ImGui::ColorConvertU32ToFloat4(GUI::Theme::TabActive));
-			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImGui::ColorConvertU32ToFloat4(GUI::Theme::TabActive));
+			ImGui::PushStyleColor(ImGuiCol_Header, ImGui::ColorConvertU32ToFloat4(GUI::Theme::SelectionDark));
+			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImGui::ColorConvertU32ToFloat4(GUI::Theme::SelectionDark));
 		}
 
 		const u64 childrenSize = rsc.ChildrenIDs.size();
@@ -159,9 +150,22 @@ namespace SW {
 		if (selected)
 			ImGui::PopStyleColor(2);
 
-		const bool additionalReq = SelectionManager::IsSelected() ? ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) : true;
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity")) {
+				m_DraggedEntity = *static_cast<Entity*>(payload->Data);
+				m_DraggedEntityTarget = entity;
+			}
 
-		if (!ImGui::IsItemToggledOpen() && ImGui::IsItemClicked(ImGuiMouseButton_Left) && additionalReq) {
+			ImGui::EndDragDropTarget();
+		}
+
+		if (ImGui::BeginDragDropSource()) {
+			ImGui::SetDragDropPayload("Entity", &entity, sizeof(entity));
+			ImGui::TextUnformatted(tc.Tag.c_str());
+			ImGui::EndDragDropSource();
+		}
+
+		if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
 			if (selected) {
 				SelectionManager::Deselect();
 			} else {
@@ -194,27 +198,6 @@ namespace SW {
 			ImGui::EndPopup();
 		}
 
-		ImVec2 verticalLineStart = ImGui::GetCursorScreenPos();
-		verticalLineStart.x -= 0.5f;
-		verticalLineStart.y -= ImGui::GetFrameHeight() * 0.5f;
-
-		{
-			if (ImGui::BeginDragDropTarget()) {
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity")) {
-					m_DraggedEntity = *static_cast<Entity*>(payload->Data);
-					m_DraggedEntityTarget = entity;
-				}
-
-				ImGui::EndDragDropTarget();
-			}
-
-			if (ImGui::BeginDragDropSource()) {
-				ImGui::SetDragDropPayload("Entity", &entity, sizeof(entity));
-				ImGui::TextUnformatted(tc.Tag.c_str());
-				ImGui::EndDragDropSource();
-			}
-		}
-
 		if (entity == m_RenamingEntity) {
 			static bool renaming = false;
 
@@ -237,6 +220,22 @@ namespace SW {
 			}
 		}
 
+		const ImVec2 screenPos = ImGui::GetCursorScreenPos();
+		const ImVec2 verticalLineStart = {
+			screenPos.x - 0.5f,
+			screenPos.y + ImGui::GetFrameHeight() * 0.5f
+		};
+
+		ImGui::TableNextColumn();
+		f32 centerPos = (ImGui::GetColumnWidth() - ImGui::CalcTextSize("Entity").x) / 2.f;
+		GUI::MoveMousePosX(centerPos);
+		ImGui::TextUnformatted("Entity");
+
+		ImGui::TableNextColumn();
+		//centerPos = (ImGui::GetColumnWidth() - ImGui::CalcTextSize(SW_ICON_EYE).x / 2.f);
+		//GUI::MoveMousePosX(centerPos);
+		ImGui::Button(SW_ICON_EYE);
+
 		const ImRect nodeRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
 
 		if (opened) {
@@ -251,10 +250,10 @@ namespace SW {
 				Scene* currentScene = m_SceneViewportPanel->GetCurrentScene();
 
 				if (const Entity child = currentScene->GetEntityByID(childId)) {
-					auto&& [tc, rsc] = child.GetAllComponents<TagComponent, RelationshipComponent>();
+					auto&& [childtc, childrsc] = child.GetAllComponents<TagComponent, RelationshipComponent>();
 
-					const f32 HorizontalTreeLineSize = rsc.ChildrenIDs.empty() ? 18.0f : 9.0f;
-					const ImRect childRect = RenderEntityNode(child, childId, tc, rsc, depth + 1);
+					const f32 HorizontalTreeLineSize = childrsc.ChildrenIDs.empty() ? 18.0f : 9.0f;
+					const ImRect childRect = RenderEntityNode(child, childId, childtc, childrsc, depth + 1);
 					const f32 midpoint = (childRect.Min.y + childRect.Max.y) / 2.0f;
 
 					drawList->AddLine(ImVec2(verticalLineStart.x, midpoint), ImVec2(verticalLineStart.x + HorizontalTreeLineSize, midpoint), treeLineColor[depth], lineThickness);
@@ -359,7 +358,10 @@ namespace SW {
 		if (!SelectionManager::IsSelected())
 			return false;
 
-		Entity entity = m_SceneViewportPanel->GetCurrentScene()->GetEntityByID(SelectionManager::GetSelectionID());
+		Entity entity = m_SceneViewportPanel->GetCurrentScene()->TryGetEntityByID(SelectionManager::GetSelectionID());
+
+		if (!entity)
+			return false;
 
 		const bool ctrl = Input::IsKeyDown(KeyCode::LeftControl) || Input::IsKeyDown(KeyCode::RightControl);
 

@@ -15,16 +15,32 @@ namespace SW {
 	namespace GUI {
 
 		namespace Theme {
+			// color of e.g. an active input's outline(border)
+			constexpr u32 ActivityOutline = IM_COL32(236, 158, 36, 255);
+			
+			// color of a casual outline(border)
+			constexpr u32 Outline = IM_COL32(60, 60, 60, 255);
+
+			constexpr u32 Selection = IM_COL32(237, 192, 119, 255);
+
+			constexpr u32 SelectionMuted = IM_COL32(237, 201, 142, 23);
+			
+			constexpr u32 SelectionHalfMuted = IM_COL32(237, 201, 142, 127);
+
+			constexpr u32 SelectionDark = IM_COL32(143, 115, 73, 255);
+
+			constexpr u32 Border = IM_COL32(28, 28, 28, 255);
+
+			constexpr u32 Titlebar = IM_COL32(43, 43, 43, 255);
+
+			constexpr u32 TitlebarActive = IM_COL32(56, 56, 56, 255);
+
 			constexpr u32 Accent = IM_COL32(236, 158, 36, 255);
 			constexpr u32 Highlight = IM_COL32(39, 185, 242, 255);
 			constexpr u32 NiceBlue = IM_COL32(83, 232, 254, 255);
 			constexpr u32 Compliment = IM_COL32(78, 151, 166, 255);
 			constexpr u32 Background = IM_COL32(36, 36, 36, 255);
 			constexpr u32 BackgroundDark = IM_COL32(26, 26, 26, 255);
-			constexpr u32 Titlebar = IM_COL32(21, 21, 21, 255);
-			constexpr u32 TitlebarOrange = IM_COL32(186, 66, 30, 255);
-			constexpr u32 TitlebarGreen = IM_COL32(18, 88, 30, 255);
-			constexpr u32 TitlebarRed = IM_COL32(185, 30, 30, 255);
 			constexpr u32 PropertyField = IM_COL32(15, 15, 15, 255);
 			constexpr u32 Text = IM_COL32(192, 192, 192, 255);
 			constexpr u32 TextBrighter = IM_COL32(210, 210, 210, 255);
@@ -33,9 +49,6 @@ namespace SW {
 			constexpr u32 Muted = IM_COL32(77, 77, 77, 255);
 			constexpr u32 Header = IM_COL32(47, 47, 47, 255);
 			constexpr u32 HeaderHovered = IM_COL32(92, 90, 90, 255);
-			constexpr u32 Selection = IM_COL32(237, 192, 119, 255);
-			constexpr u32 SelectionMuted = IM_COL32(237, 201, 142, 23);
-			constexpr u32 SelectionHalfMuted = IM_COL32(237, 201, 142, 127);
 			constexpr u32 BackgroundPopup = IM_COL32(50, 50, 50, 255);
 			constexpr u32 ValidPrefab = IM_COL32(82, 179, 222, 255);
 			constexpr u32 InvalidPrefab = IM_COL32(222, 43, 43, 255);
@@ -78,7 +91,7 @@ namespace SW {
 			f32 PopupRounding = 0.0f;
 			f32 PopupBorderSize = 1.0f;
 
-			ImVec2 FramePadding = { 6.0f, 6.0f };
+			ImVec2 FramePadding = { 6.0f, 8.0f };
 			f32 FrameRounding = 2.5f;
 			f32 FrameBorderSize = 1.0f;
 
@@ -118,14 +131,14 @@ namespace SW {
 			ImVec4 ChildBackground = ImGui::ColorConvertU32ToFloat4(Theme::Background);
 			ImVec4 PopupBackground = ImGui::ColorConvertU32ToFloat4(Theme::BackgroundPopup);
 
-			ImVec4 Border = ImGui::ColorConvertU32ToFloat4(Theme::BackgroundDark);
+			ImVec4 Border = ImGui::ColorConvertU32ToFloat4(Theme::Border);
 
 			ImVec4 FrameBackground = ImGui::ColorConvertU32ToFloat4(Theme::PropertyField);
 			ImVec4 FrameBackgroundHovered = ImGui::ColorConvertU32ToFloat4(Theme::PropertyField);
 			ImVec4 FrameBackgroundActive = ImGui::ColorConvertU32ToFloat4(Theme::PropertyField);
 
 			ImVec4 TitleBackground = ImGui::ColorConvertU32ToFloat4(Theme::Titlebar);
-			ImVec4 TitleBackgroundActive = ImGui::ColorConvertU32ToFloat4(Theme::Titlebar);
+			ImVec4 TitleBackgroundActive = ImGui::ColorConvertU32ToFloat4(Theme::TitlebarActive);
 			ImVec4 TitleBackgroundCollapsed = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 
 			ImVec4 MenuBarBackground = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -159,23 +172,23 @@ namespace SW {
 			ImVec4 Tab = ImGui::ColorConvertU32ToFloat4(Theme::Titlebar);
 			ImVec4 TabHovered = ImColor(128, 128, 128, 150);
 			ImVec4 TabActive = ImGui::ColorConvertU32ToFloat4(Theme::TabActive);
-			ImVec4 TabUnfocused = { 0.0470588244497776f, 0.05490196123719215f, 0.07058823853731155f, 1.0f };
-			ImVec4 TabUnfocusedActive = { 0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f };
+			ImVec4 TabUnfocused = ImGui::ColorConvertU32ToFloat4(IM_COL32(47, 47, 47, 255));
+			ImVec4 TabUnfocusedActive = ImGui::ColorConvertU32ToFloat4(IM_COL32(53, 53, 53, 255));
 
-			ImVec4 PlotLines = { 0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f };
-			ImVec4 PlotLinesHovered = { 0.8702952265739441f, 0.8969957232475281f, 0.06929580867290497f, 1.0f };
+			ImVec4 PlotLines = ImGui::ColorConvertU32ToFloat4(IM_COL32(255, 255, 0, 255));
+			ImVec4 PlotLinesHovered = ImGui::ColorConvertU32ToFloat4(IM_COL32(255, 255, 0, 255));
 			ImVec4 PlotHistogram = { 0.6666666865348816f, 0.686274528503418f, 0.0784313753247261f, 1.0f };
 			ImVec4 PlotHistogramHovered = { 0.8705882430076599f, 0.8980392217636108f, 0.07058823853731155f, 1.0f };
 
 			ImVec4 TableHeaderBackground = ImGui::ColorConvertU32ToFloat4(Theme::Header);
-			ImVec4 TableBorderLight = ImGui::ColorConvertU32ToFloat4(IM_COL32(48, 48, 48, 255));
+			ImVec4 TableBorderLight = ImGui::ColorConvertU32ToFloat4(Theme::Border);
+			ImVec4 TableBorderStrong = ImGui::ColorConvertU32ToFloat4(Theme::Border);
 
 			ImVec4 TextSelectedBackground = { 0.2352941185235977f, 0.2156862765550613f, 0.5960784554481506f, 1.0f };
 
-			ImVec4 DragDropTarget = { 0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f };
-
-			ImVec4 NavHighlight = { 0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f };
-			ImVec4 NavWindowingHighlight = { 0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f };
+			ImVec4 DragDropTarget = ImGui::ColorConvertU32ToFloat4(Theme::ActivityOutline);
+			ImVec4 NavHighlight = ImGui::ColorConvertU32ToFloat4(Theme::ActivityOutline);
+			ImVec4 NavWindowingHighlight = ImGui::ColorConvertU32ToFloat4(Theme::ActivityOutline);
 			ImVec4 NavWindowingDimBackground = { 0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 0.501960813999176f };
 
 			ImVec4 ModalWindowDimBackground = ImGui::ColorConvertU32ToFloat4(IM_COL32(21, 21, 21, 130));

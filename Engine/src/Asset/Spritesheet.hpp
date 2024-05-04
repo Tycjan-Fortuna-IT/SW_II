@@ -50,6 +50,7 @@ namespace SW {
 		std::filesystem::path ExportPath; // where all sprites should be exported
 
 		bool ShowImageBorders = false;
+		bool ShowGridCoords = false;
 		
 	private:
 		Texture2D** m_SpritesheetTexture = nullptr;

@@ -1,8 +1,8 @@
 /**
  * @file Event.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.2
- * @date 2024-02-20
+ * @version 0.1.3
+ * @date 2024-05-04
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -115,7 +115,7 @@ namespace SW {
     };
 
 	/** @brief EventCallback is a function pointer (interface) for event callbacks.*/
-    using EventCallback = std::function<bool(Event event, void* sender, void* listener)>;
+    using EventCallback = std::function<bool(Event event)>;
 
 	/**
 	 * @brief Compares two event callbacks.
@@ -148,35 +148,30 @@ namespace SW {
         static bool Shutdown();
 
 		/**
-		 * @brief Registers an event listener. An event listener is a function that is called when an event is emitted.
-		 * 		  The event listener is registered for a specific event code, many listeners can be registered for the same event code.
-		 * 
+		 * @brief Registers an event callback. An event callback a function that is called when an event is emitted.
 		 * @param code The event code to register the listener for.
-		 * @param listener The listener to register. Can be nullptr.
 		 * @param handler The event callback to register.
 		 * @return bool True if the listener was registered successfully, false otherwise.
 		 */
-        static bool Register(EventCode code, void* listener, EventCallback handler);
+        static bool Register(EventCode code, EventCallback handler);
 
 		/**
-		 * @brief Unregisters an event listener. An event listener is a function that is called when an event is emitted.
+		 * @brief Unregisters an event callback. An event callback is a function that is called when an event is emitted.
 		 * 
 		 * @param code The event code to unregister the listener for.
-		 * @param listener The listener to unregister. Can be nullptr.
 		 * @param handler The event callback to unregister.
 		 * @return bool True if the listener was unregistered successfully, false otherwise. 
 		 */
-        static bool UnRegister(EventCode code, void* listener, EventCallback handler);
+        static bool UnRegister(EventCode code, EventCallback handler);
 
 		/**
 		 * @brief Emits an event. This function calls all registered event listeners for the specified event code 
 		 * 		  and passes the event with the data to them.
 		 * 
 		 * @param event The event to emit.
-		 * @param sender The sender of the event. Can be nullptr.
 		 * @return bool True if the event was emitted successfully, false otherwise.
 		 */
-        static bool Emit(Event event, void* sender = nullptr);
+        static bool Emit(Event event);
 
 		/**
 		 * @brief Emits an empty event based on passed event code.

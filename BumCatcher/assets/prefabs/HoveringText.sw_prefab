@@ -1,0 +1,21 @@
+Prefab:
+  RootEntityHandle: 6524340599106544319
+  Entities:
+    - Entity:
+        IDComponent:
+          ID: 6524340599106544319
+        TagComponent:
+          Tag: HoveringText
+        TransformComponent:
+          Transform: [0, 0, 0]
+          Rotation: [0, 0, 0]
+          Scale: [0.306260705, 0.306600034, 1]
+        TextComponent:
+          AssetHandle: 2519823622692660382
+          TextString: 0 exp
+          Color: [0.973262012, 0.905602038, 0, 1]
+          Kerning: 0
+          LineSpacing: 0
+        RelationshipComponent:
+          ParentID: 0
+          ChildrenCount: 0

@@ -22,6 +22,12 @@ namespace SW {
 
 		Texture2D** Texture = nullptr;
 
+		// For Animation2D thumbnail
+		// TODO: In the future cleanup the thumbnail system, split it into many derived classes like:
+		// Animation2DThumbnail, SpritesheetThumbnail ... etc
+		// Each with own OnRender methods etc...
+		int CurrentFrame = 0;
+
 		/**
 		 * @brief Thumbnail is valid only if the texture is not nullptr. 
 		 */

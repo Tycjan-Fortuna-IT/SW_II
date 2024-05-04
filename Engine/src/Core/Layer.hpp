@@ -37,26 +37,26 @@ namespace SW {
 		/**
 		 * @brief Called when the layer is attached to the application.
 		 */
-        virtual void OnAttach() {}
+		virtual void OnAttach() = 0;
 
 		/**
 		 * @brief Called when the layer is detached from the application.
 		 */
-        virtual void OnDetach() {}
+        virtual void OnDetach() = 0;
 
 		/**
 		 * @brief Called every frame to update the layer.
 		 * 
 		 * @param dt Time elapsed since the last frame.
 		 */
-        virtual void OnUpdate(Timestep dt) {}
+        virtual void OnUpdate(Timestep dt) = 0;
 
 		/**
 		 * @brief Called every frame to render the layer.
 		 * @warning This function is called after OnUpdate(). 
 		 * @note There user should but the user's ImGui rendering code.
 		 */
-        virtual void OnRender() {}
+        virtual void OnRender() = 0;
 
 		/**
 		 * @brief Get the Name of the layer

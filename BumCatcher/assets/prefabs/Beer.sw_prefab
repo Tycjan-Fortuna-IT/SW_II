@@ -1,0 +1,37 @@
+Prefab:
+  RootEntityHandle: 11038861979503760952
+  Entities:
+    - Entity:
+        IDComponent:
+          ID: 11038861979503760952
+        TagComponent:
+          Tag: Beer
+        TransformComponent:
+          Transform: [0, 2.34022737e-05, 0.000488212332]
+          Rotation: [0, 0, 0]
+          Scale: [2, 2, 1]
+        SpriteComponent:
+          Color: [1, 1, 1, 1]
+          AssetHandle: 10579185608762731148
+        RelationshipComponent:
+          ParentID: 0
+          ChildrenCount: 0
+        RigidBody2DComponent:
+          Type: 2
+          AutoMass: true
+          Mass: 1
+          GravityScale: 1
+          Friction: 0.5
+          Restitution: 0
+          RestitutionThreshold: 0.5
+          LinearDamping: 0
+          AngularDamping: 0
+          FixedRotation: false
+          AllowSleep: true
+          InitiallyAwake: true
+          IsBullet: false
+        BoxCollider2DComponent:
+          Size: [0.150000006, 0.300000012]
+          Offset: [-0.0199999996, 0]
+          Density: 1
+          IsSensor: false

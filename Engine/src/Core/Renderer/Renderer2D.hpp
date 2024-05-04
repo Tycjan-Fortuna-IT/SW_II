@@ -1,8 +1,8 @@
 /**
  * @file Renderer2D.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.2.1
- * @date 2024-02-03
+ * @version 0.2.3
+ * @date 2024-04-12
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -103,6 +103,22 @@ namespace SW {
 		 * @param entityID The ID of the entity.
 		 */
 		static void DrawQuad(const glm::mat4& transform, const SpriteComponent& sprite, int entityID = -1);
+
+		/**
+		 * @brief Draws a quad with the specified transformation matrix and animated sprite component.
+		 * @param transform The transformation matrix of the quad.
+		 * @param asc The animated sprite component of the quad.
+		 * @param time The time elapsed since the last frame. Cumulative time is used to determine the current frame.
+		 * @param entityID The ID of the entity.
+		 */
+		static void DrawQuad(const glm::mat4& transform, AnimatedSpriteComponent& asc, f32 time, int entityID = -1);
+
+		/**
+		 * @brief Draws a quad with the placeholder missing texture and the specified transformation matrix.
+		 * @param transform The transformation matrix of the quad.
+		 * @param entityID The ID of the entity.
+		 */
+		static void DrawMissingTextureQuad(const glm::mat4& transform, int entityID = -1);
 
 		/**
 		 * @brief Draws a line with the specified start and end points and color.

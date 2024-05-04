@@ -32,14 +32,24 @@ namespace SW
 		internal static delegate* unmanaged<NativeString, void> Log_ErrorMessage;
 
 
+		internal static delegate* unmanaged<ulong, bool> AssetHandle_IsValid;
+		
+
 		internal static delegate* unmanaged<ulong, ReflectionType, bool> Entity_HasComponent;
 		internal static delegate* unmanaged<ulong, ReflectionType, void> Entity_AddComponent;
 		internal static delegate* unmanaged<ulong, ReflectionType, void> Entity_RemoveComponent;
 
 
+		internal static delegate* unmanaged<NativeString, ulong> Scene_CreateEntity;
+		internal static delegate* unmanaged<ulong, void> Scene_DestroyEntity;
 		internal static delegate* unmanaged<ulong, ulong> Scene_TryGetEntityByID;
 		internal static delegate* unmanaged<NativeString, ulong> Scene_TryGetEntityByTag;
-		
+
+		internal static delegate* unmanaged<ulong, ulong> Scene_InstantiatePrefab;
+		internal static delegate* unmanaged<ulong, Vector3*, ulong> Scene_InstantiatePrefabWithPosition;
+		internal static delegate* unmanaged<ulong, Vector3*, Vector3*, ulong> Scene_InstantiatePrefabWithPositionRotation;
+		internal static delegate* unmanaged<ulong, Vector3*, Vector3*, Vector3*, ulong> Scene_InstantiatePrefabWithPositionRotationScale;
+
 
 		internal static delegate* unmanaged<ulong, NativeString> TagComponent_GetTag;
 		internal static delegate* unmanaged<ulong, NativeString, void> TagComponent_SetTag;
@@ -53,6 +63,26 @@ namespace SW
 
 		internal static delegate* unmanaged<ulong, Vector3*, void> TransformComponent_GetScale;
 		internal static delegate* unmanaged<ulong, Vector3*, void> TransformComponent_SetScale;
+
+
+		internal static delegate* unmanaged<ulong, NativeString, void> AnimatedSpriteComponent_Play;
+		internal static delegate* unmanaged<ulong, void> AnimatedSpriteComponent_Stop;
+
+
+		internal static delegate* unmanaged<ulong, NativeString> TextComponent_GetText;
+		internal static delegate* unmanaged<ulong, NativeString, void> TextComponent_SetText;
+
+		internal static delegate* unmanaged<ulong, Vector4*, void> TextComponent_GetColor;
+		internal static delegate* unmanaged<ulong, Vector4*, void> TextComponent_SetColor;
+
+		internal static delegate* unmanaged<ulong, float> TextComponent_GetKerning;
+		internal static delegate* unmanaged<ulong, float, void> TextComponent_SetKerning;
+
+		internal static delegate* unmanaged<ulong, float> TextComponent_GetLineSpacing;
+		internal static delegate* unmanaged<ulong, float, void> TextComponent_SetLineSpacing;
+
+
+		internal static delegate* unmanaged<ulong, NativeInstance<object>> ScriptComponent_GetInstance;
 
 
 		internal static delegate* unmanaged<ulong, Vector2*, void> Rigidbody2DComponent_GetVelocity;

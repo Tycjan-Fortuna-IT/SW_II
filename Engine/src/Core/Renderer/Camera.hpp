@@ -25,11 +25,6 @@ namespace SW {
 			: m_Projection(projection) {}
 
 		/**
-		 * @brief Default destructor.
-		 */
-		virtual ~Camera() = default;
-
-		/**
 		 * @brief Get the projection matrix of the camera.
 		 * @return The projection matrix.
 		 */

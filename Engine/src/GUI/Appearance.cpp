@@ -132,28 +132,33 @@ namespace SW::GUI {
 		// Tables
 		c[ImGuiCol_TableHeaderBg] = s_Colors.TableHeaderBackground;
 		c[ImGuiCol_TableBorderLight] = s_Colors.TableBorderLight;
+		c[ImGuiCol_TableBorderStrong] = s_Colors.TableBorderStrong;
 
 		// Menubar
 		c[ImGuiCol_MenuBarBg] = s_Colors.MenuBarBackground;
 
+		// Outline highlight
+		c[ImGuiCol_DragDropTarget] = s_Colors.DragDropTarget;
+		c[ImGuiCol_NavHighlight] = s_Colors.NavHighlight;
+		c[ImGuiCol_NavWindowingHighlight] = s_Colors.NavWindowingHighlight;
+
+		// Plot lines
+		c[ImGuiCol_PlotLines] = s_Colors.PlotLines;
+		c[ImGuiCol_PlotLinesHovered] = s_Colors.PlotLinesHovered;
+		c[ImGuiCol_PlotHistogram] = s_Colors.PlotHistogram;
+		c[ImGuiCol_PlotHistogramHovered] = s_Colors.PlotHistogramHovered;
+
 		ImGuizmo::Style* imguizmoStyle = &ImGuizmo::GetStyle();
 		ImVec4* gc = imguizmoStyle->Colors;
 
-		gc[ImGuizmo::DIRECTION_X] = ImVec4(0.858f, 0.243f, 0.113f, 0.929f);
-		gc[ImGuizmo::DIRECTION_Y] = ImVec4(0.375f, 0.825f, 0.372f, 0.929f);
-		gc[ImGuizmo::DIRECTION_Z] = ImVec4(0.227f, 0.478f, 0.972f, 0.929f);
-		gc[ImGuizmo::PLANE_X] = gc[ImGuizmo::DIRECTION_X];
-		gc[ImGuizmo::PLANE_Y] = gc[ImGuizmo::DIRECTION_Y];
-		gc[ImGuizmo::PLANE_Z] = gc[ImGuizmo::DIRECTION_Z];	
-
-		imguizmoStyle->TranslationLineThickness = 4.f;		// Thickness of lines for translation gizmo
-		imguizmoStyle->TranslationLineArrowSize = 4.f;		// Size of arrow at the end of lines for translation gizmo
-		imguizmoStyle->RotationLineThickness = 3.f;			// Thickness of lines for rotation gizmo
-		imguizmoStyle->RotationOuterLineThickness = 3.f;	// Thickness of line surrounding the rotation gizmo
-		imguizmoStyle->ScaleLineThickness = 3.f;			// Thickness of lines for scale gizmo
-		imguizmoStyle->ScaleLineCircleSize = 3.f;			// Size of circle at the end of lines for scale gizmo
-		imguizmoStyle->HatchedAxisLineThickness = 4.f;		// Thickness of hatched axis lines
-		imguizmoStyle->CenterCircleSize = 4.f;				// Size of circle at the center of the translate/scale gizmo
+		//imguizmoStyle->TranslationLineThickness = 4.f;		// Thickness of lines for translation gizmo
+		//imguizmoStyle->TranslationLineArrowSize = 4.f;		// Size of arrow at the end of lines for translation gizmo
+		//imguizmoStyle->RotationLineThickness = 3.f;			// Thickness of lines for rotation gizmo
+		//imguizmoStyle->RotationOuterLineThickness = 3.f;	// Thickness of line surrounding the rotation gizmo
+		//imguizmoStyle->ScaleLineThickness = 3.f;			// Thickness of lines for scale gizmo
+		//imguizmoStyle->ScaleLineCircleSize = 3.f;			// Size of circle at the end of lines for scale gizmo
+		//imguizmoStyle->HatchedAxisLineThickness = 4.f;		// Thickness of hatched axis lines
+		//imguizmoStyle->CenterCircleSize = 4.f;				// Size of circle at the center of the translate/scale gizmo
 	}
 
 	void Appearance::ApplyFonts(const FontSpecification& spec)

@@ -11,6 +11,7 @@
 #include "RendererAPI.hpp"
 #include "Core/Editor/EditorCamera.hpp"
 #include "Asset/Sprite.hpp"
+#include "GUI/Editor/EditorResources.hpp"
 
 namespace SW {
 
@@ -372,44 +373,153 @@ namespace SW {
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 			FlushAndReset();
 
+			f32 textureIndex = 0.f; // White Texture
+
+			glm::vec2 texCoords[4] = {
+				{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f }
+			};
+
+			if (sprite.Handle) {
+				Sprite** spriteAsset = AssetManager::GetAssetRaw<Sprite>(sprite.Handle);
+
+				Texture2D* texture = nullptr;
+				if (spriteAsset)
+					texture = (*spriteAsset)->GetTexture();
+				else
+					texture = EditorResources::MissingAssetIcon;
+
+				for (u32 i = 1; i < s_Data.TextureSlotIndex; i++) {
+					if (*s_Data.TextureSlots[i] == *texture) {
+						textureIndex = static_cast<f32>(i);
+						break;
+					}
+				}
+
+				if (textureIndex == 0.0f) {
+					textureIndex = (f32)s_Data.TextureSlotIndex;
+					s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
+					s_Data.TextureSlotIndex++;
+				}
+
+				texCoords[0] = (*spriteAsset)->TexCordUpLeft;
+				texCoords[1] = (*spriteAsset)->TexCordUpRight;
+				texCoords[2] = (*spriteAsset)->TexCordRightDown;
+				texCoords[3] = (*spriteAsset)->TexCordLeftDown;
+			}
+
+			for (int i = 0; i < 4; i++) {
+				s_Data.QuadVertexBufferPtr->Position = glm::vec3(transform * s_Data.QuadVertexPositions[i]);
+				s_Data.QuadVertexBufferPtr->Color = sprite.Color;
+				s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
+				s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+				s_Data.QuadVertexBufferPtr->TilingFactor = sprite.TilingFactor;
+				s_Data.QuadVertexBufferPtr->EntityID = entityID;
+				s_Data.QuadVertexBufferPtr++;
+			}
+
+			s_Data.QuadIndexCount += 6;
+
+			s_Data.Stats.QuadCount++;
+	}
+
+	void Renderer2D::DrawQuad(const glm::mat4& transform, AnimatedSpriteComponent& asc, f32 time, int entityID /*= -1*/)
+	{
+		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
+			FlushAndReset();
+
 		f32 textureIndex = 0.f; // White Texture
 
-		glm::vec2 texCoords[4] = { 
-			{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } 
+		glm::vec2 texCoords[4] = {
+			{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f }
 		};
 
-		if (sprite.Handle) {
-			Sprite** spriteAsset = AssetManager::GetAssetRaw<Sprite>(sprite.Handle);
-			
-			ASSERT(spriteAsset); // TODO placeholder texture or smth
-			
-			Texture2D* texture = (*spriteAsset)->GetTexture();
+		u64 framesCount = (*asc.CurrentAnimation)->Sprites.size();
 
-			for (u32 i = 1; i < s_Data.TextureSlotIndex; i++) {
-				if (*s_Data.TextureSlots[i] == *texture) {
-					textureIndex = static_cast<f32>(i);
-					break;
-				}
+		asc.CurrentFrame = (int)(time * (*asc.CurrentAnimation)->Speed) % framesCount;
+
+		if (asc.CurrentFrame >= framesCount) {
+			asc.CurrentFrame = 0;
+		}
+
+		Sprite** sprite = (*asc.CurrentAnimation)->Sprites[asc.CurrentFrame];
+		Texture2D* texture = (*sprite)->GetTexture();
+
+		for (u32 i = 1; i < s_Data.TextureSlotIndex; i++) {
+			if (*s_Data.TextureSlots[i] == *texture) {
+				textureIndex = static_cast<f32>(i);
+				break;
 			}
+		}
 
-			if (textureIndex == 0.0f) {
-				textureIndex = (f32)s_Data.TextureSlotIndex;
-				s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
-				s_Data.TextureSlotIndex++;
+		if (textureIndex == 0.0f) {
+			textureIndex = (f32)s_Data.TextureSlotIndex;
+			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
+			s_Data.TextureSlotIndex++;
+		}
+
+		texCoords[0] = (*asc.CurrentAnimation)->ReverseAlongX 
+			? ((*asc.CurrentAnimation)->ReverseAlongY ? (*sprite)->TexCordRightDown : (*sprite)->TexCordUpRight)
+			: ((*asc.CurrentAnimation)->ReverseAlongY ? (*sprite)->TexCordLeftDown : (*sprite)->TexCordUpLeft);
+
+		texCoords[1] = (*asc.CurrentAnimation)->ReverseAlongX
+			? ((*asc.CurrentAnimation)->ReverseAlongY ? (*sprite)->TexCordLeftDown : (*sprite)->TexCordUpLeft)
+			: ((*asc.CurrentAnimation)->ReverseAlongY ? (*sprite)->TexCordRightDown : (*sprite)->TexCordUpRight);
+
+		texCoords[2] = (*asc.CurrentAnimation)->ReverseAlongX
+			? ((*asc.CurrentAnimation)->ReverseAlongY ? (*sprite)->TexCordUpLeft : (*sprite)->TexCordLeftDown)
+			: ((*asc.CurrentAnimation)->ReverseAlongY ? (*sprite)->TexCordUpRight : (*sprite)->TexCordRightDown);
+
+		texCoords[3] = (*asc.CurrentAnimation)->ReverseAlongX
+			? ((*asc.CurrentAnimation)->ReverseAlongY ? (*sprite)->TexCordUpRight : (*sprite)->TexCordRightDown)
+			: ((*asc.CurrentAnimation)->ReverseAlongY ? (*sprite)->TexCordUpLeft : (*sprite)->TexCordLeftDown);
+
+		for (int i = 0; i < 4; i++) {
+			s_Data.QuadVertexBufferPtr->Position = glm::vec3(transform * s_Data.QuadVertexPositions[i]);
+			s_Data.QuadVertexBufferPtr->Color = glm::vec4(1.f);
+			s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
+			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+			s_Data.QuadVertexBufferPtr->TilingFactor = 1.f;
+			s_Data.QuadVertexBufferPtr->EntityID = entityID;
+			s_Data.QuadVertexBufferPtr++;
+		}
+
+		s_Data.QuadIndexCount += 6;
+
+		s_Data.Stats.QuadCount++;
+	}
+
+	void Renderer2D::DrawMissingTextureQuad(const glm::mat4& transform, int entityID /*= -1*/)
+	{
+		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
+			FlushAndReset();
+
+		f32 textureIndex = 0.f; // White Texture
+
+		glm::vec2 texCoords[4] = {
+			{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f }
+		};
+
+		Texture2D* texture = EditorResources::MissingAssetIcon;
+
+		for (u32 i = 1; i < s_Data.TextureSlotIndex; i++) {
+			if (*s_Data.TextureSlots[i] == *texture) {
+				textureIndex = static_cast<f32>(i);
+				break;
 			}
+		}
 
-			texCoords[0] = (*spriteAsset)->TexCordLeftDown;
-			texCoords[1] = (*spriteAsset)->TexCordRightDown;
-			texCoords[2] = (*spriteAsset)->TexCordUpRight;
-			texCoords[3] = (*spriteAsset)->TexCordUpLeft;
+		if (textureIndex == 0.0f) {
+			textureIndex = (f32)s_Data.TextureSlotIndex;
+			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
+			s_Data.TextureSlotIndex++;
 		}
 
 		for (int i = 0; i < 4; i++) {
 			s_Data.QuadVertexBufferPtr->Position = glm::vec3(transform * s_Data.QuadVertexPositions[i]);
-			s_Data.QuadVertexBufferPtr->Color = sprite.Color;
+			s_Data.QuadVertexBufferPtr->Color = glm::vec4(1.f);
 			s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-			s_Data.QuadVertexBufferPtr->TilingFactor = sprite.TilingFactor;
+			s_Data.QuadVertexBufferPtr->TilingFactor = 1;
 			s_Data.QuadVertexBufferPtr->EntityID = entityID;
 			s_Data.QuadVertexBufferPtr++;
 		}
@@ -485,6 +595,12 @@ namespace SW {
 	{
 		Font** fontAsset = AssetManager::GetAssetRaw<Font>(text.Handle);
 
+		if (!fontAsset) {
+			DrawMissingTextureQuad(transform, entityID);
+			
+			return;
+		}
+
 		DrawString(text.TextString, fontAsset, transform, text.Color, text.Kerning, text.LineSpacing, entityID);
 	}
 
@@ -516,7 +632,7 @@ namespace SW {
 		const f32 spaceGlyphAdvance = (f32)fontGeometry.getGlyph(' ')->getAdvance();
 
 		for (size_t i = 0; i < string.size(); i++) {
-			char character = string[i];
+			msdf_atlas::unicode_t character = string[i];
 			if (character == '\r')
 				continue;
 
@@ -569,8 +685,8 @@ namespace SW {
 			quadMin += glm::vec2(x, y);
 			quadMax += glm::vec2(x, y);
 
-			f32 texelWidth = 1.0f / atlasTexture->GetWidth();
-			f32 texelHeight = 1.0f / atlasTexture->GetHeight();
+			f32 texelWidth = 1.0f / (f32)atlasTexture->GetWidth();
+			f32 texelHeight = 1.0f / (f32)atlasTexture->GetHeight();
 			texCoordMin *= glm::vec2(texelWidth, texelHeight);
 			texCoordMax *= glm::vec2(texelWidth, texelHeight);
 
@@ -607,7 +723,7 @@ namespace SW {
 
 			if (i < string.size() - 1) {
 				f64 advance = glyph->getAdvance();
-				char nextCharacter = string[i + 1];
+				msdf_atlas::unicode_t nextCharacter = string[i + 1];
 				fontGeometry.getAdvance(advance, character, nextCharacter);
 
 				x += fsScale * advance + kerning;

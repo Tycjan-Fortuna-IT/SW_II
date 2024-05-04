@@ -1,4 +1,6 @@
-﻿namespace SW
+﻿using Coral.Managed.Interop;
+
+namespace SW
 {
 	public abstract class Component
 	{
@@ -93,6 +95,137 @@
 				unsafe {
 					InternalCalls.TransformComponent_SetScale(Entity.GetID(), &value);
 				}
+			}
+		}
+	}
+
+	/// <summary>
+	///		Represents a component that allows playing and stopping animations for a sprite.
+	/// </summary>
+	public class AnimatedSpriteComponent : Component
+	{
+		private string CurrentAnimation = string.Empty;
+
+		/// <summary>
+		///		Plays the animation with the specified name.
+		/// </summary>
+		/// <param name="name">The name of the animation to play.</param>
+		public void Play(string name)
+		{
+			unsafe {
+				if (CurrentAnimation == name)
+					return;
+					
+				InternalCalls.AnimatedSpriteComponent_Play(Entity.GetID(), name);
+
+				CurrentAnimation = name;
+			}
+		}
+
+		/// <summary>
+		///		Stops the currently playing animation.
+		/// </summary>
+		public void Stop()
+		{
+			unsafe {
+				InternalCalls.AnimatedSpriteComponent_Stop(Entity.GetID());
+			}
+		}
+	}
+
+	/// <summary>
+	/// 	Represents a component that displays a text.
+	/// </summary>
+	public class TextComponent : Component
+	{
+		/// <summary>
+		/// 	Gets or sets the text content of the component.
+		/// </summary>
+		public string Text
+		{
+			get {
+				unsafe {
+					return InternalCalls.TextComponent_GetText(Entity.GetID())!;
+				}
+			}
+			set {
+				unsafe {
+					InternalCalls.TextComponent_SetText(Entity.GetID(), value);
+				}
+			}
+		}
+
+		/// <summary>
+		/// 	Gets or sets the color of the text.
+		/// 	E.g. new Vector4(1.0f, 0.0f, 0.0f, 1.0f) is red.
+		/// </summary>
+		public Vector4 Color
+		{
+			get {
+				Vector4 result;
+
+				unsafe {
+					InternalCalls.TextComponent_GetColor(Entity.GetID(), &result);
+				}
+
+				return result;
+			}
+			set {
+				unsafe {
+					InternalCalls.TextComponent_SetColor(Entity.GetID(), &value);
+				}
+			}
+		}
+
+		/// <summary>
+		/// 	Gets or sets the kerning value of the text.
+		/// 	Basically, it's the space between characters.
+		/// </summary>
+		public float Kerning
+		{
+			get {
+				unsafe {
+					return InternalCalls.TextComponent_GetKerning(Entity.GetID());
+				}
+			}
+			set {
+				unsafe {
+					InternalCalls.TextComponent_SetKerning(Entity.GetID(), value);
+				}
+			}
+		}
+
+		/// <summary>
+		/// 	Gets or sets the line spacing value of the text.
+		/// 	Basically, it's the space between lines.
+		/// </summary>
+		public float LineSpacing
+		{
+			get {
+				unsafe {
+					return InternalCalls.TextComponent_GetLineSpacing(Entity.GetID());
+				}
+			}
+			set {
+				unsafe {
+					InternalCalls.TextComponent_SetLineSpacing(Entity.GetID(), value);
+				}
+			}
+		}
+	}
+
+	/// <summary>
+	/// Represents a script component that can be attached to an entity.
+	/// </summary>
+	public class ScriptComponent : Component
+	{
+		/// <summary>
+		/// Gets the native instance associated with this script component.
+		/// </summary>
+		public NativeInstance<object> Instance
+		{
+			get {
+				unsafe { return InternalCalls.ScriptComponent_GetInstance(Entity.GetID()); }
 			}
 		}
 	}

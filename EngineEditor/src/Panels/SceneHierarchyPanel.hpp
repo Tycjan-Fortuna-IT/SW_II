@@ -9,7 +9,6 @@
 #pragma once
 
 #include "GUI/Panel.hpp"
-#include "GUI/GUI.hpp"
 #include "Core/ECS/Components.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Scene/Scene.hpp"
@@ -50,12 +49,12 @@ namespace SW {
 		 * @brief Called every frame to update the panel.
 		 * @param dt The time since the last frame.
 		 */
-		void OnUpdate(Timestep dt) final override;
+		void OnUpdate(UNUSED Timestep dt) override {}
 
 		/**
 		 * @brief Called every frame to render the panel.
 		 */
-		void OnRender() final override;
+		void OnRender() override;
 
 		/**
 		 * @brief Draws the entity node in the scene hierarchy panel. Recursively calls itself for each child entity.
@@ -70,12 +69,12 @@ namespace SW {
 		ImRect RenderEntityNode(Entity entity, u64 id, TagComponent& tc, const RelationshipComponent& rsc, u32 depth = 0);
 
 	private:
-		GUI::TextFilter m_SearchFilter;		/**< Search filter used to search for entities by their tag */
-
 		Entity m_DraggedEntity;			/**< The entity that is currently being dragged. */
 		Entity m_DraggedEntityTarget;	/**< The entity that the dragged entity is being dragged onto. */
 		Entity m_EntityToDelete;		/**< The entity that is currently being deleted. */
 		Entity m_RenamingEntity;		/**< The entity that is currently being renamed. */
+
+		std::string m_SearchString;		/**< The search string used to filter entities in the scene hierarchy. */
 
 		SceneViewportPanel* m_SceneViewportPanel = nullptr;	/**< The current scene viewport context. */
 

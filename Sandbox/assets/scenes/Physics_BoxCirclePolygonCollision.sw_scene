@@ -25,6 +25,7 @@ Entities:
         RestitutionThreshold: 0.5
         LinearDamping: 0
         AngularDamping: 0
+        FixedRotation: false
         AllowSleep: true
         InitiallyAwake: true
         IsBullet: false
@@ -58,6 +59,7 @@ Entities:
         RestitutionThreshold: 0.5
         LinearDamping: 0
         AngularDamping: 0
+        FixedRotation: false
         AllowSleep: true
         InitiallyAwake: true
         IsBullet: false
@@ -92,6 +94,7 @@ Entities:
         RestitutionThreshold: 0.5
         LinearDamping: 0
         AngularDamping: 0
+        FixedRotation: false
         AllowSleep: true
         InitiallyAwake: true
         IsBullet: false
@@ -125,6 +128,7 @@ Entities:
         RestitutionThreshold: 0.5
         LinearDamping: 0
         AngularDamping: 0
+        FixedRotation: false
         AllowSleep: true
         InitiallyAwake: true
         IsBullet: false
@@ -163,6 +167,7 @@ Entities:
         RestitutionThreshold: 0.5
         LinearDamping: 0
         AngularDamping: 0
+        FixedRotation: false
         AllowSleep: true
         InitiallyAwake: true
         IsBullet: false
@@ -181,7 +186,7 @@ Entities:
         Rotation: [0, 0, 0]
         Scale: [1, 1, 1]
       TextComponent:
-        AssetHandle: 1895022271424216758
+        AssetHandle: 13743448306498844429
         TextString: Isn't this scene nice?
         Color: [1, 0.99465239, 0, 1]
         Kerning: 0
@@ -199,6 +204,7 @@ Entities:
         RestitutionThreshold: 0.5
         LinearDamping: 0
         AngularDamping: 0
+        FixedRotation: false
         AllowSleep: true
         InitiallyAwake: true
         IsBullet: false
@@ -232,6 +238,7 @@ Entities:
         RestitutionThreshold: 0.5
         LinearDamping: 0
         AngularDamping: 0
+        FixedRotation: false
         AllowSleep: true
         InitiallyAwake: true
         IsBullet: false
@@ -270,6 +277,7 @@ Entities:
         RestitutionThreshold: 0.5
         LinearDamping: 0
         AngularDamping: 0
+        FixedRotation: false
         AllowSleep: true
         InitiallyAwake: true
         IsBullet: false
@@ -303,6 +311,7 @@ Entities:
         RestitutionThreshold: 0.5
         LinearDamping: 0
         AngularDamping: 0
+        FixedRotation: false
         AllowSleep: true
         InitiallyAwake: true
         IsBullet: false
@@ -336,6 +345,7 @@ Entities:
         RestitutionThreshold: 0.5
         LinearDamping: 0
         AngularDamping: 0
+        FixedRotation: false
         AllowSleep: true
         InitiallyAwake: true
         IsBullet: false
@@ -373,6 +383,7 @@ Entities:
         RestitutionThreshold: 0.5
         LinearDamping: 0
         AngularDamping: 0
+        FixedRotation: false
         AllowSleep: true
         InitiallyAwake: true
         IsBullet: false
@@ -401,6 +412,7 @@ Entities:
         RestitutionThreshold: 0.5
         LinearDamping: 0
         AngularDamping: 0
+        FixedRotation: false
         AllowSleep: true
         InitiallyAwake: true
         IsBullet: false

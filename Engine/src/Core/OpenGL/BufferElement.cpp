@@ -21,6 +21,7 @@ namespace SW {
 				return GL_INT;
 			case ShaderDataType::Bool:
 				return GL_BOOL;
+			case ShaderDataType::None:
 			default:
 				ASSERT(false, "Unknown ShaderDataType! {}", (int)type);
 		}
@@ -42,6 +43,7 @@ namespace SW {
 			case ShaderDataType::Int3:   return 4 * 3;
 			case ShaderDataType::Int4:   return 4 * 4;
 			case ShaderDataType::Bool:   return 1;
+			case ShaderDataType::None:
 			default:
 				ASSERT(false, "Unknown ShaderDataType! {}", (int)type);
 		}

@@ -1,12 +1,19 @@
 /**
  * @file SceneSerializer.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.1
- * @date 2024-02-26
+ * @version 0.1.2
+ * @date 2024-04-13
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
 #pragma once
+
+#include "Core/ECS/Entity.hpp"
+
+namespace YAML {
+	class Emitter;
+	class Node;
+}
 
 namespace SW {
 
@@ -26,6 +33,8 @@ namespace SW {
 		 */
 		static void Serialize(Scene* scene, const std::filesystem::path& path);
 
+		static void SerializeEntity(YAML::Emitter& output, Entity entity, const Scene* scene);
+		
 		/**
 		 * @brief Deserializes scene from file.
 		 *
@@ -33,6 +42,8 @@ namespace SW {
 		 * @param path Path to file.
 		 */
 		[[nodiscard]] static Scene* Deserialize(const std::filesystem::path& path);
+
+		static void DeserializeEntitiesNode(YAML::Node& entitiesNode, Scene* scene);
 	};
 
 }

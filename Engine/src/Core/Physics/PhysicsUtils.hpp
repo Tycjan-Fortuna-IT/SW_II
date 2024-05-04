@@ -48,7 +48,7 @@ namespace SW {
 
 			const f32 deltaRadians = twoPi / static_cast<f32>(polyCount);
 
-			vertices.reserve(polyCount);
+			vertices.reserve((size_t)polyCount);
 
 			for (int i = 0; i < polyCount; ++i) {
 				const f32 radians = deltaRadians * static_cast<f32>(i);

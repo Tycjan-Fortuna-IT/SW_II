@@ -7,10 +7,26 @@
 #include "GUI/Editor/EditorResources.hpp"
 #include "Asset/Font.hpp"
 #include "Cache/FontCache.hpp"
+#include "Animation2D.hpp"
+#include "Core/Scene/Scene.hpp"
+#include "Core/Scene/SceneSerializer.hpp"
+#include "Prefab.hpp"
 
 namespace SW {
 
-	void Texture2DSerializer::Serialize(const AssetMetaData& metadata)
+	void SceneAssetSerializer::Serialize(const AssetMetaData& metadata)
+	{
+		Scene* scene = *AssetManager::GetAssetRaw<Scene>(metadata.Handle);
+
+		SceneSerializer::Serialize(scene, ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
+	}
+
+	Asset* SceneAssetSerializer::TryLoadAsset(const AssetMetaData& metadata)
+	{
+		return SceneSerializer::Deserialize(ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
+	}
+
+	void Texture2DSerializer::Serialize(UNUSED const AssetMetaData& metadata)
 	{
 		ASSERT(false, "Texture2D serialization is not supported!");
 	}
@@ -22,7 +38,7 @@ namespace SW {
 		return texture;
 	}
 
-	void SpriteSerializer::Serialize(const AssetMetaData& metadata)
+	void SpriteSerializer::Serialize(UNUSED const AssetMetaData& metadata)
 	{
 		ASSERT(false, "Sprite serialization is not supported!");
 	}
@@ -142,7 +158,7 @@ namespace SW {
 		return spritesheet;
 	}
 
-	void FontSerializer::Serialize(const AssetMetaData& metadata)
+	void FontSerializer::Serialize(UNUSED const AssetMetaData& metadata)
 	{
 		ASSERT(false, "Font serialization is not supported!");
 	}
@@ -158,7 +174,7 @@ namespace SW {
 		if (!data) {
 			SW_ERROR("Error while deserializing the font: {}", metadata.Path.string());
 
-			return new Spritesheet();
+			return nullptr;
 		}
 
 		const u64 fontSourceHandle = data["FontSourceHandle"].as<u64>();
@@ -178,14 +194,140 @@ namespace SW {
 		return font;
 	}
 
-	void FontSourceSerializer::Serialize(const AssetMetaData& metadata)
+	void FontSourceSerializer::Serialize(UNUSED const AssetMetaData& metadata)
 	{
 
 	}
 
-	Asset* FontSourceSerializer::TryLoadAsset(const AssetMetaData& metadata)
+	Asset* FontSourceSerializer::TryLoadAsset(UNUSED const AssetMetaData& metadata)
 	{
 		return nullptr;
+	}
+
+    void AnimationSerializer::Serialize(const AssetMetaData& metadata)
+	{
+		const Animation2D* animation = *AssetManager::GetAsset<Animation2D>(metadata.Handle);
+
+		YAML::Emitter output;
+
+		output << YAML::BeginMap;
+		output << YAML::Key << "Animation" << YAML::Value;
+
+		output << YAML::BeginMap;
+		output << YAML::Key << "Speed" << YAML::Value << animation->Speed;
+		output << YAML::Key << "ReverseAlongX" << YAML::Value << animation->ReverseAlongX;
+		output << YAML::Key << "ReverseAlongY" << YAML::Value << animation->ReverseAlongY;
+
+		output << YAML::Key << "Sprites" << YAML::Value << YAML::BeginSeq;
+
+		for (Sprite** const sprite : animation->Sprites) {
+			output << YAML::BeginMap;
+
+			output << YAML::Key << "Sprite";
+
+			output << YAML::BeginMap;
+			output << YAML::Key << "SpriteHandle" << YAML::Value << (*sprite)->GetHandle();
+			output << YAML::EndMap;
+
+			output << YAML::EndMap;
+		}
+
+		output << YAML::EndMap;
+		output << YAML::EndSeq;
+
+		output << YAML::EndMap;
+
+
+		std::ofstream fout(ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
+		fout << output.c_str();
+	}
+
+	Asset* AnimationSerializer::TryLoadAsset(const AssetMetaData& metadata)
+    {
+		const std::filesystem::path path = ProjectContext::Get()->GetAssetDirectory() / metadata.Path;
+
+		YAML::Node file = YAML::LoadFile(path.string());
+
+		YAML::Node data = file["Animation"];
+
+		if (!data) {
+			SW_ERROR("Error while deserializing the animation: {}", metadata.Path.string());
+
+			return new Animation2D();
+		}
+
+		Animation2D* animation = new Animation2D();
+
+		animation->Speed = data["Speed"].as<f32>();
+		animation->ReverseAlongX = data["ReverseAlongX"].as<bool>();
+		animation->ReverseAlongY = data["ReverseAlongY"].as<bool>();
+
+		YAML::Node sprites = data["Sprites"];
+		for (YAML::Node sprite : sprites) {
+			Sprite** spr = AssetManager::GetAssetRaw<Sprite>(sprite["Sprite"]["SpriteHandle"].as<u64>());
+
+			animation->Sprites.emplace_back(spr);
+		}
+
+		return animation;
+    }
+
+	void PrefabSerializer::Serialize(const AssetMetaData& metadata)
+	{
+		Prefab* prefab = *AssetManager::GetAssetRaw<Prefab>(metadata.Handle);
+		Scene* prefabScene = prefab->GetSceneRaw();
+
+		YAML::Emitter output;
+
+		output << YAML::BeginMap;
+		output << YAML::Key << "Prefab" << YAML::Value;
+
+		output << YAML::BeginMap;
+		output << YAML::Key << "RootEntityHandle" << YAML::Value << prefab->GetRootEntity().GetID();
+
+		output << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
+
+		std::map<u64, Entity> sortedEntities;
+
+		for (auto&& [handle, idc] : prefabScene->GetRegistry().GetEntitiesWith<IDComponent>().each())
+			sortedEntities[idc.ID] = Entity{ handle, prefabScene };
+
+		for (auto [id, entity] : sortedEntities) {
+			SceneSerializer::SerializeEntity(output, entity, prefabScene);
+		}
+
+		output << YAML::EndSeq;
+		output << YAML::EndMap;
+
+		std::ofstream fout(ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
+		fout << output.c_str();
+	}
+
+	Asset* PrefabSerializer::TryLoadAsset(const AssetMetaData& metadata)
+	{
+		const std::filesystem::path path = ProjectContext::Get()->GetAssetDirectory() / metadata.Path;
+
+		YAML::Node file = YAML::LoadFile(path.string());
+
+		YAML::Node data = file["Prefab"];
+
+		if (!data) {
+			ASSERT(false, "Error while deserializing the prefab: {}, no entities section found!", path.string());
+
+			return new Prefab();
+		}
+
+		YAML::Node entities = data["Entities"];
+
+		Prefab* prefab = new Prefab();
+		Scene* prefabScene = prefab->GetSceneRaw();
+
+		SceneSerializer::DeserializeEntitiesNode(entities, prefabScene);
+
+		const u64 rootHandle = data["RootEntityHandle"].as<u64>();
+		prefab->SetRootEntity(prefabScene->GetEntityByID(rootHandle));
+
+		return prefab;
 	}
 
 }

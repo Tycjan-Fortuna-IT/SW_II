@@ -1,6 +1,5 @@
 #include "Project.hpp"
 
-#include "Asset/EditorAssetManager.hpp"
 #include "Core/Utils/FileSystem.hpp"
 
 namespace SW {

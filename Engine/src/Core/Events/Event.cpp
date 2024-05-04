@@ -26,7 +26,7 @@ namespace SW {
     bool AreEventCallbacksEqual(const EventCallback& a, const EventCallback& b)
 	{
         return a.target_type() == b.target_type() &&
-               a.target<void(*)(Event, void*, void*)>() == b.target<void(*)(Event, void*, void*)>();
+               a.target<void(*)(Event)>() == b.target<void(*)(Event)>();
     }
 
     bool EventSystem::Initialize()
@@ -49,13 +49,12 @@ namespace SW {
         return true;
     }
 
-    bool EventSystem::Register(EventCode code, void* listener, EventCallback handler)
+    bool EventSystem::Register(EventCode code, EventCallback handler)
 	{
         ASSERT(state, "Event system must be initialized before registering a listener!");
 
         for (u64 i = 0; i < state->registered[code].events.size(); ++i) {
             if (
-                state->registered[code].events[i].listener == listener &&
                 AreEventCallbacksEqual(state->registered[code].events[i].callback, handler)
             ) {
                 SW_WARN("Event has already been registered with the code {} and the same callback!", (int)code);
@@ -64,7 +63,6 @@ namespace SW {
         }
 
         RegisteredEvent toRegister = {
-            .listener = listener,
             .callback = handler
         };
 
@@ -73,7 +71,7 @@ namespace SW {
         return true;
     }
 
-    bool EventSystem::UnRegister(EventCode code, void* listener, EventCallback handler)
+    bool EventSystem::UnRegister(EventCode code, EventCallback handler)
 	{
         ASSERT(state, "Event system must be initialized before unregistering a listener!");
 
@@ -96,7 +94,7 @@ namespace SW {
         return false;
     }
 
-    bool EventSystem::Emit(Event event, void* sender)
+    bool EventSystem::Emit(Event event)
 	{
         ASSERT(state, "Event system must be initialized before emitting an event!");
 
@@ -109,9 +107,12 @@ namespace SW {
         for (u64 i = 0; i < state->registered[event.Code].events.size(); ++i) {
             const RegisteredEvent e = state->registered[event.Code].events[i];
 
-            if (e.callback(event, sender, e.listener)) {
+            /*if (e.callback(event, sender, e.listener)) {
                 return true;
-            }
+            }*/
+			if (e.callback(event)) {
+				return true;
+			}
         }
 
         SW_DEBUG("Event with the code {} has not been fully handled!", (int)event.Code);

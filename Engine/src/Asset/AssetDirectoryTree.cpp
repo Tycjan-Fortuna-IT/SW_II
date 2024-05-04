@@ -1,10 +1,8 @@
 #include "AssetDirectoryTree.hpp"
 
 #include "Asset/AssetManager.hpp"
-#include "Core/Project/Project.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Utils/FileSystem.hpp"
-#include "GUI/Editor/EditorResources.hpp"
 
 namespace SW {
 
@@ -35,14 +33,14 @@ namespace SW {
 		return nullptr;
 	}
 
-	void AssetDirectoryTree::RefetchChanges(const std::filesystem::path& dir)
+	void AssetDirectoryTree::RefetchChanges()
 	{
 		AssetManager::GetRegistryRaw().RefetchAvailableAssets();
 
-		TraverseDirectoryAndMapAssets(dir);
+		TraverseDirectoryAndMapAssets();
 	}
 
-	void AssetDirectoryTree::TraverseDirectoryAndMapAssets(const std::filesystem::path& dir)
+	void AssetDirectoryTree::TraverseDirectoryAndMapAssets()
 	{
 		const AssetRegistry& reg = AssetManager::GetRegistry();
 		const std::map<AssetHandle, AssetMetaData>& availableAssets = reg.GetAvailableAssets();
@@ -54,7 +52,7 @@ namespace SW {
 
 		if (m_Root)
 			CleanUp(m_Root);
-
+		 
 		m_Root = new AssetSourceItem();
 		//m_Root->Handle = pathToIdMap.find(dir)->second; // no need for handle for not-draggable item
 		m_Root->Type = AssetType::Directory;

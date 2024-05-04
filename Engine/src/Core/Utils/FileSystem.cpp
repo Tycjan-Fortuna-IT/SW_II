@@ -9,6 +9,8 @@
 	#include <shellapi.h>
 #endif
 
+#include "Utils.hpp"
+
 
 namespace SW {
 
@@ -57,7 +59,7 @@ namespace SW {
 	{
 		auto temp = std::filesystem::last_write_time(path);
 
-		return temp.time_since_epoch().count();
+		return (u64)temp.time_since_epoch().count();
 	}
 
 	bool FileSystem::RenameFile(const std::filesystem::path& path, const std::string& newName)
@@ -156,6 +158,28 @@ namespace SW {
 		ShellExecute(NULL, L"open", absolutePath.c_str(), NULL, NULL, SW_SHOWNORMAL);
 		
 		return true;
+	}
+
+	std::filesystem::path FileSystem::GetUniqueFilename(const std::filesystem::path& path)
+	{
+		if (!Exists(path))
+			return path;
+
+		int ct = 1;
+
+		while (true) {
+			std::string filename = path.filename().string();
+			std::string extension = path.extension().string();
+
+			std::string newFilename = std::format("{} ({}){}", String::RemoveExtension(filename), ct, extension);
+
+			std::filesystem::path newPath = path.parent_path() / newFilename;
+
+			if (!Exists(newPath))
+				return newPath;
+
+			ct++;
+		}
 	}
 
 }

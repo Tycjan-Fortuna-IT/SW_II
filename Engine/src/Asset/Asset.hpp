@@ -32,6 +32,7 @@ namespace SW {
 		Prefab,
 		Script,
 		Shader,
+		Animation2D,
 		AssetRegistry,
 	};
 
@@ -120,7 +121,7 @@ namespace SW {
 		 * 
 		 * @return bool True if the assets are equal, false otherwise.
 		 */
-		virtual bool operator==(const Asset& other) const
+		bool operator==(const Asset& other) const
 		{
 			return m_Handle == other.m_Handle;
 		}
@@ -131,7 +132,7 @@ namespace SW {
 		 * 
 		 * @return bool True if the assets are not equal, false otherwise.
 		 */
-		virtual bool operator!=(const Asset& other) const
+		bool operator!=(const Asset& other) const
 		{
 			return !(*this == other);
 		}
@@ -168,6 +169,12 @@ namespace SW {
 		 * @return AssetHandle 
 		 */
 		AssetHandle GetHandle() const { return m_Handle; }
+
+		/**
+		 * @brief Set the asset handle.
+		 * @warning BE CAREFUL WITH THIS! TODO As of now a workaround for scene asset handling.
+		 */
+		void SetHandle(AssetHandle handle) { m_Handle = handle; }
 		
 		/**
 		 * @brief Get the asset state.

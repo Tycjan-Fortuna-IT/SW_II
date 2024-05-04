@@ -1,0 +1,900 @@
+Entities:
+  - Entity:
+      IDComponent:
+        ID: 62661025097731656
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [-0.486136943, 1.43051147e-06, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 1.9995724, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 2001835680589378611
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [-9.5, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 3419711864795705543
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [5.51386309, 1.43051147e-06, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 3834388768095154642
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [2.51386309, 1.34855509e-06, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 4022521920788697605
+      TagComponent:
+        Tag: Player
+      TransformComponent:
+        Transform: [3.65492773, -0.830444336, 0.206298962]
+        Rotation: [0, 0, -3.85655267e-06]
+        Scale: [3, 3, 1]
+      AnimatedSpriteComponent:
+        CurrentFrame: 3
+        CurrentAnimationHandle: 650601428253319591
+        DefaultAnimationHandle: 650601428253319591
+        Animations:
+          - Animation:
+              Name: Run_Left
+              AnimationHandle: 6895740668858342272
+          - Animation:
+              Name: Run_Right
+              AnimationHandle: 9904378174786550968
+          - Animation:
+              Name: Walk_Left
+              AnimationHandle: 13281260179034324261
+          - Animation:
+              Name: Walk_Right
+              AnimationHandle: 12758159065898506176
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      ScriptComponent:
+        ScriptID: 2306580548
+        ScriptName: BumCatcher.PlayerController
+        Fields:
+          - ID: 1836235579
+            Name: Speed
+            Type: Float
+            Value: 12
+          - ID: 1968604071
+            Name: m_Exp
+            Type: Float
+            Value: 0
+      RigidBody2DComponent:
+        Type: 2
+        AutoMass: true
+        Mass: 1
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        FixedRotation: true
+        AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
+      BoxCollider2DComponent:
+        Size: [0.150000006, 0.25]
+        Offset: [0, 0]
+        Density: 1
+        IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 4038236824642947259
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [3.51386309, 1.43051147e-06, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2.01260352, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 4138094494943655987
+      TagComponent:
+        Tag: HoveringTextManager
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      ScriptComponent:
+        ScriptID: 3124153437
+        ScriptName: BumCatcher.HoveringTextManager
+        Fields:
+          - ID: 3149877876
+            Name: HoveringTextPrefab
+            Type: Prefab
+            Value: 13254685825100701881
+  - Entity:
+      IDComponent:
+        ID: 4270635559211037960
+      TagComponent:
+        Tag: Pentagram
+      TransformComponent:
+        Transform: [-0.0587328821, 0.218677402, -0.112189054]
+        Rotation: [0, 0, 0]
+        Scale: [6.40079975, 6.40079975, 1]
+      SpriteComponent:
+        Color: [1, 0, 0, 0.732620358]
+        AssetHandle: 7794725320815178832
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      ScriptComponent:
+        ScriptID: 2287399117
+        ScriptName: BumCatcher.Rotor
+        Fields:
+          []
+  - Entity:
+      IDComponent:
+        ID: 4336701336544463476
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [4.51386309, 1.34855509e-06, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 4355836930691208976
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [9.51386261, 1.43051147e-06, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 4990206727289058483
+      TagComponent:
+        Tag: Borders
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 3
+        ChildrenIDs:
+          0: 15657509363918656491
+          1: 13891455672601397775
+          2: 15602980246693789279
+  - Entity:
+      IDComponent:
+        ID: 5200842692206890297
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [-8.5, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 5323735877992856268
+      TagComponent:
+        Tag: Tomato
+      TransformComponent:
+        Transform: [-7.08909798, 1.19549048, 0.000122069541]
+        Rotation: [0, 0, 0]
+        Scale: [1.9999665, 1.9999665, 1]
+      SpriteComponent:
+        Color: [1, 1, 1, 1]
+        AssetHandle: 11023663839170045914
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 2
+        AutoMass: true
+        Mass: 1
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        FixedRotation: false
+        AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
+      BoxCollider2DComponent:
+        Size: [0.449999988, 0.25]
+        Offset: [-0.0500000007, 0.0500000007]
+        Density: 1
+        IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 5476082200580396704
+      TagComponent:
+        Tag: HP
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [6, 0.280899525, 1]
+      SpriteComponent:
+        Color: [0.775401056, 0.240498707, 0.240498707, 1]
+        AssetHandle: 0
+      RelationshipComponent:
+        ParentID: 17158307568581081913
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 6918306123303494180
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [-4.48613691, 1.34855509e-06, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 7681774979338729770
+      TagComponent:
+        Tag: DroppableSpawner
+      TransformComponent:
+        Transform: [4, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 12899590937424841027
+        ChildrenCount: 0
+      ScriptComponent:
+        ScriptID: 687438908
+        ScriptName: BumCatcher.DroppableSpawner
+        Fields:
+          - ID: 2242853084
+            Name: BottlePrefab
+            Type: Prefab
+            Value: 9850982849837239402
+          - ID: 3718901148
+            Name: DenaturePrefab
+            Type: Prefab
+            Value: 2730353169700983616
+          - ID: 1019351411
+            Name: WinePrefab
+            Type: Prefab
+            Value: 2725710666952581089
+          - ID: 1398040317
+            Name: timer
+            Type: Float
+            Value: 0
+          - ID: 495585200
+            Name: spawnInterval
+            Type: Float
+            Value: 1
+  - Entity:
+      IDComponent:
+        ID: 7894143509650206064
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [-6.48613691, 1.43051147e-06, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1.00000012]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 8722179173970968686
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [0.561440825, 1.43051147e-06, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 8932082414282034895
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [-2.48613691, 1.34855509e-06, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 9693170825510101956
+      TagComponent:
+        Tag: Banana
+      TransformComponent:
+        Transform: [-8.63628006, -0.774700642, -0.080813989]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [1, 1, 1, 1]
+        AssetHandle: 17898651313695350990
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 2
+        AutoMass: true
+        Mass: 1
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        FixedRotation: false
+        AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
+      BoxCollider2DComponent:
+        Size: [0.25, 0.25]
+        Offset: [0, 0]
+        Density: 1
+        IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 10439275683650014604
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [8.51386261, 1.34855509e-06, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 10620154728434619200
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [-3.48613691, 1.43051147e-06, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 10963784001106317391
+      TagComponent:
+        Tag: Eye
+      TransformComponent:
+        Transform: [0.0525466315, 0.114650667, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      AnimatedSpriteComponent:
+        CurrentFrame: 17
+        CurrentAnimationHandle: 13543331263469011293
+        DefaultAnimationHandle: 13543331263469011293
+        Animations:
+          []
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 10973399195842580792
+      TagComponent:
+        Tag: Spikes
+      TransformComponent:
+        Transform: [-8.77501678, -2.44131279, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [1, 1, 1, 1]
+        AssetHandle: 8999320076268252657
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 2
+        AutoMass: true
+        Mass: 1
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        FixedRotation: false
+        AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
+      BoxCollider2DComponent:
+        Size: [0.300000012, 0.150000006]
+        Offset: [0, 0.119999997]
+        Density: 1
+        IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 12558525204125414419
+      TagComponent:
+        Tag: Eye
+      TransformComponent:
+        Transform: [-0.0434558801, 0.108328521, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      AnimatedSpriteComponent:
+        CurrentFrame: 24
+        CurrentAnimationHandle: 0
+        DefaultAnimationHandle: 0
+        Animations:
+          []
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 12899590937424841027
+      TagComponent:
+        Tag: Spawners
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 2
+        ChildrenIDs:
+          0: 7681774979338729770
+          1: 18383249893031583664
+  - Entity:
+      IDComponent:
+        ID: 13174236796396508617
+      TagComponent:
+        Tag: ScoreText
+      TransformComponent:
+        Transform: [-9.03131199, 3.74529862, 0.000122069119]
+        Rotation: [0, 0, 0]
+        Scale: [0.5, 0.5, 1]
+      TextComponent:
+        AssetHandle: 2519823622692660382
+        TextString: "Exp: 0"
+        Color: [1, 0.900025725, 0.016042769, 1]
+        Kerning: 0
+        LineSpacing: 0
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 13280703639762694920
+      TagComponent:
+        Tag: Camera
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      CameraComponent:
+        Primary: true
+        AspectRatio: 1.86779666
+        ProjectionType: 1
+        OrthographicSize: 10
+        OrthographicNearClip: -1
+        OrthographicFarClip: 1
+  - Entity:
+      IDComponent:
+        ID: 13555256488081013299
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [-1.48613691, 1.34855509e-06, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 13891455672601397775
+      TagComponent:
+        Tag: Box Collider
+      TransformComponent:
+        Transform: [-10.1893559, 0.828558922, 0.000122069425]
+        Rotation: [0, 0, 0]
+        Scale: [1, 9.76481152, 1]
+      RelationshipComponent:
+        ParentID: 4990206727289058483
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 0
+        AutoMass: true
+        Mass: 1
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        FixedRotation: false
+        AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
+      BoxCollider2DComponent:
+        Size: [0.5, 0.5]
+        Offset: [0, 0]
+        Density: 1
+        IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 14340539390480082291
+      TagComponent:
+        Tag: Floor
+      TransformComponent:
+        Transform: [0, -4.5, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 20
+        ChildrenIDs:
+          0: 16165028261600413779
+          1: 2001835680589378611
+          2: 5200842692206890297
+          3: 4355836930691208976
+          4: 7894143509650206064
+          5: 17878141509878783574
+          6: 6918306123303494180
+          7: 10620154728434619200
+          8: 8932082414282034895
+          9: 13555256488081013299
+          10: 62661025097731656
+          11: 8722179173970968686
+          12: 15532114282608199612
+          13: 3834388768095154642
+          14: 4038236824642947259
+          15: 4336701336544463476
+          16: 3419711864795705543
+          17: 15188871572792218129
+          18: 16827126613354753796
+          19: 10439275683650014604
+      RigidBody2DComponent:
+        Type: 0
+        AutoMass: true
+        Mass: 1
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        FixedRotation: false
+        AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
+      BoxCollider2DComponent:
+        Size: [10, 0.5]
+        Offset: [0, 0]
+        Density: 1
+        IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 15188871572792218129
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [6.51386309, 1.43051147e-06, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 15532114282608199612
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [1.51386309, 1.34855509e-06, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 15602980246693789279
+      TagComponent:
+        Tag: Box Collider
+      TransformComponent:
+        Transform: [0, 6.11661911, -0.64440906]
+        Rotation: [0, 0, 0]
+        Scale: [21.5867653, 1, 1]
+      RelationshipComponent:
+        ParentID: 4990206727289058483
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 0
+        AutoMass: true
+        Mass: 1
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        FixedRotation: false
+        AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
+      BoxCollider2DComponent:
+        Size: [0.5, 0.5]
+        Offset: [0, 0]
+        Density: 1
+        IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 15657509363918656491
+      TagComponent:
+        Tag: Box Collider
+      TransformComponent:
+        Transform: [10.234519, 0.828558922, 0.000122069425]
+        Rotation: [0, 0, 0]
+        Scale: [1, 9.76481152, 1]
+      RelationshipComponent:
+        ParentID: 4990206727289058483
+        ChildrenCount: 0
+      RigidBody2DComponent:
+        Type: 0
+        AutoMass: true
+        Mass: 1
+        GravityScale: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        LinearDamping: 0
+        AngularDamping: 0
+        FixedRotation: false
+        AllowSleep: true
+        InitiallyAwake: true
+        IsBullet: false
+      BoxCollider2DComponent:
+        Size: [0.5, 0.5]
+        Offset: [0, 0]
+        Density: 1
+        IsSensor: false
+  - Entity:
+      IDComponent:
+        ID: 15830723957422054987
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [-7.4505806e-09, 2.98023224e-08, -0.150000006]
+        Rotation: [0, 0, 0]
+        Scale: [22.9235096, 13.7864265, 5.91136074]
+      SpriteComponent:
+        Color: [0.352941185, 0.129411772, 0.0196078438, 1]
+        AssetHandle: 0
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 16145124451901373702
+      TagComponent:
+        Tag: Background
+      TransformComponent:
+        Transform: [0, 0, -0.0500000007]
+        Rotation: [0, 0, 0]
+        Scale: [6.19000006, 0.419999987, 1]
+      SpriteComponent:
+        Color: [0, 0, 0, 1]
+        AssetHandle: 0
+      RelationshipComponent:
+        ParentID: 17158307568581081913
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 16165028261600413779
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [-7.5, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 16827126613354753796
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [7.51386309, 1.34855509e-06, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 17158307568581081913
+      TagComponent:
+        Tag: Main HP Bar
+      TransformComponent:
+        Transform: [-4.77246904, 4.52904892, 0.000487820973]
+        Rotation: [0, 0, 0]
+        Scale: [1.39999998, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 2
+        ChildrenIDs:
+          0: 5476082200580396704
+          1: 16145124451901373702
+      ScriptComponent:
+        ScriptID: 1494117412
+        ScriptName: BumCatcher.HealthBar
+        Fields:
+          - ID: 1091124672
+            Name: m_Health
+            Type: Float
+            Value: 200
+          - ID: 4090396298
+            Name: MaxHealth
+            Type: Float
+            Value: 200
+          - ID: 834692358
+            Name: m_HP
+            Type: Entity
+            Value: 14829735431805717965
+  - Entity:
+      IDComponent:
+        ID: 17878141509878783574
+      TagComponent:
+        Tag: Sprite
+      TransformComponent:
+        Transform: [-5.48613691, 1.43051147e-06, 0]
+        Rotation: [0, 0, 0]
+        Scale: [2, 2, 1]
+      SpriteComponent:
+        Color: [0.311044663, 0.326203227, 0.282593191, 1]
+        AssetHandle: 12875758880104537401
+      RelationshipComponent:
+        ParentID: 14340539390480082291
+        ChildrenCount: 0
+  - Entity:
+      IDComponent:
+        ID: 18383249893031583664
+      TagComponent:
+        Tag: DroppableSpawner
+      TransformComponent:
+        Transform: [-5, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 12899590937424841027
+        ChildrenCount: 0
+      ScriptComponent:
+        ScriptID: 687438908
+        ScriptName: BumCatcher.DroppableSpawner
+        Fields:
+          - ID: 2242853084
+            Name: BottlePrefab
+            Type: Prefab
+            Value: 9850982849837239402
+          - ID: 3718901148
+            Name: DenaturePrefab
+            Type: Prefab
+            Value: 2730353169700983616
+          - ID: 1019351411
+            Name: WinePrefab
+            Type: Prefab
+            Value: 2725710666952581089
+          - ID: 1398040317
+            Name: timer
+            Type: Float
+            Value: 0
+          - ID: 495585200
+            Name: spawnInterval
+            Type: Float
+            Value: 1

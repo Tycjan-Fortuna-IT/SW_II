@@ -32,6 +32,7 @@ namespace SW {
 		Bool,
 
 		Entity,
+		Prefab,
 	};
 
 	inline u64 DataTypeSize(DataType type)
@@ -48,10 +49,49 @@ namespace SW {
 			case DataType::Double: return sizeof(f64);
 			case DataType::Bool: return sizeof(Coral::Bool32);
 			case DataType::Entity: return sizeof(u64);
+			case DataType::Prefab: return sizeof(u64);
 		}
 
 		return 0;
 	}
+
+	inline std::string DataTypeToString(DataType type)
+	{
+		switch (type) {
+			case DataType::Byte:	return "Byte";
+			case DataType::Short:	return "Short";
+			case DataType::UShort:	return "UShort";
+			case DataType::Int:		return "Int";
+			case DataType::UInt:	return "UInt";
+			case DataType::Long:	return "Long";
+			case DataType::ULong:	return "ULong";
+			case DataType::Float:	return "Float";
+			case DataType::Double:	return "Double";
+			case DataType::Bool:	return "Bool";
+			case DataType::Entity:	return "Entity";
+			case DataType::Prefab:	return "Prefab";
+		}
+
+		return "Unknown";
+	}
+
+	 inline DataType DataTypeFromString(const std::string& type)
+	 {
+		 if (type == "Byte") 	return DataType::Byte;
+		 if (type == "Short") 	return DataType::Short;
+		 if (type == "UShort") 	return DataType::UShort;
+		 if (type == "Int") 	return DataType::Int;
+		 if (type == "UInt") 	return DataType::UInt;
+		 if (type == "Long") 	return DataType::Long;
+		 if (type == "ULong") 	return DataType::ULong;
+		 if (type == "Float") 	return DataType::Float;
+		 if (type == "Double") 	return DataType::Double;
+		 if (type == "Bool") 	return DataType::Bool;
+		 if (type == "Entity") 	return DataType::Entity;
+		 if (type == "Prefab") 	return DataType::Prefab;
+
+		 return DataType::Byte;
+	 }
 
 	struct FieldMetadata;
 

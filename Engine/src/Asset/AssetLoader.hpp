@@ -45,7 +45,7 @@ namespace SW {
 		[[nodiscard]] static Asset* TryLoadAsset(const AssetMetaData& metadata);
 
 	private:
-		static std::unordered_map<AssetType, AssetSerializer*> s_Serializers;
+		static std::unordered_map<AssetType, Scope<AssetSerializer>> s_Serializers;
 	};
 
 }
