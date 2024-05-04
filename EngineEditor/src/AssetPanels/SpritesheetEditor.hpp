@@ -40,7 +40,7 @@ namespace SW {
 
 		Spritesheet** m_Spritesheet = nullptr;
 		std::string m_Name;
-		
+
 		bool m_IsCanvasHovered = false;
 
 		std::string m_SearchString;		/**< The search string used to filter entities in the scene hierarchy. */
@@ -49,7 +49,7 @@ namespace SW {
 
 	private:
 		void DrawRectOnCanvas(ImDrawList* drawList, const glm::vec2& position, const glm::vec2& size, u32 color) const;
-		void RenderSpriteCards(f32 vscale);
+		void RenderSpriteCards();
 		void AddNewSprite();
 		void ExportSprites() const;
 		void GenerateFromGridPopup(bool* opened);

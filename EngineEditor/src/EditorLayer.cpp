@@ -30,7 +30,7 @@ namespace SW {
 		GUI::Appearance::ApplyColors(GUI::Colors());
 		GUI::Appearance::ApplyFonts(fontSpec);
 
-		EventSystem::Register(EVENT_CODE_KEY_PRESSED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+		EventSystem::Register(EVENT_CODE_KEY_PRESSED, [this](Event event) -> bool {
 			KeyCode code = (KeyCode)event.Payload.u16[0];
 
 			return OnKeyPressed(code);
@@ -372,7 +372,7 @@ namespace SW {
 	{
 		const bool shift = Input::IsKeyDown(KeyCode::LeftShift) || Input::IsKeyDown(KeyCode::RightShift);
 		const bool ctrl = Input::IsKeyDown(KeyCode::LeftControl) || Input::IsKeyDown(KeyCode::RightControl);
-		const bool alt = Input::IsKeyDown(KeyCode::LeftAlt) || Input::IsKeyDown(KeyCode::RightAlt);
+		//const bool alt = Input::IsKeyDown(KeyCode::LeftAlt) || Input::IsKeyDown(KeyCode::RightAlt);
 
 		switch (code) {
 			case KeyCode::Escape:

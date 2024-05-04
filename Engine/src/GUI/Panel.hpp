@@ -51,7 +51,7 @@ namespace SW {
 		 * @brief Called every frame to update the panel.
 		 * @param dt The time since the last frame.
 		 */
-		virtual void OnUpdate(Timestep dt) {}
+		virtual void OnUpdate(Timestep dt) = 0;
 
 		/**
 		 * @brief Called every frame to render the panel.

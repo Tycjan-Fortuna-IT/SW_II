@@ -73,13 +73,13 @@ namespace SW {
 
         this->SetVSync(m_Specification.VSync);
 
-        glfwSetWindowCloseCallback(m_Handle, []([[maybe_unused]] GLFWwindow* window) {
+        glfwSetWindowCloseCallback(m_Handle, [](UNUSED GLFWwindow* window) {
             EventSystem::Emit({
                 .Code = EVENT_CODE_APPLICATION_QUIT
-            }, nullptr);
+            });
         });
 
-        glfwSetKeyCallback(m_Handle, []([[maybe_unused]] GLFWwindow* window, i32 key, i32 scancode, i32 action, i32 mods) {
+        glfwSetKeyCallback(m_Handle, [](UNUSED GLFWwindow* window, i32 key, UNUSED i32 scancode, i32 action, UNUSED i32 mods) {
             switch (action)
 			{
 				case GLFW_RELEASE:
@@ -91,7 +91,7 @@ namespace SW {
 						.Payload = {
 							.u16 = { (u16)key }
 						}
-					}, nullptr);
+					});
 
 					break;
 				}
@@ -104,7 +104,7 @@ namespace SW {
 						.Payload = {
 							.u16 = { (u16)key }
 						}
-					}, nullptr);
+					});
 
 					break;
 				}          
@@ -117,7 +117,7 @@ namespace SW {
 						.Payload = {
 							.u16 = { (u16)key }
 						}
-					}, nullptr);
+					});
 
 					break;
 				}
@@ -126,7 +126,7 @@ namespace SW {
             }
         });
 
-		glfwSetMouseButtonCallback(m_Handle, []([[maybe_unused]] GLFWwindow* window, int button, int action, int mods) {
+		glfwSetMouseButtonCallback(m_Handle, [](UNUSED GLFWwindow* window, int button, int action, UNUSED int mods) {
 			switch (action)
 			{
 				case GLFW_RELEASE:
@@ -138,7 +138,7 @@ namespace SW {
 						.Payload = {
 							.u16 = { (u16)button }
 						}
-					}, nullptr);
+					});
 
 					break;
 				}
@@ -151,7 +151,7 @@ namespace SW {
 						.Payload = {
 							.u16 = { (u16)button }
 						}
-					}, nullptr);
+					});
 				
 					break;
 				}
@@ -163,27 +163,27 @@ namespace SW {
 		glfwSetWindowSizeCallback(m_Handle, [](GLFWwindow* window, i32 width, i32 height) {
 			WindowSpecification* spec = (WindowSpecification*)glfwGetWindowUserPointer(window);
 			
-			spec->Width = width;
-			spec->Height = height;
+			spec->Width = (u16)width;
+			spec->Height = (u16)height;
 
 			EventSystem::Emit({
 				.Code = EVENT_CODE_WINDOW_RESIZED,
 				.Payload = {
 					.i32 = { width, height }
 				}
-			}, nullptr);
+			});
 		});
 
-		glfwSetScrollCallback(m_Handle, []([[maybe_unused]] GLFWwindow* window, f64 xOffset, f64 yOffset) {
+		glfwSetScrollCallback(m_Handle, [](UNUSED GLFWwindow* window, f64 xOffset, f64 yOffset) {
 			EventSystem::Emit({
 				.Code = EVENT_CODE_MOUSE_WHEEL,
 				.Payload = {
 					.f32 = { (f32)xOffset, (f32)yOffset }
 				}
-			}, nullptr);
+			});
 		});
 
-		glfwSetTitlebarHitTestCallback(m_Handle, [](GLFWwindow* window, [[maybe_unused]] int xPos, [[maybe_unused]] int yPos, int* hit) {
+		glfwSetTitlebarHitTestCallback(m_Handle, [](GLFWwindow* window, UNUSED int xPos, UNUSED int yPos, int* hit) {
 			*hit = static_cast<WindowSpecification*>(glfwGetWindowUserPointer(window))->OverTitlebar ? 1 : 0;
 		});
     }

@@ -30,26 +30,7 @@ namespace SW {
 		 * @param bytes The bytes to convert to a string.
 		 * @return std::string The string representation of the given bytes.
 		 */
-		static std::string BytesToString(u32 bytes)
-		{
-			constexpr u32 GB = 1024 * 1024 * 1024;
-			constexpr u32 MB = 1024 * 1024;
-			constexpr u32 KB = 1024;
-
-			std::string result;
-
-			if (bytes >= GB) {
-				result = std::format("{:.2f} GB", static_cast<float>(bytes) / GB);
-			} else if (bytes >= MB) {
-				result = std::format("{:.2f} MB", static_cast<float>(bytes) / MB);
-			} else if (bytes >= KB) {
-				result = std::format("{:.2f} KB", static_cast<float>(bytes) / KB);
-			} else {
-				result = std::format("{} bytes", bytes);
-			}
-
-			return result;
-		}
+		std::string BytesToString(u32 bytes);
 
 		/**
 		 * @brief Returns a string representation of the sum of allocated memory 

@@ -7,7 +7,7 @@ namespace SW {
 	Physics2DContactListener::Physics2DContactListener(Scene* scene)
 		: m_Scene(scene) {}
 
-	void Physics2DContactListener::Step(Timestep dt)
+	void Physics2DContactListener::Step(UNUSED Timestep dt)
 	{
 		for (auto& [fluid, fixture] : m_BuoyancyFluidFixturePairs) {
 			Entity fluidEntity = { static_cast<entt::entity>(static_cast<uint32_t>(fluid->GetUserData().pointer)), m_Scene };

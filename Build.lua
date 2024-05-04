@@ -23,6 +23,9 @@ workspace "SW_II"
         "4868", -- compiler may not enforce left-to-right evaluation order in braced initializer list
         "4061", -- enumerator in switch of enum is not explicitly handled by a case label
         "4062", -- enumerator in switch of enum is not handled
+        "5039", -- pointer or reference to potentially throwing function passed to extern C function under -EHc
+        "4625", -- copy constructor was implicitly defined as deleted
+        "4626", -- assignment operator was implicitly defined as deleted
     }
 
 	-- rtti "off"

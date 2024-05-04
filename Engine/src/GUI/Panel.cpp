@@ -3,7 +3,7 @@
 namespace SW {
 
 	Panel::Panel(const char* name, const char* icon, bool defaultShow)
-		: m_Name(name), m_Showing(defaultShow), m_Icon(icon)
+		: m_Showing(defaultShow), m_Name(name), m_Icon(icon)
 	{
 		m_ID = std::format(" {} {}\t\t###{}", icon, m_Name, m_Name);
 	}

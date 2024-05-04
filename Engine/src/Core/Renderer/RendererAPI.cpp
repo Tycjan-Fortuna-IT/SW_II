@@ -8,7 +8,7 @@
 namespace SW {
 
 	void OpenGLMessageCallback(
-		u32 source, [[maybe_unused]] u32 type, u32 id, u32 severity, i32 length, const char* message, [[maybe_unused]] const void* userParam
+		u32 source, UNUSED u32 type, UNUSED u32 id, u32 severity, UNUSED i32 length, const char* message, UNUSED const void* userParam
 	) {
 		switch (severity) {
 			case GL_DEBUG_SEVERITY_HIGH:         SW_ERROR(message); return;

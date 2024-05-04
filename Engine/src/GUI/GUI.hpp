@@ -606,7 +606,7 @@ namespace SW::GUI {
 			const f32 w = ImGui::GetContentRegionAvail().x;
 
 			f32 leftOffset = 0.0f;
-			for (int i = 0; i < (int)options.size(); i++) {
+			for (size_t i = 0; i < options.size(); i++) {
 				const SelectOption<T>& option = options[i];
 				leftOffset += ImGui::CalcTextSize(option.Label.c_str()).x;
 			}
@@ -619,7 +619,7 @@ namespace SW::GUI {
 				GUI::MoveMousePosX((w - leftOffset) / 2 - 20.f);
 
 			int val = (int)(*value);
-			for (int i = 0; i < (int)options.size(); i++) {
+			for (size_t i = 0; i < options.size(); i++) {
 				const SelectOption<T>& option = options[i];
 
 				if (ImGui::RadioButton(option.Label.c_str(), &val, (int)option.value)) {
@@ -630,7 +630,7 @@ namespace SW::GUI {
 				Components::ItemActivityOutline(Components::OutlineFlags_All, GUI::Theme::ActivityOutline,
 					GUI::Theme::ActivityOutline, 10.f);
 
-				if (i != (int)options.size() - 1)
+				if (i != options.size() - 1)
 					ImGui::SameLine();
 			}
 
@@ -776,7 +776,7 @@ namespace SW::GUI {
 				}
 			}
 
-			if (ImGui::BeginCombo("##selectable_input", chosenName.data())) {
+			if (ImGui::BeginCombo("##selectable_input", chosenName.data(), flags)) {
 				for (SelectOption<T> option : options) {
 					const bool isSelected = *value == option.value;
 
@@ -1538,7 +1538,7 @@ namespace SW::GUI {
 		) {
 			Properties::BeginPropertyGrid(label, tooltip);
 
-			bool modified = Components::RadioButton(value, options, center);
+			bool modified = Components::RadioButton<T>(value, options, center);
 
 			Properties::EndPropertyGrid();
 

@@ -59,7 +59,7 @@ namespace SW {
 	{
 		auto temp = std::filesystem::last_write_time(path);
 
-		return temp.time_since_epoch().count();
+		return (u64)temp.time_since_epoch().count();
 	}
 
 	bool FileSystem::RenameFile(const std::filesystem::path& path, const std::string& newName)

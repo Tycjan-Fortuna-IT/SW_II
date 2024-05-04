@@ -45,6 +45,8 @@ static_assert(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 #define EXPAND_MACRO(x) x
 #define STRINGIFY_MACRO(x) #x
 
+#define UNUSED [[maybe_unused]]
+
 #ifdef EXPORT
     // Exports
     #ifdef _MSC_VER

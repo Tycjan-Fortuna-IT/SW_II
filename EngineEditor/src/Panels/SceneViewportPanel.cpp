@@ -17,7 +17,7 @@ namespace SW {
 	SceneViewportPanel::SceneViewportPanel(const char* name)
 		: Panel(name, SW_ICON_TERRAIN, true)
 	{
-		EventSystem::Register(EVENT_CODE_WINDOW_RESIZED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+		EventSystem::Register(EVENT_CODE_WINDOW_RESIZED, [this](Event event) -> bool {
 			const i32 width = event.Payload.i32[0];
 			const i32 height = event.Payload.i32[1];
 
@@ -28,13 +28,13 @@ namespace SW {
 			return false;
 		});
 
-		EventSystem::Register(EVENT_CODE_MOUSE_BUTTON_PRESSED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+		EventSystem::Register(EVENT_CODE_MOUSE_BUTTON_PRESSED, [this](Event event) -> bool {
 			MouseCode code = (MouseCode)event.Payload.u16[0];
 
 			return OnMouseButtonPressed(code);
 		});
 
-		EventSystem::Register(EVENT_CODE_KEY_PRESSED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+		EventSystem::Register(EVENT_CODE_KEY_PRESSED, [this](Event event) -> bool {
 			KeyCode code = (KeyCode)event.Payload.u16[0];
 
 			return OnKeyPressed(code);
@@ -519,7 +519,6 @@ namespace SW {
 			}
 
 			ImVec2 framePadding = ImGui::GetStyle().FramePadding;
-			f32 frameHeight = 1.3f * ImGui::GetFrameHeight();
 
 			ImGui::SetNextItemAllowOverlap();
 			{
@@ -599,7 +598,7 @@ namespace SW {
 
 		if (
 			mouseX >= 0 && mouseY >= 0 &&
-			mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y
+			mouseX < viewportSize.x && mouseY < viewportSize.y
 		) {
 			if (ImGuizmo::IsUsing() || ImGuizmo::IsOver())
 				return false;
@@ -700,8 +699,6 @@ namespace SW {
 			lastMousePosition = mousePos;
 
 			const SceneState currentState = m_ActiveScene->GetCurrentState();
-
-			constexpr f32 alpha = 0.6f;
 
 			ImGui::SameLine();
 
@@ -815,8 +812,6 @@ namespace SW {
 			}
 
 			lastMousePosition = mousePos;
-
-			constexpr f32 alpha = 0.6f;
 
 			bool isRotate = m_GizmoType == ImGuizmo::ROTATE;
 			if (GUI::Components::ToggleButton(&isRotate, SW_ICON_ROTATE_3D, SW_ICON_ROTATE_3D, false))

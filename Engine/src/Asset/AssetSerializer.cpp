@@ -26,7 +26,7 @@ namespace SW {
 		return SceneSerializer::Deserialize(ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
 	}
 
-	void Texture2DSerializer::Serialize(const AssetMetaData& metadata)
+	void Texture2DSerializer::Serialize(UNUSED const AssetMetaData& metadata)
 	{
 		ASSERT(false, "Texture2D serialization is not supported!");
 	}
@@ -38,7 +38,7 @@ namespace SW {
 		return texture;
 	}
 
-	void SpriteSerializer::Serialize(const AssetMetaData& metadata)
+	void SpriteSerializer::Serialize(UNUSED const AssetMetaData& metadata)
 	{
 		ASSERT(false, "Sprite serialization is not supported!");
 	}
@@ -158,7 +158,7 @@ namespace SW {
 		return spritesheet;
 	}
 
-	void FontSerializer::Serialize(const AssetMetaData& metadata)
+	void FontSerializer::Serialize(UNUSED const AssetMetaData& metadata)
 	{
 		ASSERT(false, "Font serialization is not supported!");
 	}
@@ -194,12 +194,12 @@ namespace SW {
 		return font;
 	}
 
-	void FontSourceSerializer::Serialize(const AssetMetaData& metadata)
+	void FontSourceSerializer::Serialize(UNUSED const AssetMetaData& metadata)
 	{
 
 	}
 
-	Asset* FontSourceSerializer::TryLoadAsset(const AssetMetaData& metadata)
+	Asset* FontSourceSerializer::TryLoadAsset(UNUSED const AssetMetaData& metadata)
 	{
 		return nullptr;
 	}

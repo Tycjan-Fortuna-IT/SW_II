@@ -103,8 +103,8 @@ namespace SW {
 					(*m_Animation)->ReverseAlongY ? (*current)->TexCordLeftDown.y : (*current)->TexCordUpRight.y
 				};
 
-				const f32 sprWidth = std::roundf(abs((*current)->TexCordUpRight.x - (*current)->TexCordLeftDown.x) * texture->GetWidth());
-				const f32 sprHeight = std::roundf(abs((*current)->TexCordUpRight.y - (*current)->TexCordLeftDown.y) * texture->GetHeight());
+				const f32 sprWidth = std::roundf(abs((*current)->TexCordUpRight.x - (*current)->TexCordLeftDown.x) * (f32)texture->GetWidth());
+				const f32 sprHeight = std::roundf(abs((*current)->TexCordUpRight.y - (*current)->TexCordLeftDown.y) * (f32)texture->GetHeight());
 
 				const f32 aspectRatio = sprWidth / sprHeight;
 				constexpr f32 thumbnailSize = 256.f;

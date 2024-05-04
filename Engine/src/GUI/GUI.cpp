@@ -567,7 +567,6 @@ namespace SW::GUI {
 
 		bool DrawFolderPicker(std::filesystem::path* path, const std::filesystem::path& relative)
 		{
-			const f32 posx = ImGui::GetCursorPosX();
 			const f32 framePaddingY = ImGui::GetStyle().FramePadding.y;
 			constexpr f32 bw = 28.f;
 			constexpr f32 buttonOffset = 11.f;
@@ -638,7 +637,6 @@ namespace SW::GUI {
 
 		bool DrawFilePicker(std::filesystem::path* path, const std::filesystem::path& relative, const std::initializer_list<FileDialogFilterItem> filters)
 		{
-			const f32 posx = ImGui::GetCursorPosX();
 			const f32 framePaddingY = ImGui::GetStyle().FramePadding.y;
 			constexpr f32 bw = 28.f;
 			constexpr f32 buttonOffset = 11.f;
@@ -734,7 +732,7 @@ namespace SW::GUI {
 				ImGui::TableHeadersRow();
 
 				for (int i = 0; i < (int)vector->size(); i++) {
-					glm::vec2& point = vector->at(i);
+					glm::vec2& point = vector->at((size_t)i);
 
 					ImGui::TableNextRow();
 					ImGui::TableNextColumn();
@@ -790,7 +788,7 @@ namespace SW::GUI {
 				ImGui::TableHeadersRow();
 
 				for (int i = 0; i < (int)vector->size(); i++) {
-					glm::vec3& point = vector->at(i);
+					glm::vec3& point = vector->at((size_t)i);
 
 					ImGui::TableNextRow();
 					ImGui::TableNextColumn();

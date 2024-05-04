@@ -632,7 +632,7 @@ namespace SW {
 		const f32 spaceGlyphAdvance = (f32)fontGeometry.getGlyph(' ')->getAdvance();
 
 		for (size_t i = 0; i < string.size(); i++) {
-			char character = string[i];
+			msdf_atlas::unicode_t character = string[i];
 			if (character == '\r')
 				continue;
 
@@ -723,7 +723,7 @@ namespace SW {
 
 			if (i < string.size() - 1) {
 				f64 advance = glyph->getAdvance();
-				char nextCharacter = string[i + 1];
+				msdf_atlas::unicode_t nextCharacter = string[i + 1];
 				fontGeometry.getAdvance(advance, character, nextCharacter);
 
 				x += fsScale * advance + kerning;

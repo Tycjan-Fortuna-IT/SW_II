@@ -49,12 +49,12 @@ namespace SW {
 		 * @brief Called every frame to update the panel.
 		 * @param dt The time since the last frame.
 		 */
-		void OnUpdate(Timestep dt) final override;
+		void OnUpdate(UNUSED Timestep dt) override {}
 
 		/**
 		 * @brief Called every frame to render the panel.
 		 */
-		void OnRender() final override;
+		void OnRender() override;
 
 		/**
 		 * @brief Draws the entity node in the scene hierarchy panel. Recursively calls itself for each child entity.

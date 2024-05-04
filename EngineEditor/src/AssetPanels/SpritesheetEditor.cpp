@@ -19,7 +19,7 @@ namespace SW {
 	SpritesheetEditor::SpritesheetEditor(const char* name, const char* icon)
 		: AssetEditorPanel(name, icon)
 	{
-
+		
 	}
 
 	void SpritesheetEditor::OnUpdate(Timestep ts)
@@ -115,7 +115,7 @@ namespace SW {
 			}
 			ImGui::PopStyleVar();
 
-			RenderSpriteCards((*m_Spritesheet)->GridSize);
+			RenderSpriteCards();
 
 			ImGui::TableNextColumn();
 
@@ -164,7 +164,7 @@ namespace SW {
 				{
 					ImRect rect = m_Canvas.ViewRect();
 
-					drawList->AddRectFilled(rect.Min, rect.Max, GUI::Theme::BackgroundDark);
+					drawList->AddRectFilled(rect.Min, rect.Max, GUI::Theme::HeaderHovered);
 				}
 
 				Texture2D* spritesheetTexture = (*m_Spritesheet)->GetSpritesheetTexture();
@@ -259,7 +259,7 @@ namespace SW {
 		drawList->AddLine(bottomLeft, topLeft, color);
 	}
 
-	void SpritesheetEditor::RenderSpriteCards(f32 vscale)
+	void SpritesheetEditor::RenderSpriteCards()
 	{
 		constexpr ImGuiTableFlags flags = ImGuiTableFlags_NoPadInnerX
 			| ImGuiTableFlags_NoPadOuterX
@@ -308,8 +308,6 @@ namespace SW {
 		if (ImGui::Button(SW_ICON_DELETE " Clear")) {
 			(*m_Spritesheet)->Sprites.clear();
 		}
-
-		const f32 availableWidth = ImGui::GetContentRegionAvail().x - 16.f;
 
 		GUI::Widgets::SearchInput(&m_SearchString);
 
@@ -460,8 +458,6 @@ namespace SW {
 			GUI::Properties::BeginProperties("##spritesheet_editor_generate_from_grid_options");
 
 			const Texture2D* texture = (*m_Spritesheet)->GetSpritesheetTexture();
-			const f32 texWidth = (f32)texture->GetWidth();
-			const f32 texHeight = (f32)texture->GetHeight();
 
 			static glm::vec2 gridSize = { (*m_Spritesheet)->GridSize, (*m_Spritesheet)->GridSize };
 			GUI::Properties::Vector2InputProperty(&gridSize, "Grid Size", 

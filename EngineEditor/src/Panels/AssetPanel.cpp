@@ -25,7 +25,7 @@ namespace SW {
 	{
 		m_AssetTree = new AssetDirectoryTree();
 
-		EventSystem::Register(EVENT_CODE_PROJECT_LOADED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+		EventSystem::Register(EVENT_CODE_PROJECT_LOADED, [this](Event event) -> bool {
 			m_AssetsDirectory = ProjectContext::Get()->GetAssetDirectory();
 
 			m_AssetTree->TraverseDirectoryAndMapAssets();
@@ -34,7 +34,7 @@ namespace SW {
 			return false;
 		});
 
-		EventSystem::Register(EVENT_CODE_ASSET_DIR_CONTENT_CHANGED, nullptr, [this](Event event, void* sender, void* listener) -> bool {
+		EventSystem::Register(EVENT_CODE_ASSET_DIR_CONTENT_CHANGED, [this](Event event) -> bool {
 			LoadDirectoryEntries();
 
 			return true;
@@ -245,7 +245,7 @@ namespace SW {
 
 			const f32 charWidth = ImGui::CalcTextSize("A").x;
 			const f32 colWidth = ImGui::GetColumnWidth();
-			const int maxChars = (int)(colWidth / charWidth) - 4;
+			const f32 maxChars = colWidth / charWidth - 4;
 			if (ImGui::CalcTextSize(filename.c_str()).x > maxChars * charWidth) {
 				filename = filename.substr(0, maxChars) + "...";
 			}
@@ -327,7 +327,7 @@ namespace SW {
 		bool refreshDirectory = false;
 
 		constexpr f32 padding = 4.0f;
-		const f32 scaledThumbnailSize = m_ThumbnailSize * ImGui::GetIO().FontGlobalScale;
+		const f32 scaledThumbnailSize = (f32)m_ThumbnailSize * ImGui::GetIO().FontGlobalScale;
 		const f32 scaledThumbnailSizeX = scaledThumbnailSize * 0.65f;
 		const f32 cellSize = scaledThumbnailSizeX + 2 * padding;
 
@@ -356,7 +356,7 @@ namespace SW {
 		bool isAnyItemHovered = false;
 
 		if (ImGui::BeginTable("BodyTable", columnCount, flags)) {
-			for (u32 i = 0; i < (u32)m_SelectedItem->Children.size(); i++) {
+			for (int i = 0; i < (int)m_SelectedItem->Children.size(); i++) {
 				AssetSourceItem* item = m_SelectedItem->Children[i];
 
 				ImGui::TableNextColumn();
@@ -425,7 +425,6 @@ namespace SW {
 					ImGui::Text("Path: %s", item->Path.string().c_str());
 					ImGui::Spacing();
 
-					const f32 tooltipSize = ImGui::GetFrameHeight() * 11.0f;
 					ImGui::EndDragDropSource();
 				}
 
@@ -444,8 +443,8 @@ namespace SW {
 						Texture2D* texture = (*spriteAsset)->GetTexture();
 
 						Thumbnail thumbnail; // I keep an eye you - std::roundf!
-						thumbnail.Width = std::roundf(abs((*spriteAsset)->TexCordUpRight.x - (*spriteAsset)->TexCordLeftDown.x) * texture->GetWidth());
-						thumbnail.Height = std::roundf(abs((*spriteAsset)->TexCordUpRight.y - (*spriteAsset)->TexCordLeftDown.y) * texture->GetHeight());
+						thumbnail.Width = std::roundf(abs((*spriteAsset)->TexCordUpRight.x - (*spriteAsset)->TexCordLeftDown.x) * (f32)texture->GetWidth());
+						thumbnail.Height = std::roundf(abs((*spriteAsset)->TexCordUpRight.y - (*spriteAsset)->TexCordLeftDown.y) * (f32)texture->GetHeight());
 						thumbnail.TexCoordMin = { (*spriteAsset)->TexCordLeftDown.x, (*spriteAsset)->TexCordLeftDown.y };
 						thumbnail.TexCoordMax = { (*spriteAsset)->TexCordUpRight.x, (*spriteAsset)->TexCordUpRight.y };
 						thumbnail.Texture = (*spriteAsset)->GetTextureRaw();
@@ -517,8 +516,8 @@ namespace SW {
 						Sprite** sprite = (*animation)->Sprites[item->Thumbnail.CurrentFrame];
 
 						texture = (*sprite)->GetTextureRaw();
-						item->Thumbnail.Width = std::roundf(abs((*sprite)->TexCordUpRight.x - (*sprite)->TexCordLeftDown.x) * (*texture)->GetWidth());
-						item->Thumbnail.Height = std::roundf(abs((*sprite)->TexCordUpRight.y - (*sprite)->TexCordLeftDown.y) * (*texture)->GetHeight());
+						item->Thumbnail.Width = std::roundf(abs((*sprite)->TexCordUpRight.x - (*sprite)->TexCordLeftDown.x) * (f32)(*texture)->GetWidth());
+						item->Thumbnail.Height = std::roundf(abs((*sprite)->TexCordUpRight.y - (*sprite)->TexCordLeftDown.y) * (f32)(*texture)->GetHeight());
 						
 						item->Thumbnail.TexCoordMin = {
 							(*animation)->ReverseAlongX ? (*sprite)->TexCordUpRight.x : (*sprite)->TexCordLeftDown.x,
@@ -573,7 +572,7 @@ namespace SW {
 
 				const ImVec2 rectMin = ImGui::GetItemRectMin();
 				const ImVec2 rectSize = ImGui::GetItemRectSize();
-				const ImRect clipRect = ImRect({ rectMin.x + padding * 1.0f, rectMin.y + padding * (m_ThumbnailSize / 100.f)},
+				const ImRect clipRect = ImRect({ rectMin.x + padding * 1.0f, rectMin.y + padding * ((f32)m_ThumbnailSize / 100.f)},
 					{ rectMin.x + rectSize.x, rectMin.y + scaledThumbnailSizeX - GUI::Appearance::GetFonts().SmallFont->FontSize - padding * 4.0f });
 				GUI::Widgets::ClippedText(clipRect.Min, clipRect.Max, filename.c_str(), filenameEnd, nullptr, { 0, 0 }, nullptr, clipRect.GetSize().x);
 

@@ -46,6 +46,8 @@ namespace SW {
 		 */
 		void OnRender() override;
 
+		void OnUpdate(UNUSED Timestep dt) override {}
+
 	private:
 		float m_FpsValues[200];					///< Last 200 fps values
 		std::vector<f32> m_FrameTimes = {};		///< Last 200 frame times

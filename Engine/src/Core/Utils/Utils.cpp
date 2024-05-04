@@ -10,16 +10,36 @@ namespace SW {
         ASSERT(stream.is_open(), "Could not open file {}", filepath);
 
         stream.seekg(0, std::ios::end);
-        result.resize(stream.tellg());
+        result.resize(static_cast<size_t>(stream.tellg()));
 
         stream.seekg(0, std::ios::beg);
-        stream.read(result.data(), result.size());
+        stream.read(result.data(), static_cast<std::streamsize>(result.size()));
         stream.close();
 
         return result;
     }
 
 	namespace String {
+
+		std::string BytesToString(u32 bytes)
+		{
+			constexpr u32 GB = 1024 * 1024 * 1024;
+			constexpr u32 MB = 1024 * 1024;
+			constexpr u32 KB = 1024;
+
+			const std::string result = [bytes]() {
+				if (bytes >= GB)
+					return std::format("{:.2f} GB", static_cast<float>(bytes) / GB);
+				else if (bytes >= MB)
+					return std::format("{:.2f} MB", static_cast<float>(bytes) / MB);
+				else if (bytes >= KB)
+					return std::format("{:.2f} KB", static_cast<float>(bytes) / KB);
+
+				return std::format("{} bytes", bytes);
+			}();
+
+			return result;
+		}
 
 		std::string GetAllocatedMemoryString()
 		{

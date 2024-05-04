@@ -210,7 +210,7 @@ namespace SW {
 				GUI::Properties::EndProperties();
 			}, true);
 
-			DrawComponent<ScriptComponent>(entity, [=](ScriptComponent& component) {
+			DrawComponent<ScriptComponent>(entity, [this, id](ScriptComponent& component) {
 				GUI::Properties::BeginProperties("##script_property");
 				ScriptingCore& scriptingCore = ScriptingCore::Get();
 
@@ -258,7 +258,7 @@ namespace SW {
 						const FieldMetadata& fieldMetadata = scriptMetadata.Fields.at(fieldId);
 						Coral::String fieldName = Coral::String::New(fieldMetadata.Name);
 
-						bool isSerializable = reflectionHelper.InvokeStaticMethod<Coral::Bool32>(
+						bool isSerializable = (bool)reflectionHelper.InvokeStaticMethod<Coral::Bool32>(
 							"HasFieldAttribute", assemblyName, className, fieldName, serializeAttrName
 						);
 

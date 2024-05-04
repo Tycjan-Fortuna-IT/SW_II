@@ -360,52 +360,47 @@ namespace SW {
 		/**
 		 * @brief Creates a distance joint between an entity and a rigid body component.
 		 * 
-		 * @param entity The entity to create the distance joint with.
 		 * @param rbc The rigid body component of the entity.
 		 * @param djc The distance joint component to be created.
 		 */
-		void CreateDistanceJoint2D(Entity entity, const RigidBody2DComponent& rbc, DistanceJoint2DComponent& djc);
+		void CreateDistanceJoint2D(const RigidBody2DComponent& rbc, DistanceJoint2DComponent& djc);
 
 		/**
 		 * @brief Creates a 2D revolution joint between an entity and a rigid body.
 		 * 
-		 * @param entity The entity to create the revolution joint for.
 		 * @param rbc The rigid body component of the entity.
 		 * @param rjc The revolution joint component to be created and attached to the entity.
 		 */
-		void CreateRevolutionJoint2D(Entity entity, const RigidBody2DComponent& rbc, RevolutionJoint2DComponent& rjc);
+		void CreateRevolutionJoint2D(const RigidBody2DComponent& rbc, RevolutionJoint2DComponent& rjc);
 
 		/**
 		 * @brief Creates a prismatic joint between an entity and a rigid body component.
 		 * 
-		 * @param entity The entity to create the prismatic joint for.
 		 * @param rbc The rigid body component of the entity.
 		 * @param pjc The prismatic joint component to be created.
 		 */
-		void CreatePrismaticJoint2D(Entity entity, const RigidBody2DComponent& rbc, PrismaticJoint2DComponent& pjc);
+		void CreatePrismaticJoint2D(const RigidBody2DComponent& rbc, PrismaticJoint2DComponent& pjc);
 		
 		/**
 		 * @brief Creates a spring joint between an entity and a rigid body component.
 		 *
-		 * @param entity The entity to create the spring joint for.
 		 * @param rbc The rigid body component of the entity.
 		 * @param sjc The spring joint component to be created.
 		 */
-		void CreateSpringJoint2D(Entity entity, const RigidBody2DComponent& rbc, SpringJoint2DComponent& sjc);
+		void CreateSpringJoint2D(const RigidBody2DComponent& rbc, SpringJoint2DComponent& sjc);
 
 		/**
 		 * @brief Creates a wheel joint between an entity and a rigid body component.
 		 *
-		 * @param entity The entity to create the wheel joint for.
 		 * @param rbc The rigid body component of the entity.
 		 * @param wjc The wheel joint component to be created.
 		 */
-		void CreateWheelJoint2D(Entity entity, const RigidBody2DComponent& rbc, WheelJoint2DComponent& wjc);
+		void CreateWheelJoint2D(const RigidBody2DComponent& rbc, WheelJoint2DComponent& wjc);
 
 		/**
 		 * @brief Function bound to the event of creating a rigidbody2D component.
 		 * 		  Used to register the rigidbody2D component in the physics world at runtime.
-		 * 
+		 *
 		 * @param registry The registry of the scene.
 		 * @param handle The entity handle of the entity with the rigidbody2D component.
 		 */

@@ -20,8 +20,6 @@ namespace SW {
 		Prefab() = default;
 		Prefab(Entity entity);
 
-		~Prefab() = default;
-
 		static AssetType GetStaticType() { return AssetType::Prefab; }
 		AssetType GetAssetType() const override { return AssetType::Prefab; }
 

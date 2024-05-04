@@ -32,7 +32,7 @@ namespace SW {
 	Scene::Scene()
 		: m_Registry(this)
 	{
-		entt::registry& reg = m_Registry.GetRegistryHandle();
+		//entt::registry& reg = m_Registry.GetRegistryHandle();
 
 		// This enables creating entities in runtime
 		//reg.on_construct<RigidBody2DComponent>().connect<&Scene::OnRigidBody2DComponentCreated>(this);
@@ -280,33 +280,23 @@ namespace SW {
 		}
 
 		for (auto&& [handle, rbc, djc] : m_Registry.GetEntitiesWith<RigidBody2DComponent, DistanceJoint2DComponent>().each()) {
-			Entity entity = { handle, this };
-
-			CreateDistanceJoint2D(entity, rbc, djc);
+			CreateDistanceJoint2D(rbc, djc);
 		}
 
 		for (auto&& [handle, rbc, rjc] : m_Registry.GetEntitiesWith<RigidBody2DComponent, RevolutionJoint2DComponent>().each()) {
-			Entity entity = { handle, this };
-
-			CreateRevolutionJoint2D(entity, rbc, rjc);
+			CreateRevolutionJoint2D(rbc, rjc);
 		}
 
 		for (auto&& [handle, rbc, pjc] : m_Registry.GetEntitiesWith<RigidBody2DComponent, PrismaticJoint2DComponent>().each()) {
-			Entity entity = { handle, this };
-
-			CreatePrismaticJoint2D(entity, rbc, pjc);
+			CreatePrismaticJoint2D(rbc, pjc);
 		}
 
 		for (auto&& [handle, rbc, sjc] : m_Registry.GetEntitiesWith<RigidBody2DComponent, SpringJoint2DComponent>().each()) {
-			Entity entity = { handle, this };
-
-			CreateSpringJoint2D(entity, rbc, sjc);
+			CreateSpringJoint2D(rbc, sjc);
 		}
 
 		for (auto&& [handle, rbc, wjc] : m_Registry.GetEntitiesWith<RigidBody2DComponent, WheelJoint2DComponent>().each()) {
-			Entity entity = { handle, this };
-
-			CreateWheelJoint2D(entity, rbc, wjc);
+			CreateWheelJoint2D(rbc, wjc);
 		}
 	}
 
@@ -839,7 +829,7 @@ namespace SW {
 		pcc.Handle = fixture;
 	}
 
-	void Scene::CreateDistanceJoint2D(Entity entity, const RigidBody2DComponent& rbc, DistanceJoint2DComponent& djc)
+	void Scene::CreateDistanceJoint2D(const RigidBody2DComponent& rbc, DistanceJoint2DComponent& djc)
 	{
 		if (!djc.ConnectedEntityID)
 			return;
@@ -866,7 +856,7 @@ namespace SW {
 		djc.RuntimeJoint = m_PhysicsWorld2D->CreateJoint(&jointDef);
 	}
 
-	void Scene::CreateRevolutionJoint2D(Entity entity, const RigidBody2DComponent& rbc, RevolutionJoint2DComponent& rjc)
+	void Scene::CreateRevolutionJoint2D(const RigidBody2DComponent& rbc, RevolutionJoint2DComponent& rjc)
 	{
 		if (!rjc.ConnectedEntityID)
 			return;
@@ -894,7 +884,7 @@ namespace SW {
 		rjc.RuntimeJoint = m_PhysicsWorld2D->CreateJoint(&jointDef);
 	}
 
-	void Scene::CreatePrismaticJoint2D(Entity entity, const RigidBody2DComponent& rbc, PrismaticJoint2DComponent& pjc)
+	void Scene::CreatePrismaticJoint2D(const RigidBody2DComponent& rbc, PrismaticJoint2DComponent& pjc)
 	{
 		if (!pjc.ConnectedEntityID)
 			return;
@@ -923,7 +913,7 @@ namespace SW {
 		pjc.RuntimeJoint = m_PhysicsWorld2D->CreateJoint(&jointDef);
 	}
 
-	void Scene::CreateSpringJoint2D(Entity entity, const RigidBody2DComponent& rbc, SpringJoint2DComponent& sjc)
+	void Scene::CreateSpringJoint2D(const RigidBody2DComponent& rbc, SpringJoint2DComponent& sjc)
 	{
 		if (!sjc.ConnectedEntityID)
 			return;
@@ -952,7 +942,7 @@ namespace SW {
 		sjc.RuntimeJoint = m_PhysicsWorld2D->CreateJoint(&jointDef);
 	}
 
-	void Scene::CreateWheelJoint2D(Entity entity, const RigidBody2DComponent& rbc, WheelJoint2DComponent& wjc)
+	void Scene::CreateWheelJoint2D(const RigidBody2DComponent& rbc, WheelJoint2DComponent& wjc)
 	{
 		if (!wjc.ConnectedEntityID)
 			return;
