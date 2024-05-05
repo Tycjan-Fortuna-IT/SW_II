@@ -76,6 +76,9 @@ Dependencies = {
     IMGUI_NODE_EDITOR = {
 		IncludeDir = "%{wks.location}/Engine/vendor/imgui-node-editor",
 	},
+    MINIAUDIO = {
+        IncludeDir = "%{wks.location}/Engine/vendor/miniaudio",
+    },
 }
 
 function IncludeEngineDependencies(additional)
