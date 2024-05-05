@@ -11,6 +11,7 @@
 #include "Core/Scene/Scene.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Prefab.hpp"
+#include "Audio/Sound.hpp"
 
 namespace SW {
 
@@ -26,7 +27,7 @@ namespace SW {
 		return SceneSerializer::Deserialize(ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
 	}
 
-	void Texture2DSerializer::Serialize(UNUSED const AssetMetaData& metadata)
+	void Texture2DSerializer::Serialize(const AssetMetaData& /*metadata*/)
 	{
 		ASSERT(false, "Texture2D serialization is not supported!");
 	}
@@ -38,7 +39,7 @@ namespace SW {
 		return texture;
 	}
 
-	void SpriteSerializer::Serialize(UNUSED const AssetMetaData& metadata)
+	void SpriteSerializer::Serialize(const AssetMetaData& /*metadata*/)
 	{
 		ASSERT(false, "Sprite serialization is not supported!");
 	}
@@ -158,7 +159,7 @@ namespace SW {
 		return spritesheet;
 	}
 
-	void FontSerializer::Serialize(UNUSED const AssetMetaData& metadata)
+	void FontSerializer::Serialize(const AssetMetaData& /*metadata*/)
 	{
 		ASSERT(false, "Font serialization is not supported!");
 	}
@@ -194,12 +195,12 @@ namespace SW {
 		return font;
 	}
 
-	void FontSourceSerializer::Serialize(UNUSED const AssetMetaData& metadata)
+	void FontSourceSerializer::Serialize(const AssetMetaData& /*metadata*/)
 	{
 
 	}
 
-	Asset* FontSourceSerializer::TryLoadAsset(UNUSED const AssetMetaData& metadata)
+	Asset* FontSourceSerializer::TryLoadAsset(const AssetMetaData& /*metadata*/)
 	{
 		return nullptr;
 	}
@@ -271,6 +272,18 @@ namespace SW {
 
 		return animation;
     }
+
+	void SoundSerializer::Serialize(const AssetMetaData& /*metadata*/)
+	{
+
+	}
+
+	Asset* SoundSerializer::TryLoadAsset(const AssetMetaData& metadata)
+	{
+		Sound* sound = new Sound(ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
+
+		return sound;
+	}
 
 	void PrefabSerializer::Serialize(const AssetMetaData& metadata)
 	{

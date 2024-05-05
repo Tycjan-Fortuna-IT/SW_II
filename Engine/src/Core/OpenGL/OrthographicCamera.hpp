@@ -8,8 +8,6 @@
  */
 #pragma once
 
-#include "Core/Math/Matrix4.hpp"
-
 namespace SW {
 
 	/**

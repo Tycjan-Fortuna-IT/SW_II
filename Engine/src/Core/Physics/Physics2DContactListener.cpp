@@ -98,12 +98,12 @@ namespace SW {
 		onContactEnd(secondEntity, firstEntity);
 	}
 
-	void Physics2DContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
+	void Physics2DContactListener::PreSolve(b2Contact* /*contact*/, const b2Manifold* /*oldManifold*/)
 	{
 
 	}
 
-	void Physics2DContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
+	void Physics2DContactListener::PostSolve(b2Contact* /*contact*/, const b2ContactImpulse* /*impulse*/)
 	{
 
 	}

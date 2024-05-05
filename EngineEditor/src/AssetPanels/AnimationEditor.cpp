@@ -90,7 +90,7 @@ namespace SW {
 
 			// Display animation
 			if (m_FramesCount) {
-				Sprite** current = (*m_Animation)->Sprites[m_CurrentFrame];
+				Sprite** current = (*m_Animation)->Sprites[(size_t)m_CurrentFrame];
 				const Texture2D* texture = (*current)->GetTexture();
 
 				ImVec2 uv0 = {

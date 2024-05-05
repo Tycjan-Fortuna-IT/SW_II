@@ -16,6 +16,7 @@ namespace SW {
 		s_Serializers[AssetType::Animation2D] = CreateScope<AnimationSerializer>();
 		s_Serializers[AssetType::Scene] = CreateScope<SceneAssetSerializer>();
 		s_Serializers[AssetType::Prefab] = CreateScope<PrefabSerializer>();
+		s_Serializers[AssetType::Audio] = CreateScope<SoundSerializer>();
 	}
 
 	void AssetLoader::Shutdown()

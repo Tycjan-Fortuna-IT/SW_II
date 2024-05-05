@@ -64,8 +64,6 @@ namespace SW {
 		CopyReferencedEntities(SpringJoint2DComponent);
 		CopyReferencedEntities(WheelJoint2DComponent);
 
-		u64 id = dst.GetID();
-		
 		duplicatedEntities[src.GetID()] = dst;
 
 		std::vector<u64> childIds = src.GetRelations().ChildrenIDs;

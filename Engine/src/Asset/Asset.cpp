@@ -20,6 +20,7 @@ namespace SW {
 		{ "Script",			AssetType::Script				},
 		{ "Shader",			AssetType::Shader				},
 		{ "Animation2D",	AssetType::Animation2D			},
+		{ "Audio",			AssetType::Audio				},
 		{ "AssetRegistry",	AssetType::AssetRegistry		},
 	};
 
@@ -36,6 +37,8 @@ namespace SW {
 		{ ".sw_spritesh",	AssetType::Spritesheet		},
 		{ ".glsl",			AssetType::Shader			},
 		{ ".sw_anim",		AssetType::Animation2D		},
+		{ ".mp3",			AssetType::Audio			},
+		{ ".wav",			AssetType::Audio			},
 		{ ".sw_registry",	AssetType::AssetRegistry	},
 	};
 
@@ -44,16 +47,17 @@ namespace SW {
 		{ AssetType::Unknown,			IM_COL32(179, 167, 167, 255) },
 		{ AssetType::Texture2D,			IM_COL32(229,  70,  70, 255) },
 		{ AssetType::Directory,			IM_COL32(255, 171,   0, 255) },
-		{ AssetType::Scene,				IM_COL32(70, 103, 226, 255)  },
+		{ AssetType::Scene,				IM_COL32( 70, 103, 226, 255) },
 		{ AssetType::Font,				IM_COL32(204, 255, 153, 255) },
-		{ AssetType::FontSource,		IM_COL32(88,  88,  88, 255)  },
-		{ AssetType::Prefab,			IM_COL32(70, 199, 152, 255)  },
-		{ AssetType::Script,			IM_COL32(0, 255, 17, 255)    },
+		{ AssetType::FontSource,		IM_COL32( 88,  88,  88, 255) },
+		{ AssetType::Prefab,			IM_COL32( 70, 199, 152, 255) },
+		{ AssetType::Script,			IM_COL32(  0, 255,  17, 255) },
 		{ AssetType::Sprite,			IM_COL32(230, 255,   0, 255) },
 		{ AssetType::Spritesheet,		IM_COL32(172, 101, 183, 255) },
 		{ AssetType::Shader,			IM_COL32(201, 197, 202, 255) },
-		{ AssetType::Animation2D,		IM_COL32(0, 255,  17, 255)	 },
-		{ AssetType::AssetRegistry,		IM_COL32(0,   0,   0,   0)	 },
+		{ AssetType::Animation2D,		IM_COL32(  0, 255,  17, 255) },
+		{ AssetType::Audio,				IM_COL32(255,   0,  17, 255) },
+		{ AssetType::AssetRegistry,		IM_COL32(  0,   0,   0,   0) },
 	};
 
 	static const std::unordered_map <AssetType, const char*> s_AssetSourceTypesToIcon =
@@ -70,6 +74,7 @@ namespace SW {
 		{ AssetType::Spritesheet,		SW_ICON_FILE_IMAGE		},
 		{ AssetType::Shader,			SW_ICON_LANGUAGE_C      },
 		{ AssetType::Animation2D,		SW_ICON_VIDEO			},
+		{ AssetType::Audio,				SW_ICON_VOLUME_HIGH		},
 		{ AssetType::AssetRegistry,		SW_ICON_FILE			},
 	};
 
@@ -88,6 +93,7 @@ namespace SW {
 			case AssetType::Script:			return "Script";		break;
 			case AssetType::Shader:			return "Shader";		break;
 			case AssetType::Animation2D:	return "Animation2D";	break;
+			case AssetType::Audio:			return "Audio";			break;
 			case AssetType::AssetRegistry:	return "AssetRegistry";	break;
 		}
 
@@ -186,6 +192,9 @@ namespace SW {
 			case AssetType::Animation2D: {
 				// Thumbnail will be lazy loaded individually request based. (No need to load at the beginning).
 				// Maybe even this animation. (?)
+			} break;
+			case AssetType::Audio: {
+				texture = &EditorResources::AudioAssetIcon;
 			} break;
 			case AssetType::AssetRegistry: {
 				// This file as an exception is not shown in the asset panel!

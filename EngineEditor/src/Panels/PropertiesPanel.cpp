@@ -49,11 +49,6 @@ namespace SW {
 		delete m_ComponentCopyScene;
 	}
 
-	void PropertiesPanel::OnUpdate(Timestep dt)
-	{
-
-	}
-
 	void PropertiesPanel::OnRender()
 	{
 		PROFILE_SCOPE();

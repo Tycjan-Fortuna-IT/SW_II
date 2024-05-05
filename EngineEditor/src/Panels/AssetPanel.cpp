@@ -25,7 +25,7 @@ namespace SW {
 	{
 		m_AssetTree = new AssetDirectoryTree();
 
-		EventSystem::Register(EVENT_CODE_PROJECT_LOADED, [this](Event event) -> bool {
+		EventSystem::Register(EVENT_CODE_PROJECT_LOADED, [this](UNUSED Event event) -> bool {
 			m_AssetsDirectory = ProjectContext::Get()->GetAssetDirectory();
 
 			m_AssetTree->TraverseDirectoryAndMapAssets();
@@ -34,7 +34,7 @@ namespace SW {
 			return false;
 		});
 
-		EventSystem::Register(EVENT_CODE_ASSET_DIR_CONTENT_CHANGED, [this](Event event) -> bool {
+		EventSystem::Register(EVENT_CODE_ASSET_DIR_CONTENT_CHANGED, [this](UNUSED Event event) -> bool {
 			LoadDirectoryEntries();
 
 			return true;
@@ -247,7 +247,7 @@ namespace SW {
 			const f32 colWidth = ImGui::GetColumnWidth();
 			const f32 maxChars = colWidth / charWidth - 4;
 			if (ImGui::CalcTextSize(filename.c_str()).x > maxChars * charWidth) {
-				filename = filename.substr(0, maxChars) + "...";
+				filename = filename.substr(0, (size_t)maxChars) + "...";
 			}
 
 			ImGui::SameLine();
@@ -357,7 +357,7 @@ namespace SW {
 
 		if (ImGui::BeginTable("BodyTable", columnCount, flags)) {
 			for (int i = 0; i < (int)m_SelectedItem->Children.size(); i++) {
-				AssetSourceItem* item = m_SelectedItem->Children[i];
+				AssetSourceItem* item = m_SelectedItem->Children[(size_t)i];
 
 				ImGui::TableNextColumn();
 
@@ -369,7 +369,7 @@ namespace SW {
 				int maxCharsPerLine = static_cast<int>(scaledThumbnailSizeX / charWidth);
 
 				if (ImGui::CalcTextSize(filename.c_str()).x > scaledThumbnailSizeX) {
-					int maxChars = maxCharsPerLine * 2;
+					size_t maxChars = maxCharsPerLine * 2;
 					if (filename.size() > maxChars) {
 						filename = filename.substr(0, maxChars) + "...";
 					}
@@ -504,7 +504,7 @@ namespace SW {
 					Animation2D** animation = AssetManager::GetAssetRaw<Animation2D>(item->Handle);
 					Texture2D** texture = nullptr;
 
-					u64 framesCount = (*animation)->Sprites.size();
+					int framesCount = (int)(*animation)->Sprites.size();
 
 					if (framesCount) {
 						item->Thumbnail.CurrentFrame = (int)(m_CurrentTime * (*animation)->Speed) % framesCount;
@@ -513,7 +513,7 @@ namespace SW {
 							item->Thumbnail.CurrentFrame = 0;
 						}
 
-						Sprite** sprite = (*animation)->Sprites[item->Thumbnail.CurrentFrame];
+						Sprite** sprite = (*animation)->Sprites[(size_t)item->Thumbnail.CurrentFrame];
 
 						texture = (*sprite)->GetTextureRaw();
 						item->Thumbnail.Width = std::roundf(abs((*sprite)->TexCordUpRight.x - (*sprite)->TexCordLeftDown.x) * (f32)(*texture)->GetWidth());

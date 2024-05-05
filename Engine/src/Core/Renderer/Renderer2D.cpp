@@ -6,7 +6,6 @@
 #include "Core/OpenGL/VertexBuffer.hpp"
 #include "Core/OpenGL/IndexBuffer.hpp"
 #include "Core/OpenGL/Shader.hpp"
-#include "Core/Math/Math.hpp"
 #include "Asset/AssetManager.hpp"
 #include "RendererAPI.hpp"
 #include "Core/Editor/EditorCamera.hpp"

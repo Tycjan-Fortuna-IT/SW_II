@@ -234,7 +234,7 @@ namespace SW {
 		ImGui::TableNextColumn();
 		//centerPos = (ImGui::GetColumnWidth() - ImGui::CalcTextSize(SW_ICON_EYE).x / 2.f);
 		//GUI::MoveMousePosX(centerPos);
-		ImGui::Button(SW_ICON_EYE);
+		ImGui::TextUnformatted(SW_ICON_EYE);
 
 		const ImRect nodeRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
 

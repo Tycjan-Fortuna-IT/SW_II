@@ -74,6 +74,14 @@ namespace SW {
 		Asset* TryLoadAsset(const AssetMetaData& metadata) override;
 	};
 
+	class SoundSerializer final : public AssetSerializer
+	{
+	public:
+		void Serialize(const AssetMetaData& metadata) override;
+
+		Asset* TryLoadAsset(const AssetMetaData& metadata) override;
+	};
+
 	class PrefabSerializer final : public AssetSerializer
 	{
 	public:

@@ -16,12 +16,14 @@
 #include "../../EngineEditor/src/Panels/AssetPanel.hpp"
 #include "Core/Utils/FileSystem.hpp"
 #include "GUI/GUI.hpp"
+#include "Audio/AudioEngine.hpp"
+#include "Audio/Sound.hpp"
 
 namespace SW {
 
 	static AssetPanel* assetPanel = nullptr;
 	static Project* newProject = nullptr;
-	static Texture2D* texture = nullptr;
+	static Sound* sound = nullptr;
 
 	void TestbedLayer::OnAttach()
 	{
@@ -36,6 +38,7 @@ namespace SW {
 		Renderer2D::Initialize();
 		EditorResources::Initialize();
 
+		AudioEngine::Initialize();
 		AssetEditorPanelManager::Initialize();
 		AssetManager::Initialize();
 		assetPanel = new AssetPanel();
@@ -43,7 +46,7 @@ namespace SW {
 		newProject = ProjectSerializer::Deserialize(R"(C:\Users\tycja\Desktop\SW_II\Testbed\Testbed.swproj)");
 		ProjectContext::Set(newProject); // TODO: Make projects switchable
 
-		texture = *AssetManager::GetAssetRaw<Texture2D>(17232749685889010059);
+		sound = *AssetManager::GetAssetRaw<Sound>(15796824912633671577);
 	}
 
 	void TestbedLayer::OnDetach()
@@ -51,6 +54,7 @@ namespace SW {
 		Renderer2D::Shutdown();
 		EditorResources::Shutdown();
 
+		AudioEngine::Shutdown();
 		AssetEditorPanelManager::Shutdown();
 		AssetManager::Shutdown();
 
@@ -63,11 +67,20 @@ namespace SW {
 		RendererAPI::Clear();
 		AssetEditorPanelManager::OnUpdate(dt);
 		assetPanel->OnUpdate(dt);
+		AudioEngine::OnUpdate(dt);
 	}
 
 	void TestbedLayer::OnRender()
 	{
 		GUI::Layout::CreateDockspace("Main Dockspace", nullptr);
+
+		ImGui::Begin("Audio");
+
+		if (ImGui::Button(SW_ICON_ANGLE_ACUTE, { 100.f, 100.f })) {
+			AudioEngine::PlaySound(sound);
+		}
+		 
+		ImGui::End();
 
 		AssetEditorPanelManager::OnRender();
 

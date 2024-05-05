@@ -8,6 +8,8 @@
  */
 #pragma once
 
+#include <map>
+
 #include "Core/KeyCode.hpp"
 #include "Core/MouseCode.hpp"
 

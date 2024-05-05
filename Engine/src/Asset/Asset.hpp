@@ -18,6 +18,17 @@ namespace SW {
 
 	/**
 	 * @brief Enum class representing the type of an asset.
+	 * @warning When adding new asset types, remember to update the GetStaticType() method in the Asset class.
+	 *			1) Add the new type to the enum class.
+	 * 			2) Add the new type to the GetStaticType() method.
+	 * 			3) Add the new type to the GetAssetType() method.
+	 * 			4) Add the new type to the GetStringifiedAssetType() method.
+	 * 			5) Add the new type to the GetAssetTypeFromStringified() method.
+	 * 			6) Add the new type to the GetAssetTypeFromExtension() method.
+	 * 			7) Add the new type to the GetIconFromAssetType() method.
+	 * 			8) Add the new type to the GetColorFromAssetType() method.
+	 * 			9) Add the new type to the GetThumbnailFromAssetType() method.
+	 *			10) Asset Serializer/Deserializer + regiter inside AssetLoader
 	 */
 	enum class AssetType : u8
 	{
@@ -33,6 +44,7 @@ namespace SW {
 		Script,
 		Shader,
 		Animation2D,
+		Audio,
 		AssetRegistry,
 	};
 

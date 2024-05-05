@@ -8,7 +8,7 @@ namespace SW {
 	ConsolePanel::ConsolePanel(const char* name)
 		: Panel(name, SW_ICON_CONSOLE, true) {}
 
-	void ConsolePanel::OnUpdate(Timestep dt)
+	void ConsolePanel::OnUpdate(UNUSED Timestep dt)
 	{
 
 	}

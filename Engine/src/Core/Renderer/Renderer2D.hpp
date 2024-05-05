@@ -8,10 +8,6 @@
  */
 #pragma once
 
-#include "Core/Math/Vector2.hpp"
-#include "Core/Math/Vector3.hpp"
-#include "Core/Math/Vector4.hpp"
-#include "Core/Math/Matrix4.hpp"
 #include "Core/Scene/SceneCamera.hpp"
 #include "Core/ECS/Components.hpp"
 
@@ -20,6 +16,7 @@ namespace SW {
 	class Shader;
 	class VertexArray;
 	class EditorCamera;
+	class Font;
 
 	/**
 	 * @brief The Renderer2DStatistics struct contains statistics of the Renderer2D.

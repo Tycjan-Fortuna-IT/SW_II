@@ -22,11 +22,6 @@ namespace SW {
 		
 	}
 
-	void SpritesheetEditor::OnUpdate(Timestep ts)
-	{
-
-	}
-
 	void SpritesheetEditor::OnWindowStylePush()
 	{
 
@@ -325,10 +320,10 @@ namespace SW {
 			}
 
 			std::vector<SpriteData>& sprites = (*m_Spritesheet)->Sprites;
-			for (int i = 0; i < sprites.size(); i++) {
+			for (int i = 0; i < (int)sprites.size(); i++) {
 				ImGui::PushID(i);
 
-				SpriteData& sprite = sprites[i];
+				SpriteData& sprite = sprites[(size_t)i];
 
 				if (!m_SearchString.empty() && sprite.Name.find(m_SearchString)) {
 					ImGui::PopID();

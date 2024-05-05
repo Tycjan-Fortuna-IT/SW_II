@@ -12,7 +12,6 @@
 
 #include "Asset/Panels/AssetEditorPanel.hpp"
 #include "Asset/Spritesheet.hpp"
-#include "Asset/Sprite.hpp"
 
 namespace SW {
 
@@ -21,7 +20,7 @@ namespace SW {
 	public:
 		SpritesheetEditor(const char* name, const char* icon);
 
-		void OnUpdate(Timestep ts) override;
+		void OnUpdate(UNUSED Timestep ts) override {}
 
 		void OnWindowStylePush() override;
 

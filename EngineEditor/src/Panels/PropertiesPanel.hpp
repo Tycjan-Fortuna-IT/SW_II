@@ -44,7 +44,7 @@ namespace SW {
 		 * @brief Called every frame to update the panel.
 		 * @param dt The time since the last frame.
 		 */
-		void OnUpdate(Timestep dt) override;
+		void OnUpdate(UNUSED Timestep dt) override {}
 
 		/**
 		 * @brief Called every frame to render the panel.

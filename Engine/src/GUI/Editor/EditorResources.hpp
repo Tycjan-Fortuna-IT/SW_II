@@ -25,6 +25,7 @@ namespace SW {
 			PrefabAssetIcon = new Texture2D(exePath / "assets/icons/editor/asset_icons/prefab_icon.png", true);
 			ScriptAssetIcon = new Texture2D(exePath / "assets/icons/editor/asset_icons/script_icon.png", true);
 			ShaderAssetIcon = new Texture2D(exePath / "assets/icons/editor/asset_icons/shader_icon.png", true);
+			AudioAssetIcon = new Texture2D(exePath / "assets/icons/editor/asset_icons/audio_icon.png", true);
 		}
 
 		static void Shutdown()
@@ -43,6 +44,7 @@ namespace SW {
 			delete PrefabAssetIcon;
 			delete ScriptAssetIcon;
 			delete ShaderAssetIcon;
+			delete AudioAssetIcon;
 		}
 
 		// EngineEditor icons
@@ -61,6 +63,7 @@ namespace SW {
 		inline static Texture2D* PrefabAssetIcon = nullptr;
 		inline static Texture2D* ScriptAssetIcon = nullptr;
 		inline static Texture2D* ShaderAssetIcon = nullptr;
+		inline static Texture2D* AudioAssetIcon = nullptr;
 	};
 
 }
