@@ -1,12 +1,13 @@
 #pragma once
 
 #include <miniaudio.h>
+
 #include "Core/Timestep.hpp"
+#include "SoundInstance.hpp"
 
 namespace SW {
 
 	class Sound;
-	class SoundInstance;
 
 	class AudioEngine
 	{
@@ -16,7 +17,13 @@ namespace SW {
 
 		static void OnUpdate(Timestep dt);
 
-		static void PlaySound(const Sound* sound);
+		static void PlaySoundOnce(const Sound* sound);
+		
+		static SoundInstance** PlaySound(const Sound* sound);
+
+		static SoundInstance** PlaySound(const SoundSpecification& spec);
+
+		static SoundInstance** PlaySound3D(const SoundSpecification& spec, const glm::vec3& position, const glm::vec3& direction);
 
 		static ma_engine* Get() { return &engine; }
 

@@ -10,12 +10,12 @@
 
 #include "Core/Utils/Random.hpp"
 #include "Core/Scene/SceneCamera.hpp"
-#include "Core/OpenGL/Texture2D.hpp"
 #include "Core/Math/Math.hpp"
-#include "Asset/Font.hpp"
 #include "Core/Scripting/CSharpObject.hpp"
 #include "Asset/Asset.hpp"
 #include "Asset/Animation2D.hpp"
+#include "Audio/SoundInstance.hpp"
+#include "Audio/SoundListener.hpp"
 
 namespace SW {
 
@@ -24,7 +24,7 @@ namespace SW {
      * @brief This component is used to identify an entity. Each entity has a unique ID.
      * @note This component is required for each entity. ID = 0 is reserved for null or invalid entity.
      */
-    struct IDComponent final
+    struct IDComponent
     {
         u64 ID = 0;
 
@@ -32,34 +32,20 @@ namespace SW {
             : ID(Random::CreateID()) {}
         IDComponent(u64 id)
             : ID(id) {}
-
-        IDComponent(const IDComponent& other) = default;
-        IDComponent(IDComponent&& other) = default;
-        IDComponent& operator=(const IDComponent& other) = default;
-        IDComponent& operator=(IDComponent&& other) = default;
-
-        ~IDComponent() = default;
     };
 
     /**
      * @struct TagComponent
      * @brief This component is used to identify an entity by a tag.
-     * @note This component is optional.
+     * @note This component is required for each entity.
      */
-    struct TagComponent final
+    struct TagComponent
     {
         std::string Tag = "No tag";
 
         TagComponent() = default;
         TagComponent(const std::string& tag)
             : Tag(tag) {}
-
-        TagComponent(const TagComponent& other) = default;
-        TagComponent(TagComponent&& other) = default;
-        TagComponent& operator=(const TagComponent& other) = default;
-        TagComponent& operator=(TagComponent&& other) = default;
-
-        ~TagComponent() = default;
     };
 
     /**
@@ -67,7 +53,7 @@ namespace SW {
      * @brief This component is used to store the position, rotation and scale of an entity.
      * @note This component is required for each entity.
      */
-    struct TransformComponent final
+    struct TransformComponent
     {
         glm::vec3 Position = { 0.0f, 0.0f , 0.0f };
         glm::vec3 Rotation = { 0.0f, 0.0f , 0.0f };		/** @brief Rotation angles are in radians! */
@@ -78,13 +64,6 @@ namespace SW {
             : Position(position), Rotation(rotation), Scale(scale) {}
         TransformComponent(const glm::vec3& position)
             : Position(position) {}
-
-        TransformComponent(const TransformComponent& other) = default;
-        TransformComponent(TransformComponent&& other) = default;
-        TransformComponent& operator=(const TransformComponent& other) = default;
-        TransformComponent& operator=(TransformComponent&& other) = default;
-
-        ~TransformComponent() = default;
 
 		glm::mat4 GetTransform() const
 		{
@@ -102,9 +81,8 @@ namespace SW {
     /**
      * @struct SpriteComponent
      * @brief This component is used to store the color of an entity. This component is used for rendering of squares and rectangles.
-     * @note This component is optional.
      */
-    struct SpriteComponent final
+    struct SpriteComponent
     {
         glm::vec4 Color = glm::vec4(1.0f);
 		AssetHandle Handle = 0u; // sprite handle
@@ -117,7 +95,11 @@ namespace SW {
 			: Color(tint), Handle(handle), TilingFactor(tilingFactor) {}
     };
 
-	struct AnimatedSpriteComponent final
+	/**
+	 * @struct AnimatedSpriteComponent
+	 * @brief This component is used to store the animation data of an entity.
+	 */
+	struct AnimatedSpriteComponent
 	{
 		int CurrentFrame = 0u;
 
@@ -131,9 +113,8 @@ namespace SW {
 	/**
 	 * @struct CircleComponent
 	 * @brief This component is used to store the color of an entity. This component is used for rendering of circles and rings.
-	 * @note This component is optional.
 	 */
-	struct CircleComponent final
+	struct CircleComponent
 	{
 		glm::vec4 Color = glm::vec4(1.0f);
 		f32 Thickness = 1.0f;
@@ -142,21 +123,13 @@ namespace SW {
 		CircleComponent() = default;
 		CircleComponent(const glm::vec4& color)
 			: Color(color) {}
-		
-		CircleComponent(const CircleComponent& other) = default;
-		CircleComponent(CircleComponent&& other) = default;
-		CircleComponent& operator=(const CircleComponent& other) = default;
-		CircleComponent& operator=(CircleComponent&& other) = default;
-
-		~CircleComponent() = default;
 	};
 
 	/**
 	 * @struct TextComponent
 	 * @brief This component is used to store the text of an entity. This component is used for rendering of text.
-	 * @note This component is optional.
 	 */
-	struct TextComponent final
+	struct TextComponent
 	{
 		std::string TextString = "Empty";	/**< Text to be rendered. */
 
@@ -171,9 +144,9 @@ namespace SW {
 	/**
 	 * @struct CameraComponent
 	 * @brief This component is used to store the camera's data with position's attached to the component.
-	 * @note This component is optional. However without even single camera the scene will not be visible!
+	 * @note However without even single camera the scene will not be visible!
 	 */
-	struct CameraComponent final
+	struct CameraComponent
 	{
 		SceneCamera Camera;
 		bool Primary = true;	/** @brief In case of many cameras only the first primary one will be used. */
@@ -181,18 +154,14 @@ namespace SW {
 		CameraComponent() = default;
 		CameraComponent(const SceneCamera& camera)
 			: Camera(camera) {}
-
-		CameraComponent(const CameraComponent& other) = default;
-		CameraComponent(CameraComponent&& other) = default;
-		CameraComponent& operator=(const CameraComponent& other) = default;
-		CameraComponent& operator=(CameraComponent&& other) = default;
 	};
 
 	/**
 	 * @struct RelationshipComponent
 	 * @brief This component is used to store the parent-child relationship between entities.
+	 * @note This component is used to create a hierarchy of entities. It is required.
 	 */
-	struct RelationshipComponent final
+	struct RelationshipComponent
 	{
 		u64 ParentID = 0u;
 		std::vector<u64> ChildrenIDs;
@@ -200,14 +169,13 @@ namespace SW {
 		RelationshipComponent() = default;
 		RelationshipComponent(u64 parentID)
 			: ParentID(parentID) {}
-
-		RelationshipComponent(const RelationshipComponent& other) = default;
-		RelationshipComponent(RelationshipComponent&& other) = default;
-		RelationshipComponent& operator=(const RelationshipComponent& other) = default;
-		RelationshipComponent& operator=(RelationshipComponent&& other) = default;
 	};
 
-	struct ScriptComponent final
+	/**
+	 * @struct NativeScriptComponent
+	 * @brief This component is used to store the native script data.
+	 */
+	struct ScriptComponent
 	{
 		u64 ScriptID = 0;			/** @brief Unique ID of the script. */
 		
@@ -229,9 +197,8 @@ namespace SW {
 	/**
 	 * @struct RigidBody2DComponent
 	 * @brief This component is used to store the physics body data.
-	 * @note This component is optional.
 	 */
-	struct RigidBody2DComponent final
+	struct RigidBody2DComponent
 	{
 		PhysicBodyType Type = PhysicBodyType::Static;	/**< By default the body is static */
 
@@ -256,9 +223,9 @@ namespace SW {
 	/**
 	 * @struct BoxCollider2DComponent
 	 * @brief This component is used to store the box collider data.
-	 * @note This component is optional.
+	 * @warning Rigidbody2DComponent is required for this component to work properly.
 	 */
-	struct BoxCollider2DComponent final
+	struct BoxCollider2DComponent
 	{
 		void* Handle = nullptr;		/**< Internal box2D physics box collider handle */
 
@@ -273,9 +240,9 @@ namespace SW {
 	/**
 	 * @struct CircleCollider2DComponent
 	 * @brief This component is used to store the circle collider data.
-	 * @note This component is optional.
+	 * @warning Rigidbody2DComponent is required for this component to work properly.
 	 */
-	struct CircleCollider2DComponent final
+	struct CircleCollider2DComponent
 	{
 		void* Handle = nullptr;		/**< Internal box2D physics circle collider handle */
 
@@ -290,9 +257,9 @@ namespace SW {
 	/**
 	 * @struct PolygonCollider2DComponent
 	 * @brief This component is used to store the polygon collider data.
-	 * @note This component is optional.
+	 * @warning Rigidbody2DComponent is required for this component to work properly.
 	 */
-	struct PolygonCollider2DComponent final
+	struct PolygonCollider2DComponent
 	{
 		void* Handle = nullptr;		/**< Internal box2D physics polygon collider handle */
 
@@ -308,9 +275,9 @@ namespace SW {
 	/**
 	 * @struct BuoyancyEffector2DComponent
 	 * @brief This component is used to store the buoyancy effector data.
-	 * @note This component is optional.
+	 * @warning Rigidbody2DComponent is required for this component to work properly.
 	 */
-	struct BuoyancyEffector2DComponent final
+	struct BuoyancyEffector2DComponent
 	{
 		f32 Density = 2.f;			/**< The density of the fluid [kg/m^2]. */
 		f32 DragMultiplier = 1.0f;			/**< The fluid drag multiplier. */
@@ -321,9 +288,9 @@ namespace SW {
 	/**
 	 * @struct DistanceJoint2DComponent
 	 * @brief This component is used to store the joint data.
-	 * @note This component is optional.
+	 * @warning Rigidbody2DComponent is required for this component to work properly.
 	 */
-	struct DistanceJoint2DComponent final 
+	struct DistanceJoint2DComponent 
 	{
 		void* RuntimeJoint = nullptr;
 
@@ -344,9 +311,9 @@ namespace SW {
 	/**
 	 * @struct RevolutionJoint2DComponent
 	 * @brief This component is used to store the joint data.
-	 * @note This component is optional.
+	 * @warning Rigidbody2DComponent is required for this component to work properly.
 	 */
-	struct RevolutionJoint2DComponent final
+	struct RevolutionJoint2DComponent
 	{
 		void* RuntimeJoint = nullptr;
 
@@ -369,9 +336,9 @@ namespace SW {
 	/**
 	 * @struct PrismaticJoint2DComponent
 	 * @brief This component is used to store the joint data.
-	 * @note This component is optional.
+	 * @warning Rigidbody2DComponent is required for this component to work properly.
 	 */
-	struct PrismaticJoint2DComponent final
+	struct PrismaticJoint2DComponent
 	{
 		void* RuntimeJoint = nullptr;
 
@@ -395,9 +362,9 @@ namespace SW {
 	/**
 	 * @struct SpringJoint2DComponent
 	 * @brief This component is used to store the joint data.
-	 * @note This component is optional.
+	 * @warning Rigidbody2DComponent is required for this component to work properly.
 	 */
-	struct SpringJoint2DComponent final
+	struct SpringJoint2DComponent
 	{
 		void* RuntimeJoint = nullptr;
 
@@ -420,9 +387,9 @@ namespace SW {
 	/**
 	 * @struct WheelJoint2DComponent
 	 * @brief This component is used to store the joint data.
-	 * @note This component is optional.
+	 * @warning Rigidbody2DComponent is required for this component to work properly.
 	 */
-	struct WheelJoint2DComponent final
+	struct WheelJoint2DComponent
 	{
 		void* RuntimeJoint = nullptr;
 
@@ -442,5 +409,47 @@ namespace SW {
 		bool EnableLimit = true;		/**< Enable the joint limit. */
 		bool EnableMotor = true;		/**< Enable the joint motor. */
 		bool EnableCollision = false;	/**< Enable collision between connected bodies. */
+	};
+
+	/**
+	 * @struct AudioSourceComponent
+	 * @brief This component is used to store the audio source data.
+	 */
+	struct AudioSourceComponent
+	{
+		AssetHandle Handle = 0u;			/**< Audio handle */
+		SoundInstance** Instance = nullptr;	/**< Audio instance Can be nullptr if the audio is not playing!!! */
+
+		f32 Volume = 1.0f;			/**< Volume of the audio source. */
+		f32 Pitch = 1.0f;			/**< Pitch of the audio source. */
+
+		bool Looping = false;		/**< Is the audio source looping. */
+		bool PlayOnCreate = false;	/**< Should the audio source play on creation. */
+		
+		bool Is3D = false;
+		AttenuationType Attenuation = AttenuationType::None;
+		
+		f32 RollOff = 1.0f;
+		f32 MinGain = 0.0f;
+		f32 MaxGain = 1.0f;
+		f32 MinDistance = 0.3f;
+		f32 MaxDistance = 100.0f;
+		f32 ConeInnerAngle = glm::radians(360.0f);
+		f32 ConeOuterAngle = glm::radians(360.0f);
+		f32 ConeOuterGain = 0.0f;
+		
+		f32 DopplerFactor = 1.0f;
+	};
+
+	/**
+	 * @struct AudioListenerComponent
+	 * @brief This component is used to store the audio listener data.
+	 */
+	struct AudioListenerComponent
+	{
+		SoundListener* Listener = nullptr;
+		f32 ConeInnerAngle = glm::radians(360.0f);
+		f32 ConeOuterAngle = glm::radians(360.0f);
+		f32 ConeOuterGain = 0.0f;
 	};
 }

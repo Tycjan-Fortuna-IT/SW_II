@@ -6,6 +6,7 @@
 #include "Asset/AssetManager.hpp"
 #include "Core/Scripting/ScriptingCore.hpp"
 #include "Core/Utils/SerializationUtils.hpp"
+#include "Audio/SoundInstance.hpp"
 
 namespace SW {
 
@@ -424,6 +425,41 @@ namespace SW {
 			output << YAML::EndMap;
 		}
 
+		if (entity.HasComponent<AudioSourceComponent>()) {
+			const AudioSourceComponent& asc = entity.GetComponent<AudioSourceComponent>();
+
+			output << YAML::Key << "AudioSourceComponent";
+			output << YAML::BeginMap;
+			output << YAML::Key << "AudioHandle" << YAML::Value << asc.Handle;
+			output << YAML::Key << "Volume" << YAML::Value << asc.Volume;
+			output << YAML::Key << "Pitch" << YAML::Value << asc.Pitch;
+			output << YAML::Key << "Looping" << YAML::Value << asc.Looping;
+			output << YAML::Key << "PlayOnCreate" << YAML::Value << asc.PlayOnCreate;
+			output << YAML::Key << "Is3D" << YAML::Value << asc.Is3D;
+			output << YAML::Key << "Attenuation" << YAML::Value << (int)asc.Attenuation;
+			output << YAML::Key << "RollOff" << YAML::Value << asc.RollOff;
+			output << YAML::Key << "MinGain" << YAML::Value << asc.MinGain;
+			output << YAML::Key << "MaxGain" << YAML::Value << asc.MaxGain;
+			output << YAML::Key << "MinDistance" << YAML::Value << asc.MinDistance;
+			output << YAML::Key << "MaxDistance" << YAML::Value << asc.MaxDistance;
+			output << YAML::Key << "ConeInnerAngle" << YAML::Value << asc.ConeInnerAngle;
+			output << YAML::Key << "ConeOuterAngle" << YAML::Value << asc.ConeOuterAngle;
+			output << YAML::Key << "ConeOuterGain" << YAML::Value << asc.ConeOuterGain;
+			output << YAML::Key << "DopplerFactor" << YAML::Value << asc.DopplerFactor;
+			output << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<AudioListenerComponent>()) {
+			const AudioListenerComponent& alc = entity.GetComponent<AudioListenerComponent>();
+
+			output << YAML::Key << "AudioListenerComponent";
+			output << YAML::BeginMap;
+			output << YAML::Key << "ConeInnerAngle" << YAML::Value << alc.ConeInnerAngle;
+			output << YAML::Key << "ConeOuterAngle" << YAML::Value << alc.ConeOuterAngle;
+			output << YAML::Key << "ConeOuterGain" << YAML::Value << alc.ConeOuterGain;
+			output << YAML::EndMap;
+		}
+
 		output << YAML::EndMap; // End Entity components content
 
 		output << YAML::EndMap; // End Entity content
@@ -782,6 +818,35 @@ namespace SW {
 				wjc.EnableLimit = wheelJoint2DComponent["EnableLimit"].as<bool>();
 				wjc.EnableMotor = wheelJoint2DComponent["EnableMotor"].as<bool>();
 				wjc.EnableCollision = wheelJoint2DComponent["EnableCollision"].as<bool>();
+			}
+
+			if (YAML::Node audioSourceComponent = entity["Entity"]["AudioSourceComponent"]) {
+				AudioSourceComponent& asc = deserialized.AddComponent<AudioSourceComponent>();
+
+				asc.Handle = audioSourceComponent["AudioHandle"].as<AssetHandle>();
+				asc.Volume = audioSourceComponent["Volume"].as<f32>();
+				asc.Pitch = audioSourceComponent["Pitch"].as<f32>();
+				asc.Looping = audioSourceComponent["Looping"].as<bool>();
+				asc.PlayOnCreate = audioSourceComponent["PlayOnCreate"].as<bool>();
+				asc.Is3D = audioSourceComponent["Is3D"].as<bool>();
+				asc.Attenuation = (AttenuationType)audioSourceComponent["Attenuation"].as<int>();
+				asc.RollOff = audioSourceComponent["RollOff"].as<f32>();
+				asc.MinGain = audioSourceComponent["MinGain"].as<f32>();
+				asc.MaxGain = audioSourceComponent["MaxGain"].as<f32>();
+				asc.MinDistance = audioSourceComponent["MinDistance"].as<f32>();
+				asc.MaxDistance = audioSourceComponent["MaxDistance"].as<f32>();
+				asc.ConeInnerAngle = audioSourceComponent["ConeInnerAngle"].as<f32>();
+				asc.ConeOuterAngle = audioSourceComponent["ConeOuterAngle"].as<f32>();
+				asc.ConeOuterGain = audioSourceComponent["ConeOuterGain"].as<f32>();
+				asc.DopplerFactor = audioSourceComponent["DopplerFactor"].as<f32>();
+			}
+
+			if (YAML::Node audioListenerComponent = entity["Entity"]["AudioListenerComponent"]) {
+				AudioListenerComponent& alc = deserialized.AddComponent<AudioListenerComponent>();
+
+				alc.ConeInnerAngle = audioListenerComponent["ConeInnerAngle"].as<f32>();
+				alc.ConeOuterAngle = audioListenerComponent["ConeOuterAngle"].as<f32>();
+				alc.ConeOuterGain = audioListenerComponent["ConeOuterGain"].as<f32>();
 			}
 		}
 	}

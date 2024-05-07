@@ -88,3 +88,4 @@
 #define SW_ICON_ARROW_DOWN_BOLD u8"\uF72D"
 #define SW_ICON_GRID u8"\uF2C1"
 #define SW_ICON_VOLUME_HIGH u8"\uF57E"
+#define SW_ICON_MICROPHONE u8"\uF36C"

@@ -10,6 +10,7 @@
 #include "Asset/Sprite.hpp"
 #include "Asset/Prefab.hpp"
 #include "GUI/GUI.hpp"
+#include "Audio/Sound.hpp"
 
 namespace SW {
 
@@ -39,6 +40,9 @@ namespace SW {
 		AddComponentName<PrismaticJoint2DComponent>(SW_ICON_VIEW_AGENDA "  Prismatic Joint 2D");
 		AddComponentName<SpringJoint2DComponent>(SW_ICON_ARROW_EXPAND " Spring Joint 2D");
 		AddComponentName<WheelJoint2DComponent>(SW_ICON_CAR " Wheel Joint 2D");
+
+		AddComponentName<AudioSourceComponent>(SW_ICON_VOLUME_HIGH "  Audio Source");
+		AddComponentName<AudioListenerComponent>(SW_ICON_MICROPHONE "  Audio Listener");
 
 		m_ComponentCopyScene = new Scene();
 		m_ComponentCopyEntity = m_ComponentCopyScene->CreateEntity();
@@ -492,6 +496,112 @@ namespace SW {
 				GUI::Properties::EndProperties();
 			}, true);
 
+			DrawComponent<AudioSourceComponent>(entity, [&](AudioSourceComponent& component) {
+				GUI::Properties::BeginProperties("##audio_source_property");
+				
+				GUI::Properties::AssetSearchProperty<Sound>(&component.Handle, "Clip", "The audio sound to be played");
+				GUI::Properties::ScalarSliderProperty<f32>(&component.Volume, "Volume", "The volume of the audio source", 0.f, 2.f);
+				GUI::Properties::ScalarSliderProperty<f32>(&component.Pitch, "Pitch", "The pitch of the audio source", 0.f, 2.f);
+				GUI::Properties::CheckboxProperty(&component.Looping, "Looping", "Whether the audio source should loop");
+				GUI::Properties::CheckboxProperty(&component.PlayOnCreate, "Play On Create", "Whether the audio source should play on entity creation");
+				GUI::Properties::CheckboxProperty(&component.Is3D, "3D", "Whether the audio source should be 3D");
+
+				if (component.Is3D) {
+					GUI::Properties::SelectableProperty<AttenuationType>(&component.Attenuation, {
+						{ "None", AttenuationType::None },
+						{ "Linear", AttenuationType::Linear },
+						{ "Inverse", AttenuationType::Inverse },
+						{ "Exponential", AttenuationType::Exponential }
+					}, "Attenuation Type", "The type of attenuation to be used for the audio source");
+
+					GUI::Properties::ScalarSliderProperty<f32>(&component.RollOff, "Roll Off", "The roll off factor of the audio source (how quickly the sound fades)", 0.f, 10.f);
+					GUI::Properties::ScalarSliderProperty<f32>(&component.MinGain, "Min Gain", "The minimum gain of the audio source", 0.f, 1.f);
+					GUI::Properties::ScalarSliderProperty<f32>(&component.MaxGain, "Max Gain", "The maximum gain of the audio source", 0.f, 1.f);
+					GUI::Properties::ScalarSliderProperty<f32>(&component.MinDistance, "Min Distance", "The minimum distance of the audio source (where the sound starts to fade)", 0.f, 1000.f);
+					GUI::Properties::ScalarSliderProperty<f32>(&component.MaxDistance, "Max Distance", "The maximum distance of the audio source (where the sound is inaudible)", 0.f, 1000.f);
+				
+					f32 coneInnerAngle = glm::degrees(component.ConeInnerAngle);
+					if (GUI::Properties::ScalarDragProperty<f32>(&coneInnerAngle, "Cone Inner Angle", "The inner angle of the cone in degrees", 1.f, 0.f, 360.f)) {
+						component.ConeInnerAngle = glm::radians(coneInnerAngle);
+					}
+
+					f32 coneOuterAngle = glm::degrees(component.ConeOuterAngle);
+					if (GUI::Properties::ScalarDragProperty<f32>(&coneOuterAngle, "Cone Outer Angle", "The outer angle of the cone in degrees", 1.f, 0.f, 360.f)) {
+						component.ConeOuterAngle = glm::radians(coneOuterAngle);
+					}
+
+					GUI::Properties::ScalarSliderProperty<f32>(&component.ConeOuterGain, "Cone Outer Gain", "The gain of the outer cone", 0.f, 1.f);
+					GUI::Properties::ScalarSliderProperty<f32>(&component.DopplerFactor, "Doppler Factor", "The Doppler factor of the audio source", 0.f, 10.f);
+				}
+				
+				GUI::Properties::BeginPropertyGrid("Control", "Start, Stop, Pause, Resume the audio source");
+				if (component.Handle) {
+					if (ImGui::Button("Play")) {
+						if (component.Instance && *component.Instance) {
+							(*component.Instance)->Stop();
+						}
+
+						Sound* sound = *AssetManager::GetAssetRaw<Sound>(component.Handle);
+
+						SoundSpecification spec;
+						spec.Sound = sound;
+						spec.Pitch = component.Pitch;
+						spec.Volume = component.Volume;
+
+						if (component.Is3D) {
+							spec.Looping = component.Looping;
+							spec.Is3D = component.Is3D;
+							spec.Attenuation = component.Attenuation;
+							spec.RollOff = component.RollOff;
+							spec.MinGain = component.MinGain;
+							spec.MaxGain = component.MaxGain;
+							spec.MinDistance = component.MinDistance;
+							spec.MaxDistance = component.MaxDistance;
+							spec.ConeInnerAngle = component.ConeInnerAngle;
+							spec.ConeOuterAngle = component.ConeOuterAngle;
+							spec.ConeOuterGain = component.ConeOuterGain;
+							spec.DopplerFactor = component.DopplerFactor;
+
+							const glm::mat4 invertedTransform = entity.GetWorldSpaceTransformMatrix();
+							const glm::vec3 forward = glm::normalize(glm::vec3(invertedTransform * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
+
+							TransformComponent& tc = entity.GetComponent<TransformComponent>();
+							component.Instance = AudioEngine::PlaySound3D(spec, tc.Position, forward);
+						} else {
+							component.Instance = AudioEngine::PlaySound(spec);
+						}
+					}
+
+					if (component.Instance && *component.Instance) {
+						ImGui::SameLine();
+						if (ImGui::Button("Stop")) {
+							(*component.Instance)->Stop();
+						}
+					}
+				}
+				GUI::Properties::EndPropertyGrid();
+				
+				GUI::Properties::EndProperties();
+			}, true);
+
+			DrawComponent<AudioListenerComponent>(entity, [](AudioListenerComponent& component) {
+				GUI::Properties::BeginProperties("##audio_listener_property");
+
+				f32 coneInnerAngle = glm::degrees(component.ConeInnerAngle);
+				if (GUI::Properties::ScalarDragProperty<f32>(&coneInnerAngle, "Cone Inner Angle", "The inner angle of the cone in degrees", 1.f, 0.f, 360.f)) {
+					component.ConeInnerAngle = glm::radians(coneInnerAngle);
+				}
+
+				f32 coneOuterAngle = glm::degrees(component.ConeOuterAngle);
+				if (GUI::Properties::ScalarDragProperty<f32>(&coneOuterAngle, "Cone Outer Angle", "The outer angle of the cone in degrees", 1.f, 0.f, 360.f)) {
+					component.ConeOuterAngle = glm::radians(coneOuterAngle);
+				}
+
+				GUI::Properties::ScalarSliderProperty<f32>(&component.ConeOuterGain, "Cone Outer Gain", "The gain of the outer cone", 0.f, 1.f);
+
+				GUI::Properties::EndProperties();
+			}, true);
+
 			ImGui::PopStyleVar(3);
 
 			OnEnd();
@@ -631,6 +741,22 @@ namespace SW {
 		if (!entity.HasComponent<ScriptComponent>()) {
 			if (ImGui::MenuItemEx("Script", SW_ICON_LANGUAGE_CSHARP)) {
 				entity.AddComponent<ScriptComponent>();
+
+				ImGui::CloseCurrentPopup();
+			}
+		}
+
+		if (!entity.HasComponent<AudioSourceComponent>()) {
+			if (ImGui::MenuItemEx("Audio Source", SW_ICON_VOLUME_HIGH)) {
+				entity.AddComponent<AudioSourceComponent>();
+
+				ImGui::CloseCurrentPopup();
+			}
+		}
+
+		if (!entity.HasComponent<AudioListenerComponent>()) {
+			if (ImGui::MenuItemEx("Audio Listener", SW_ICON_MICROPHONE)) {
+				entity.AddComponent<AudioListenerComponent>();
 
 				ImGui::CloseCurrentPopup();
 			}

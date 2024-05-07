@@ -16,6 +16,7 @@
 #include "GUI/Editor/EditorResources.hpp"
 #include "AssetPanels/AssetEditorPanelManager.hpp"
 #include "GUI/GUI.hpp"
+#include "Audio/AudioEngine.hpp"
 
 namespace SW {
 
@@ -23,6 +24,7 @@ namespace SW {
 	{
 		EditorResources::Initialize();
 		AssetEditorPanelManager::Initialize();
+		AudioEngine::Initialize();
 
 		const GUI::FontSpecification fontSpec("assets/fonts/Roboto/Roboto-Regular.ttf", "assets/fonts/Roboto/Roboto-Bold.ttf");
 
@@ -63,6 +65,7 @@ namespace SW {
 
 		EditorResources::Shutdown();
 		AssetEditorPanelManager::Shutdown();
+		AudioEngine::Shutdown();
 
 		Renderer2D::Shutdown();
 
@@ -80,6 +83,7 @@ namespace SW {
 		}
 
 		AssetEditorPanelManager::OnUpdate(dt);
+		AudioEngine::OnUpdate(dt);
 	}
 
 	f32 EditorLayer::DrawTitleBar()

@@ -12,6 +12,9 @@
 #include "Core/Physics/Physics2DContactListener.hpp"
 #include "Core/Scripting/ScriptingCore.hpp"
 #include "Asset/Prefab.hpp"
+#include "Asset/AssetManager.hpp"
+#include "Audio/AudioEngine.hpp"
+#include "Audio/SoundListener.hpp"
 
 namespace SW {
 
@@ -296,6 +299,61 @@ namespace SW {
 		for (auto&& [handle, rbc, wjc] : m_Registry.GetEntitiesWith<RigidBody2DComponent, WheelJoint2DComponent>().each()) {
 			CreateWheelJoint2D(rbc, wjc);
 		}
+
+		for (auto&& [handle, tc, asc] : m_Registry.GetEntitiesWith<TransformComponent, AudioSourceComponent>().each()) {
+			if (!asc.Handle)
+				continue;
+
+			if (asc.PlayOnCreate) {
+				Sound* sound = *AssetManager::GetAssetRaw<Sound>(asc.Handle);
+
+				SoundSpecification spec;
+				spec.Sound = sound;
+				spec.Pitch = asc.Pitch;
+				spec.Volume = asc.Volume;
+
+				if (asc.Is3D) {
+					spec.Looping = asc.Looping;
+					spec.Is3D = asc.Is3D;
+					spec.Attenuation = asc.Attenuation;
+					spec.RollOff = asc.RollOff;
+					spec.MinGain = asc.MinGain;
+					spec.MaxGain = asc.MaxGain;
+					spec.MinDistance = asc.MinDistance;
+					spec.MaxDistance = asc.MaxDistance;
+					spec.ConeInnerAngle = asc.ConeInnerAngle;
+					spec.ConeOuterAngle = asc.ConeOuterAngle;
+					spec.ConeOuterGain = asc.ConeOuterGain;
+					spec.DopplerFactor = asc.DopplerFactor;
+
+					const glm::mat4 invertedTransform = glm::inverse(Entity(handle, this).GetWorldSpaceTransformMatrix());
+					const glm::vec3 forward = glm::normalize(glm::vec3(invertedTransform * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
+
+					asc.Instance = AudioEngine::PlaySound3D(spec, tc.Position, forward);
+				} else {
+					asc.Instance = AudioEngine::PlaySound(spec);
+				}
+			}
+		}
+
+		for (auto&& [handle, tc, alc] : m_Registry.GetEntitiesWith<TransformComponent, AudioListenerComponent>().each()) {
+			SoundListener* listener = new SoundListener(alc.ConeInnerAngle, alc.ConeOuterAngle, alc.ConeOuterGain);
+
+			const glm::mat4 invertedTransform = glm::inverse(Entity(handle, this).GetWorldSpaceTransformMatrix());
+			const glm::vec3 forward = glm::normalize(glm::vec3(invertedTransform * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
+
+			listener->SetPosition(tc.Position);
+			listener->SetDirection(-forward);
+
+			alc.Listener = listener;
+		}
+
+		for (auto&& [handle, tc, alc] : m_Registry.GetEntitiesWith<TransformComponent, AudioListenerComponent>().each()) {
+			if (alc.Listener) {
+				delete alc.Listener;
+				alc.Listener = nullptr;
+			}
+		}
 	}
 
 	void Scene::OnRuntimeStop()
@@ -308,6 +366,14 @@ namespace SW {
 
 			sc.Instance.Invoke("OnCleanup");
 			ScriptingCore::Get().DestroyInstance(id.ID, m_ScriptStorage);
+		}
+
+		for (auto&& [handle, tc, asc] : m_Registry.GetEntitiesWith<TransformComponent, AudioSourceComponent>().each()) {
+			if (!asc.Handle)
+				continue;
+
+			if (asc.Instance && *asc.Instance)
+				(*asc.Instance)->Stop();
 		}
 
 		delete m_PhysicsWorld2D;
@@ -655,6 +721,8 @@ namespace SW {
 		CopyComponent<PrismaticJoint2DComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<SpringJoint2DComponent>(copyRegistry, currentRegistry, enttMap);
 		CopyComponent<WheelJoint2DComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<AudioSourceComponent>(copyRegistry, currentRegistry, enttMap);
+		CopyComponent<AudioListenerComponent>(copyRegistry, currentRegistry, enttMap);
 
 		m_ScriptStorage.CopyTo(copy->m_ScriptStorage);
 
@@ -689,6 +757,8 @@ namespace SW {
 		CopyComponentIfExists<PrismaticJoint2DComponent>(dst, currentRegistry, src);
 		CopyComponentIfExists<SpringJoint2DComponent>(dst, currentRegistry, src);
 		CopyComponentIfExists<WheelJoint2DComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<AudioSourceComponent>(dst, currentRegistry, src);
+		CopyComponentIfExists<AudioListenerComponent>(dst, currentRegistry, src);
 
 		CopyReferencedEntities(DistanceJoint2DComponent);
 		CopyReferencedEntities(RevolutionJoint2DComponent);
