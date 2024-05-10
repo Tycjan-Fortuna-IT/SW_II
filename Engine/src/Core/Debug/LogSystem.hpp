@@ -1,8 +1,8 @@
 /**
  * @file LogSystem.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.2.0
- * @date 2024-03-10
+ * @version 0.2.1
+ * @date 2024-05-10
  * 
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -45,7 +45,8 @@ namespace SW {
 	 * @brief The LogSystem class is responsible for logging messages to the console.
 	 *        It is a static class and should not be instantiated.
 	 */
-	class LogSystem final {
+	class LogSystem
+	{
 	public:
 		/**
 		 * @brief Initializes the log system.
@@ -59,6 +60,18 @@ namespace SW {
 		 *			(before application shutdown)!!
 		 */
 		static void Shutdown();
+
+		/**
+		 * @brief Adds a sink to the engine logger.
+		 * @param sink The sink to add.
+		 */
+		static void AddEngineSink(const spdlog::sink_ptr& sink);
+
+		/**
+		 * @brief Adds a sink to the client logger.
+		 * @param sink The sink to add.
+		 */
+		static void AddClientSink(const spdlog::sink_ptr& sink);
 
 		/**
 		 * @brief Prints using spdlog logger logs to specified sinks.

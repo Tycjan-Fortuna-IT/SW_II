@@ -12,6 +12,13 @@
 
 namespace SW {
 
+	struct ConsoleMessage
+	{
+		LogLevel Level = LogLevel::LOG_LEVEL_TRACE;
+		std::string Message;
+		time_t Time;
+	};
+
 	/**
 	 * @brief The ConsolePanel class represents a panel that displays the console window.
 	 *        in a tree-like structure.
@@ -50,6 +57,23 @@ namespace SW {
 		 * @brief Called every frame to render the panel.
 		 */
 		void OnRender() override;
+
+		/**
+		 * @brief Adds a message to the console.
+		 * 
+		 * @param message The message to be added.
+		 */
+		void AddMessage(const ConsoleMessage& message);
+
+	private:
+		const char* GetLevelName(LogLevel level) const;
+
+		ImVec4 GetLevelColor(LogLevel level) const;
+
+		const char* GetLevelIcon(LogLevel level) const;
+
+	private:
+		std::vector<ConsoleMessage> m_Messages;
 	};
 
 }

@@ -121,7 +121,17 @@ namespace SW {
 		spdlog::drop_all();
 	}
 
-    void LogSystem::ReportAssertionFailure(const char* expression, const char* message, const char* file, i16 line)
+    void LogSystem::AddEngineSink(const spdlog::sink_ptr& sink)
+    {
+		s_EngineLogger->sinks().push_back(sink);
+    }
+
+	void LogSystem::AddClientSink(const spdlog::sink_ptr& sink)
+	{
+		s_AppLogger->sinks().push_back(sink);
+	}
+
+	void LogSystem::ReportAssertionFailure(const char* expression, const char* message, const char* file, i16 line)
 	{
 		LogSystem::PrintMessage(LogType::ENGINE, LogLevel::LOG_LEVEL_FATAL, "Assertion Failure: {}, message: '{}', in file: {}, line: {}\n", expression, message, file, line);
     }

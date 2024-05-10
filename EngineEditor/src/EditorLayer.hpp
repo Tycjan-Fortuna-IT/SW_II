@@ -4,6 +4,7 @@ namespace SW {
 
 	class Panel;
 	class SceneViewportPanel;
+	class ConsolePanel;
 
 	class EditorLayer final : public Layer
 	{
@@ -14,6 +15,7 @@ namespace SW {
 		std::vector<Panel*> m_Panels;
 
 		SceneViewportPanel* m_Viewport = nullptr;
+		ConsolePanel* m_Console = nullptr;
 
 		bool m_WindowMaximized = true;
 

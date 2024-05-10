@@ -14,16 +14,18 @@
 #include "../../EngineEditor/src/AssetPanels/AnimationEditor.hpp"
 #include "../../EngineEditor/src/Panels/AssetPanel.cpp"
 #include "../../EngineEditor/src/Panels/AssetPanel.hpp"
-#include "Core/Utils/FileSystem.hpp"
+#include "../../EngineEditor/src/Panels/ConsolePanel.cpp"
+#include "../../EngineEditor/src/Panels/ConsolePanel.hpp"
 #include "GUI/GUI.hpp"
 #include "Audio/AudioEngine.hpp"
-#include "Audio/Sound.hpp"
+#include "Core/Debug/LogSystem.hpp"
+#include "../../EngineEditor/src/EditorConsoleSink.hpp"
 
 namespace SW {
 
 	static AssetPanel* assetPanel = nullptr;
+	static ConsolePanel* consolePanel = nullptr;
 	static Project* newProject = nullptr;
-	static Sound* sound = nullptr;
 
 	void TestbedLayer::OnAttach()
 	{
@@ -41,12 +43,17 @@ namespace SW {
 		AudioEngine::Initialize();
 		AssetEditorPanelManager::Initialize();
 		AssetManager::Initialize();
-		assetPanel = new AssetPanel();
 
-		newProject = ProjectSerializer::Deserialize(R"(C:\Users\tycja\Desktop\SW_II\Testbed\Testbed.swproj)");
+		consolePanel = new ConsolePanel();
+		
+		spdlog::sink_ptr logger = std::make_shared<EditorConsoleSink<std::mutex>>(consolePanel);
+		logger->set_pattern("%v");
+
+		LogSystem::AddClientSink(logger);
+		//assetPanel = new AssetPanel();
+
+		newProject = ProjectSerializer::Deserialize(R"(C:\Users\tycja\Desktop\SW_II\BumCatcher\BumCatcher.swproj)");
 		ProjectContext::Set(newProject); // TODO: Make projects switchable
-
-		sound = *AssetManager::GetAssetRaw<Sound>(15796824912633671577);
 	}
 
 	void TestbedLayer::OnDetach()
@@ -58,15 +65,17 @@ namespace SW {
 		AssetEditorPanelManager::Shutdown();
 		AssetManager::Shutdown();
 
-		delete assetPanel;
+		//delete assetPanel;
+		delete consolePanel;
 		delete newProject;
 	}
 
 	void TestbedLayer::OnUpdate(Timestep dt)
 	{
 		RendererAPI::Clear();
-		AssetEditorPanelManager::OnUpdate(dt);
-		assetPanel->OnUpdate(dt);
+		//AssetEditorPanelManager::OnUpdate(dt);
+		//assetPanel->OnUpdate(dt);
+		consolePanel->OnUpdate(dt);
 		AudioEngine::OnUpdate(dt);
 	}
 
@@ -74,17 +83,21 @@ namespace SW {
 	{
 		GUI::Layout::CreateDockspace("Main Dockspace", nullptr);
 
-		ImGui::Begin("Audio");
+		ImGui::Begin("Trace");
 
-		if (ImGui::Button(SW_ICON_ANGLE_ACUTE, { 100.f, 100.f })) {
-			AudioEngine::PlaySound(sound);
+		if (ImGui::Button("Trace")) {
+			APP_TRACE("Trace messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessages");
+			APP_INFO("Info messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessages");
+			APP_WARN("Warn messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessages");
+			APP_ERROR("Error messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessages");
 		}
-		 
+
 		ImGui::End();
 
-		AssetEditorPanelManager::OnRender();
+		//AssetEditorPanelManager::OnRender();
 
-		assetPanel->OnRender();
+		//assetPanel->OnRender();
+		consolePanel->OnRender();
 
 		//ImGui::Begin("New GUI API");
 #if 0

@@ -17,6 +17,7 @@
 #include "AssetPanels/AssetEditorPanelManager.hpp"
 #include "GUI/GUI.hpp"
 #include "Audio/AudioEngine.hpp"
+#include "EditorConsoleSink.hpp"
 
 namespace SW {
 
@@ -38,15 +39,20 @@ namespace SW {
 			return OnKeyPressed(code);
 		});
 
-		m_Panels.emplace_back(new StatisticsPanel("Statistics"));
-		m_Panels.emplace_back(new ConsolePanel());
-		m_Panels.emplace_back(new AssetPanel());
-
+		m_Console = new ConsolePanel();
 		m_Viewport = new SceneViewportPanel();
-		
+
+		spdlog::sink_ptr logger = std::make_shared<EditorConsoleSink<std::mutex>>(m_Console);
+		logger->set_pattern("%v");
+
+		LogSystem::AddClientSink(logger);
+
+		m_Panels.emplace_back(m_Console);
 		m_Panels.emplace_back(m_Viewport);
+		m_Panels.emplace_back(new AssetPanel());
 		m_Panels.emplace_back(new PropertiesPanel(m_Viewport));
 		m_Panels.emplace_back(new SceneHierarchyPanel(m_Viewport));
+		m_Panels.emplace_back(new StatisticsPanel("Statistics"));
 
 		Application::Get()->GetWindow()->SetVSync(true);
 

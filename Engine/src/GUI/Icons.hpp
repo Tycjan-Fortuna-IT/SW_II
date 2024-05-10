@@ -1,8 +1,8 @@
 /**
  * @file Icons.hpp
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.1
- * @date 2024-03-16
+ * @version 0.1.6
+ * @date 2024-05-10
  *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
@@ -90,3 +90,8 @@
 #define SW_ICON_VOLUME_HIGH u8"\uF57E"
 #define SW_ICON_MICROPHONE u8"\uF36C"
 #define SW_ICON_FILE_POWERPOINT u8"\uF227"
+#define SW_ICON_MESSAGE_TEXT u8"\uF369"
+#define SW_ICON_BUG u8"\uF0E4"
+#define SW_ICON_ALERT u8"\uF026"
+#define SW_ICON_CLOSE_OCTAGON u8"\uF15C"
+#define SW_ICON_ALERT_OCTAGON u8"\uF029"
