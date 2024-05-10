@@ -11,7 +11,7 @@ namespace SW {
 		{
 			const std::filesystem::path exePath = std::filesystem::current_path();
 
-			SW_Icon = new Texture2D(exePath / "assets/icons/SW_Icon.png", true);
+			SW_Icon = new Texture2D(exePath / "assets/icons/sw.png", true);
 			CloseIcon = new Texture2D(exePath / "assets/icons/editor/windows/Close.png", true);
 			MaximizeIcon = new Texture2D(exePath / "assets/icons/editor/windows/Maximize.png", true);
 			MinimizeIcon = new Texture2D(exePath / "assets/icons/editor/windows/Minimize.png", true);

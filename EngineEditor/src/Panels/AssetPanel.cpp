@@ -118,7 +118,7 @@ namespace SW {
 
 		if (ImGui::BeginPopup("SettingsPopup")) {
 			GUI::Properties::BeginProperties("##thumbnail_size");
-			GUI::Properties::ScalarSliderProperty<int>(&m_ThumbnailSize, "Thumbnail Size", nullptr, 200, 400);
+			GUI::Properties::ScalarSliderProperty<int>(&m_ThumbnailSize, "Thumbnail Size", nullptr, 150, 400);
 			if (GUI::Properties::ButtonProperty(SW_ICON_DELETE, "Clear thumbnail cache", nullptr, { 34.f, 34.f })) {
 				m_Cache.Clear();
 
@@ -369,7 +369,7 @@ namespace SW {
 				int maxCharsPerLine = static_cast<int>(scaledThumbnailSizeX / charWidth);
 
 				if (ImGui::CalcTextSize(filename.c_str()).x > scaledThumbnailSizeX) {
-					size_t maxChars = maxCharsPerLine * 2;
+					size_t maxChars = (size_t)maxCharsPerLine * 2;
 					if (filename.size() > maxChars) {
 						filename = filename.substr(0, maxChars) + "...";
 					}
@@ -540,27 +540,27 @@ namespace SW {
 				const ImTextureID texId = item->Thumbnail ? GUI::GetTextureID(*item->Thumbnail.Texture) : 0;
 				const ImVec2 uv0 = item->Thumbnail.TexCoordMin;
 				const ImVec2 uv1 = item->Thumbnail.TexCoordMax;
-				const f32 aspectRatio = thumbSize.x / thumbSize.y;
+				//const f32 aspectRatio = thumbSize.x / thumbSize.y;
 
 				ImVec2 displaySize = { thumbnailSize, thumbnailSize };
-				const f32 minSpace = 0.0f;
-				const f32 maxSpace = thumbnailSize * 0.25f;
+				//const f32 minSpace = 0.0f;
+				//const f32 maxSpace = thumbnailSize * 0.25f;
 
-				const f32 leftSpaceX = std::clamp(abs((256.f - thumbSize.x) * 0.25f), minSpace, maxSpace);
-				const f32 leftSpaceY = std::clamp(abs((256.f - thumbSize.y) * 0.25f), minSpace, maxSpace);
+				//const f32 leftSpaceX = std::clamp(abs((256.f - thumbSize.x) * 0.25f), minSpace, maxSpace);
+				//const f32 leftSpaceY = std::clamp(abs((256.f - thumbSize.y) * 0.25f), minSpace, maxSpace);
 
 				ImGui::SetCursorPos({ cursorPos.x + thumbnailPadding * 0.8f, cursorPos.y + thumbnailPadding * 0.8f });
 				ImGui::SetItemAllowOverlap();
 
-				if (thumbSize.x != thumbSize.y) {
-					if (aspectRatio > 1.0f) { // Image is wider than it is tall
-						displaySize = { thumbnailSize, thumbnailSize / aspectRatio };
-						GUI::MoveMousePosY(leftSpaceY);
-					} else { // Image is taller than it is wide
-						displaySize = { thumbnailSize * aspectRatio, thumbnailSize };
-						GUI::MoveMousePosX(leftSpaceX);
-					}
-				}
+				//if (thumbSize.x != thumbSize.y) {
+				//	if (aspectRatio > 1.0f) { // Image is wider than it is tall
+				//		displaySize = { thumbnailSize, thumbnailSize / aspectRatio };
+				//		GUI::MoveMousePosY(leftSpaceY);
+				//	} else { // Image is taller than it is wide
+				//		displaySize = { thumbnailSize * aspectRatio, thumbnailSize };
+				//		GUI::MoveMousePosX(leftSpaceX);
+				//	}
+				//}
 
 				// Display the image
 				ImGui::Image(texId, displaySize, uv0, uv1);

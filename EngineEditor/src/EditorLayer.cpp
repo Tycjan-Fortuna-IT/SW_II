@@ -65,12 +65,13 @@ namespace SW {
 
 		EditorResources::Shutdown();
 		AssetEditorPanelManager::Shutdown();
-		AudioEngine::Shutdown();
 
 		Renderer2D::Shutdown();
 
 		if (ProjectContext::HasContext())
 			delete ProjectContext::Get();
+
+		AudioEngine::Shutdown();
 	}
 
 	void EditorLayer::OnUpdate(Timestep dt)
@@ -123,8 +124,8 @@ namespace SW {
 		drawList->AddRectFilledMultiColor(titlebarMin, ImVec2(titlebarMin.x + 600.0f, titlebarMax.y), gradientColor, Color::TitleBar, Color::TitleBar, gradientColor);
 
 		{
-			const f32 logoWidth = (f32)EditorResources::SW_Icon->GetWidth() / 3.f;
-			const f32 logoHeight = (f32)EditorResources::SW_Icon->GetHeight() / 3.f;
+			const f32 logoWidth = (f32)EditorResources::SW_Icon->GetWidth() / 4.f;
+			const f32 logoHeight = (f32)EditorResources::SW_Icon->GetHeight() / 4.f;
 			const ImVec2 logoOffset(20.0f + windowPadding.x, windowPadding.y - 1.2f);
 			const ImVec2 logoRectStart = { ImGui::GetItemRectMin().x + logoOffset.x, ImGui::GetItemRectMin().y + logoOffset.y };
 			const ImVec2 logoRectMax = { logoRectStart.x + logoWidth, logoRectStart.y + logoHeight };
@@ -289,13 +290,26 @@ namespace SW {
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("Scripting")) {
-				if (ImGui::MenuItem("Reload C# Assemblies", "Ctrl+B")) {
-					ReloadCSharpScripts();
+			if (ImGui::BeginMenu("Project")) {
+				if (ImGui::BeginMenuEx("Scripting", SW_ICON_LANGUAGE_CSHARP)) {
+					if (ImGui::MenuItem("Reload C# Assemblies", "Ctrl+B")) {
+						ReloadCSharpScripts();
+					}
+
+					ImGui::EndMenu();
+				}
+
+				if (ImGui::BeginMenuEx("Audio", SW_ICON_VOLUME_HIGH)) {
+					if (ImGui::MenuItem("Open Audio Event Manager")) {
+					
+					}
+				
+					ImGui::EndMenu();
 				}
 
 				ImGui::EndMenu();
 			}
+
 		}
 		GUI::Layout::EndMenuBar();
 
@@ -325,7 +339,6 @@ namespace SW {
 
 		if (m_OpenNewSceneModal) {
 			m_OpenNewSceneModal = false;
-			m_IsNewSceneModalOpen = true;
 
 			ImGui::OpenPopup("NewSceneModal");
 		}
@@ -363,7 +376,6 @@ namespace SW {
 			}
 
 			if (ImGui::Button("Cancel", ImVec2(100.f, 0))) {
-				m_IsNewSceneModalOpen = false;
 
 				ImGui::CloseCurrentPopup();
 			}
@@ -379,9 +391,9 @@ namespace SW {
 		//const bool alt = Input::IsKeyDown(KeyCode::LeftAlt) || Input::IsKeyDown(KeyCode::RightAlt);
 
 		switch (code) {
-			case KeyCode::Escape:
-				if (!m_IsNewSceneModalOpen)
-					Application::Get()->Close(); break;
+			//case KeyCode::Escape:
+				//if (!m_IsNewSceneModalOpen)
+					//Application::Get()->Close(); break;
 			case KeyCode::S:
 				if (ctrl && shift && ProjectContext::HasContext()) {
 					SaveProjectAs(); break;

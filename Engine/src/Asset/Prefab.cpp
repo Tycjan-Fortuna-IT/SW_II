@@ -57,6 +57,8 @@ namespace SW {
 		srcScene->CopyComponentIfExists<PrismaticJoint2DComponent>(dst, destReg, src);
 		srcScene->CopyComponentIfExists<SpringJoint2DComponent>(dst, destReg, src);
 		srcScene->CopyComponentIfExists<WheelJoint2DComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<AudioSourceComponent>(dst, destReg, src);
+		srcScene->CopyComponentIfExists<AudioListenerComponent>(dst, destReg, src);
 
 		CopyReferencedEntities(DistanceJoint2DComponent);
 		CopyReferencedEntities(RevolutionJoint2DComponent);

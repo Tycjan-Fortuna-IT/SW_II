@@ -27,6 +27,8 @@ namespace SW {
 
 		static ma_engine* Get() { return &engine; }
 
+		static void ClearActiveInstances();
+
 	private:
 		static ma_engine engine;
 		static std::vector<SoundInstance*> m_ActiveInstances;

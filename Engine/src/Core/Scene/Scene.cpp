@@ -347,13 +347,6 @@ namespace SW {
 
 			alc.Listener = listener;
 		}
-
-		for (auto&& [handle, tc, alc] : m_Registry.GetEntitiesWith<TransformComponent, AudioListenerComponent>().each()) {
-			if (alc.Listener) {
-				delete alc.Listener;
-				alc.Listener = nullptr;
-			}
-		}
 	}
 
 	void Scene::OnRuntimeStop()
@@ -368,13 +361,14 @@ namespace SW {
 			ScriptingCore::Get().DestroyInstance(id.ID, m_ScriptStorage);
 		}
 
-		for (auto&& [handle, tc, asc] : m_Registry.GetEntitiesWith<TransformComponent, AudioSourceComponent>().each()) {
-			if (!asc.Handle)
-				continue;
-
-			if (asc.Instance && *asc.Instance)
-				(*asc.Instance)->Stop();
+		for (auto&& [handle, tc, alc] : m_Registry.GetEntitiesWith<TransformComponent, AudioListenerComponent>().each()) {
+			if (alc.Listener) {
+				delete alc.Listener;
+				alc.Listener = nullptr;
+			}
 		}
+
+		AudioEngine::ClearActiveInstances();
 
 		delete m_PhysicsWorld2D;
 		m_PhysicsWorld2D = nullptr;
@@ -528,6 +522,28 @@ namespace SW {
 						wjc.RuntimeJoint = nullptr;
 					}
 				}
+			}
+
+			for (auto&& [handle, tc, asc] : m_Registry.GetEntitiesWith<TransformComponent, AudioSourceComponent>().each()) {
+				if (!asc.Handle)
+					continue;
+
+				if (!asc.Is3D || !asc.Instance || *asc.Instance != nullptr)
+					continue;
+
+				const glm::mat4 invertedTransform = glm::inverse(Entity(handle, this).GetWorldSpaceTransformMatrix());
+				const glm::vec3 forward = glm::normalize(glm::vec3(invertedTransform * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
+			
+				(*asc.Instance)->SetPosition(tc.Position);
+				(*asc.Instance)->SetDirection(forward);
+			}
+
+			for (auto&& [handle, tc, alc] : m_Registry.GetEntitiesWith<TransformComponent, AudioListenerComponent>().each()) {
+				const glm::mat4 invertedTransform = glm::inverse(Entity(handle, this).GetWorldSpaceTransformMatrix());
+				const glm::vec3 forward = glm::normalize(glm::vec3(invertedTransform * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
+
+				alc.Listener->SetPosition(tc.Position);
+				alc.Listener->SetDirection(-forward);
 			}
 		}
 

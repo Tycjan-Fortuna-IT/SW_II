@@ -20,6 +20,8 @@ namespace SW {
 
 	void AudioEngine::Shutdown()
 	{
+		ClearActiveInstances();
+
 		ma_engine_uninit(&engine);
 	}
 
@@ -75,6 +77,21 @@ namespace SW {
 
 		m_ActiveInstances.push_back(soundInstance);
 		return &m_ActiveInstances.back();
+	}
+
+	void AudioEngine::ClearActiveInstances()
+	{
+		for (int i = 0; i < m_ActiveInstances.size(); i++) {
+			SoundInstance** instance = &m_ActiveInstances[i];
+
+			ASSERT(instance);
+
+			if (*instance) {
+				(*instance)->Stop();
+				delete* instance;
+				*instance = nullptr;
+			}
+		}
 	}
 
 }

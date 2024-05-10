@@ -5,7 +5,8 @@ namespace SW {
 	class Panel;
 	class SceneViewportPanel;
 
-	class EditorLayer final : public Layer {
+	class EditorLayer final : public Layer
+	{
 	public:
 		explicit EditorLayer(const std::string& name)
 			: Layer(name) {}
@@ -17,7 +18,6 @@ namespace SW {
 		bool m_WindowMaximized = true;
 
 		bool m_OpenNewSceneModal = false;
-		bool m_IsNewSceneModalOpen = false;
 
 		void OnAttach() override;
 		void OnDetach() override;

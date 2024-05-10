@@ -113,9 +113,9 @@ namespace SW {
 					finalPosition += m_EditorCamera->GetRight() * maxMoveSpeed;
 				else if (ImGui::IsKeyDown(ImGuiKey_A))
 					finalPosition -= m_EditorCamera->GetRight() * maxMoveSpeed;
-				else if (ImGui::IsKeyDown(ImGuiKey_Space))
+				else if (ImGui::IsKeyDown(ImGuiKey_E))
 					finalPosition += m_EditorCamera->GetUp() * maxMoveSpeed;
-				else if (ImGui::IsKeyDown(ImGuiKey_C))
+				else if (ImGui::IsKeyDown(ImGuiKey_Q))
 					finalPosition -= m_EditorCamera->GetUp() * maxMoveSpeed;
 			}
 		}
@@ -600,7 +600,12 @@ namespace SW {
 			mouseX >= 0 && mouseY >= 0 &&
 			mouseX < viewportSize.x && mouseY < viewportSize.y
 		) {
-			if (ImGuizmo::IsUsing() || ImGuizmo::IsOver())
+			if (
+				ImGuizmo::IsUsing() ||
+				(ImGuizmo::IsOver() && SelectionManager::IsSelected()) ||
+				m_IsGizmoBarHovered ||
+				m_IsToolbarHovered
+			)
 				return false;
 
 			int pickedID = m_Framebuffer->ReadPixel(1, (int)mouseX, (int)mouseY);
@@ -615,8 +620,7 @@ namespace SW {
 					SelectionManager::SelectByID(picked.GetID());
 				}
 			} else {
-				if (!ImGuizmo::IsOver() && !ImGuizmo::IsUsingAny() && !m_IsGizmoBarHovered && !m_IsToolbarHovered)
-					SelectionManager::Deselect();
+				SelectionManager::Deselect();
 			}
 		}
 		

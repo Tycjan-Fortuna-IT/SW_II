@@ -9,6 +9,7 @@
 #include "Core/Utils/TypeInfo.hpp"
 #include "Core/Utils/Input.hpp"
 #include "Asset/AssetManager.hpp"
+#include "Audio/AudioEngine.hpp"
 
 #ifdef SW_WINDOWS
 	#define SW_FUNCTION_NAME __func__
@@ -86,6 +87,7 @@ namespace SW {
 		RegisterManagedComponent<TextComponent>(coreAssembly);
 		RegisterManagedComponent<ScriptComponent>(coreAssembly);
 		RegisterManagedComponent<RigidBody2DComponent>(coreAssembly);
+		RegisterManagedComponent<AudioSourceComponent>(coreAssembly);
     }
 
 	u32 Application_GetVieportWidth() { return ScriptingCore::Get().GetCurrentScene()->GetViewportWidth(); }
@@ -551,6 +553,73 @@ namespace SW {
 		body->ApplyForce(*(const b2Vec2*)inForce, body->GetWorldCenter() + *(const b2Vec2*)inOffset, wake);
 	}
 
+	void AudioSourceComponent_Play(u64 entityID)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		AudioSourceComponent& asc = entity.GetComponent<AudioSourceComponent>();
+
+		Sound* sound = *AssetManager::GetAssetRaw<Sound>(asc.Handle);
+
+		SoundSpecification spec;
+		spec.Sound = sound;
+		spec.Pitch = asc.Pitch;
+		spec.Volume = asc.Volume;
+
+		if (asc.Is3D) {
+			spec.Looping = asc.Looping;
+			spec.Is3D = asc.Is3D;
+			spec.Attenuation = asc.Attenuation;
+			spec.RollOff = asc.RollOff;
+			spec.MinGain = asc.MinGain;
+			spec.MaxGain = asc.MaxGain;
+			spec.MinDistance = asc.MinDistance;
+			spec.MaxDistance = asc.MaxDistance;
+			spec.ConeInnerAngle = asc.ConeInnerAngle;
+			spec.ConeOuterAngle = asc.ConeOuterAngle;
+			spec.ConeOuterGain = asc.ConeOuterGain;
+			spec.DopplerFactor = asc.DopplerFactor;
+
+			const TransformComponent& tc = entity.GetComponent<TransformComponent>();
+			const glm::mat4 invertedTransform = glm::inverse(entity.GetWorldSpaceTransformMatrix());
+			const glm::vec3 forward = glm::normalize(glm::vec3(invertedTransform * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
+
+			asc.Instance = AudioEngine::PlaySound3D(spec, tc.Position, forward);
+		} else {
+			asc.Instance = AudioEngine::PlaySound(spec);
+		}
+	}
+
+	void AudioSourceComponent_Stop(u64 entityID)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		AudioSourceComponent& asc = entity.GetComponent<AudioSourceComponent>();
+
+		if (asc.Instance && *asc.Instance) {
+			(*asc.Instance)->Stop();
+		}
+	}
+
+	bool AudioSourceComponent_IsPlaying(u64 entityID)
+	{
+		Entity entity = GetEntityById(entityID);
+
+		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
+
+		AudioSourceComponent& asc = entity.GetComponent<AudioSourceComponent>();
+
+		if (asc.Instance && *asc.Instance) {
+			return (*asc.Instance)->IsPlaying();
+		}
+
+		return false;
+	}
+
 	void Input_GetWindowMousePosition(glm::vec2* outMousePosition)
 	{
 		*outMousePosition = Input::GetMousePosition();
@@ -655,5 +724,10 @@ namespace SW {
 		ADD_INTERNAL_CALL(Rigidbody2DComponent_SetVelocity);
 
 		ADD_INTERNAL_CALL(RigidBody2DComponent_ApplyForce);
+
+
+		ADD_INTERNAL_CALL(AudioSourceComponent_Play);
+		ADD_INTERNAL_CALL(AudioSourceComponent_Stop);
+		ADD_INTERNAL_CALL(AudioSourceComponent_IsPlaying);
     }
 }

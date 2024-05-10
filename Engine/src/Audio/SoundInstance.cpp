@@ -31,7 +31,7 @@ namespace SW {
 			ma_sound_set_cone(&m_Instance, spec.ConeInnerAngle, spec.ConeOuterAngle, spec.ConeOuterGain);
 			ma_sound_set_doppler_factor(&m_Instance, spec.DopplerFactor);
 		} else {
-			ma_sound_set_attenuation_model(&m_Instance, ma_attenuation_model_none);
+			ma_sound_set_spatialization_enabled(&m_Instance, MA_FALSE);
 		}
     }
 
