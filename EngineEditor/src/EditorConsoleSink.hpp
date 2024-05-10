@@ -20,7 +20,7 @@ namespace SW {
 			spdlog::memory_buf_t formatted;
 			spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
 
-			m_Messages[m_MessageCount++] = {
+			m_Messages[(size_t)m_MessageCount++] = {
 				.Level = [&msg]() -> LogLevel  {
 					if (msg.level == spdlog::level::trace) return LogLevel::LOG_LEVEL_TRACE;
 					else if (msg.level == spdlog::level::debug) return LogLevel::LOG_LEVEL_DEBUG;
@@ -39,7 +39,7 @@ namespace SW {
 		void flush_() override
 		{
 			for (int i = 0; i < m_MessageCount; i++) {
-				m_ConsolePanel->AddMessage(m_Messages[i]);
+				m_ConsolePanel->AddMessage(m_Messages[(size_t)i]);
 			}
 
 			m_MessageCount = 0;

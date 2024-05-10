@@ -567,9 +567,9 @@ namespace SW {
 		spec.Sound = sound;
 		spec.Pitch = asc.Pitch;
 		spec.Volume = asc.Volume;
+		spec.Looping = asc.Looping;
 
 		if (asc.Is3D) {
-			spec.Looping = asc.Looping;
 			spec.Is3D = asc.Is3D;
 			spec.Attenuation = asc.Attenuation;
 			spec.RollOff = asc.RollOff;

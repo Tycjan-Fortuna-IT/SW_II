@@ -121,6 +121,7 @@ namespace SW {
 					component.Handle = handle;
 				}
 				GUI::Properties::ScalarInputProperty<f32>(&component.TilingFactor, "Tiling", "Tiling factor of the texture (how many times the texture should be repeated)", 1.f, 5.f, 0.f, 20.f);
+				GUI::Properties::ScalarInputProperty<int>(&component.ZIndex, "Z-Index", "Z-Index of the sprite (higher z-index will be rendered on top)");
 				GUI::Properties::EndProperties();
 			}, true);
 
@@ -547,9 +548,9 @@ namespace SW {
 						spec.Sound = sound;
 						spec.Pitch = component.Pitch;
 						spec.Volume = component.Volume;
+						spec.Looping = component.Looping;
 
 						if (component.Is3D) {
-							spec.Looping = component.Looping;
 							spec.Is3D = component.Is3D;
 							spec.Attenuation = component.Attenuation;
 							spec.RollOff = component.RollOff;

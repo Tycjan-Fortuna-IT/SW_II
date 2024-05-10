@@ -60,16 +60,33 @@ namespace SW
 		public event Action<Entity>? OnCollision2DBegin;
 
 		/// <summary>
-		/// Event triggered when a 2D collision with another entity ends.
+		///		Event triggered when a 2D collision with another entity ends.
 		/// </summary>
 		/// <remarks>
 		/// 	The event handler receives the entity that this entity stopped colliding with.
 		/// </remarks>
 		public event Action<Entity>? OnCollision2DEnd;
 
+		/// <summary>
+		///		Event triggered when a 2D sensor with another entity begins.
+		///	</summary>
+		///	<remarks>
+		///		The event handler receives the entity that this entity started sensing.
+		/// </remarks>
+		public event Action<Entity>? OnSensor2DBegin;
+
+		/// <summary>
+		///		Event triggered when a 2D sensor with another entity ends.
+		///	</summary>
+		///	<remarks>
+		///		The event handler receives the entity that this entity stopped sensing.
+		/// </remarks>
+		public event Action<Entity>? OnSensor2DEnd;
+
 		private void OnCollision2DBeginInternal(ulong id) => OnCollision2DBegin?.Invoke(new Entity(id));
-		
 		private void OnCollision2DEndInternal(ulong id) => OnCollision2DEnd?.Invoke(new Entity(id));
+		private void OnSensor2DBeginInternal(ulong id) => OnSensor2DBegin?.Invoke(new Entity(id));
+		private void OnSensor2DEndInternal(ulong id) => OnSensor2DEnd?.Invoke(new Entity(id));
 
 		/// <summary>
 		///		Checks if this entity is a script entity of type T

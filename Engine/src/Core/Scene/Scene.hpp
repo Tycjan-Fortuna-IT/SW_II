@@ -286,6 +286,8 @@ namespace SW {
 		Entity InstantiatePrefab(const Prefab* prefab, const glm::vec3* position = nullptr, const glm::vec3* rotation = nullptr,
 			const glm::vec3* scale = nullptr);
 
+		void SortSpritesByDepth();
+
 	private:
 		Entity CreatePrefabricatedEntity(Entity src, std::unordered_map<u64, Entity>& duplicatedEntities, const glm::vec3* position = nullptr,
 			const glm::vec3* rotation = nullptr, const glm::vec3* scale = nullptr);

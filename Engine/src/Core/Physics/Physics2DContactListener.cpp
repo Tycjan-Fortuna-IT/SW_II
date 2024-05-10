@@ -46,17 +46,20 @@ namespace SW {
 			m_BuoyancyFluidFixturePairs.insert(std::make_pair(secondFixture, firstFixture));
 		}
 
-		const auto onContactBegin = [](Entity entity, Entity other) {
+		const auto onContactBegin = [](Entity entity, Entity other, bool isSensor) {
 			if (!entity.HasComponent<ScriptComponent>())
 				return;
 
 			ScriptComponent& sc = entity.GetComponent<ScriptComponent>();
 
-			sc.Instance.Invoke<u64>("OnCollision2DBeginInternal", other.GetID());
+			if (isSensor)
+				sc.Instance.Invoke<u64>("OnSensor2DBeginInternal", other.GetID());
+			else
+				sc.Instance.Invoke<u64>("OnCollision2DBeginInternal", other.GetID());
 		};
 
-		onContactBegin(firstEntity, secondEntity);
-		onContactBegin(secondEntity, firstEntity);
+		onContactBegin(firstEntity, secondEntity, isFirstFixtureSensor);
+		onContactBegin(secondEntity, firstEntity, isSecondFixtureSensor);
 	}
 
 	void Physics2DContactListener::EndContact(b2Contact* contact)
@@ -85,17 +88,20 @@ namespace SW {
 			m_BuoyancyFluidFixturePairs.erase(std::make_pair(secondFixture, firstFixture));
 		}
 
-		const auto onContactEnd = [](Entity entity, Entity other) {
+		const auto onContactEnd = [](Entity entity, Entity other, bool isSensor) {
 			if (!entity.HasComponent<ScriptComponent>())
 				return;
 
 			ScriptComponent& sc = entity.GetComponent<ScriptComponent>();
 
-			sc.Instance.Invoke<u64>("OnCollision2DEndInternal", other.GetID());
+			if (isSensor)
+				sc.Instance.Invoke<u64>("OnSensor2DEndInternal", other.GetID());
+			else
+				sc.Instance.Invoke<u64>("OnCollision2DEndInternal", other.GetID());
 		};
 
-		onContactEnd(firstEntity, secondEntity);
-		onContactEnd(secondEntity, firstEntity);
+		onContactEnd(firstEntity, secondEntity, isFirstFixtureSensor);
+		onContactEnd(secondEntity, firstEntity, isSecondFixtureSensor);
 	}
 
 	void Physics2DContactListener::PreSolve(b2Contact* /*contact*/, const b2Manifold* /*oldManifold*/)

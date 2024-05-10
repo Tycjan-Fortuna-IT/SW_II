@@ -72,6 +72,7 @@ namespace SW {
 			output << YAML::BeginMap;
 			output << YAML::Key << "Color" << YAML::Value << sc.Color;
 			output << YAML::Key << "AssetHandle" << YAML::Value << sc.Handle;
+			output << YAML::Key << "ZIndex" << YAML::Value << sc.ZIndex;
 
 			output << YAML::EndMap;
 		}
@@ -510,6 +511,7 @@ namespace SW {
 
 				sc.Color = spriteComponent["Color"].as<glm::vec4>();
 				sc.Handle = spriteComponent["AssetHandle"].as<AssetHandle>();
+				sc.ZIndex = spriteComponent["ZIndex"].as<i32>();
 			}
 
 			if (YAML::Node animatedSpriteComponent = entity["Entity"]["AnimatedSpriteComponent"]) {

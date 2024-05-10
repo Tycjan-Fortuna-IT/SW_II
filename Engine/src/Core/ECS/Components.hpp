@@ -87,6 +87,7 @@ namespace SW {
         glm::vec4 Color = glm::vec4(1.0f);
 		AssetHandle Handle = 0u; // sprite handle
 		f32 TilingFactor = 1.0f;
+		int ZIndex = 0;
 
         SpriteComponent() = default;
         SpriteComponent(const glm::vec4& color)

@@ -154,6 +154,13 @@ namespace SW {
 		return CreatePrefabricatedEntity(prefab->GetRootEntity(), duplicatedEntities, position, rotation, scale);
 	}
 
+	void Scene::SortSpritesByDepth()
+	{
+		m_Registry.GetRegistryHandle().sort<SpriteComponent>([](const SpriteComponent& lhs, const SpriteComponent& rhs) {
+			return lhs.ZIndex < rhs.ZIndex;
+		});
+	}
+
 #define CopyReferencedEntitiesPref(T) \
 { \
 	if (src.HasComponent<T>()) { \
@@ -258,6 +265,8 @@ namespace SW {
 
 	void Scene::OnRuntimeStart()
 	{
+		SortSpritesByDepth();
+
 		m_PhysicsFrameAccumulator = 0.0f;
 
 		m_PhysicsWorld2D = new b2World({ Gravity.x, Gravity.y });
@@ -311,9 +320,9 @@ namespace SW {
 				spec.Sound = sound;
 				spec.Pitch = asc.Pitch;
 				spec.Volume = asc.Volume;
+				spec.Looping = asc.Looping;
 
 				if (asc.Is3D) {
-					spec.Looping = asc.Looping;
 					spec.Is3D = asc.Is3D;
 					spec.Attenuation = asc.Attenuation;
 					spec.RollOff = asc.RollOff;
