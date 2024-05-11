@@ -414,6 +414,38 @@ namespace SW {
 						Renderer2D::DrawCircle(originCircleTransformMatrix, glm::vec4(1.f, 0.5f, 0.f, 1.f), 0.1f);
 					}
 				}
+
+				// Audio Source spheres visualization
+				{
+					for (auto&& [handle, asc] : m_ActiveScene->GetRegistry().GetEntitiesWith<AudioSourceComponent>().each()) {
+						if (!asc.Is3D)
+							continue;
+
+						Entity entity = { handle, m_ActiveScene };
+
+						TransformComponent tc = entity.GetWorldSpaceTransform();
+						glm::vec3 pos = tc.Position;
+
+						const f32 minDistance = asc.MinDistance;
+						const f32 maxDistance = asc.MaxDistance;
+
+						// outer sphere
+						glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos)
+							* glm::scale(glm::mat4(1.0f), glm::vec3(maxDistance * 2.0f));
+						
+						Renderer2D::DrawCircle(transform, glm::vec4(1.f, 0.5f, 0.f, 1.f), 0.02f);
+						Renderer2D::DrawCircle(glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec4(1.f, 0.5f, 0.f, 1.f), 0.02f);
+						Renderer2D::DrawCircle(glm::rotate(transform, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec4(1.f, 0.5f, 0.f, 1.f), 0.02f);
+
+						// inner sphere
+						transform = glm::translate(glm::mat4(1.0f), pos)
+							* glm::scale(glm::mat4(1.0f), glm::vec3(minDistance * 2.0f));
+
+						Renderer2D::DrawCircle(transform, glm::vec4(1.f, 0.5f, 0.f, 1.f), 0.02f);
+						Renderer2D::DrawCircle(glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec4(1.f, 0.5f, 0.f, 1.f), 0.02f);
+						Renderer2D::DrawCircle(glm::rotate(transform, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec4(1.f, 0.5f, 0.f, 1.f), 0.02f);
+					}
+				}
 			}
 
 			Renderer2D::EndScene();

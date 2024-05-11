@@ -521,18 +521,18 @@ namespace SW {
 					GUI::Properties::ScalarSliderProperty<f32>(&component.MinDistance, "Min Distance", "The minimum distance of the audio source (where the sound starts to fade)", 0.f, 1000.f);
 					GUI::Properties::ScalarSliderProperty<f32>(&component.MaxDistance, "Max Distance", "The maximum distance of the audio source (where the sound is inaudible)", 0.f, 1000.f);
 				
-					f32 coneInnerAngle = glm::degrees(component.ConeInnerAngle);
-					if (GUI::Properties::ScalarDragProperty<f32>(&coneInnerAngle, "Cone Inner Angle", "The inner angle of the cone in degrees", 1.f, 0.f, 360.f)) {
-						component.ConeInnerAngle = glm::radians(coneInnerAngle);
-					}
+					//f32 coneInnerAngle = glm::degrees(component.ConeInnerAngle);
+					//if (GUI::Properties::ScalarDragProperty<f32>(&coneInnerAngle, "Cone Inner Angle", "The inner angle of the cone in degrees", 1.f, 0.f, 360.f)) {
+						//component.ConeInnerAngle = glm::radians(coneInnerAngle);
+					//}
 
-					f32 coneOuterAngle = glm::degrees(component.ConeOuterAngle);
-					if (GUI::Properties::ScalarDragProperty<f32>(&coneOuterAngle, "Cone Outer Angle", "The outer angle of the cone in degrees", 1.f, 0.f, 360.f)) {
-						component.ConeOuterAngle = glm::radians(coneOuterAngle);
-					}
+					//f32 coneOuterAngle = glm::degrees(component.ConeOuterAngle);
+					//if (GUI::Properties::ScalarDragProperty<f32>(&coneOuterAngle, "Cone Outer Angle", "The outer angle of the cone in degrees", 1.f, 0.f, 360.f)) {
+						//component.ConeOuterAngle = glm::radians(coneOuterAngle);
+					//}
 
-					GUI::Properties::ScalarSliderProperty<f32>(&component.ConeOuterGain, "Cone Outer Gain", "The gain of the outer cone", 0.f, 1.f);
-					GUI::Properties::ScalarSliderProperty<f32>(&component.DopplerFactor, "Doppler Factor", "The Doppler factor of the audio source", 0.f, 10.f);
+					//GUI::Properties::ScalarSliderProperty<f32>(&component.ConeOuterGain, "Cone Outer Gain", "The gain of the outer cone", 0.f, 1.f);
+					//GUI::Properties::ScalarSliderProperty<f32>(&component.DopplerFactor, "Doppler Factor", "The Doppler factor of the audio source", 0.f, 10.f);
 				}
 				
 				GUI::Properties::BeginPropertyGrid("Control", "Start, Stop, Pause, Resume the audio source");
@@ -558,10 +558,10 @@ namespace SW {
 							spec.MaxGain = component.MaxGain;
 							spec.MinDistance = component.MinDistance;
 							spec.MaxDistance = component.MaxDistance;
-							spec.ConeInnerAngle = component.ConeInnerAngle;
-							spec.ConeOuterAngle = component.ConeOuterAngle;
-							spec.ConeOuterGain = component.ConeOuterGain;
-							spec.DopplerFactor = component.DopplerFactor;
+							//spec.ConeInnerAngle = component.ConeInnerAngle;
+							//spec.ConeOuterAngle = component.ConeOuterAngle;
+							//spec.ConeOuterGain = component.ConeOuterGain;
+							//spec.DopplerFactor = component.DopplerFactor;
 
 							const glm::mat4 invertedTransform = entity.GetWorldSpaceTransformMatrix();
 							const glm::vec3 forward = glm::normalize(glm::vec3(invertedTransform * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
@@ -588,17 +588,17 @@ namespace SW {
 			DrawComponent<AudioListenerComponent>(entity, [](AudioListenerComponent& component) {
 				GUI::Properties::BeginProperties("##audio_listener_property");
 
-				f32 coneInnerAngle = glm::degrees(component.ConeInnerAngle);
-				if (GUI::Properties::ScalarDragProperty<f32>(&coneInnerAngle, "Cone Inner Angle", "The inner angle of the cone in degrees", 1.f, 0.f, 360.f)) {
-					component.ConeInnerAngle = glm::radians(coneInnerAngle);
-				}
+				//f32 coneInnerAngle = glm::degrees(component.ConeInnerAngle);
+				//if (GUI::Properties::ScalarDragProperty<f32>(&coneInnerAngle, "Cone Inner Angle", "The inner angle of the cone in degrees", 1.f, 0.f, 360.f)) {
+					//component.ConeInnerAngle = glm::radians(coneInnerAngle);
+				//}
 
-				f32 coneOuterAngle = glm::degrees(component.ConeOuterAngle);
-				if (GUI::Properties::ScalarDragProperty<f32>(&coneOuterAngle, "Cone Outer Angle", "The outer angle of the cone in degrees", 1.f, 0.f, 360.f)) {
-					component.ConeOuterAngle = glm::radians(coneOuterAngle);
-				}
+				//f32 coneOuterAngle = glm::degrees(component.ConeOuterAngle);
+				//if (GUI::Properties::ScalarDragProperty<f32>(&coneOuterAngle, "Cone Outer Angle", "The outer angle of the cone in degrees", 1.f, 0.f, 360.f)) {
+					//component.ConeOuterAngle = glm::radians(coneOuterAngle);
+				//}
 
-				GUI::Properties::ScalarSliderProperty<f32>(&component.ConeOuterGain, "Cone Outer Gain", "The gain of the outer cone", 0.f, 1.f);
+				//GUI::Properties::ScalarSliderProperty<f32>(&component.ConeOuterGain, "Cone Outer Gain", "The gain of the outer cone", 0.f, 1.f);
 
 				GUI::Properties::EndProperties();
 			}, true);

@@ -28,8 +28,8 @@ namespace SW {
 			ma_sound_set_max_gain(&m_Instance, spec.MaxGain);
 			ma_sound_set_min_distance(&m_Instance, spec.MinDistance);
 			ma_sound_set_max_distance(&m_Instance, spec.MaxDistance);
-			ma_sound_set_cone(&m_Instance, spec.ConeInnerAngle, spec.ConeOuterAngle, spec.ConeOuterGain);
-			ma_sound_set_doppler_factor(&m_Instance, spec.DopplerFactor);
+			//ma_sound_set_cone(&m_Instance, spec.ConeInnerAngle, spec.ConeOuterAngle, spec.ConeOuterGain);
+			//ma_sound_set_doppler_factor(&m_Instance, spec.DopplerFactor);
 		} else {
 			ma_sound_set_spatialization_enabled(&m_Instance, MA_FALSE);
 		}

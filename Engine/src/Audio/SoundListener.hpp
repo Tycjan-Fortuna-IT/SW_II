@@ -5,7 +5,7 @@ namespace SW {
 	class SoundListener
 	{
 	public:
-		SoundListener(f32 coneInnerAngle, f32 coneOuterAngle, f32 coneOuterGain);
+		SoundListener(/*f32 coneInnerAngle, f32 coneOuterAngle, f32 coneOuterGain*/);
 		~SoundListener() = default;
 
 		void SetPosition(const glm::vec3& position) const;

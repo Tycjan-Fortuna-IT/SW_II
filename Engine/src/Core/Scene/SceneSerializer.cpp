@@ -443,21 +443,21 @@ namespace SW {
 			output << YAML::Key << "MaxGain" << YAML::Value << asc.MaxGain;
 			output << YAML::Key << "MinDistance" << YAML::Value << asc.MinDistance;
 			output << YAML::Key << "MaxDistance" << YAML::Value << asc.MaxDistance;
-			output << YAML::Key << "ConeInnerAngle" << YAML::Value << asc.ConeInnerAngle;
-			output << YAML::Key << "ConeOuterAngle" << YAML::Value << asc.ConeOuterAngle;
-			output << YAML::Key << "ConeOuterGain" << YAML::Value << asc.ConeOuterGain;
+			//output << YAML::Key << "ConeInnerAngle" << YAML::Value << asc.ConeInnerAngle;
+			//output << YAML::Key << "ConeOuterAngle" << YAML::Value << asc.ConeOuterAngle;
+			//output << YAML::Key << "ConeOuterGain" << YAML::Value << asc.ConeOuterGain;
 			output << YAML::Key << "DopplerFactor" << YAML::Value << asc.DopplerFactor;
 			output << YAML::EndMap;
 		}
 
 		if (entity.HasComponent<AudioListenerComponent>()) {
-			const AudioListenerComponent& alc = entity.GetComponent<AudioListenerComponent>();
+			//const AudioListenerComponent& alc = entity.GetComponent<AudioListenerComponent>();
 
 			output << YAML::Key << "AudioListenerComponent";
 			output << YAML::BeginMap;
-			output << YAML::Key << "ConeInnerAngle" << YAML::Value << alc.ConeInnerAngle;
-			output << YAML::Key << "ConeOuterAngle" << YAML::Value << alc.ConeOuterAngle;
-			output << YAML::Key << "ConeOuterGain" << YAML::Value << alc.ConeOuterGain;
+			//output << YAML::Key << "ConeInnerAngle" << YAML::Value << alc.ConeInnerAngle;
+			//output << YAML::Key << "ConeOuterAngle" << YAML::Value << alc.ConeOuterAngle;
+			//output << YAML::Key << "ConeOuterGain" << YAML::Value << alc.ConeOuterGain;
 			output << YAML::EndMap;
 		}
 
@@ -853,18 +853,18 @@ namespace SW {
 				asc.MaxGain = TryDeserializeNode<f32>(audioSourceComponent, "MaxGain", 1.0f);
 				asc.MinDistance = TryDeserializeNode<f32>(audioSourceComponent, "MinDistance", 0.3f);
 				asc.MaxDistance = TryDeserializeNode<f32>(audioSourceComponent, "MaxDistance", 100.0f);
-				asc.ConeInnerAngle = TryDeserializeNode<f32>(audioSourceComponent, "ConeInnerAngle", glm::radians(360.0f));
-				asc.ConeOuterAngle = TryDeserializeNode<f32>(audioSourceComponent, "ConeOuterAngle", glm::radians(360.0f));
-				asc.ConeOuterGain = TryDeserializeNode<f32>(audioSourceComponent, "ConeOuterGain", 0.0f);
+				//asc.ConeInnerAngle = TryDeserializeNode<f32>(audioSourceComponent, "ConeInnerAngle", glm::radians(360.0f));
+				//asc.ConeOuterAngle = TryDeserializeNode<f32>(audioSourceComponent, "ConeOuterAngle", glm::radians(360.0f));
+				//asc.ConeOuterGain = TryDeserializeNode<f32>(audioSourceComponent, "ConeOuterGain", 0.0f);
 				asc.DopplerFactor = TryDeserializeNode<f32>(audioSourceComponent, "DopplerFactor", 1.0f);
 			}
 
 			if (YAML::Node audioListenerComponent = entity["Entity"]["AudioListenerComponent"]) {
-				AudioListenerComponent& alc = deserialized.AddComponent<AudioListenerComponent>();
+				//AudioListenerComponent& alc = deserialized.AddComponent<AudioListenerComponent>();
 
-				alc.ConeInnerAngle = TryDeserializeNode<f32>(audioListenerComponent, "ConeInnerAngle", glm::radians(360.0f));
-				alc.ConeOuterAngle = TryDeserializeNode<f32>(audioListenerComponent, "ConeOuterAngle", glm::radians(360.0f));
-				alc.ConeOuterGain = TryDeserializeNode<f32>(audioListenerComponent, "ConeOuterGain", 0.0f);
+				//alc.ConeInnerAngle = TryDeserializeNode<f32>(audioListenerComponent, "ConeInnerAngle", glm::radians(360.0f));
+				//alc.ConeOuterAngle = TryDeserializeNode<f32>(audioListenerComponent, "ConeOuterAngle", glm::radians(360.0f));
+				//alc.ConeOuterGain = TryDeserializeNode<f32>(audioListenerComponent, "ConeOuterGain", 0.0f);
 			}
 		}
 	}

@@ -29,11 +29,11 @@ namespace SW {
 		f32 MaxGain = 1.0f;
 		f32 MinDistance = 0.3f;
 		f32 MaxDistance = 100.0f;
-		f32 ConeInnerAngle = glm::radians(360.0f);
-		f32 ConeOuterAngle = glm::radians(360.0f);
-		f32 ConeOuterGain = 0.0f;
+		//f32 ConeInnerAngle = glm::radians(360.0f);
+		//f32 ConeOuterAngle = glm::radians(360.0f);
+		//f32 ConeOuterGain = 0.0f;
 		
-		f32 DopplerFactor = 1.0f;
+		//f32 DopplerFactor = 1.0f;
 	};
 
 	class SoundInstance

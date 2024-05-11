@@ -4,9 +4,9 @@
 
 namespace SW {
 
-	SoundListener::SoundListener(f32 coneInnerAngle, f32 coneOuterAngle, f32 coneOuterGain)
+	SoundListener::SoundListener(/*f32 coneInnerAngle, f32 coneOuterAngle, f32 coneOuterGain*/)
 	{
-		ma_engine_listener_set_cone(AudioEngine::Get(), m_ListenerIndex, coneInnerAngle, coneOuterAngle, coneOuterGain);
+		//ma_engine_listener_set_cone(AudioEngine::Get(), m_ListenerIndex, coneInnerAngle, coneOuterAngle, coneOuterGain);
 		ma_engine_listener_set_position(AudioEngine::Get(), m_ListenerIndex, 0.0f, 0.0f, 0.0f);
 		ma_engine_listener_set_direction(AudioEngine::Get(), m_ListenerIndex, 0.0f, 0.0f, -1.0f);
 		ma_engine_listener_set_world_up(AudioEngine::Get(), m_ListenerIndex, 0.0f, 1.0f, 0.0f);

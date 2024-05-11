@@ -330,10 +330,10 @@ namespace SW {
 					spec.MaxGain = asc.MaxGain;
 					spec.MinDistance = asc.MinDistance;
 					spec.MaxDistance = asc.MaxDistance;
-					spec.ConeInnerAngle = asc.ConeInnerAngle;
-					spec.ConeOuterAngle = asc.ConeOuterAngle;
-					spec.ConeOuterGain = asc.ConeOuterGain;
-					spec.DopplerFactor = asc.DopplerFactor;
+					//spec.ConeInnerAngle = asc.ConeInnerAngle;
+					//spec.ConeOuterAngle = asc.ConeOuterAngle;
+					//spec.ConeOuterGain = asc.ConeOuterGain;
+					//spec.DopplerFactor = asc.DopplerFactor;
 
 					const glm::mat4 invertedTransform = glm::inverse(Entity(handle, this).GetWorldSpaceTransformMatrix());
 					const glm::vec3 forward = glm::normalize(glm::vec3(invertedTransform * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
@@ -346,7 +346,7 @@ namespace SW {
 		}
 
 		for (auto&& [handle, tc, alc] : m_Registry.GetEntitiesWith<TransformComponent, AudioListenerComponent>().each()) {
-			SoundListener* listener = new SoundListener(alc.ConeInnerAngle, alc.ConeOuterAngle, alc.ConeOuterGain);
+			SoundListener* listener = new SoundListener(/*alc.ConeInnerAngle, alc.ConeOuterAngle, alc.ConeOuterGain*/);
 
 			const glm::mat4 invertedTransform = glm::inverse(Entity(handle, this).GetWorldSpaceTransformMatrix());
 			const glm::vec3 forward = glm::normalize(glm::vec3(invertedTransform * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
