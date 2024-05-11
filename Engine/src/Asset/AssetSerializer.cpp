@@ -60,15 +60,19 @@ namespace SW {
 
 		Sprite* sprite = new Sprite();
 
-		const u64 handle = data["SpritesheetTextureHandle"].as<u64>();
+		const u64 handle = TryDeserializeNode<u64>(data, "SpritesheetTextureHandle", 0);
 		const bool isValid = AssetManager::IsValid(handle);
 		Texture2D** texture = isValid ? AssetManager::GetAssetRaw<Texture2D>(handle) : &EditorResources::MissingAssetIcon;
 
 		sprite->SetTexture(texture);
-		sprite->TexCordLeftDown = isValid ? data["TexCordLeftDown"].as<glm::vec2>() : glm::vec2(0.0f, 0.0f);
-		sprite->TexCordRightDown = isValid ? data["TexCordRightDown"].as<glm::vec2>() : glm::vec2(1.0f, 0.0f);
-		sprite->TexCordUpRight = isValid ? data["TexCordUpRight"].as<glm::vec2>() : glm::vec2(1.0f, 1.0f);
-		sprite->TexCordUpLeft = isValid ? data["TexCordUpLeft"].as<glm::vec2>() : glm::vec2(0.0f, 1.0f);
+		sprite->TexCordLeftDown = isValid ? 
+			TryDeserializeNode<glm::vec2>(data, "TexCordLeftDown", glm::vec2(0.0f, 0.0f)) : glm::vec2(0.0f, 0.0f);
+		sprite->TexCordRightDown = isValid ?
+			TryDeserializeNode<glm::vec2>(data, "TexCordRightDown", glm::vec2(1.0f, 0.0f)) : glm::vec2(1.0f, 0.0f);
+		sprite->TexCordUpRight = isValid ?
+			TryDeserializeNode<glm::vec2>(data, "TexCordUpRight", glm::vec2(1.0f, 1.0f)) : glm::vec2(1.0f, 1.0f);
+		sprite->TexCordUpLeft = isValid ?
+			TryDeserializeNode<glm::vec2>(data, "TexCordUpLeft", glm::vec2(0.0f, 1.0f)) : glm::vec2(0.0f, 1.0f);
 
 		return sprite;
 	}
@@ -134,24 +138,24 @@ namespace SW {
 
 		Spritesheet* spritesheet = new Spritesheet();
 
-		const u64 handle = data["TextureHandle"].as<u64>();
+		const u64 handle = TryDeserializeNode<u64>(data, "TextureHandle", 0);
 		Texture2D** texture = handle ? AssetManager::GetAssetRaw<Texture2D>(handle) : nullptr;
 
 		spritesheet->SetSpritesheetTexture(texture);
-		spritesheet->ViewZoom = data["ViewZoom"].as<f32>();
-		spritesheet->GridSize = data["GridSize"].as<f32>();
-		spritesheet->CenterOffset = data["CenterOffset"].as<glm::vec2>();
-		spritesheet->ViewPos = data["ViewPos"].as<glm::vec2>();
-		spritesheet->ShowImageBorders = data["ShowImageBorders"].as<bool>();
-		spritesheet->ExportPath = data["ExportPath"].as<std::string>();
+		spritesheet->ViewZoom = TryDeserializeNode<f32>(data, "ViewZoom", 1.0f);
+		spritesheet->GridSize = TryDeserializeNode<f32>(data, "GridSize", 32.0f);
+		spritesheet->CenterOffset = TryDeserializeNode<glm::vec2>(data, "CenterOffset", glm::vec2(0.0f, 0.0f));
+		spritesheet->ViewPos = TryDeserializeNode<glm::vec2>(data, "ViewPos", glm::vec2(0.0f, 0.0f));
+		spritesheet->ShowImageBorders = TryDeserializeNode<bool>(data, "ShowImageBorders", false);
+		spritesheet->ExportPath = TryDeserializeNode<std::string>(data, "ExportPath", "");
 
 		YAML::Node sprites = data["Sprites"];
 		for (YAML::Node sprite : sprites) {
-			std::string name = sprite["Sprite"]["Name"].as<std::string>();
+			std::string name = TryDeserializeNode<std::string>(sprite["Sprite"], "Name", "Sprite");
 
 			SpriteData spriteData(name);
-			spriteData.Position = sprite["Sprite"]["Position"].as<glm::vec2>();
-			spriteData.Size = sprite["Sprite"]["Size"].as<glm::vec2>();
+			spriteData.Position = TryDeserializeNode<glm::vec2>(sprite["Sprite"], "Position", glm::vec2(0.0f, 0.0f));
+			spriteData.Size = TryDeserializeNode<glm::vec2>(sprite["Sprite"], "Size", glm::vec2(1.0f, 1.0f));
 
 			spritesheet->Sprites.emplace_back(spriteData);
 		}
@@ -178,13 +182,13 @@ namespace SW {
 			return nullptr;
 		}
 
-		const u64 fontSourceHandle = data["FontSourceHandle"].as<u64>();
+		const u64 fontSourceHandle = TryDeserializeNode<u64>(data, "FontSourceHandle", 0);
 
 		const AssetMetaData& sourceMetadata = AssetManager::GetAssetMetaData(fontSourceHandle);
 
 		FontSpecification spec;
 		spec.Path = ProjectContext::Get()->GetAssetDirectory() / sourceMetadata.Path;
-		spec.Charset = (FontCharsetType)data["CharsetType"].as<int>();;
+		spec.Charset = (FontCharsetType)TryDeserializeNode<u32>(data, "Charset", (int)FontCharsetType::ASCII);
 		spec.PreloadedAtlas = FontCache::TryGetCachedAtlas(metadata.Handle, metadata.ModificationTime);
 
 		Font* font = new Font(spec);
@@ -259,13 +263,13 @@ namespace SW {
 
 		Animation2D* animation = new Animation2D();
 
-		animation->Speed = data["Speed"].as<f32>();
-		animation->ReverseAlongX = data["ReverseAlongX"].as<bool>();
-		animation->ReverseAlongY = data["ReverseAlongY"].as<bool>();
+		animation->Speed = TryDeserializeNode<f32>(data, "Speed", 1.0f);
+		animation->ReverseAlongX = TryDeserializeNode<bool>(data, "ReverseAlongX", false);
+		animation->ReverseAlongY = TryDeserializeNode<bool>(data, "ReverseAlongY", false);
 
 		YAML::Node sprites = data["Sprites"];
 		for (YAML::Node sprite : sprites) {
-			Sprite** spr = AssetManager::GetAssetRaw<Sprite>(sprite["Sprite"]["SpriteHandle"].as<u64>());
+			Sprite** spr = AssetManager::GetAssetRaw<Sprite>(TryDeserializeNode<u64>(sprite["Sprite"], "SpriteHandle", 0));
 
 			animation->Sprites.emplace_back(spr);
 		}
@@ -337,7 +341,7 @@ namespace SW {
 
 		SceneSerializer::DeserializeEntitiesNode(entities, prefabScene);
 
-		const u64 rootHandle = data["RootEntityHandle"].as<u64>();
+		const u64 rootHandle = TryDeserializeNode<u64>(data, "RootEntityHandle", 0);
 		prefab->SetRootEntity(prefabScene->GetEntityByID(rootHandle));
 
 		return prefab;

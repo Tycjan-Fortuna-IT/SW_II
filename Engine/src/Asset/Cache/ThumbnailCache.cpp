@@ -1,7 +1,6 @@
 #include "ThumbnailCache.hpp"
 
 #include "Core/OpenGL/Texture2D.hpp"
-#include "Asset/AssetSourceItem.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Utils/FileSystem.hpp"
 #include "Core/Utils/SerializationUtils.hpp"
@@ -72,17 +71,17 @@ namespace SW {
 					file.read(reinterpret_cast<char*>(&height), sizeof(i32));
 					file.read(reinterpret_cast<char*>(&channels), sizeof(i32));
 
-					char* data = new char[width * height * channels];
+					char* data = new char[(size_t)(width * height * channels)];
 					file.read(data, width * height * channels);
 					file.close();
 
 					TextureSpecification spec;
-					spec.Height = height;
-					spec.Width = width;
-					spec.Format = channels == 3 ? ImageFormat::RGB8 : ImageFormat::RGBA8;
+					spec.Height = (u32)height;
+					spec.Width = (u32)width;
+					spec.Format = (u32)channels == 3 ? ImageFormat::RGB8 : ImageFormat::RGBA8;
 
 					Texture2D* texture = new Texture2D(spec);
-					texture->SetData(data, width * height * channels);
+					texture->SetData(data, (u32)(width * height * channels));
 					delete[] data;
 
 					ThumbnailCacheData cacheData = ThumbnailCacheData{ texture, lastModified };
@@ -142,17 +141,17 @@ namespace SW {
 					file.read(reinterpret_cast<char*>(&height), sizeof(i32));
 					file.read(reinterpret_cast<char*>(&channels), sizeof(i32));
 
-					char* data = new char[width * height * channels];
+					char* data = new char[(size_t)(width * height * channels)];
 					file.read(data, width * height * channels);
 					file.close();
 
 					TextureSpecification spec;
-					spec.Height = height;
-					spec.Width = width;
+					spec.Height = (u32)height;
+					spec.Width = (u32)width;
 					spec.Format = channels == 3 ? ImageFormat::RGB8 : ImageFormat::RGBA8;
 
 					Texture2D* texture = new Texture2D(spec);
-					texture->SetData(data, width * height * channels);
+					texture->SetData(data, (u32)(width * height * channels));
 					delete[] data;
 
 					ThumbnailCacheData cacheData = ThumbnailCacheData{ texture, lastModified };
@@ -240,13 +239,13 @@ namespace SW {
 
 		ASSERT(data);
 
-		const u64 fontSourceHandle = data["FontSourceHandle"].as<u64>();
+		const u64 fontSourceHandle = TryDeserializeNode<u64>(data, "FontSourceHandle", 0);
 
 		const AssetMetaData& sourceMetadata = AssetManager::GetAssetMetaData(fontSourceHandle);
 
 		FontSpecification spec;
 		spec.Path = ProjectContext::Get()->GetAssetDirectory() / sourceMetadata.Path;
-		spec.Charset = (FontCharsetType)data["CharsetType"].as<int>();;
+		spec.Charset = (FontCharsetType)TryDeserializeNode<int>(data, "CharsetType", (int)FontCharsetType::ASCII);
 		spec.ApplyMSDFColoring = false;
 		spec.ForceHeight = 512;
 		spec.ForceWidth = 512;
@@ -271,12 +270,12 @@ namespace SW {
 
 		// Copy the font atlas texture since we delete font afterwards (maybe clean this later on)
 		TextureSpecification texSpec;
-		texSpec.Height = height;
-		texSpec.Width = width;
+		texSpec.Height = (u32)height;
+		texSpec.Width = (u32)width;
 		texSpec.Format = channels == 3 ? ImageFormat::RGB8 : ImageFormat::RGBA8;
 
 		Texture2D* texture = new Texture2D(texSpec);
-		texture->SetData((void*)bytes, width * height * channels);
+		texture->SetData((void*)bytes, (u32)(width * height * channels));
 
 		delete font;
 

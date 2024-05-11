@@ -449,6 +449,7 @@ namespace SW {
 	struct AudioListenerComponent
 	{
 		SoundListener* Listener = nullptr;
+
 		f32 ConeInnerAngle = glm::radians(360.0f);
 		f32 ConeOuterAngle = glm::radians(360.0f);
 		f32 ConeOuterGain = 0.0f;

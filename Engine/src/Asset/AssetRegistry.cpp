@@ -7,6 +7,7 @@
 #include "Core/Utils/Random.hpp"
 #include "AssetManager.hpp"
 #include "Core/Utils/FileSystem.hpp"
+#include "Core/Utils/SerializationUtils.hpp"
 
 namespace SW {
 
@@ -101,10 +102,10 @@ namespace SW {
 
 		for (const YAML::Node& asset : assets) {
 			AssetMetaData metadata;
-			metadata.Handle = asset["Handle"].as<AssetHandle>();
-			metadata.Path = asset["Path"].as<std::string>();
-			metadata.ModificationTime = asset["ModificationTime"].as<u64>();
-			metadata.Type = Asset::GetAssetTypeFromStringified(asset["Type"].as<std::string>());
+			metadata.Handle = TryDeserializeNode<AssetHandle>(asset, "Handle", 0);
+			metadata.Path = TryDeserializeNode<std::string>(asset, "Path", "");
+			metadata.ModificationTime = TryDeserializeNode<u64>(asset, "ModificationTime", 0);
+			metadata.Type = Asset::GetAssetTypeFromStringified(TryDeserializeNode<std::string>(asset, "Type", "Unknown"));
 
 			registeredEntries[metadata.Path] = metadata;
 		}

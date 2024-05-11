@@ -288,6 +288,16 @@ namespace SW {
 	 */
 	#define APP_FATAL(msg, ...) { SW_LOG(APP, LOG_LEVEL_FATAL, msg, ##__VA_ARGS__); DEBUG_BREAK(); }
 
+	 /**
+	  * @brief Logs a fatal message.
+	  * 	  	  This macro should be used to stop the application when hit.
+	  * @note Application use only.
+	  *
+	  * @param msg The message to log.
+	  * @param ... The arguments to the message to be formatted.
+	  */
+	#define APP_FATAL_NDB(msg, ...) { SW_LOG(APP, LOG_LEVEL_FATAL, msg, ##__VA_ARGS__); }
+
 #else
 
 	#define SW_LOG(type, level, msg, ...)

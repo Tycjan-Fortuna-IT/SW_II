@@ -3,6 +3,7 @@
 #include <yaml-cpp/yaml.h>
 
 #include "Project.hpp"
+#include "../Utils/SerializationUtils.hpp"
 
 namespace SW {
 
@@ -35,8 +36,8 @@ namespace SW {
 
 		YAML::Node projectNode = data["Project"];
 
-		deserialized.Name = projectNode["Name"].as<std::string>().c_str();
-		deserialized.AssetsDirectory = projectNode["AssetDirectory"].as<std::string>();
+		deserialized.Name = TryDeserializeNode<std::string>(projectNode, "Name", "Unnamed");
+		deserialized.AssetsDirectory = TryDeserializeNode<std::string>(projectNode, "AssetDirectory", "assets");
 
 		Project* newProject = new Project(deserialized);
 
