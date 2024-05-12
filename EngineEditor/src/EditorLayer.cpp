@@ -1,26 +1,27 @@
 #include "EditorLayer.hpp"
 
-#include "Panels/StatisticsPanel.hpp"
-#include "Panels/ConsolePanel.hpp"
-#include "Panels/AssetPanel.hpp"
-#include "Panels/SceneHierarchyPanel.hpp"
-#include "Panels/PropertiesPanel.hpp"
-#include "Core/Scene/SceneSerializer.hpp"
-#include "Core/Utils/FileSystem.hpp"
-#include "Managers/SelectionManager.hpp"
-#include "Panels/SceneViewportPanel.hpp"
-#include "Core/Project/ProjectContext.hpp"
-#include "Core/Project/Project.hpp"
-#include "Core/Project/ProjectSerializer.hpp"
-#include "Core/Scripting/ScriptingCore.hpp"
-#include "GUI/Editor/EditorResources.hpp"
 #include "AssetPanels/AssetEditorPanelManager.hpp"
-#include "GUI/GUI.hpp"
 #include "Audio/AudioEngine.hpp"
+#include "Core/Project/Project.hpp"
+#include "Core/Project/ProjectContext.hpp"
+#include "Core/Project/ProjectSerializer.hpp"
+#include "Core/Scene/SceneSerializer.hpp"
+#include "Core/Scripting/ScriptingCore.hpp"
+#include "Core/Utils/FileSystem.hpp"
 #include "EditorConsoleSink.hpp"
-#include "Panels/PanelManager.hpp"
+#include "GUI/Editor/EditorResources.hpp"
+#include "GUI/GUI.hpp"
+#include "Managers/SelectionManager.hpp"
 #include "Panels/AssetManagerPanel.hpp"
-#include "Panels/AudioManagerPanel.hpp"
+#include "Panels/AssetPanel.hpp"
+#include "Panels/AudioEventsPanel.hpp"
+#include "Panels/ConsolePanel.hpp"
+#include "Panels/PanelManager.hpp"
+#include "Panels/ProjectSettingsPanel.hpp"
+#include "Panels/PropertiesPanel.hpp"
+#include "Panels/SceneHierarchyPanel.hpp"
+#include "Panels/SceneViewportPanel.hpp"
+#include "Panels/StatisticsPanel.hpp"
 
 namespace SW {
 
@@ -58,7 +59,8 @@ namespace SW {
 		PanelManager::AddPanel(PanelType::SceneViewportPanel, m_Viewport);
 		PanelManager::AddPanel(PanelType::StatisticsPanel, new StatisticsPanel());
 		PanelManager::AddPanel(PanelType::AssetManagerPanel, new AssetManagerPanel());
-		PanelManager::AddPanel(PanelType::AudioManagerPanel, new AudioManagerPanel());
+		PanelManager::AddPanel(PanelType::AudioEventsPanel, new AudioEventsPanel());
+		PanelManager::AddPanel(PanelType::ProjectSettingsPanel, new ProjectSettingsPanel());
 
 		Application::Get()->GetWindow()->SetVSync(true);
 
@@ -300,6 +302,12 @@ namespace SW {
 			}
 
 			if (ImGui::BeginMenu("Project")) {
+				if (ProjectContext::HasContext()) {
+					if (ImGui::MenuItemEx("Project Settings", SW_ICON_SETTINGS)) {
+						PanelManager::OpenPanel(PanelType::ProjectSettingsPanel);
+					}
+				}
+
 				if (ImGui::BeginMenuEx("Scripting", SW_ICON_LANGUAGE_CSHARP)) {
 					if (ImGui::MenuItem("Reload C# Assemblies", "Ctrl+B")) {
 						ReloadCSharpScripts();
@@ -309,15 +317,15 @@ namespace SW {
 				}
 
 				if (ImGui::BeginMenuEx("Audio", SW_ICON_VOLUME_HIGH)) {
-					if (ImGui::MenuItem("Open Audio Event Manager")) {
-						PanelManager::OpenPanel(PanelType::AudioManagerPanel);
+					if (ImGui::MenuItem("Open Audio Events Panel")) {
+						PanelManager::OpenPanel(PanelType::AudioEventsPanel);
 					}
 				
 					ImGui::EndMenu();
 				}
 
 				if (ImGui::BeginMenuEx("Assets", SW_ICON_FILE)) {
-					if (ImGui::MenuItem("Open Asset Manager")) {
+					if (ImGui::MenuItem("Open Asset Manager Panel")) {
 						PanelManager::OpenPanel(PanelType::AssetManagerPanel);
 					}
 
@@ -329,7 +337,7 @@ namespace SW {
 
 			if (ImGui::BeginMenu("Panels")) {
 				for (auto& [type, panel] : PanelManager::GetPanels()) {
-					if (ImGui::MenuItem(panel->GetName(), nullptr, panel->IsOpen())) {
+					if (ImGui::MenuItemEx(panel->GetName(), panel->GetIcon(), nullptr, panel->IsOpen())) {
 						panel->IsOpen() ? PanelManager::ClosePanel(type) : PanelManager::OpenPanel(type);
 					}
 				}

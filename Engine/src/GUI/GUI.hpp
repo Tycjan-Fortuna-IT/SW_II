@@ -198,6 +198,8 @@ namespace SW::GUI {
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + y);
 	}
 
+	void HelpMarker(const char* desc);
+
 	/**
 	 * @brief Utility helper class to make use of the scope mechanic
 	 *		  so that we easily can avoid many calls to Push/Pop ID.
@@ -1363,10 +1365,10 @@ namespace SW::GUI {
 			ImGui::PushID(label);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + ImGui::GetStyle().FramePadding.y * 0.5f);
 			ImGui::TextUnformatted(label);
-			if (tooltip && ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
-				ImGui::BeginTooltip();
-				ImGui::TextUnformatted(tooltip);
-				ImGui::EndTooltip();
+
+			if (tooltip) {
+				ImGui::SameLine();
+				HelpMarker(tooltip);
 			}
 
 			ImGui::TableNextColumn();

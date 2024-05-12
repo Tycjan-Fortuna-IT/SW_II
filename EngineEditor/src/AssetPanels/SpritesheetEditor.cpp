@@ -81,7 +81,7 @@ namespace SW {
 
 				GUI::Properties::ScalarSliderProperty(&(*m_Spritesheet)->GridSize, "Grid Size", nullptr, MIN_GRID_SIZE, MAX_GRID_SIZE);
 				GUI::Properties::Vector2InputProperty(&(*m_Spritesheet)->CenterOffset, "Center Offset");
-				GUI::Properties::DrawFolderPickerProperty(&(*m_Spritesheet)->ExportPath, "Export Path");
+				GUI::Properties::DrawFolderPickerProperty(&(*m_Spritesheet)->ExportPath, ProjectContext::Get()->GetAssetDirectory(), "Export Path");
 
 				AssetHandle handle = (*m_Spritesheet)->GetSpritesheetTexture() ? (*m_Spritesheet)->GetSpritesheetTexture()->GetHandle() : 0u;
 				if (GUI::Properties::AssetSearchProperty<Texture2D>(&handle, "Spritesheet")) {

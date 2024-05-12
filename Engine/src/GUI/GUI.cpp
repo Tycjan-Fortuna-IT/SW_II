@@ -2,6 +2,21 @@
 
 namespace SW::GUI {
 
+	void HelpMarker(const char* desc)
+	{
+		GUI::ScopedStyle WindowPadding(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
+
+		ImGui::TextDisabled("(?)");
+
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
+			ImGui::BeginTooltip();
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::TextUnformatted(desc);
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
+		}
+	}
+
 	namespace Layout {
 
 		bool BeginMenuBar(const ImRect& barRectangle)
@@ -585,18 +600,20 @@ namespace SW::GUI {
 				GUI::ScopedStyle FrameRounding(ImGuiStyleVar_FrameRounding, 3.0f);
 				GUI::ScopedStyle FramePadding(ImGuiStyleVar_FramePadding, ImVec2(28.0f, framePaddingY));
 
+				bool isRelative = !relative.empty();
+
 				if (ImGui::Button("##folder_picker", { isPicked ? w - bw : w , ImGui::GetFrameHeight() })) {
-					std::filesystem::path pickedPath = FileSystem::OpenFolderDialog(relative.string().c_str());
+					std::filesystem::path pickedPath = FileSystem::OpenFolderDialog(isRelative ? "" : relative.string().c_str());
 
 					if (!pickedPath.empty()) {
-						*path = std::filesystem::relative(pickedPath, relative);
+						*path = isRelative ? std::filesystem::relative(pickedPath, relative) : pickedPath;
 						modified = true;
 					}
 				}
 				inputWidth = ImGui::GetItemRectSize().x;
 
 				if (ImGui::IsItemHovered() && isPicked) {
-					std::filesystem::path fullPath = relative / *path;
+					std::filesystem::path fullPath = isRelative ? (relative / *path) : *path;
 
 					ImGui::BeginTooltip();
 					ImGui::TextUnformatted(fullPath.string().c_str());

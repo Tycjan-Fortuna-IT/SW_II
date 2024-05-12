@@ -70,6 +70,8 @@ namespace SW {
 		 */
 		const std::string& GetName() const { return m_Config.Name; }
 
+		ProjectConfig& GetConfig() { return m_Config; }
+
 		EditorAssetManager* GetEditorAssetManager() const { return dynamic_cast<EditorAssetManager*>(m_AssetManager); }
 		AssetManagerBase* GetAssetManager() const { return m_AssetManager; }
 

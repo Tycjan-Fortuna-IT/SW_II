@@ -98,6 +98,8 @@ namespace SW {
 
 	void AssetPanel::LoadDirectoryEntries()
 	{
+		m_AssetsDirectory = ProjectContext::Get()->GetAssetDirectory();
+
 		const std::filesystem::path oldSelectedPath = m_SelectedItem->Path;
 
 		m_AssetTree->RefetchChanges();

@@ -23,7 +23,8 @@ namespace SW {
 		SceneViewportPanel,
 		StatisticsPanel,
 		AssetManagerPanel,
-		AudioManagerPanel,
+		AudioEventsPanel,
+		ProjectSettingsPanel,
 	};
 
 	/**
@@ -70,6 +71,7 @@ namespace SW {
 		bool IsOpen() const { return m_Open; }
 
 		const char* GetName() const { return m_Name; }
+		const char* GetIcon() const { return m_Icon; }
 
 		void Open() { m_Open = true; }
 
