@@ -11,6 +11,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -26,6 +27,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -41,6 +43,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -56,6 +59,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -69,7 +73,7 @@ Entities:
         Rotation: [0, 0, -3.85655267e-06]
         Scale: [3, 3, 1]
       AnimatedSpriteComponent:
-        CurrentFrame: 3
+        CurrentFrame: 2
         CurrentAnimationHandle: 650601428253319591
         DefaultAnimationHandle: 650601428253319591
         Animations:
@@ -119,6 +123,8 @@ Entities:
         Offset: [0, 0]
         Density: 1
         IsSensor: false
+      AudioListenerComponent:
+        {}
   - Entity:
       IDComponent:
         ID: 4038236824642947259
@@ -131,6 +137,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -166,6 +173,7 @@ Entities:
       SpriteComponent:
         Color: [1, 0, 0, 0.732620358]
         AssetHandle: 7794725320815178832
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 0
         ChildrenCount: 0
@@ -186,6 +194,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -201,6 +210,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -232,6 +242,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -247,6 +258,7 @@ Entities:
       SpriteComponent:
         Color: [1, 1, 1, 1]
         AssetHandle: 11023663839170045914
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 0
         ChildrenCount: 0
@@ -281,6 +293,7 @@ Entities:
       SpriteComponent:
         Color: [0.775401056, 0.240498707, 0.240498707, 1]
         AssetHandle: 0
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 17158307568581081913
         ChildrenCount: 0
@@ -296,6 +309,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -347,6 +361,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -362,6 +377,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -377,6 +393,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -392,6 +409,7 @@ Entities:
       SpriteComponent:
         Color: [1, 1, 1, 1]
         AssetHandle: 17898651313695350990
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 0
         ChildrenCount: 0
@@ -426,6 +444,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -441,6 +460,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -450,11 +470,11 @@ Entities:
       TagComponent:
         Tag: Eye
       TransformComponent:
-        Transform: [0.0525466315, 0.114650667, 0]
+        Transform: [-0.0327504277, 0.113396838, 0.000237941742]
         Rotation: [0, 0, 0]
         Scale: [2, 2, 1]
       AnimatedSpriteComponent:
-        CurrentFrame: 17
+        CurrentFrame: 5
         CurrentAnimationHandle: 13543331263469011293
         DefaultAnimationHandle: 13543331263469011293
         Animations:
@@ -462,6 +482,20 @@ Entities:
       RelationshipComponent:
         ParentID: 0
         ChildrenCount: 0
+      AudioSourceComponent:
+        AudioHandle: 16104452366063628818
+        Volume: 0.240999997
+        Pitch: 0.680999994
+        Looping: true
+        PlayOnCreate: true
+        Is3D: false
+        Attenuation: 2
+        RollOff: 1
+        MinGain: 0
+        MaxGain: 1
+        MinDistance: 5
+        MaxDistance: 6
+        DopplerFactor: 1
   - Entity:
       IDComponent:
         ID: 10973399195842580792
@@ -474,6 +508,7 @@ Entities:
       SpriteComponent:
         Color: [1, 1, 1, 1]
         AssetHandle: 8999320076268252657
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 0
         ChildrenCount: 0
@@ -496,24 +531,6 @@ Entities:
         Offset: [0, 0.119999997]
         Density: 1
         IsSensor: false
-  - Entity:
-      IDComponent:
-        ID: 12558525204125414419
-      TagComponent:
-        Tag: Eye
-      TransformComponent:
-        Transform: [-0.0434558801, 0.108328521, 0]
-        Rotation: [0, 0, 0]
-        Scale: [2, 2, 1]
-      AnimatedSpriteComponent:
-        CurrentFrame: 24
-        CurrentAnimationHandle: 0
-        DefaultAnimationHandle: 0
-        Animations:
-          []
-      RelationshipComponent:
-        ParentID: 0
-        ChildrenCount: 0
   - Entity:
       IDComponent:
         ID: 12899590937424841027
@@ -578,6 +595,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -666,6 +684,32 @@ Entities:
         IsSensor: false
   - Entity:
       IDComponent:
+        ID: 14952446886233477744
+      TagComponent:
+        Tag: PickupSound
+      TransformComponent:
+        Transform: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      RelationshipComponent:
+        ParentID: 0
+        ChildrenCount: 0
+      AudioSourceComponent:
+        AudioHandle: 1228078906311856759
+        Volume: 0.112000003
+        Pitch: 1
+        Looping: false
+        PlayOnCreate: false
+        Is3D: false
+        Attenuation: 0
+        RollOff: 1
+        MinGain: 0
+        MaxGain: 1
+        MinDistance: 0.300000012
+        MaxDistance: 100
+        DopplerFactor: 1
+  - Entity:
+      IDComponent:
         ID: 15188871572792218129
       TagComponent:
         Tag: Sprite
@@ -676,6 +720,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -691,6 +736,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -762,12 +808,13 @@ Entities:
       TagComponent:
         Tag: Sprite
       TransformComponent:
-        Transform: [-7.4505806e-09, 2.98023224e-08, -0.150000006]
+        Transform: [0.119262695, 2.98023224e-08, -0.150000006]
         Rotation: [0, 0, 0]
         Scale: [22.9235096, 13.7864265, 5.91136074]
       SpriteComponent:
         Color: [0.352941185, 0.129411772, 0.0196078438, 1]
         AssetHandle: 0
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 0
         ChildrenCount: 0
@@ -783,6 +830,7 @@ Entities:
       SpriteComponent:
         Color: [0, 0, 0, 1]
         AssetHandle: 0
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 17158307568581081913
         ChildrenCount: 0
@@ -798,6 +846,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -813,6 +862,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0
@@ -859,6 +909,7 @@ Entities:
       SpriteComponent:
         Color: [0.311044663, 0.326203227, 0.282593191, 1]
         AssetHandle: 12875758880104537401
+        ZIndex: 0
       RelationshipComponent:
         ParentID: 14340539390480082291
         ChildrenCount: 0

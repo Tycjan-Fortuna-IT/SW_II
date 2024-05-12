@@ -31,10 +31,10 @@ namespace SW {
 		 * @return A pointer to the newly created asset.
 		 */
 		template <typename T, typename... Args>
-			requires std::is_base_of_v<Asset, T>&& std::is_constructible_v<T, Args...>
+			requires std::is_base_of_v<Asset, T> && std::is_constructible_v<T, Args...>
 		T** CreateNew(const std::filesystem::path& path, Args&&... args)
 		{
-			Asset* newAsset = new T(std::forward<Args>(args)...);
+			Asset* newAsset = new T(std::forward<Args...>(args...));
 
 			std::map<AssetHandle, AssetMetaData>& avail = m_AvailRegistry.GetAvailableAssetsRaw();
 
@@ -97,6 +97,13 @@ namespace SW {
 		 * @return If the asset is contained.
 		 */
 		bool ContainsAsset(AssetHandle handle) const { return m_Registry.find(handle) != m_Registry.end(); }
+
+		/**
+		 * @brief Get the registry (all loaded assets).
+		 * 
+		 * @return const std::unordered_map<AssetHandle, Asset*> The registry.
+		 */
+		const std::unordered_map<AssetHandle, Asset*> GetLoadedAssets() const { return m_Registry; }
 
 	private:
 		std::unordered_map<AssetHandle, Asset*> m_Registry; // contains all loaded assets

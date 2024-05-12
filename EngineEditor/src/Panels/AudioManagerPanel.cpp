@@ -5,7 +5,7 @@ namespace SW {
 	AudioManagerPanel::AudioManagerPanel()
 		: Panel("Audio Manager", SW_ICON_VOLUME_HIGH, false) {}
 
-	void AudioManagerPanel::OnUpdate(Timestep dt)
+	void AudioManagerPanel::OnUpdate(Timestep /*dt*/)
 	{
 		
 	}

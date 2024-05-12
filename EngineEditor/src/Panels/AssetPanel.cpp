@@ -27,7 +27,7 @@ namespace SW {
 	AssetPanel::AssetPanel()
 		: Panel("Assets", SW_ICON_FOLDER_STAR, true), m_AssetTree(new AssetDirectoryTree())
 	{
-		EventSystem::Register(EVENT_CODE_PROJECT_LOADED, [this](UNUSED Event event) -> bool {
+		EventSystem::Register(EVENT_CODE_PROJECT_LOADED, [this](Event /*event*/) -> bool {
 			m_AssetsDirectory = ProjectContext::Get()->GetAssetDirectory();
 
 			m_AssetTree->TraverseDirectoryAndMapAssets();
@@ -36,7 +36,7 @@ namespace SW {
 			return false;
 		});
 
-		EventSystem::Register(EVENT_CODE_ASSET_DIR_CONTENT_CHANGED, [this](UNUSED Event event) -> bool {
+		EventSystem::Register(EVENT_CODE_ASSET_DIR_CONTENT_CHANGED, [this](Event /*event*/) -> bool {
 			LoadDirectoryEntries();
 
 			return true;

@@ -15,7 +15,6 @@ namespace SW {
 		bool m_WindowMaximized = true;
 
 		bool m_OpenNewSceneModal = false;
-		bool m_OpenAssetManagerModal = false;
 
 		void OnAttach() override;
 		void OnDetach() override;

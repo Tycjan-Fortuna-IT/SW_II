@@ -310,7 +310,7 @@ namespace SW {
 
 				if (ImGui::BeginMenuEx("Audio", SW_ICON_VOLUME_HIGH)) {
 					if (ImGui::MenuItem("Open Audio Event Manager")) {
-					
+						PanelManager::OpenPanel(PanelType::AudioManagerPanel);
 					}
 				
 					ImGui::EndMenu();
@@ -318,7 +318,7 @@ namespace SW {
 
 				if (ImGui::BeginMenuEx("Assets", SW_ICON_FILE)) {
 					if (ImGui::MenuItem("Open Asset Manager")) {
-						m_OpenAssetManagerModal = true;
+						PanelManager::OpenPanel(PanelType::AssetManagerPanel);
 					}
 
 					ImGui::EndMenu();

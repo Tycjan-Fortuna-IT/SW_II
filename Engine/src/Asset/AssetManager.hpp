@@ -147,6 +147,12 @@ namespace SW {
 		 */
 		static AssetRegistry& GetRegistryRaw() { return ProjectContext::Get()->GetAssetManager()->GetRegistryRaw(); }
 
+		/**
+		 * @brief Get the registry (all loaded assets).
+		 *
+		 * @return const std::unordered_map<AssetHandle, Asset*> The registry.
+		 */
+		static const std::unordered_map<AssetHandle, Asset*> GetLoadedAssets() { return ProjectContext::Get()->GetEditorAssetManager()->GetLoadedAssets(); }
 	};
 
 }

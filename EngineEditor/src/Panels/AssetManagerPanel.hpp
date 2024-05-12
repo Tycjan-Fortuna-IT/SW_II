@@ -17,7 +17,8 @@ namespace SW {
 		void OnRender() override;
 
 	private:
-
+		std::string m_AvailableSearchString;
+		std::string m_LoadedSearchString;
 	};
 
 }

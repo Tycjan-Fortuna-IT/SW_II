@@ -28,6 +28,9 @@ namespace SW {
 
 	void AssetRegistry::FetchDirectory(std::map<std::filesystem::path, AssetMetaData>& registered, const std::filesystem::path& dir, bool reload)
 	{
+		if (dir.filename() == "build" || dir.filename() == "cache")
+			return;
+
 		for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(dir)) {
 			const std::filesystem::path& rel = std::filesystem::relative(entry.path(), ProjectContext::Get()->GetAssetDirectory());
 
@@ -122,6 +125,9 @@ namespace SW {
 		output << YAML::Key << "Assets" << YAML::Value << YAML::BeginSeq;
 
 		for (auto&& [handle, metadata] : m_AvailableAssets) {
+			if (metadata.Type == AssetType::Directory) // Skip directories
+				continue;
+
 			output << YAML::BeginMap;
 
 			output << YAML::Key << "Handle" << YAML::Value << handle;
