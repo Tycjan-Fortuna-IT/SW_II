@@ -18,15 +18,14 @@
 #include "GUI/GUI.hpp"
 #include "Audio/AudioEngine.hpp"
 #include "EditorConsoleSink.hpp"
+#include "Panels/PanelManager.hpp"
+#include "Panels/AssetManagerPanel.hpp"
+#include "Panels/AudioManagerPanel.hpp"
 
 namespace SW {
 
 	void EditorLayer::OnAttach()
 	{
-		EditorResources::Initialize();
-		AssetEditorPanelManager::Initialize();
-		AudioEngine::Initialize();
-
 		const GUI::FontSpecification fontSpec("assets/fonts/Roboto/Roboto-Regular.ttf", "assets/fonts/Roboto/Roboto-Bold.ttf");
 
 		GUI::Appearance::ApplyStyle(GUI::Style());
@@ -39,20 +38,27 @@ namespace SW {
 			return OnKeyPressed(code);
 		});
 
-		m_Console = new ConsolePanel();
+		EditorResources::Initialize();
+		AudioEngine::Initialize();
+		PanelManager::Initialize();
+		AssetEditorPanelManager::Initialize();
+
+		ConsolePanel* console = new ConsolePanel();
 		m_Viewport = new SceneViewportPanel();
 
-		spdlog::sink_ptr logger = std::make_shared<EditorConsoleSink<std::mutex>>(m_Console);
+		spdlog::sink_ptr logger = std::make_shared<EditorConsoleSink<std::mutex>>(console);
 		logger->set_pattern("%v");
 
 		LogSystem::AddClientSink(logger);
 
-		m_Panels.emplace_back(m_Console);
-		m_Panels.emplace_back(m_Viewport);
-		m_Panels.emplace_back(new AssetPanel());
-		m_Panels.emplace_back(new PropertiesPanel(m_Viewport));
-		m_Panels.emplace_back(new SceneHierarchyPanel(m_Viewport));
-		m_Panels.emplace_back(new StatisticsPanel("Statistics"));
+		PanelManager::AddPanel(PanelType::AssetPanel, new AssetPanel());
+		PanelManager::AddPanel(PanelType::ConsolePanel, console);
+		PanelManager::AddPanel(PanelType::PropertiesPanel, new PropertiesPanel(m_Viewport));
+		PanelManager::AddPanel(PanelType::SceneHierarchyPanel, new SceneHierarchyPanel(m_Viewport));
+		PanelManager::AddPanel(PanelType::SceneViewportPanel, m_Viewport);
+		PanelManager::AddPanel(PanelType::StatisticsPanel, new StatisticsPanel());
+		PanelManager::AddPanel(PanelType::AssetManagerPanel, new AssetManagerPanel());
+		PanelManager::AddPanel(PanelType::AudioManagerPanel, new AudioManagerPanel());
 
 		Application::Get()->GetWindow()->SetVSync(true);
 
@@ -65,13 +71,9 @@ namespace SW {
 
 	void EditorLayer::OnDetach()
 	{
-		for (Panel* panel : m_Panels) {
-			delete panel;
-		}
-
 		EditorResources::Shutdown();
+		PanelManager::Shutdown();
 		AssetEditorPanelManager::Shutdown();
-
 		Renderer2D::Shutdown();
 
 		if (ProjectContext::HasContext())
@@ -84,11 +86,7 @@ namespace SW {
 	{
 		PROFILE_FUNCTION();
 
-		for (Panel* panel : m_Panels) {
-			if (panel->IsShowing())
-				panel->OnUpdate(dt);
-		}
-
+		PanelManager::OnUpdate(dt);
 		AssetEditorPanelManager::OnUpdate(dt);
 		AudioEngine::OnUpdate(dt);
 	}
@@ -140,14 +138,19 @@ namespace SW {
 		}
 
 		const f32 w = ImGui::GetContentRegionAvail().x;
-		constexpr f32 buttonsAreaWidth = 350; // just so it doesn't interfere with buttons on the right
+		constexpr f32 buttonsAreaWidth = 420; // just so it doesn't interfere with buttons on the right
 
-		ImGui::SetCursorPosX(230); // just so it doesn't interfere with the menubar on the left
-		ImGui::InvisibleButton("##titleBarDragZone", ImVec2(w - buttonsAreaWidth, titlebarHeight));
+		ImGui::SetCursorPosX(0);
+		ImGui::InvisibleButton("##titleBarDragZone_0", ImVec2(100, titlebarHeight));
 
-		if (ImGui::IsItemHovered()) {
+		if (GUI::IsItemHovered())
 			Application::Get()->GetWindow()->RegisterOverTitlebar(true);
-		}
+		
+		ImGui::SameLine(300); // just so it doesn't interfere with the menubar on the left
+		ImGui::InvisibleButton("##titleBarDragZone_1", ImVec2(w - buttonsAreaWidth, titlebarHeight));
+
+		if (GUI::IsItemHovered())
+			Application::Get()->GetWindow()->RegisterOverTitlebar(true);
 
 		{
 			const f32 logoOffset = 16.0f * 2.0f + 41.0f + windowPadding.x;
@@ -313,9 +316,26 @@ namespace SW {
 					ImGui::EndMenu();
 				}
 
+				if (ImGui::BeginMenuEx("Assets", SW_ICON_FILE)) {
+					if (ImGui::MenuItem("Open Asset Manager")) {
+						m_OpenAssetManagerModal = true;
+					}
+
+					ImGui::EndMenu();
+				}
+
 				ImGui::EndMenu();
 			}
 
+			if (ImGui::BeginMenu("Panels")) {
+				for (auto& [type, panel] : PanelManager::GetPanels()) {
+					if (ImGui::MenuItem(panel->GetName(), nullptr, panel->IsOpen())) {
+						panel->IsOpen() ? PanelManager::ClosePanel(type) : PanelManager::OpenPanel(type);
+					}
+				}
+
+				ImGui::EndMenu();
+			}
 		}
 		GUI::Layout::EndMenuBar();
 
@@ -336,11 +356,7 @@ namespace SW {
 			return DrawTitleBar();
 		});
 
-		for (Panel* panel : m_Panels) {
-			if (panel->IsShowing())
-				panel->OnRender();
-		}
-
+		PanelManager::OnRender();
 		AssetEditorPanelManager::OnRender();
 
 		if (m_OpenNewSceneModal) {
@@ -349,7 +365,7 @@ namespace SW {
 			ImGui::OpenPopup("NewSceneModal");
 		}
 
-		//ImGui::ShowStyleEditor();
+		//ImGui::ShowDemoWindow();
 
 		if (ImGui::BeginPopupModal("NewSceneModal", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 			ImGui::Text("Input the desired scene name with .sw extension!");
@@ -476,13 +492,13 @@ namespace SW {
 
 	void EditorLayer::ReloadCSharpScripts()
 	{
-		if (!ProjectContext::HasContext())
+		if (!ProjectContext::HasContext() || !m_Viewport->IsSceneLoaded())
 			return;
 
 		if (m_Viewport->GetCurrentScene()->GetCurrentState() != SceneState::Edit)
 			return;
 
-		SW_INFO("Reloading C# Scripts ...");
+		APP_INFO("Reloading C# Scripts ...");
 
 		ScriptingCore& core = ScriptingCore::Get();
 

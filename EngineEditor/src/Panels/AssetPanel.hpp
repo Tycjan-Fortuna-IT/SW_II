@@ -1,10 +1,9 @@
 /**
  * @file AssetPanel.hpp
- * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.2.1
- * @date 2024-03-29
+ * @version 0.2.2
+ * @date 2024-05-12
  *
- * @copyright Copyright (c) 2024 Tycjan Fortuna
+ * @copyright Copyright (c) 2024 SW
  */
 #pragma once
 
@@ -20,32 +19,21 @@ namespace SW {
 	struct AssetSourceItem;
 
 	/**
-	 * @brief The AssetPanel class represents a panel that displays the console window.
+	 * @brief The AssetPanel class represents a panel that displays the assets of the project
 	 *        in a tree-like structure.
 	 */
 	class AssetPanel final : public Panel
 	{
 	public:
-		/**
-		 * @brief Constructs a AssetPanel object with an optional name.
-		 * 
-		 * @param name The name of the panel. Default is "Assets".
-		 */
-		explicit AssetPanel(const char* name = "Assets");
-
-		/**
-		 * @brief Default destructor for the AssetPanel class.
-		 */
+		AssetPanel();
 		~AssetPanel() override;
 
-		/** @brief Copy constructor (deleted). */
 		AssetPanel(const AssetPanel& other) = delete;
-		/** @brief Move constructor (deleted). */
 		AssetPanel(AssetPanel&& other) = delete;
-		/** @brief Copy assignment operator (deleted). */
 		AssetPanel& operator=(const AssetPanel& other) = delete;
-		/** @brief Move assignment operator (deleted). */
 		AssetPanel& operator=(AssetPanel&& other) = delete;
+
+		PanelType GetPanelType() const override { return PanelType::AssetPanel; }
 
 		/**
 		 * @brief Called every frame to update the panel.

@@ -4,8 +4,8 @@
 
 namespace SW {
 
-	ConsolePanel::ConsolePanel(const char* name)
-		: Panel(name, SW_ICON_CONSOLE, true)
+	ConsolePanel::ConsolePanel()
+		: Panel("Console", SW_ICON_CONSOLE, true)
 	{
 		m_Messages.reserve(100);
 	}

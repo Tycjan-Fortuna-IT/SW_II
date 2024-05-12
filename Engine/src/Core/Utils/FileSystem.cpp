@@ -5,7 +5,6 @@
 #ifdef SW_WINDOWS
 	#include <ShlObj_core.h>
 	#include <comdef.h>
-	#include <commdlg.h>
 	#include <shellapi.h>
 #endif
 
@@ -85,12 +84,12 @@ namespace SW {
 		if (result == NFD_OKAY) {
 			return filePath.get();
 		} else if (result == NFD_CANCEL) {
-			return "";
+			return std::filesystem::path();
 		}
 
 		SW_ERROR("NFD-Extended threw an error: {}", NFD::GetError());
 
-		return "";
+		return std::filesystem::path();
     }
 
 	std::filesystem::path FileSystem::SaveFileDialog(const std::initializer_list<FileDialogFilterItem> filters)
@@ -102,12 +101,12 @@ namespace SW {
 			return filePath.get();
 		}
 		else if (result == NFD_CANCEL) {
-			return "";
+			return std::filesystem::path();
 		}
 
 		SW_ERROR("NFD-Extended threw an error: {}", NFD::GetError());
 
-		return "";
+		return std::filesystem::path();
 	}
 
     std::filesystem::path FileSystem::OpenFolderDialog(const char* initialFolder)
@@ -117,15 +116,15 @@ namespace SW {
 
 		switch (result) {
 			case NFD_OKAY: return filePath.get();
-			case NFD_CANCEL: return "";
+			case NFD_CANCEL: return std::filesystem::path();
 			case NFD_ERROR:
 			{
 				ASSERT(false, "NFD-Extended threw an error: {}", NFD::GetError());
-				return "";
+				return std::filesystem::path();
 			}
 		}
 
-		return "";
+		return std::filesystem::path();
     }
 
     void FileSystem::RevealFolderInFileExplorer(const std::filesystem::path& path)

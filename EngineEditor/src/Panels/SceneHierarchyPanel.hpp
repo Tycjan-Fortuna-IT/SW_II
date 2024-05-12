@@ -1,10 +1,9 @@
 /**
  * @file SceneHierarchyPanel.hpp
- * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.3
- * @date 2024-03-04
+ * @version 0.1.5
+ * @date 2024-05-12
  *
- * @copyright Copyright (c) 2024 Tycjan Fortuna
+ * @copyright Copyright (c) 2024 SW
  */
 #pragma once
 
@@ -26,24 +25,17 @@ namespace SW {
 	public:
 		/**
 		 * @brief Constructs a SceneHierarchyPanel object with an optional name.
-		 * 
 		 * @param context Current scene context.
 		 */
-		explicit SceneHierarchyPanel(SceneViewportPanel* sceneViewportPanel);
-
-		/**
-		 * @brief Default destructor for the SceneHierarchyPanel class.
-		 */
+		SceneHierarchyPanel(SceneViewportPanel* sceneViewportPanel);
 		~SceneHierarchyPanel() override = default;
 
-		/** @brief Copy constructor (deleted). */
 		SceneHierarchyPanel(const SceneHierarchyPanel& other) = delete;
-		/** @brief Move constructor (deleted). */
 		SceneHierarchyPanel(SceneHierarchyPanel&& other) = delete;
-		/** @brief Copy assignment operator (deleted). */
 		SceneHierarchyPanel& operator=(const SceneHierarchyPanel& other) = delete;
-		/** @brief Move assignment operator (deleted). */
 		SceneHierarchyPanel& operator=(SceneHierarchyPanel&& other) = delete;
+
+		PanelType GetPanelType() const override { return PanelType::SceneHierarchyPanel; }
 
 		/**
 		 * @brief Called every frame to update the panel.
@@ -78,6 +70,7 @@ namespace SW {
 
 		SceneViewportPanel* m_SceneViewportPanel = nullptr;	/**< The current scene viewport context. */
 
+	private:
 		/**
 		 * @brief Draws the entity creation menu in the scene hierarchy panel.
 		 *

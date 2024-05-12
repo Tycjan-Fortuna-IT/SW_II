@@ -13,6 +13,8 @@ namespace SW {
 
 	void AssetDirectoryTree::CleanUp(AssetSourceItem* item)
 	{
+		if (item == nullptr) return;
+
 		for (AssetSourceItem* child : item->Children) {
 			CleanUp(child);
 		}

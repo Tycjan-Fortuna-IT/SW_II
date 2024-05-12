@@ -13,18 +13,20 @@
 #include "Asset/Thumbnail.hpp"
 #include "Asset/Spritesheet.hpp"
 #include "GUI/Editor/EditorResources.hpp"
-#include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.hpp" // TODO - remove (because of Testbed)
+#ifdef TESTBED
+	#include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.hpp" // TODO - remove (because of Testbed)
+#else
+	#include "AssetPanels/AssetEditorPanelManager.hpp"
+#endif
 #include "Asset/Animation2D.hpp"
 #include "Asset/Prefab.hpp"
 #include "GUI/GUI.hpp"
 
 namespace SW {
 
-	AssetPanel::AssetPanel(const char* name)
-		: Panel(name, SW_ICON_FOLDER_STAR, true)
+	AssetPanel::AssetPanel()
+		: Panel("Assets", SW_ICON_FOLDER_STAR, true), m_AssetTree(new AssetDirectoryTree())
 	{
-		m_AssetTree = new AssetDirectoryTree();
-
 		EventSystem::Register(EVENT_CODE_PROJECT_LOADED, [this](UNUSED Event event) -> bool {
 			m_AssetsDirectory = ProjectContext::Get()->GetAssetDirectory();
 
@@ -39,7 +41,6 @@ namespace SW {
 
 			return true;
 		});
-
 	}
 
 	AssetPanel::~AssetPanel()
@@ -85,7 +86,7 @@ namespace SW {
 			if (GUI::Popups::DrawDeleteFilePopup(m_FilesystemEntryToDelete, &m_OpenDeleteWarningModal))
 				LoadDirectoryEntries();
 
-			if (GUI::Popups::DrawAddNewFilePopup(m_AssetsDirectory / m_SelectedItem->Path, &m_OpenNewFileModal))
+			if (m_SelectedItem && GUI::Popups::DrawAddNewFilePopup(m_AssetsDirectory / m_SelectedItem->Path, &m_OpenNewFileModal))
 				LoadDirectoryEntries();
 
 			if (GUI::Popups::DrawDeleteFileToRenamePopup(m_FilesystemEntryToRename, &m_RenameEntryModal))

@@ -1,10 +1,9 @@
 /**
  * @file Panel.hpp
- * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.1
- * @date 2024-01-18
+ * @version 0.1.0
+ * @date 2024-05-12
  *
- * @copyright Copyright (c) 2024 Tycjan Fortuna
+ * @copyright Copyright (c) 2024 SW
  */
 #pragma once
 
@@ -15,10 +14,22 @@
 
 namespace SW {
 
+	enum class PanelType : u8
+	{
+		AssetPanel,
+		ConsolePanel,
+		PropertiesPanel,
+		SceneHierarchyPanel,
+		SceneViewportPanel,
+		StatisticsPanel,
+		AssetManagerPanel,
+		AudioManagerPanel,
+	};
+
 	/**
 	 * @brief Represents a GUI panel.
 	 * 
-	 * The Panel class provides a base class for creating GUI panels in an application.
+	 * The Panel class provides a base class for creating GUI panels in the application.
 	 * It contains common functionality for managing the panel's visibility, name, and icon.
 	 * Derived classes can override the OnUpdate and OnRender methods to implement custom behavior.
 	 */
@@ -32,20 +43,14 @@ namespace SW {
 		 * @param defaultShow Whether the panel should be shown by default.
 		 */
 		Panel(const char* name = "Unnamed Panel", const char* icon = "", bool defaultShow = false);
-
-		/**
-		 * @brief Destroys the Panel object.
-		 */
 		virtual ~Panel() = default;
 
-		/** @brief Copy constructor (deleted). */
 		Panel(const Panel& other) = delete;
-		/** @brief Move constructor (deleted). */
 		Panel(Panel&& other) = delete;
-		/** @brief Copy assignment operator (deleted). */
 		Panel& operator=(const Panel& other) = delete;
-		/** @brief Move assignment operator (deleted). */
 		Panel& operator=(Panel&& other) = delete;
+
+		virtual PanelType GetPanelType() const = 0;
 
 		/**
 		 * @brief Called every frame to update the panel.
@@ -62,7 +67,13 @@ namespace SW {
 		 * @brief Checks if the panel is currently showing.
 		 * @return True if the panel is showing, false otherwise.
 		 */
-		bool IsShowing() const { return m_Showing; }
+		bool IsOpen() const { return m_Open; }
+
+		const char* GetName() const { return m_Name; }
+
+		void Open() { m_Open = true; }
+
+		void Close() { m_Open = false; }
 
 	protected:
 		/**
@@ -77,12 +88,14 @@ namespace SW {
 		 */
 		void OnEnd() const;
 
-		bool m_Showing = false; ///< Flag indicating whether the panel is showing.
+	protected:
+		bool m_Open = false; ///< Flag indicating whether the panel is showing.
 
 	private:
+		const char* m_Name; ///< The name of the panel.
+		const char* m_Icon; ///< The icon of the panel.
+
 		std::string m_ID;   ///< The ID of the panel.
-		std::string m_Name; ///< The name of the panel.
-		std::string m_Icon; ///< The icon of the panel.
 	};
 
 }

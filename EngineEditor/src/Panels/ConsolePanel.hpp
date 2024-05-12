@@ -1,10 +1,9 @@
 /**
  * @file ConsolePanel.hpp
- * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.0.1
- * @date 2024-01-18
+ * @version 0.1.1
+ * @date 2024-05-12
  *
- * @copyright Copyright (c) 2024 Tycjan Fortuna
+ * @copyright Copyright (c) 2024 SW
  */
 #pragma once
 
@@ -20,32 +19,20 @@ namespace SW {
 	};
 
 	/**
-	 * @brief The ConsolePanel class represents a panel that displays the console window.
-	 *        in a tree-like structure.
+	 * @brief The ConsolePanel class represents a panel that displays the console window with application logs.
 	 */
 	class ConsolePanel final : public Panel
 	{
 	public:
-		/**
-		 * @brief Constructs a ConsolePanel object with an optional name.
-		 * 
-		 * @param name The name of the panel. Default is "Console".
-		 */
-		explicit ConsolePanel(const char* name = "Console");
-
-		/**
-		 * @brief Default destructor for the ConsolePanel class.
-		 */
+		ConsolePanel();
 		~ConsolePanel() override = default;
 
-		/** @brief Copy constructor (deleted). */
 		ConsolePanel(const ConsolePanel& other) = delete;
-		/** @brief Move constructor (deleted). */
 		ConsolePanel(ConsolePanel&& other) = delete;
-		/** @brief Copy assignment operator (deleted). */
 		ConsolePanel& operator=(const ConsolePanel& other) = delete;
-		/** @brief Move assignment operator (deleted). */
 		ConsolePanel& operator=(ConsolePanel&& other) = delete;
+
+		PanelType GetPanelType() const override { return PanelType::ConsolePanel; }
 
 		/**
 		 * @brief Called every frame to update the panel.

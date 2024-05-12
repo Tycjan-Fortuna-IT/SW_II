@@ -8,8 +8,8 @@
 
 namespace SW {
 
-	StatisticsPanel::StatisticsPanel(const char* name)
-		: Panel(name, SW_ICON_INFORMATION_VARIANT, true) {}
+	StatisticsPanel::StatisticsPanel()
+		: Panel("Statistics", SW_ICON_INFORMATION_VARIANT, true) {}
 
 	void StatisticsPanel::OnRender()
 	{

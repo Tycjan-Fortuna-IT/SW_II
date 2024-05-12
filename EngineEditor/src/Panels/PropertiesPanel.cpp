@@ -585,7 +585,7 @@ namespace SW {
 				GUI::Properties::EndProperties();
 			}, true);
 
-			DrawComponent<AudioListenerComponent>(entity, [](AudioListenerComponent& component) {
+			DrawComponent<AudioListenerComponent>(entity, [](AudioListenerComponent& /*component*/) {
 				GUI::Properties::BeginProperties("##audio_listener_property");
 
 				//f32 coneInnerAngle = glm::degrees(component.ConeInnerAngle);

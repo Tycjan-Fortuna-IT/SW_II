@@ -29,6 +29,10 @@ namespace BumCatcher
 			ScoreText = Scene.GetEntityByTag("ScoreText").GetComponent<TextComponent>()!;
 
 			OnCollision2DBegin += PlayerController_OnCollision2DBegin;
+			//OnCollision2DEnd += PlayerController_OnCollision2DEnd;
+			//OnSensor2DBegin += PlayerController_OnSensor2DBegin;
+			//OnSensor2DEnd += PlayerController_OnSensor2DEnd;
+
 			m_HoveringTextManager = Scene.GetEntityByTag("HoveringTextManager").As<HoveringTextManager>()!;
 
 			m_HPBar = Scene.GetEntityByTag("Main HP Bar").As<HealthBar>()!;

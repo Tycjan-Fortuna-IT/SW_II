@@ -2,9 +2,7 @@
 
 namespace SW {
 
-	class Panel;
 	class SceneViewportPanel;
-	class ConsolePanel;
 
 	class EditorLayer final : public Layer
 	{
@@ -12,14 +10,12 @@ namespace SW {
 		explicit EditorLayer(const std::string& name)
 			: Layer(name) {}
 
-		std::vector<Panel*> m_Panels;
-
 		SceneViewportPanel* m_Viewport = nullptr;
-		ConsolePanel* m_Console = nullptr;
 
 		bool m_WindowMaximized = true;
 
 		bool m_OpenNewSceneModal = false;
+		bool m_OpenAssetManagerModal = false;
 
 		void OnAttach() override;
 		void OnDetach() override;

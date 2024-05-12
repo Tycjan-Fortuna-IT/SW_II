@@ -415,7 +415,7 @@ namespace SW {
 			const glm::vec2 upRight = { (x + width) / texWidth, 1.0f - (y + height) / texHeight };
 			const glm::vec2 upLeft = { x / texWidth, 1.0f - (y + height) / texHeight };
 
-			SW_TRACE("Exporting {} sprite", sprite.Name);
+			APP_TRACE("Exporting {} sprite", sprite.Name);
 
 			YAML::Emitter output;
 

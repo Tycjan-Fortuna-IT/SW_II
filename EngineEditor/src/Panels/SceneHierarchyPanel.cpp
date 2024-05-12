@@ -182,6 +182,8 @@ namespace SW {
 				std::unordered_map<u64, Entity> duplicatedEntities;
 
 				m_SceneViewportPanel->GetCurrentScene()->DuplicateEntity(entity, duplicatedEntities);
+
+				APP_INFO("Entity with ID {0} was duplicated", id);
 			}
 
 			if (ImGui::MenuItemEx("Delete", SW_ICON_DELETE, "Del")) {
@@ -189,6 +191,8 @@ namespace SW {
 					SelectionManager::Deselect();
 
 				m_EntityToDelete = entity;
+
+				APP_INFO("Entity with ID {0} was deleted", id);
 			}
 
 			ImGui::Separator();
@@ -377,6 +381,8 @@ namespace SW {
 					std::unordered_map<u64, Entity> duplicatedEntities;
 
 					m_SceneViewportPanel->GetCurrentScene()->DuplicateEntity(entity, duplicatedEntities);
+
+					APP_INFO("Entity with ID {0} was duplicated", entity.GetID());
 				}
 				break;
 			}
@@ -384,6 +390,8 @@ namespace SW {
 			{
 				m_EntityToDelete = entity;
 				SelectionManager::Deselect();
+
+				APP_INFO("Entity with ID {0} was deleted", entity.GetID());
 				break;
 			}
 		}

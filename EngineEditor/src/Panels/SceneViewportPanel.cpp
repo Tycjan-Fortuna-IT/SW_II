@@ -14,8 +14,8 @@
 
 namespace SW {
 
-	SceneViewportPanel::SceneViewportPanel(const char* name)
-		: Panel(name, SW_ICON_TERRAIN, true)
+	SceneViewportPanel::SceneViewportPanel()
+		: Panel("Scene Viewport", SW_ICON_TERRAIN, true)
 	{
 		EventSystem::Register(EVENT_CODE_WINDOW_RESIZED, [this](Event event) -> bool {
 			const i32 width = event.Payload.i32[0];

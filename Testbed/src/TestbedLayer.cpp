@@ -1,5 +1,7 @@
 #include "TestbedLayer.hpp"
 
+#define TESTBED
+
 #include "Core/Renderer/RendererAPI.hpp"
 #include "Core/Project/ProjectSerializer.hpp"
 #include "Core/Project/Project.hpp"
