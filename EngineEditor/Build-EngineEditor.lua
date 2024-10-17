@@ -40,9 +40,6 @@ project "EngineEditor"
         "../Engine/src",
         "../Engine/vendor",
     }
-
-    IncludeEngineDependencies()
-    LinkEngineDependencies()
     
     filter "system:windows"
 	    linkoptions { "/NODEFAULTLIB:LIBCMT" }
@@ -61,6 +58,7 @@ project "EngineEditor"
         }
 
     filter "configurations:Debug"
+        FBS.ProcessDependencies(FBS.Configurations.Debug)
         defines { "SW_DEBUG_BUILD" }
         runtime "Debug"
         symbols "On"
@@ -73,6 +71,7 @@ project "EngineEditor"
         }
 
     filter "configurations:Release"
+        FBS.ProcessDependencies(FBS.Configurations.Release)
         defines { "SW_RELEASE_BUILD" }
         runtime "Release"
         optimize "On"
@@ -86,6 +85,7 @@ project "EngineEditor"
         }
 
     filter "configurations:Dist"
+        FBS.ProcessDependencies(FBS.Configurations.Dist)
         defines { "SW_DIST_BUILD" }
         runtime "Release"
         optimize "On"

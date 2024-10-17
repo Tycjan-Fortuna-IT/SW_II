@@ -37,3 +37,6 @@
 [submodule "Engine/vendor/imgui-node-editor"]
 	path = Engine/vendor/imgui-node-editor
 	url = https://github.com/thedmd/imgui-node-editor.git
+[submodule "vendor/FancyBuildSystem"]
+	path = vendor/FancyBuildSystem
+	url = https://github.com/Tycjan-Fortuna-IT/FancyBuildSystem.git

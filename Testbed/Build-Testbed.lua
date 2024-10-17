@@ -37,9 +37,6 @@ project "Testbed"
         "../Engine/src",
         "../Engine/vendor",
     }
-
-    IncludeEngineDependencies()
-    LinkEngineDependencies()
     
     filter "system:windows"
 	    linkoptions { "/NODEFAULTLIB:LIBCMT" }
@@ -58,17 +55,20 @@ project "Testbed"
         }
 
     filter "configurations:Debug"
+        FBS.ProcessDependencies(FBS.Configurations.Debug)
         defines { "SW_DEBUG_BUILD" }
         runtime "Debug"
         symbols "On"
 
     filter "configurations:Release"
+        FBS.ProcessDependencies(FBS.Configurations.Release)
         defines { "SW_RELEASE_BUILD" }
         runtime "Release"
         optimize "On"
         symbols "On"
 
     filter "configurations:Dist"
+        FBS.ProcessDependencies(FBS.Configurations.Dist)
         defines { "SW_DIST_BUILD" }
         runtime "Release"
         optimize "On"

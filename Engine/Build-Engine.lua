@@ -37,9 +37,6 @@ project "Engine"
     includedirs {
         "src"
     }
-
-    IncludeEngineDependencies()
-    LinkEngineDependencies()
     
     filter "system:windows"
         buildoptions {
@@ -58,17 +55,20 @@ project "Engine"
         }
 
     filter "configurations:Debug"
+        FBS.IncludeDependencies(FBS.Configurations.Debug)
         defines { "SW_DEBUG_BUILD" }
         runtime "Debug"
         symbols "On"
 
     filter "configurations:Release"
+        FBS.IncludeDependencies(FBS.Configurations.Release)
         defines { "SW_RELEASE_BUILD" }
         runtime "Release"
         optimize "On"
         symbols "On"
 
     filter "configurations:Dist"
+        FBS.IncludeDependencies(FBS.Configurations.Dist)
         defines { "SW_DIST_BUILD" }
         runtime "Release"
         optimize "On"
