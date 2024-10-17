@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GUI/Panel.hpp"
+#include "Audio/AudioEngine.hpp"
 
 namespace SW {
 
@@ -15,6 +16,10 @@ namespace SW {
 		void OnUpdate(Timestep dt) override;
 
 		void OnRender() override;
+	
+	private:
+		AudioEvent* m_SelectedEvent = nullptr;
+		std::string m_Selected;
 	};
 
 }

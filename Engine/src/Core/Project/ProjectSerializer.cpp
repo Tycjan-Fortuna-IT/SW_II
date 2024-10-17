@@ -3,7 +3,7 @@
 #include <yaml-cpp/yaml.h>
 
 #include "Project.hpp"
-#include "../Utils/SerializationUtils.hpp"
+#include "Core/Utils/SerializationUtils.hpp"
 
 namespace SW {
 
@@ -19,6 +19,8 @@ namespace SW {
 				out << YAML::BeginMap;	// Project
 				out << YAML::Key << "Name" << YAML::Value << config.Name.c_str();
 				out << YAML::Key << "AssetDirectory" << YAML::Value << config.AssetsDirectory.string();
+				out << YAML::Key << "AssetRegistryPath" << YAML::Value << config.AssetRegistryPath.string();
+				out << YAML::Key << "AudioRegistryPath" << YAML::Value << config.AudioRegistryPath.string();
 				out << YAML::EndMap;	// Project
 			}
 			out << YAML::EndMap;	// Root
@@ -30,14 +32,15 @@ namespace SW {
 
 	Project* ProjectSerializer::Deserialize(const std::string& path)
 	{
-		ProjectConfig deserialized;
-
 		YAML::Node data = YAML::LoadFile(path);
 
 		YAML::Node projectNode = data["Project"];
 
+		ProjectConfig deserialized;
 		deserialized.Name = TryDeserializeNode<std::string>(projectNode, "Name", "Unnamed");
 		deserialized.AssetsDirectory = TryDeserializeNode<std::string>(projectNode, "AssetDirectory", "assets");
+		deserialized.AssetRegistryPath = TryDeserializeNode<std::string>(projectNode, "AssetRegistryPath", "assets/assets.sw_registry");
+		deserialized.AudioRegistryPath = TryDeserializeNode<std::string>(projectNode, "AudioRegistryPath", "assets/audio.sw_registry");
 
 		Project* newProject = new Project(deserialized);
 

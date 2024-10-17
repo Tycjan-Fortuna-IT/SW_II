@@ -30,6 +30,20 @@ namespace SW {
 						}
 					}
 
+					std::filesystem::path assetRegistryPath = ProjectContext::Get()->GetAssetRegistryPath();
+					if (GUI::Properties::DrawFilePickerProperty(&assetRegistryPath, "", { { "SW Asset Registry", "sw_registry" } }, "Asset registry path", "Select the path to the asset registry file. DO NOT CHANGE while any scene or assets are loaded.")) {
+						if (!assetRegistryPath.empty()) {
+							ProjectContext::Get()->GetConfig().AssetRegistryPath = assetRegistryPath;
+						}
+					}
+
+					std::filesystem::path audioRegistryPath = ProjectContext::Get()->GetAudioRegistryPath();
+					if (GUI::Properties::DrawFilePickerProperty(&audioRegistryPath, "", { { "SW Audio Registry", "sw_registry" } }, "Audio registry path", "Select the path to the audio registry file. DO NOT CHANGE while any scene or assets are loaded.")) {
+						if (!audioRegistryPath.empty()) {
+							ProjectContext::Get()->GetConfig().AudioRegistryPath = audioRegistryPath;
+						}
+					}
+
 					GUI::Properties::EndProperties();
 
 					GUI::Layout::EndHeaderCollapse();

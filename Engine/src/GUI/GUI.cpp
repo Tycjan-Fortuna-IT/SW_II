@@ -600,7 +600,7 @@ namespace SW::GUI {
 				GUI::ScopedStyle FrameRounding(ImGuiStyleVar_FrameRounding, 3.0f);
 				GUI::ScopedStyle FramePadding(ImGuiStyleVar_FramePadding, ImVec2(28.0f, framePaddingY));
 
-				bool isRelative = !relative.empty();
+				const bool isRelative = !relative.empty();
 
 				if (ImGui::Button("##folder_picker", { isPicked ? w - bw : w , ImGui::GetFrameHeight() })) {
 					std::filesystem::path pickedPath = FileSystem::OpenFolderDialog(isRelative ? "" : relative.string().c_str());
@@ -672,18 +672,20 @@ namespace SW::GUI {
 				GUI::ScopedStyle FrameRounding(ImGuiStyleVar_FrameRounding, 3.0f);
 				GUI::ScopedStyle FramePadding(ImGuiStyleVar_FramePadding, ImVec2(28.0f, framePaddingY));
 
+				const bool isRelative = !relative.empty();
+
 				if (ImGui::Button("##file_picker", { isPicked ? w - bw : w , ImGui::GetFrameHeight() })) {
 					std::filesystem::path pickedPath = FileSystem::OpenFileDialog(filters);
 
 					if (!pickedPath.empty()) {
-						*path = std::filesystem::relative(pickedPath, relative);
+						*path = isRelative ? std::filesystem::relative(pickedPath, relative) : pickedPath;
 						modified = true;
 					}
 				}
 				inputWidth = ImGui::GetItemRectSize().x;
 
 				if (ImGui::IsItemHovered() && isPicked) {
-					std::filesystem::path fullPath = relative / *path;
+					std::filesystem::path fullPath = isRelative ? (relative / *path) : *path;
 
 					ImGui::BeginTooltip();
 					ImGui::TextUnformatted(fullPath.string().c_str());

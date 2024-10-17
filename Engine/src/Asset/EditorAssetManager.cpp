@@ -48,6 +48,8 @@ namespace SW {
 
 		m_Registry.erase(handle);
 
+		APP_INFO("Asset with handle {0} was unloaded", handle);
+
 		return true;
     }
 
@@ -66,6 +68,8 @@ namespace SW {
 		m_Registry[handle] = reloadedAsset;
 
 		delete oldAsset;
+
+		APP_INFO("Asset with handle {0} was reloaded", handle);
 
 		return true;
     }

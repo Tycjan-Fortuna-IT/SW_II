@@ -4,6 +4,7 @@
 
 #include "Core/Timestep.hpp"
 #include "SoundInstance.hpp"
+#include "AudioEvent.hpp"
 
 namespace SW {
 
@@ -25,13 +26,18 @@ namespace SW {
 
 		static SoundInstance** PlaySound3D(const SoundSpecification& spec, const glm::vec3& position, const glm::vec3& direction);
 
+		static SoundInstance** DispatchAudioEvent(const std::string& name);
+
 		static ma_engine* Get() { return &engine; }
+
+		static std::unordered_map<std::string, AudioEvent>& GetAudioEvents() { return s_AudioEvents; }
 
 		static void ClearActiveInstances();
 
 	private:
 		static ma_engine engine;
-		static std::vector<SoundInstance*> m_ActiveInstances;
+		static std::vector<SoundInstance*> s_ActiveInstances;
+		static std::unordered_map<std::string, AudioEvent> s_AudioEvents;
 	};
 
 }

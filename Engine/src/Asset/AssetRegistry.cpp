@@ -13,7 +13,7 @@ namespace SW {
 
 	AssetRegistry::AssetRegistry()
 	{
-		const std::filesystem::path regPath = ProjectContext::Get()->GetAssetDirectory() / "assets.sw_registry";
+		const std::filesystem::path& regPath = ProjectContext::Get()->GetAssetRegistryPath();
 
 		if (!FileSystem::Exists(regPath))
 			FileSystem::CreateFileWithContent(regPath, "Assets:\n");
@@ -95,9 +95,8 @@ namespace SW {
     void AssetRegistry::FetchAvailableAssets()
 	{
 		const std::filesystem::path& assetsDir = ProjectContext::Get()->GetAssetDirectory();
-		const std::string registryPath = (assetsDir / "assets.sw_registry").string();
 
-		YAML::Node registry = YAML::LoadFile(registryPath);
+		YAML::Node registry = YAML::LoadFile(ProjectContext::Get()->GetAssetRegistryPath().string());
 
 		YAML::Node assets = registry["Assets"];
 
@@ -142,7 +141,7 @@ namespace SW {
 
 		output << YAML::EndSeq;
 
-		std::ofstream fout(ProjectContext::Get()->GetAssetDirectory() / "assets.sw_registry");
+		std::ofstream fout(ProjectContext::Get()->GetAssetRegistryPath());
 		fout << output.c_str();
 	}
 

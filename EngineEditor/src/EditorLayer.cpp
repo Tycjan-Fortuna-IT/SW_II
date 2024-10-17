@@ -77,11 +77,10 @@ namespace SW {
 		PanelManager::Shutdown();
 		AssetEditorPanelManager::Shutdown();
 		Renderer2D::Shutdown();
+		AudioEngine::Shutdown();
 
 		if (ProjectContext::HasContext())
 			delete ProjectContext::Get();
-
-		AudioEngine::Shutdown();
 	}
 
 	void EditorLayer::OnUpdate(Timestep dt)
@@ -490,11 +489,11 @@ namespace SW {
 		if (!filepath.empty()) {
 			ProjectSerializer::Serialize(ProjectContext::Get(), filepath.string());
 
-			Scene* currentScene = m_Viewport->GetCurrentScene();
+			if (Scene* currentScene = m_Viewport->GetCurrentScene()) {
+				const AssetMetaData& metadata = AssetManager::GetAssetMetaData(currentScene->GetHandle());
 
-			const AssetMetaData& metadata = AssetManager::GetAssetMetaData(currentScene->GetHandle());
-
-			SceneSerializer::Serialize(currentScene, ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
+				SceneSerializer::Serialize(currentScene, ProjectContext::Get()->GetAssetDirectory() / metadata.Path);
+			}
 		}
 	}
 
