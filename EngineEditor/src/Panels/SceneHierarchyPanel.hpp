@@ -7,13 +7,13 @@
  */
 #pragma once
 
-#include "GUI/Panel.hpp"
 #include "Core/ECS/Components.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Scene/Scene.hpp"
+#include "GUI/Panel.hpp"
 
-namespace SW {
-
+namespace SW
+{
 	class SceneViewportPanel;
 
 	/**
@@ -30,10 +30,10 @@ namespace SW {
 		SceneHierarchyPanel(SceneViewportPanel* sceneViewportPanel);
 		~SceneHierarchyPanel() override = default;
 
-		SceneHierarchyPanel(const SceneHierarchyPanel& other) = delete;
-		SceneHierarchyPanel(SceneHierarchyPanel&& other) = delete;
+		SceneHierarchyPanel(const SceneHierarchyPanel& other)            = delete;
+		SceneHierarchyPanel(SceneHierarchyPanel&& other)                 = delete;
 		SceneHierarchyPanel& operator=(const SceneHierarchyPanel& other) = delete;
-		SceneHierarchyPanel& operator=(SceneHierarchyPanel&& other) = delete;
+		SceneHierarchyPanel& operator=(SceneHierarchyPanel&& other)      = delete;
 
 		PanelType GetPanelType() const override { return PanelType::SceneHierarchyPanel; }
 
@@ -50,7 +50,7 @@ namespace SW {
 
 		/**
 		 * @brief Draws the entity node in the scene hierarchy panel. Recursively calls itself for each child entity.
-		 * 
+		 *
 		 * @param entity The entity to draw.
 		 * @param id The unique id of the entity.
 		 * @param tc The tag component of the entity.
@@ -58,17 +58,18 @@ namespace SW {
 		 * @param depth The depth of the entity in the hierarchy.
 		 * @return ImRect The rectangle of the created entity node.
 		 */
-		ImRect RenderEntityNode(Entity entity, u64 id, TagComponent& tc, const RelationshipComponent& rsc, u32 depth = 0);
+		ImRect RenderEntityNode(Entity entity, u64 id, TagComponent& tc, const RelationshipComponent& rsc,
+		                        u32 depth = 0);
 
 	private:
-		Entity m_DraggedEntity;			/**< The entity that is currently being dragged. */
-		Entity m_DraggedEntityTarget;	/**< The entity that the dragged entity is being dragged onto. */
-		Entity m_EntityToDelete;		/**< The entity that is currently being deleted. */
-		Entity m_RenamingEntity;		/**< The entity that is currently being renamed. */
+		Entity m_DraggedEntity;       /**< The entity that is currently being dragged. */
+		Entity m_DraggedEntityTarget; /**< The entity that the dragged entity is being dragged onto. */
+		Entity m_EntityToDelete;      /**< The entity that is currently being deleted. */
+		Entity m_RenamingEntity;      /**< The entity that is currently being renamed. */
 
-		std::string m_SearchString;		/**< The search string used to filter entities in the scene hierarchy. */
+		std::string m_SearchString; /**< The search string used to filter entities in the scene hierarchy. */
 
-		SceneViewportPanel* m_SceneViewportPanel = nullptr;	/**< The current scene viewport context. */
+		SceneViewportPanel* m_SceneViewportPanel = nullptr; /**< The current scene viewport context. */
 
 	private:
 		/**
@@ -82,4 +83,4 @@ namespace SW {
 		bool OnKeyPressed(KeyCode code);
 	};
 
-}
+} // namespace SW

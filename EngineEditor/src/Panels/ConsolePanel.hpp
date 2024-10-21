@@ -9,8 +9,8 @@
 
 #include "GUI/Panel.hpp"
 
-namespace SW {
-
+namespace SW
+{
 	struct ConsoleMessage
 	{
 		LogLevel Level = LogLevel::LOG_LEVEL_TRACE;
@@ -27,10 +27,10 @@ namespace SW {
 		ConsolePanel();
 		~ConsolePanel() override = default;
 
-		ConsolePanel(const ConsolePanel& other) = delete;
-		ConsolePanel(ConsolePanel&& other) = delete;
+		ConsolePanel(const ConsolePanel& other)            = delete;
+		ConsolePanel(ConsolePanel&& other)                 = delete;
 		ConsolePanel& operator=(const ConsolePanel& other) = delete;
-		ConsolePanel& operator=(ConsolePanel&& other) = delete;
+		ConsolePanel& operator=(ConsolePanel&& other)      = delete;
 
 		PanelType GetPanelType() const override { return PanelType::ConsolePanel; }
 
@@ -47,7 +47,7 @@ namespace SW {
 
 		/**
 		 * @brief Adds a message to the console.
-		 * 
+		 *
 		 * @param message The message to be added.
 		 */
 		void AddMessage(const ConsoleMessage& message);
@@ -63,4 +63,4 @@ namespace SW {
 		std::vector<ConsoleMessage> m_Messages;
 	};
 
-}
+} // namespace SW

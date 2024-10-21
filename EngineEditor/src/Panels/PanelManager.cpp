@@ -1,17 +1,17 @@
 #include "PanelManager.hpp"
 
-namespace SW {
-
+namespace SW
+{
 	std::unordered_map<PanelType, Panel*> PanelManager::s_Panels;
 
 	void PanelManager::Initialize()
 	{
-
 	}
 
 	void PanelManager::Shutdown()
 	{
-		for (auto& [type, panel] : s_Panels) {
+		for (auto& [type, panel] : s_Panels)
+		{
 			delete panel;
 		}
 
@@ -20,15 +20,19 @@ namespace SW {
 
 	void PanelManager::OnUpdate(Timestep ts)
 	{
-		for (auto& [type, panel] : s_Panels) {
-			if (panel->IsOpen()) panel->OnUpdate(ts);
+		for (auto& [type, panel] : s_Panels)
+		{
+			if (panel->IsOpen())
+				panel->OnUpdate(ts);
 		}
 	}
 
 	void PanelManager::OnRender()
 	{
-		for (auto& [type, panel] : s_Panels) {
-			if (panel->IsOpen()) panel->OnRender();
+		for (auto& [type, panel] : s_Panels)
+		{
+			if (panel->IsOpen())
+				panel->OnRender();
 		}
 	}
 
@@ -58,4 +62,4 @@ namespace SW {
 		s_Panels.at(type)->Close();
 	}
 
-}
+} // namespace SW

@@ -13,8 +13,8 @@
 #include "Asset/Panels/AssetEditorPanel.hpp"
 #include "Asset/Spritesheet.hpp"
 
-namespace SW {
-
+namespace SW
+{
 	class SpritesheetEditor final : public AssetEditorPanel
 	{
 	public:
@@ -42,7 +42,7 @@ namespace SW {
 
 		bool m_IsCanvasHovered = false;
 
-		std::string m_SearchString;		/**< The search string used to filter entities in the scene hierarchy. */
+		std::string m_SearchString; /**< The search string used to filter entities in the scene hierarchy. */
 
 		bool m_OpenGenerateFromGridModal = false;
 
@@ -54,5 +54,4 @@ namespace SW {
 		void GenerateFromGridPopup(bool* opened);
 	};
 
-}
-
+} // namespace SW

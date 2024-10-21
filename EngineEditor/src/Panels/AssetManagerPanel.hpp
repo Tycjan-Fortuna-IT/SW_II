@@ -2,8 +2,8 @@
 
 #include "GUI/Panel.hpp"
 
-namespace SW {
-
+namespace SW
+{
 	class AssetManagerPanel final : public Panel
 	{
 	public:
@@ -21,4 +21,4 @@ namespace SW {
 		std::string m_LoadedSearchString;
 	};
 
-}
+} // namespace SW

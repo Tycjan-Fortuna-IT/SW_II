@@ -10,8 +10,8 @@
 #include "Core/Timestep.hpp"
 #include "GUI/Panel.hpp"
 
-namespace SW {
-
+namespace SW
+{
 	class PanelManager
 	{
 	public:
@@ -23,8 +23,7 @@ namespace SW {
 
 		static void AddPanel(PanelType type, Panel* panel);
 		static Panel* GetPanel(PanelType type);
-		static void RemovePanel(PanelType type)
-			;
+		static void RemovePanel(PanelType type);
 		static void OpenPanel(PanelType type);
 		static void ClosePanel(PanelType type);
 
@@ -34,4 +33,4 @@ namespace SW {
 		static std::unordered_map<PanelType, Panel*> s_Panels;
 	};
 
-}
+} // namespace SW

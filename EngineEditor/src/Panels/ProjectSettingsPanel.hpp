@@ -2,8 +2,8 @@
 
 #include "GUI/Panel.hpp"
 
-namespace SW {
-
+namespace SW
+{
 	class ProjectSettingsPanel final : public Panel
 	{
 	public:
@@ -17,4 +17,4 @@ namespace SW {
 		void OnRender() override;
 	};
 
-}
+} // namespace SW

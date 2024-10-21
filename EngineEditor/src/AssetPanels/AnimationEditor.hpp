@@ -10,8 +10,8 @@
 
 #include "Asset/Panels/AssetEditorPanel.hpp"
 
-namespace SW {
-
+namespace SW
+{
 	class Animation2D;
 
 	class AnimationEditor final : public AssetEditorPanel
@@ -33,10 +33,9 @@ namespace SW {
 		Animation2D** m_Animation = nullptr;
 		std::string m_Name;
 
-		f32 m_CurrentTime = 0.f;
+		f32 m_CurrentTime  = 0.f;
 		int m_CurrentFrame = 0;
-		u64 m_FramesCount = 0u;
+		u64 m_FramesCount  = 0u;
 	};
 
-}
-
+} // namespace SW

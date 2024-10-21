@@ -11,8 +11,8 @@
 
 #include "GUI/Panel.hpp"
 
-namespace SW {
-
+namespace SW
+{
 	/**
 	 * @brief The StatisticsPanel class represents a panel that displays statistics.
 	 */
@@ -22,10 +22,10 @@ namespace SW {
 		StatisticsPanel();
 		~StatisticsPanel() override = default;
 
-		StatisticsPanel(const StatisticsPanel& other) = delete;
-		StatisticsPanel(StatisticsPanel&& other) = delete;
+		StatisticsPanel(const StatisticsPanel& other)            = delete;
+		StatisticsPanel(StatisticsPanel&& other)                 = delete;
 		StatisticsPanel& operator=(const StatisticsPanel& other) = delete;
-		StatisticsPanel& operator=(StatisticsPanel&& other) = delete;
+		StatisticsPanel& operator=(StatisticsPanel&& other)      = delete;
 
 		PanelType GetPanelType() const override { return PanelType::StatisticsPanel; }
 
@@ -37,8 +37,8 @@ namespace SW {
 		void OnUpdate(UNUSED Timestep dt) override {}
 
 	private:
-		float m_FpsValues[200] = {};			///< Last 200 fps values
-		std::vector<f32> m_FrameTimes = {};		///< Last 200 frame times
+		float m_FpsValues[200]        = {}; ///< Last 200 fps values
+		std::vector<f32> m_FrameTimes = {}; ///< Last 200 frame times
 	};
 
-}
+} // namespace SW

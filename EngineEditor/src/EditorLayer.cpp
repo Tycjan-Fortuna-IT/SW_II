@@ -25,7 +25,6 @@
 
 namespace SW
 {
-
 	void EditorLayer::OnAttach()
 	{
 		const GUI::FontSpecification fontSpec("assets/fonts/Roboto/Roboto-Regular.ttf",

@@ -1,14 +1,13 @@
 #pragma once
 
-namespace SW {
-
+namespace SW
+{
 	class SceneViewportPanel;
 
 	class EditorLayer final : public Layer
 	{
 	public:
-		explicit EditorLayer(const std::string& name)
-			: Layer(name) {}
+		explicit EditorLayer(const std::string& name) : Layer(name) {}
 
 		SceneViewportPanel* m_Viewport = nullptr;
 
@@ -36,4 +35,4 @@ namespace SW {
 		void ReloadCSharpScripts();
 	};
 
-}
+} // namespace SW

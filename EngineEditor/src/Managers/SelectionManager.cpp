@@ -1,7 +1,7 @@
 #include "SelectionManager.hpp"
 
-namespace SW {
-
+namespace SW
+{
 	u64 SelectionManager::s_SelectedID = NOT_SELECTED;
 
 	void SelectionManager::SelectByID(u64 id)
@@ -17,4 +17,4 @@ namespace SW {
 		s_SelectedID = NOT_SELECTED;
 	}
 
-}
+} // namespace SW
