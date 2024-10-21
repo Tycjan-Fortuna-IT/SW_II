@@ -8,15 +8,16 @@
  */
 #pragma once
 
-namespace SW {
+namespace SW
+{
 
 	/**
 	 * @brief Struct representing single item in file dialog filter.
 	 */
 	struct FileDialogFilterItem
 	{
-		const char* Label;			///< Label of the filter.
-		const char* Filter;			///< File filter.
+		const char* Label;  ///< Label of the filter.
+		const char* Filter; ///< File filter.
 	};
 
 	/**
@@ -157,4 +158,4 @@ namespace SW {
 		static std::filesystem::path GetUniqueFilename(const std::filesystem::path& path);
 	};
 
-}
+} // namespace SW

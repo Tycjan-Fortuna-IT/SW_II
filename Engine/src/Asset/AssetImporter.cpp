@@ -4,7 +4,8 @@
 #include "Core/Events/Event.hpp"
 #include "Core/Project/ProjectContext.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	void FontAssetImporter::Import(const FontImportData& data)
 	{
@@ -27,4 +28,4 @@ namespace SW {
 		EventSystem::Emit(EVENT_CODE_ASSET_DIR_CONTENT_CHANGED);
 	}
 
-}
+} // namespace SW

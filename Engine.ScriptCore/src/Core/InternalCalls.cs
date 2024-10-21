@@ -89,6 +89,11 @@ namespace SW
 		internal static delegate* unmanaged<ulong, Vector2*, void> Rigidbody2DComponent_SetVelocity;
 
 		internal static delegate* unmanaged<ulong, Vector2*, Vector2*, bool, void> RigidBody2DComponent_ApplyForce;
+
+
+		internal static delegate* unmanaged<ulong, void> AudioSourceComponent_Play;
+		internal static delegate* unmanaged<ulong, void> AudioSourceComponent_Stop;
+		internal static delegate* unmanaged<ulong, bool> AudioSourceComponent_IsPlaying;
 	}
 
 #pragma warning restore CS0649

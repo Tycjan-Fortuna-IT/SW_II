@@ -11,17 +11,18 @@
 #include "Asset.hpp"
 #include "Sprite.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	class Animation2D final : public Asset
 	{
 	public:
-		Animation2D() = default;
+		Animation2D()  = default;
 		~Animation2D() = default;
 
 		static AssetType GetStaticType() { return AssetType::Animation2D; }
 		AssetType GetAssetType() const override { return AssetType::Animation2D; }
-	
+
 		bool ReverseAlongX = false;
 		bool ReverseAlongY = false;
 
@@ -30,7 +31,6 @@ namespace SW {
 		std::vector<Sprite**> Sprites;
 
 	private:
-
 	};
 
-}
+} // namespace SW

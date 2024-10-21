@@ -2,10 +2,10 @@
 
 #include <glad/glad.h>
 
-namespace SW {
+namespace SW
+{
 
-	IndexBuffer::IndexBuffer(u32* indices, u32 count)
-		: m_Count(count)
+	IndexBuffer::IndexBuffer(u32* indices, u32 count) : m_Count(count)
 	{
 		glGenBuffers(1, &m_Handle);
 
@@ -29,4 +29,4 @@ namespace SW {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
-}
+} // namespace SW

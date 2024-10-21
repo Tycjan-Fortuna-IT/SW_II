@@ -10,10 +10,11 @@
 
 #include <random>
 
-namespace SW::Random {
+namespace SW::Random
+{
 
-    static std::mt19937 s_Generator(std::random_device{}());
-    static std::uniform_int_distribution<u64> s_IDDistribution;
+	static std::mt19937 s_Generator(std::random_device{}());
+	static std::uniform_int_distribution<u64> s_IDDistribution;
 
 	/**
 	 * @brief Creates a random ID.
@@ -29,22 +30,20 @@ namespace SW::Random {
 	 * @brief Creates a random tag.
 	 * @param count The length of the tag.
 	 * @info Safe to use for file names. (A-Z, a-z, 0-9)
-	 * 
+	 *
 	 * @return std::string The random tag.
 	 */
 	static std::string CreateTag(int count = 10)
 	{
-		static const char alphanum[] =
-			"0123456789"
-			"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-			"abcdefghijklmnopqrstuvwxyz";
+		static const char alphanum[] = "0123456789"
+		                               "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		                               "abcdefghijklmnopqrstuvwxyz";
 
 		std::string tag;
-		
-		for (int i = 0; i < count; ++i)
-			tag += alphanum[s_IDDistribution(s_Generator) % (sizeof(alphanum) - 1)];
+
+		for (int i = 0; i < count; ++i) tag += alphanum[s_IDDistribution(s_Generator) % (sizeof(alphanum) - 1)];
 
 		return tag;
 	}
 
-}
+} // namespace SW::Random

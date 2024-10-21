@@ -10,15 +10,17 @@
 
 #include "BufferLayout.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	/**
 	 * @brief Represents a vertex buffer object in OpenGL.
-	 * 
+	 *
 	 * The VertexBuffer class encapsulates the functionality of a vertex buffer object (VBO) in OpenGL.
 	 * It provides methods to construct the buffer with a specified size or with specified vertices and size,
 	 * bind and unbind the VBO, and destroy the VBO.
-	 * The VBO stores the vertex data which will be processed by the Vertex Shader to determine the final positions of the vertices in the screen.
+	 * The VBO stores the vertex data which will be processed by the Vertex Shader to determine the final positions of
+	 * the vertices in the screen.
 	 */
 	class VertexBuffer final
 	{
@@ -35,7 +37,7 @@ namespace SW {
 		 * @param size The size of the buffer in bytes.
 		 */
 		VertexBuffer(float* vertices, u32 size);
-	
+
 		/**
 		 * @brief Destroys the vertex buffer object.
 		 */
@@ -71,8 +73,8 @@ namespace SW {
 		const BufferLayout& GetLayout() const { return m_Layout; }
 
 	private:
-		u32 m_Handle; 			/** @brief The handle of the vertex buffer object. */
-		BufferLayout m_Layout;  /** @brief The layout of the vertex buffer. */
+		u32 m_Handle;          /** @brief The handle of the vertex buffer object. */
+		BufferLayout m_Layout; /** @brief The layout of the vertex buffer. */
 	};
 
-}
+} // namespace SW

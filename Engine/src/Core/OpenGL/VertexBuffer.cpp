@@ -2,7 +2,8 @@
 
 #include <glad/glad.h>
 
-namespace SW {
+namespace SW
+{
 
 	VertexBuffer::VertexBuffer(u32 size)
 	{
@@ -43,4 +44,4 @@ namespace SW {
 		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 	}
 
-}
+} // namespace SW

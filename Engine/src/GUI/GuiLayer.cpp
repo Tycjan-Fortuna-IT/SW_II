@@ -3,20 +3,23 @@
 #include <GLFW/glfw3.h>
 #include <ImGuizmo.h>
 
-#include "GUI/ImGuiBuild.hpp"
 #include "Core/Application.hpp"
+#include "GUI/ImGuiBuild.hpp"
 
-namespace SW {
+namespace SW
+{
 
-	GuiLayer::GuiLayer()
-		: Layer("GUI Layer") {}
+	GuiLayer::GuiLayer() : Layer("GUI Layer")
+	{
+	}
 
 	void GuiLayer::OnAttach()
 	{
 		IMGUI_CHECKVERSION();
 
 		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		ImGuiIO& io = ImGui::GetIO();
+		(void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
@@ -34,15 +37,14 @@ namespace SW {
 
 	void GuiLayer::OnUpdate(Timestep dt)
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		ImGuiIO& io      = ImGui::GetIO();
 		Application* app = Application::Get();
-		io.DisplaySize = ImVec2(app->GetWindow()->GetWidth(), app->GetWindow()->GetHeight());
-		io.DeltaTime = dt;
+		io.DisplaySize   = ImVec2(app->GetWindow()->GetWidth(), app->GetWindow()->GetHeight());
+		io.DeltaTime     = dt;
 	}
 
 	void GuiLayer::OnRender()
 	{
-		
 	}
 
 	void GuiLayer::Begin() const
@@ -60,7 +62,8 @@ namespace SW {
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
 			GLFWwindow* backup_current_context = glfwGetCurrentContext();
 
 			ImGui::UpdatePlatformWindows();
@@ -70,4 +73,4 @@ namespace SW {
 		}
 	}
 
-}
+} // namespace SW

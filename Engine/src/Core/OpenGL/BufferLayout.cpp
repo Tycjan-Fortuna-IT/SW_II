@@ -1,12 +1,14 @@
 ﻿#include "BufferLayout.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	void BufferLayout::CalculateOffsetsAndStride()
 	{
 		u32 offset = 0;
 
-		for (BufferElement& element : m_Elements) {
+		for (BufferElement& element : m_Elements)
+		{
 			element.Offset = offset;
 			offset += element.Size;
 		}
@@ -14,4 +16,4 @@ namespace SW {
 		m_Stride = offset;
 	}
 
-}
+} // namespace SW

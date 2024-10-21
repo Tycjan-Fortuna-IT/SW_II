@@ -1,11 +1,12 @@
 #pragma once
 
-#include "Core/OpenGL/Texture2D.hpp"
 #include "Asset.hpp"
 #include "AssetSourceItem.hpp"
+#include "Core/OpenGL/Texture2D.hpp"
 
-namespace SW {
-	
+namespace SW
+{
+
 	using Timestamp = u64;
 
 	struct AssetMetaData
@@ -15,16 +16,17 @@ namespace SW {
 		std::filesystem::path Path;
 		Timestamp ModificationTime;
 	};
-	
+
 	class AssetRegistry
 	{
 	public:
-		AssetRegistry();		
+		AssetRegistry();
 		~AssetRegistry();
 
 		bool Contains(AssetHandle handle) const { return m_AvailableAssets.find(handle) != m_AvailableAssets.end(); }
 
-		void FetchDirectory(std::map<std::filesystem::path, AssetMetaData>& registered, const std::filesystem::path& dir, bool reload);
+		void FetchDirectory(std::map<std::filesystem::path, AssetMetaData>& registered,
+		                    const std::filesystem::path& dir, bool reload);
 		void RefetchAvailableAssets();
 
 		const AssetMetaData& GetAssetMetaData(AssetHandle handle) const;
@@ -41,4 +43,4 @@ namespace SW {
 		void SaveRegistryToFile();
 	};
 
-}
+} // namespace SW

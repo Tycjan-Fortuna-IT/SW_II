@@ -1,15 +1,14 @@
 #include "AssetManagerBase.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	AssetManagerBase::AssetManagerBase()
 	{
-
 	}
 
 	AssetManagerBase::~AssetManagerBase()
 	{
-
 	}
 
-}
+} // namespace SW

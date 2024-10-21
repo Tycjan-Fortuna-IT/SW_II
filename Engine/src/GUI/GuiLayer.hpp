@@ -3,14 +3,15 @@
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
  * @version 0.0.1
  * @date 2024-01-03
- * 
+ *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
 #pragma once
 
 #include "Core/Layer.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	/**
 	 * @brief GuiLayer is a layer that is responsible for rendering GUI.
@@ -41,7 +42,7 @@ namespace SW {
 
 		/**
 		 * @brief Called every frame to update the layer.
-		 * 
+		 *
 		 * @param dt Time elapsed since the last frame.
 		 */
 		void OnUpdate(Timestep dt) override;
@@ -57,12 +58,12 @@ namespace SW {
 		 * @warning Must be called before rendering each frame of GUI.
 		 */
 		void Begin() const;
-		
+
 		/**
 		 * @brief End rendering GUI.
 		 * @warning Must be called after rendering each frame of GUI.
 		 */
 		void End() const;
 	};
-	
-}
+
+} // namespace SW

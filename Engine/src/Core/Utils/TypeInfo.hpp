@@ -8,16 +8,17 @@
  */
 #pragma once
 
-#include <type_traits>
 #include <string>
+#include <type_traits>
 
 #include "Core/Hash.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	using TypeNameString = std::string_view;
 
-	template<typename T, bool ExcludeNamespace>
+	template <typename T, bool ExcludeNamespace>
 	struct TypeInfoBase
 	{
 	protected:
@@ -39,17 +40,13 @@ namespace SW {
 		}
 	};
 
-	template<typename T, bool ExcludeNamespace = false>
+	template <typename T, bool ExcludeNamespace = false>
 	struct TypeInfo : TypeInfoBase<T, ExcludeNamespace>
 	{
 	public:
 		using Base = TypeInfoBase<T, ExcludeNamespace>;
 
-		TypeInfo()
-			: m_DemangledName(Base::DemangleTypeName(typeid(T).name()))
-		{
-
-		}
+		TypeInfo() : m_DemangledName(Base::DemangleTypeName(typeid(T).name())) {}
 
 		TypeNameString Name() { return m_DemangledName; }
 
@@ -60,4 +57,4 @@ namespace SW {
 	private:
 		TypeNameString m_DemangledName;
 	};
-}
+} // namespace SW

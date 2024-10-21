@@ -1,13 +1,12 @@
 #include "Popups.hpp"
 
-#include "GUI.hpp"
 #include "Core/Utils/FileSystem.hpp"
+#include "GUI.hpp"
 
-#define EMPTY_SCENE_CONTENT \
-"Entities: \n"
+#define EMPTY_SCENE_CONTENT "Entities: \n"
 
 #define EMPTY_SPRITESHEET_CONTENT \
-R"(Spritesheet:
+	R"(Spritesheet:
   TextureHandle: 0
   ViewZoom: 1
   GridSize: 64
@@ -19,14 +18,15 @@ R"(Spritesheet:
     {})"
 
 #define EMPTY_ANIMATION2D_CONTENT \
-R"(Animation:
+	R"(Animation:
   Speed: 1
   ReverseAlongX: false
   ReverseAlongY: false
   Sprites:
     {})"
 
-namespace SW::GUI::Popups {
+namespace SW::GUI::Popups
+{
 
 	bool DrawAddNewFilePopup(const std::filesystem::path& destinationDir, bool* opened)
 	{
@@ -35,7 +35,8 @@ namespace SW::GUI::Popups {
 		if (*opened)
 			ImGui::OpenPopup("Add new file");
 
-		if (ImGui::BeginPopupModal("Add new file", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+		if (ImGui::BeginPopupModal("Add new file", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+		{
 			ImGui::Text("Create new file modal.");
 			ImGui::Separator();
 
@@ -46,72 +47,76 @@ namespace SW::GUI::Popups {
 			ImGui::SameLine();
 
 			GUI::Components::Selectable<AssetType>(&filetype, {
-				{ "Directory",		AssetType::Directory		},
-				{ "Scene",			AssetType::Scene			},
-				{ "Spritesheet",	AssetType::Spritesheet		},
-				{ "Animation2D",	AssetType::Animation2D		},
-			});
+			                                                      {"Directory", AssetType::Directory},
+			                                                      {"Scene", AssetType::Scene},
+			                                                      {"Spritesheet", AssetType::Spritesheet},
+			                                                      {"Animation2D", AssetType::Animation2D},
+			                                                  });
 
 			static std::string filename = "";
 
-			if (filetype != AssetType::Unknown) {
+			if (filetype != AssetType::Unknown)
+			{
 				ImGui::AlignTextToFramePadding();
 				ImGui::TextUnformatted("Type the file name:              ");
 				ImGui::SameLine();
 
 				GUI::Components::SingleLineTextInput<64>(&filename);
 
-				switch (filetype) {
-					case AssetType::Scene:
-					{
-						ImGui::SameLine();
-						ImGui::TextUnformatted(".sw_scene");
-					} break;
-					case AssetType::Spritesheet:
-					{
-						ImGui::SameLine();
-						ImGui::TextUnformatted(".sw_spritesh");
-					} break;
-					case AssetType::Animation2D:
-					{
-						ImGui::SameLine();
-						ImGui::TextUnformatted(".sw_anim");
-					} break;
+				switch (filetype)
+				{
+				case AssetType::Scene: {
+					ImGui::SameLine();
+					ImGui::TextUnformatted(".sw_scene");
+				}
+				break;
+				case AssetType::Spritesheet: {
+					ImGui::SameLine();
+					ImGui::TextUnformatted(".sw_spritesh");
+				}
+				break;
+				case AssetType::Animation2D: {
+					ImGui::SameLine();
+					ImGui::TextUnformatted(".sw_anim");
+				}
+				break;
 				}
 			}
 
-			if (ImGui::Button("OK", ImVec2(120, 0))) {
+			if (ImGui::Button("OK", ImVec2(120, 0)))
+			{
 				std::string name = filename;
 
-				switch (filetype) {
-					case AssetType::Directory:
-					{
-						std::filesystem::path newDirPath = destinationDir / name;
+				switch (filetype)
+				{
+				case AssetType::Directory: {
+					std::filesystem::path newDirPath = destinationDir / name;
 
-						if (!FileSystem::CreateEmptyDirectory(newDirPath))
-							SW_ERROR("Failed to create new directory: {}", name);
-					} break;
-					case AssetType::Scene:
-					{
-						std::filesystem::path newFilePath = destinationDir / name += ".sw_scene";
+					if (!FileSystem::CreateEmptyDirectory(newDirPath))
+						SYSTEM_ERROR("Failed to create new directory: {}", name);
+				}
+				break;
+				case AssetType::Scene: {
+					std::filesystem::path newFilePath = destinationDir / name += ".sw_scene";
 
-						if (!FileSystem::CreateFileWithContent(newFilePath, EMPTY_SCENE_CONTENT))
-							SW_ERROR("Failed to create new file: {}", name);
-					} break;
-					case AssetType::Spritesheet:
-					{
-						std::filesystem::path newFilePath = destinationDir / name += ".sw_spritesh";
+					if (!FileSystem::CreateFileWithContent(newFilePath, EMPTY_SCENE_CONTENT))
+						SYSTEM_ERROR("Failed to create new file: {}", name);
+				}
+				break;
+				case AssetType::Spritesheet: {
+					std::filesystem::path newFilePath = destinationDir / name += ".sw_spritesh";
 
-						if (!FileSystem::CreateFileWithContent(newFilePath, EMPTY_SPRITESHEET_CONTENT))
-							SW_ERROR("Failed to create new spritesheet: {}", name);
-					} break;
-					case AssetType::Animation2D:
-					{
-						std::filesystem::path newFilePath = destinationDir / name += ".sw_anim";
+					if (!FileSystem::CreateFileWithContent(newFilePath, EMPTY_SPRITESHEET_CONTENT))
+						SYSTEM_ERROR("Failed to create new spritesheet: {}", name);
+				}
+				break;
+				case AssetType::Animation2D: {
+					std::filesystem::path newFilePath = destinationDir / name += ".sw_anim";
 
-						if (!FileSystem::CreateFileWithContent(newFilePath, EMPTY_ANIMATION2D_CONTENT))
-							SW_ERROR("Failed to create new animation 2D: {}", name);
-					} break;
+					if (!FileSystem::CreateFileWithContent(newFilePath, EMPTY_ANIMATION2D_CONTENT))
+						SYSTEM_ERROR("Failed to create new animation 2D: {}", name);
+				}
+				break;
 				}
 
 				filetype = AssetType::Unknown;
@@ -125,7 +130,8 @@ namespace SW::GUI::Popups {
 
 			ImGui::SameLine();
 
-			if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+			if (ImGui::Button("Cancel", ImVec2(120, 0)))
+			{
 				filetype = AssetType::Unknown;
 				filename.clear();
 				*opened = false;
@@ -146,13 +152,15 @@ namespace SW::GUI::Popups {
 		if (*opened)
 			ImGui::OpenPopup("Delete?");
 
-		if (ImGui::BeginPopupModal("Delete?", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+		if (ImGui::BeginPopupModal("Delete?", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+		{
 			std::string toDelete = filepath.filename().string();
 
 			ImGui::Text("This file fill be deleted!  [%s]", toDelete.c_str());
 			ImGui::Separator();
 
-			if (ImGui::Button("OK", ImVec2(120, 0))) {
+			if (ImGui::Button("OK", ImVec2(120, 0)))
+			{
 				std::filesystem::remove(filepath);
 
 				*opened = false;
@@ -165,7 +173,8 @@ namespace SW::GUI::Popups {
 
 			ImGui::SameLine();
 
-			if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+			if (ImGui::Button("Cancel", ImVec2(120, 0)))
+			{
 				*opened = false;
 
 				ImGui::CloseCurrentPopup();
@@ -184,7 +193,8 @@ namespace SW::GUI::Popups {
 		if (*opened)
 			ImGui::OpenPopup("Rename file");
 
-		if (ImGui::BeginPopupModal("Rename file", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+		if (ImGui::BeginPopupModal("Rename file", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+		{
 			ImGui::Text("Rename file modal. Remember about the extension!");
 			ImGui::Separator();
 
@@ -201,9 +211,10 @@ namespace SW::GUI::Popups {
 
 			GUI::Components::SingleLineTextInput<64>(&filename);
 
-			if (ImGui::Button("OK", ImVec2(120, 0))) {
+			if (ImGui::Button("OK", ImVec2(120, 0)))
+			{
 				if (!FileSystem::RenameFile(filepath, filename))
-					SW_ERROR("Failed to rename the file: {}", filepath.string());
+					SYSTEM_ERROR("Failed to rename the file: {}", filepath.string());
 
 				*opened = false;
 				filename.clear();
@@ -215,7 +226,8 @@ namespace SW::GUI::Popups {
 
 			ImGui::SameLine();
 
-			if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+			if (ImGui::Button("Cancel", ImVec2(120, 0)))
+			{
 				*opened = false;
 				filename.clear();
 
@@ -239,48 +251,49 @@ namespace SW::GUI::Popups {
 
 	void FontSourceImportDialog::OnRender()
 	{
-		constexpr ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen
-			| ImGuiTreeNodeFlags_SpanAvailWidth
-			| ImGuiTreeNodeFlags_AllowItemOverlap
-			| ImGuiTreeNodeFlags_Framed
-			| ImGuiTreeNodeFlags_FramePadding;
+		constexpr ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth |
+		                                         ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed |
+		                                         ImGuiTreeNodeFlags_FramePadding;
 
 		GUI::ScopedStyle WindowPadding(ImGuiStyleVar_WindowPadding, ImVec2(4.0f, 4.0f));
 		GUI::ScopedStyle FramePadding(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 8.0f));
-		
+
 		bool closeable = true;
 
 		// Always should be in the middle of the screen
 		ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-		
-		if (ImGui::BeginPopupModal("Font Source Import Dialog", &closeable)) {
+
+		if (ImGui::BeginPopupModal("Font Source Import Dialog", &closeable))
+		{
 
 			const bool generalOpen = ImGui::TreeNodeEx("FontImport_General", treeFlags, "%s", "General Import Options");
-			
-			if (generalOpen) {
+
+			if (generalOpen)
+			{
 				GUI::Properties::BeginProperties("##font_import_general_property");
 
-				GUI::Properties::DrawFilePickerProperty(
-					&m_Data.OutputPath, ProjectContext::Get()->GetAssetDirectory(), { { "SW Font file", "sw_font" } },
-					"Font output file");
+				GUI::Properties::DrawFilePickerProperty(&m_Data.OutputPath, ProjectContext::Get()->GetAssetDirectory(),
+				                                        {{"SW Font file", "sw_font"}}, "Font output file");
 
 				GUI::Properties::EndProperties();
-			
+
 				ImGui::TreePop();
 			}
 
-			const bool advancedOpen = ImGui::TreeNodeEx("FontImport_Advanced", treeFlags, "%s", "Advanced Import Options");
-			
-			if (advancedOpen) {
+			const bool advancedOpen =
+			    ImGui::TreeNodeEx("FontImport_Advanced", treeFlags, "%s", "Advanced Import Options");
+
+			if (advancedOpen)
+			{
 				GUI::Properties::BeginProperties("##font_import_advanced_property");
 
-				GUI::Properties::RadioButtonProperty<FontCharsetType>(&m_Data.CharsetType, {
-					{ "ASCII", FontCharsetType::ASCII },
-					{ "ALL", FontCharsetType::ALL }
-				}, "Charset Type", "Define which set of characters to use (ALL is much more memory intensive than ASCII)");
+				GUI::Properties::RadioButtonProperty<FontCharsetType>(
+				    &m_Data.CharsetType, {{"ASCII", FontCharsetType::ASCII}, {"ALL", FontCharsetType::ALL}},
+				    "Charset Type",
+				    "Define which set of characters to use (ALL is much more memory intensive than ASCII)");
 
 				GUI::Properties::EndProperties();
-				
+
 				ImGui::TreePop();
 			}
 
@@ -290,18 +303,21 @@ namespace SW::GUI::Popups {
 
 			bool isDataValid = (bool)m_Data;
 
-			if (!isDataValid) {
+			if (!isDataValid)
+			{
 				ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 				ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
 			}
 
-			if (ImGui::Button("Import", ImVec2(width / 2.f, 30.f))) {
+			if (ImGui::Button("Import", ImVec2(width / 2.f, 30.f)))
+			{
 				FontAssetImporter::Import(m_Data);
 
 				ImGui::CloseCurrentPopup();
 			}
 
-			if (!isDataValid) {
+			if (!isDataValid)
+			{
 				ImGui::PopItemFlag();
 				ImGui::PopStyleVar();
 			}
@@ -322,8 +338,8 @@ namespace SW::GUI::Popups {
 	void FontSourceImportDialog::Reset()
 	{
 		m_Data.FontSourceHandle = 0u;
-		m_Data.CharsetType = SW::FontCharsetType::ASCII;
-		m_Data.OutputPath = "";
+		m_Data.CharsetType      = SW::FontCharsetType::ASCII;
+		m_Data.OutputPath       = "";
 	}
 
-}
+} // namespace SW::GUI::Popups

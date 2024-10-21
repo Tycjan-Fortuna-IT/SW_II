@@ -1,10 +1,10 @@
 #include "AssetEditorPanelManager.hpp"
 
-#include "SpritesheetEditor.hpp"
 #include "AnimationEditor.hpp"
+#include "SpritesheetEditor.hpp"
 
-namespace SW {
-
+namespace SW
+{
 	std::unordered_map<AssetType, Scope<AssetEditorPanel>> AssetEditorPanelManager::s_Editors;
 
 	SW::Scene* AssetEditorPanelManager::s_SceneContext;
@@ -31,8 +31,7 @@ namespace SW {
 	{
 		s_SceneContext = scene;
 
-		for (auto& kv : s_Editors)
-			kv.second->SetSceneContext(scene);
+		for (auto& kv : s_Editors) kv.second->SetSceneContext(scene);
 	}
 
 	void AssetEditorPanelManager::OnRender()
@@ -57,4 +56,4 @@ namespace SW {
 		editor->Open();
 	}
 
-}
+} // namespace SW

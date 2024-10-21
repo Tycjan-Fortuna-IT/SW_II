@@ -1,105 +1,112 @@
--- When adding a new dependency, add it to the table below, where:
--- - The key is the name of the dependency
--- - The value is a table containing the following:
---   - IncludeDir: The directory containing the headers of the dependency
---   - LinkAs: The name of the library to link to (if compiled as a static library)
-Dependencies = {
-    GLFW = { -- premake handles this library's directory automatically
-        IncludeDir = "%{wks.location}/Engine/vendor/GLFW/include",
-        LinkAs = "GLFW",
+FBS.Configurations = FBS.Enum { "Debug", "Release", "Dist" }
+
+FBS.Dependencies = {
+    {
+        name = "Defines",
+        Defines = { 
+            "GLFW_INCLUDE_NONE",
+            "IMGUI_DEFINE_MATH_OPERATORS",
+            "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
+            "YAML_CPP_STATIC_DEFINE",
+            "TRACY_ENABLE",
+            "TRACY_ON_DEMAND",
+            "TRACY_CALLSTACK=10",
+        },
     },
-    GLAD = { -- premake handles this library's directory automatically
-        IncludeDir = "%{wks.location}/Engine/vendor/GLAD/include",
-        LinkAs = "GLAD",
+    {
+        Name = "GLFW",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/GLFW/include" },
+        LibsToLink = { "GLFW" },
     },
-    ENTT = {
-        IncludeDir = "%{wks.location}/Engine/vendor/entt",
+    {
+        Name = "GLAD",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/GLAD/include" },
+        LibsToLink = { "GLAD" },
     },
-    STB_IMAGE = {
-        IncludeDir = "%{wks.location}/Engine/vendor/stb_image",
+    {
+        Name = "ENTT",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/entt" },
     },
-    SPDLOG = { -- premake handles this library's directory automatically
-        IncludeDir = "%{wks.location}/Engine/vendor/spdlog/include",
-        LinkAs = "spdlog",
+    {
+        Name = "STB Image",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/stb_image" },
     },
-    IMGUI = {
-        IncludeDir = "%{wks.location}/Engine/vendor/ImGui",
-        LinkAs = "ImGui",
+    {
+        Name = "ImGui",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/ImGui" },
+        LibsToLink = { "ImGui" },
     },
-    MATERIAL_ICONS = {
-        IncludeDir = "%{wks.location}/Engine/vendor/icons/include",
+    {
+        Name = "ImGuizmo",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/ImGuizmo" },
     },
-    YAML_CPP = {
-        IncludeDir = "%{wks.location}/Engine/vendor/YamlCpp/include",
-        LinkAs = "yaml-cpp",
+    {
+        Name = "ImGui Node Editor",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/imgui-node-editor" },
     },
-    NFD_EXTENDED = {
-        IncludeDir = "%{wks.location}/Engine/vendor/NFD-Extended/src/include",
-        LinkAs = "NFD-Extended",
+    {
+        Name = "Material Icons",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/icons/include" },
     },
-    BOX2D = {
-        IncludeDir = "%{wks.location}/Engine/vendor/box2d/include",
-        LinkAs = "Box2D",
+    {
+        Name = "Yaml CPP",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/YamlCpp/include" },
+        LibsToLink = { "yaml-cpp" },
     },
-    IMGUIZMO = {
-        IncludeDir = "%{wks.location}/Engine/vendor/ImGuizmo",
+    {
+        Name = "NFD Extended",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/NFD-Extended/src/include" },
+        LibsToLink = { "NFD-Extended" },
     },
-    GLM = {
-        IncludeDir = "%{wks.location}/Engine/vendor/glm",
+    {
+        Name = "Box 2D",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/box2d/include" },
+        LibsToLink = { "Box2D" },
     },
-    MSDF_ATLAS_GEN = {
-        IncludeDir = "%{wks.location}/Engine/vendor/msdf-atlas-gen",
-        LinkAs = "msdf-atlas-gen",
+    {
+        Name = "GLM",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/glm" },
     },
-    MSDFGEN = {
-        IncludeDir = "%{wks.location}/Engine/vendor/msdf-atlas-gen/msdfgen",
-        LinkAs = "msdfgen",
+    {
+        Name = "msdfgen",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/msdf-atlas-gen/msdfgen" },
+        LibsToLink = { "msdfgen" },
     },
-    FREETYPE = {
-        IncludeDir = "%{wks.location}/Engine/vendor/msdf-atlas-gen/msdfgen/freetype/include",
-        LinkAs = "freetype",
+    {
+        Name = "msdf-atlas-gen",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/msdf-atlas-gen" },
+        LibsToLink = { "msdf-atlas-gen" },
     },
-    TRACY = {
-        IncludeDir = "%{wks.location}/Engine/vendor/tracy/tracy/public",
-        LinkAs = "Tracy",
+    {
+        Name = "freetype",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/msdf-atlas-gen/msdfgen/freetype/include" },
+        LibsToLink = { "freetype" },
     },
-    WS2_32 = {
-        LinkAs = "ws2_32",
+    {
+        Name = "Tracy",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/tracy/tracy/public" },
+        LibsToLink = { "Tracy" },
+        Windows = {
+            LibsToLink = { "ws2_32", "Dbghelp" },
+        },
     },
-    DBGHELP = {
-        LinkAs = "Dbghelp",
+    {
+        Name = "Coral",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/Coral/Coral.Native/Include" },
+        LibsToLink = { "Coral.Native" },
     },
-    CORAL = {
-		LinkAs = "Coral.Native",
-        IncludeDir = "%{wks.location}/Engine/vendor/Coral/Coral.Native/Include"
+    {
+        Name = "MiniAudio",
+        IncludeDirs = { "%{wks.location}/Engine/vendor/miniaudio" },
     },
-    IMGUI_NODE_EDITOR = {
-		IncludeDir = "%{wks.location}/Engine/vendor/imgui-node-editor",
+
+    -- SW Modules
+    {
+		Name = "SW Logger Module",
+		LibsToLink = { "Logger" },
+		IncludeDirs = {
+			"%{wks.location}/Engine/modules/Logger/src",
+			"%{wks.location}/Engine/modules/Logger/vendor/spdlog/include"
+		},
 	},
 }
-
-function IncludeEngineDependencies(additional)
-    includetable = {}
-
-    for name, dependency in pairs(Dependencies) do
-        table.insert(includetable, dependency.IncludeDir)
-    end
-
-    if additional == nil then additional = {} end
-
-    for name, dependency in pairs(additional) do
-        table.insert(includetable, dependency)
-    end
-
-    includedirs(includetable)
-end
-
-function LinkEngineDependencies()
-    linktable = {}
-
-    for name, dependency in pairs(Dependencies) do
-        table.insert(linktable, dependency.LinkAs)
-    end
-
-    links(linktable)
-end

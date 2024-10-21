@@ -2,10 +2,12 @@
 
 #include "Core/Utils/FileSystem.hpp"
 
-namespace SW {
+namespace SW
+{
 
-	Project::Project(const ProjectConfig& config)
-		: m_Config(config) {}
+	Project::Project(const ProjectConfig& config) : m_Config(config)
+	{
+	}
 
 	Project::~Project()
 	{
@@ -21,4 +23,4 @@ namespace SW {
 		m_AssetManager = new EditorAssetManager();
 	}
 
-}
+} // namespace SW

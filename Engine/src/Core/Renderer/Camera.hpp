@@ -8,7 +8,8 @@
  */
 #pragma once
 
-namespace SW {
+namespace SW
+{
 
 	/**
 	 * @brief Represents a camera in the rendering system.
@@ -21,8 +22,7 @@ namespace SW {
 		 */
 		Camera() = default;
 
-		Camera(const glm::mat4& projection)
-			: m_Projection(projection) {}
+		Camera(const glm::mat4& projection) : m_Projection(projection) {}
 
 		/**
 		 * @brief Get the projection matrix of the camera.
@@ -34,4 +34,4 @@ namespace SW {
 		glm::mat4 m_Projection = glm::mat4(1.0f); /** @brief The projection matrix of the camera. */
 	};
 
-}
+} // namespace SW

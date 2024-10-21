@@ -1,25 +1,27 @@
 #include "Utils.hpp"
 
-namespace SW {
-    std::string Utils::ReadFile(const std::string& filepath)
+namespace SW
+{
+	std::string Utils::ReadFile(const std::string& filepath)
 	{
-        std::string result;
+		std::string result;
 
-        std::ifstream stream(filepath, std::ios::in | std::ios::binary);
+		std::ifstream stream(filepath, std::ios::in | std::ios::binary);
 
-        ASSERT(stream.is_open(), "Could not open file {}", filepath);
+		ASSERT(stream.is_open(), "Could not open file {}", filepath);
 
-        stream.seekg(0, std::ios::end);
-        result.resize(static_cast<size_t>(stream.tellg()));
+		stream.seekg(0, std::ios::end);
+		result.resize(static_cast<size_t>(stream.tellg()));
 
-        stream.seekg(0, std::ios::beg);
-        stream.read(result.data(), static_cast<std::streamsize>(result.size()));
-        stream.close();
+		stream.seekg(0, std::ios::beg);
+		stream.read(result.data(), static_cast<std::streamsize>(result.size()));
+		stream.close();
 
-        return result;
-    }
+		return result;
+	}
 
-	namespace String {
+	namespace String
+	{
 
 		std::string BytesToString(u32 bytes)
 		{
@@ -56,6 +58,6 @@ namespace SW {
 			return filename.substr(0, filename.find_last_of('.'));
 		}
 
-	}
+	} // namespace String
 
-}
+} // namespace SW

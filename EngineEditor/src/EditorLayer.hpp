@@ -1,23 +1,19 @@
 #pragma once
 
-namespace SW {
-
-	class Panel;
+namespace SW
+{
 	class SceneViewportPanel;
 
-	class EditorLayer final : public Layer {
+	class EditorLayer final : public Layer
+	{
 	public:
-		explicit EditorLayer(const std::string& name)
-			: Layer(name) {}
-
-		std::vector<Panel*> m_Panels;
+		explicit EditorLayer(const std::string& name) : Layer(name) {}
 
 		SceneViewportPanel* m_Viewport = nullptr;
 
 		bool m_WindowMaximized = true;
 
 		bool m_OpenNewSceneModal = false;
-		bool m_IsNewSceneModalOpen = false;
 
 		void OnAttach() override;
 		void OnDetach() override;
@@ -39,4 +35,4 @@ namespace SW {
 		void ReloadCSharpScripts();
 	};
 
-}
+} // namespace SW

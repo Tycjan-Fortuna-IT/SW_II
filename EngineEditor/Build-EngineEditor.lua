@@ -20,18 +20,6 @@ project "EngineEditor"
 
     forceincludes { "pch.hpp" }
 
-    defines { 
-        "GLFW_INCLUDE_NONE",
-        "IMGUI_DEFINE_MATH_OPERATORS",
-        "SPDLOG_COMPILED_LIB",
-        "SPDLOG_USE_STD_FORMAT",
-        "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
-        "YAML_CPP_STATIC_DEFINE",
-        "TRACY_ENABLE",
-		"TRACY_ON_DEMAND",
-        "TRACY_CALLSTACK=10",
-    }
-
     links { "Engine" }
 
     includedirs {
@@ -40,9 +28,6 @@ project "EngineEditor"
         "../Engine/src",
         "../Engine/vendor",
     }
-
-    IncludeEngineDependencies()
-    LinkEngineDependencies()
     
     filter "system:windows"
 	    linkoptions { "/NODEFAULTLIB:LIBCMT" }
@@ -61,6 +46,7 @@ project "EngineEditor"
         }
 
     filter "configurations:Debug"
+        FBS.ProcessDependencies(FBS.Configurations.Debug)
         defines { "SW_DEBUG_BUILD" }
         runtime "Debug"
         symbols "On"
@@ -73,6 +59,7 @@ project "EngineEditor"
         }
 
     filter "configurations:Release"
+        FBS.ProcessDependencies(FBS.Configurations.Release)
         defines { "SW_RELEASE_BUILD" }
         runtime "Release"
         optimize "On"
@@ -86,6 +73,7 @@ project "EngineEditor"
         }
 
     filter "configurations:Dist"
+        FBS.ProcessDependencies(FBS.Configurations.Dist)
         defines { "SW_DIST_BUILD" }
         runtime "Release"
         optimize "On"

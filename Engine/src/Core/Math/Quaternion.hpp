@@ -8,13 +8,13 @@
  */
 #pragma once
 
-namespace SW {
+namespace SW
+{
 
 	template <typename T>
-		requires std::is_arithmetic_v<T>
+	    requires std::is_arithmetic_v<T>
 	struct Quaternion final
 	{
-		
 	};
 
-}
+} // namespace SW

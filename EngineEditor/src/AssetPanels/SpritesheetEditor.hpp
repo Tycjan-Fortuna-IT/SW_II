@@ -12,16 +12,15 @@
 
 #include "Asset/Panels/AssetEditorPanel.hpp"
 #include "Asset/Spritesheet.hpp"
-#include "Asset/Sprite.hpp"
 
-namespace SW {
-
+namespace SW
+{
 	class SpritesheetEditor final : public AssetEditorPanel
 	{
 	public:
 		SpritesheetEditor(const char* name, const char* icon);
 
-		void OnUpdate(Timestep ts) override;
+		void OnUpdate(UNUSED Timestep ts) override {}
 
 		void OnWindowStylePush() override;
 
@@ -43,7 +42,7 @@ namespace SW {
 
 		bool m_IsCanvasHovered = false;
 
-		std::string m_SearchString;		/**< The search string used to filter entities in the scene hierarchy. */
+		std::string m_SearchString; /**< The search string used to filter entities in the scene hierarchy. */
 
 		bool m_OpenGenerateFromGridModal = false;
 
@@ -55,5 +54,4 @@ namespace SW {
 		void GenerateFromGridPopup(bool* opened);
 	};
 
-}
-
+} // namespace SW

@@ -9,23 +9,24 @@
 #pragma once
 
 #include "Asset.hpp"
-#include "GUI/Icons.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
+#include "GUI/Icons.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	using Timestamp = u64;
 
 	struct AssetSourceItem
 	{
 		AssetHandle Handle = 0;
-		AssetType Type = AssetType::Unknown;
+		AssetType Type     = AssetType::Unknown;
 
 		Timestamp ModificationTime = 0;
 		Thumbnail Thumbnail;
 
 		const char* Icon = SW_ICON_FILE;
-		u32 Color = IM_COL32(204, 133, 0, 255);
+		u32 Color        = IM_COL32(204, 133, 0, 255);
 
 		std::filesystem::path Path = ""; // relative to project's asset directory
 
@@ -38,11 +39,11 @@ namespace SW {
 		// recursive
 		/**
 		 * @brief Check if the asset is a descendant of the specified ancestor.
-		 * 
+		 *
 		 * @param descendant The descendant asset.
 		 * @return If the asset is a descendant of the specified ancestor.
 		 */
 		bool IsParentOfDescendant(const AssetSourceItem* descendant) const;
 	};
 
-}
+} // namespace SW

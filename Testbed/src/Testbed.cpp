@@ -1,5 +1,4 @@
 #include <Entrypoint.hpp>
-
 #include "TestbedLayer.hpp"
 
 class EngineTestbed final : public SW::Application

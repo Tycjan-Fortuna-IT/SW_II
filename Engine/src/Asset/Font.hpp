@@ -13,17 +13,18 @@
 
 #include "Asset/Asset.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	class Texture2D;
 
 	/**
 	 * @brief Struct representing the data required for Multi-channel Signed Distance Field (MSDF) rendering.
 	 */
-	struct MSDFData final 
+	struct MSDFData final
 	{
 		std::vector<msdf_atlas::GlyphGeometry> Glyphs; /**< Vector of glyph geometries. */
-	
+
 		msdf_atlas::FontGeometry FontGeometry; /**< Font geometry data. */
 	};
 
@@ -32,8 +33,8 @@ namespace SW {
 	 */
 	enum class FontCharsetType
 	{
-		ASCII = 0,  /**< ASCII character set. */
-		ALL,		/**< All characters. */
+		ASCII = 0, /**< ASCII character set. */
+		ALL,       /**< All characters. */
 	};
 
 	/**
@@ -41,12 +42,13 @@ namespace SW {
 	 */
 	struct FontSpecification
 	{
-		std::filesystem::path Path;							/**< Path to the font file. */
-		FontCharsetType Charset = FontCharsetType::ASCII;	/**< Character set type. */
-		Texture2D* PreloadedAtlas = nullptr;				/**< Pointer to the preloaded atlas texture. (If not passed will be automaticaly created) */
-		bool ApplyMSDFColoring = true;				/**< Flag indicating whether to apply MSDF coloring. */
-		int ForceWidth = 0;							/**< Forced width of the font atlas. */
-		int ForceHeight = 0;						/**< Forced height of the font atlas. */
+		std::filesystem::path Path;                       /**< Path to the font file. */
+		FontCharsetType Charset = FontCharsetType::ASCII; /**< Character set type. */
+		Texture2D* PreloadedAtlas =
+		    nullptr; /**< Pointer to the preloaded atlas texture. (If not passed will be automaticaly created) */
+		bool ApplyMSDFColoring = true; /**< Flag indicating whether to apply MSDF coloring. */
+		int ForceWidth         = 0;    /**< Forced width of the font atlas. */
+		int ForceHeight        = 0;    /**< Forced height of the font atlas. */
 	};
 
 	/**
@@ -71,7 +73,7 @@ namespace SW {
 		 * @return AssetType::Font.
 		 */
 		static AssetType GetStaticType() { return AssetType::Font; }
-		
+
 		/**
 		 * @brief Gets the type of the asset.
 		 * @return AssetType::Font.
@@ -91,8 +93,8 @@ namespace SW {
 		Texture2D* GetAtlasTexture() const { return m_AtlasTexture; }
 
 	private:
-		MSDFData m_Data;						/**< MSDFData structure. */
-		Texture2D* m_AtlasTexture = nullptr;    /**< Pointer to the atlas texture. */
+		MSDFData m_Data;                     /**< MSDFData structure. */
+		Texture2D* m_AtlasTexture = nullptr; /**< Pointer to the atlas texture. */
 	};
 
-}
+} // namespace SW

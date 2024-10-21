@@ -17,7 +17,7 @@ void main()
 
     vec4 texCol = texture(u_Textures[textureIndex], v_TexCoord * v_TilingFactor) * v_Color;
 
-    if (texCol.a == 0.0)
+    if (texCol.a < 0.1)
 		discard;
 
     o_Color = texCol;

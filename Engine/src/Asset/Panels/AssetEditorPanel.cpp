@@ -1,9 +1,10 @@
 #include "AssetEditorPanel.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	AssetEditorPanel::AssetEditorPanel(const char* name = "Unnamed Panel", const char* icon = "")
-		: m_Name(name), m_Icon(icon), m_MinSize(200, 400), m_MaxSize(2000, 2000)
+	    : m_Name(name), m_Icon(icon), m_MinSize(200, 400), m_MaxSize(2000, 2000)
 	{
 		m_ID = std::format(" {} {}\t\t###{}", icon, m_Name, m_Name);
 	}
@@ -55,4 +56,4 @@ namespace SW {
 		OnClose();
 	}
 
-}
+} // namespace SW

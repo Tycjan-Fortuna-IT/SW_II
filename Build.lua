@@ -1,4 +1,4 @@
-include "SolutionItems.lua"
+include "vendor/FancyBuildSystem/FancyBuildSystem.lua"
 include "Dependencies.lua"
 
 workspace "SW_II"
@@ -26,6 +26,8 @@ workspace "SW_II"
         "5039", -- pointer or reference to potentially throwing function passed to extern C function under -EHc
         "4625", -- copy constructor was implicitly defined as deleted
         "4626", -- assignment operator was implicitly defined as deleted
+        "5026", -- move constructor was implicitly defined as deleted
+        "5027", -- move assignment operator was implicitly defined as deleted
     }
 
 	-- rtti "off"
@@ -39,7 +41,7 @@ workspace "SW_II"
 	}
 
     -- Include editorconfig file for consistent coding style
-    solution_items { ".editorconfig" }
+    solution_items { ".clang-format", ".clang-tidy" }
 
     -- Enable Visual Studio to use multiple compiler processes when building.
     flags { "MultiProcessorCompile" }

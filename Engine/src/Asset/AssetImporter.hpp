@@ -11,12 +11,13 @@
 #include "Asset.hpp"
 #include "Font.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	struct FontImportData
 	{
 		AssetHandle FontSourceHandle = 0u;
-		FontCharsetType CharsetType = FontCharsetType::ASCII;
+		FontCharsetType CharsetType  = FontCharsetType::ASCII;
 		std::filesystem::path OutputPath;
 
 		explicit operator bool() { return FontSourceHandle && !OutputPath.empty(); }
@@ -28,11 +29,10 @@ namespace SW {
 		/**
 		 * @brief Import a font asset.
 		 * @note Used to import a font asset from a font source file.
-		 * 
+		 *
 		 * @param data Font import data.
 		 */
 		static void Import(const FontImportData& data);
 	};
 
-}
-
+} // namespace SW

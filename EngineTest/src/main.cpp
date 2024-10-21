@@ -19,7 +19,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <Core/Defines.hpp>
-#include <Core/Debug/LogSystem.hpp>
+#include <Logger/Logger.hpp>
 
 #include "Math_UT/Vector2_UT.hpp"
 #include "Math_UT/Vector3_UT.hpp"

@@ -9,20 +9,20 @@
 #pragma once
 
 #include "Asset.hpp"
+#include "AssetManager.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
 #include "Sprite.hpp"
-#include "AssetManager.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	struct SpriteData
 	{
-		SpriteData(const std::string& name)
-			: Name(name) {}
+		SpriteData(const std::string& name) : Name(name) {}
 
 		std::string Name;
 		glm::vec2 Position = glm::vec2(0.0f);
-		glm::vec2 Size = glm::vec2(32.0f);
+		glm::vec2 Size     = glm::vec2(32.0f);
 	};
 
 	class Spritesheet final : public Asset
@@ -45,15 +45,15 @@ namespace SW {
 		f32 GridSize = 64.0f;
 
 		glm::vec2 CenterOffset = glm::vec2(0.f, 0.f);
-		glm::vec2 ViewPos = glm::vec2(0.f, 0.f);
+		glm::vec2 ViewPos      = glm::vec2(0.f, 0.f);
 
 		std::filesystem::path ExportPath; // where all sprites should be exported
 
 		bool ShowImageBorders = false;
-		bool ShowGridCoords = false;
-		
+		bool ShowGridCoords   = false;
+
 	private:
 		Texture2D** m_SpritesheetTexture = nullptr;
 	};
 
-}
+} // namespace SW

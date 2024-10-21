@@ -11,8 +11,8 @@
 #include "Asset/Asset.hpp"
 #include "Asset/Panels/AssetEditorPanel.hpp"
 
-namespace SW {
-
+namespace SW
+{
 	class AssetEditorPanelManager
 	{
 	public:
@@ -33,4 +33,4 @@ namespace SW {
 		static Scene* s_SceneContext;
 	};
 
-}
+} // namespace SW

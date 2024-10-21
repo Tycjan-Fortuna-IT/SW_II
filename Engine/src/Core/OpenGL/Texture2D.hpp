@@ -10,7 +10,8 @@
 
 #include "Asset/Asset.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	/**
 	 * @brief Represents the format of an image.
@@ -28,8 +29,8 @@ namespace SW {
 	 */
 	struct TextureSpecification final
 	{
-		u32 Width = 1; /**< The width of the texture */
-		u32 Height = 1; /**< The height of the texture */
+		u32 Width          = 1;                  /**< The width of the texture */
+		u32 Height         = 1;                  /**< The height of the texture */
 		ImageFormat Format = ImageFormat::RGBA8; /**< The format of the texture */
 	};
 
@@ -37,19 +38,19 @@ namespace SW {
 	 * @brief 2D texture class
 	 */
 	class Texture2D final : public Asset
-    {
-    public:
+	{
+	public:
 		/**
 		 * @brief Construct a new Texture 2D
-		 * 
+		 *
 		 * @param filepath Path to the texture file relative to project's assets folder
 		 * @param flipped Whether the texture should be flipped vertically (must be for OpenGL related textures)
 		 */
-        Texture2D(const char* filepath, bool flipped = true);
+		Texture2D(const char* filepath, bool flipped = true);
 
 		/**
 		 * @brief Construct a new Texture 2D
-		 * 
+		 *
 		 * @param filepath Path to the texture file relative to project's assets folder
 		 * @param flipped Whether the texture should be flipped vertically (must be for OpenGL related textures)
 		 */
@@ -68,28 +69,28 @@ namespace SW {
 		/**
 		 * @brief Destroy the Texture 2D
 		 */
-        ~Texture2D();
+		~Texture2D();
 
 		/**
 		 * @brief Get the static type of the texture asset
-		 * 
+		 *
 		 * @return AssetType Type of the asset
 		 */
 		static AssetType GetStaticType() { return AssetType::Texture2D; }
-		
+
 		/**
 		 * @brief Get the type of the asset
-		 * 
+		 *
 		 * @return AssetType Type of the asset
 		 */
 		AssetType GetAssetType() const override { return AssetType::Texture2D; }
 
 		/**
 		 * @brief Bind texture to the specified slot
-		 * 
+		 *
 		 * @param slot Slot to bind texture to
 		 */
-        void Bind(u32 slot) const;
+		void Bind(u32 slot) const;
 
 		/**
 		 * @brief Get the OpenGL texture ID
@@ -100,28 +101,28 @@ namespace SW {
 
 		/**
 		 * @brief Get the Width of the texture
-		 * 
-		 * @return i32 
+		 *
+		 * @return i32
 		 */
 		i32 GetWidth() const { return m_Width; }
 
 		/**
 		 * @brief Get the Height of the texture
-		 * 
-		 * @return i32 
+		 *
+		 * @return i32
 		 */
 		i32 GetHeight() const { return m_Height; }
 
 		/**
 		 * @brief Get the Channels of the texture
-		 * 
-		 * @return i32 
+		 *
+		 * @return i32
 		 */
 		i32 GetChannels() const { return m_Channels; }
 
 		/**
 		 * @brief Change the size of the texture
-		 * 
+		 *
 		 * @param newWidth New width of the texture
 		 * @param newHeight New height of the texture
 		 */
@@ -130,8 +131,8 @@ namespace SW {
 		/**
 		 * @brief Get the bytes of the texture
 		 * @warning Returned pointer must be freed by the caller!!
-		 * 
-		 * @return const char* 
+		 *
+		 * @return const char*
 		 */
 		const char* GetBytes() const;
 
@@ -150,22 +151,19 @@ namespace SW {
 
 		/**
 		 * @brief Check if two textures are the same
-		 * 
+		 *
 		 * @param other Texture to compare to
 		 * @return bool If textures are the same
 		 */
-		bool operator==(const Texture2D& other) const
-		{
-			return m_Handle == ((Texture2D&)other).m_Handle;
-		}
+		bool operator==(const Texture2D& other) const { return m_Handle == ((Texture2D&)other).m_Handle; }
 
-    private:
-        u32 m_Handle;				/** @brief OpenGL texture handle */
-		i32 m_Width;				/** @brief Texture width */
-		i32 m_Height;				/** @brief Texture height */
-		i32 m_Channels;				/** @brief Texture channels */
-		u32 m_DataFormat;			/** @brief Texture data format */
-		u32 m_InternalFormat;		/** @brief Texture internal format */
+	private:
+		u32 m_Handle;         /** @brief OpenGL texture handle */
+		i32 m_Width;          /** @brief Texture width */
+		i32 m_Height;         /** @brief Texture height */
+		i32 m_Channels;       /** @brief Texture channels */
+		u32 m_DataFormat;     /** @brief Texture data format */
+		u32 m_InternalFormat; /** @brief Texture internal format */
 
 		/**
 		 * Loads the texture data from the specified file.
@@ -176,4 +174,4 @@ namespace SW {
 		void LoadTextureData(const char* filepath, bool flipped);
 	};
 
-}
+} // namespace SW

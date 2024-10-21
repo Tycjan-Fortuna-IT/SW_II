@@ -11,8 +11,9 @@
 #include "AssetRegistry.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
 
-namespace SW {
-	
+namespace SW
+{
+
 	class AssetManagerBase
 	{
 	public:
@@ -22,16 +23,16 @@ namespace SW {
 		/**
 		 * @brief Get the asset.
 		 * @warning If the asset is not available, the nullptr will be returned.
-		 * 
+		 *
 		 * @param handle The handle of the asset.
 		 * @return Asset** The asset.
 		 */
 		virtual Asset** GetAssetRaw(AssetHandle handle) = 0;
-		
+
 		/**
 		 * @brief Get the asset.
 		 * @warning If the asset is not available, the nullptr will be returned.
-		 * 
+		 *
 		 * @param handle The handle of the asset.
 		 * @return const Asset* The asset.
 		 */
@@ -42,7 +43,7 @@ namespace SW {
 		 * @param handle The handle of the asset.
 		 */
 		virtual bool ForceUnload(AssetHandle handle) = 0;
-		
+
 		/**
 		 * @brief Force reload the asset.
 		 * @param handle The handle of the asset.
@@ -74,4 +75,4 @@ namespace SW {
 		AssetRegistry m_AvailRegistry; // All asset pointers are owned by the AssetRegistry!
 	};
 
-}
+} // namespace SW

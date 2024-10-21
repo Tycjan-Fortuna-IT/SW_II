@@ -1,21 +1,21 @@
 #include "Panel.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	Panel::Panel(const char* name, const char* icon, bool defaultShow)
-		: m_Showing(defaultShow), m_Name(name), m_Icon(icon)
+	    : m_Open(defaultShow), m_Name(name), m_Icon(icon), m_ID(std::format(" {} {}\t\t###{}", icon, name, name))
 	{
-		m_ID = std::format(" {} {}\t\t###{}", icon, m_Name, m_Name);
 	}
 
 	bool Panel::OnBegin(i32 flags)
 	{
-		if (!m_Showing)
+		if (!m_Open)
 			return false;
 
 		ImGui::SetNextWindowSize(ImVec2(480, 640), ImGuiCond_FirstUseEver);
 
-		ImGui::Begin(m_ID.c_str(), &m_Showing, flags | ImGuiWindowFlags_NoCollapse);
+		ImGui::Begin(m_ID.c_str(), &m_Open, flags | ImGuiWindowFlags_NoCollapse);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 2.0f));
 
@@ -28,4 +28,4 @@ namespace SW {
 		ImGui::End();
 	}
 
-}
+} // namespace SW

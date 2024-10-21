@@ -278,4 +278,41 @@ namespace SW
 			}
 		}
 	}
+
+	/// <summary>
+	///		Represents an audio source component that can play and stop audio.
+	/// </summary>
+	public class AudioSourceComponent : Component
+	{
+		/// <summary>
+		/// 	Plays the audio.
+		/// </summary>
+		public void Play()
+		{
+			unsafe {
+				InternalCalls.AudioSourceComponent_Play(Entity.GetID());
+			}
+		}
+
+		/// <summary>
+		/// 	Stops the audio.
+		/// </summary>
+		public void Stop()
+		{
+			unsafe {
+				InternalCalls.AudioSourceComponent_Stop(Entity.GetID());
+			}
+		}
+
+		/// <summary>
+		///		Check if the audio is currently playing.
+		///	</summary>
+		public bool IsPlaying()
+		{
+			unsafe {
+				return InternalCalls.AudioSourceComponent_IsPlaying(Entity.GetID());
+			}
+		}
+	}
+
 }

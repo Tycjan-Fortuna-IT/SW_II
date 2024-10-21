@@ -1,20 +1,19 @@
 /**
  * @file SceneHierarchyPanel.hpp
- * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
- * @version 0.1.3
- * @date 2024-03-04
+ * @version 0.1.5
+ * @date 2024-05-12
  *
- * @copyright Copyright (c) 2024 Tycjan Fortuna
+ * @copyright Copyright (c) 2024 SW
  */
 #pragma once
 
-#include "GUI/Panel.hpp"
 #include "Core/ECS/Components.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Scene/Scene.hpp"
+#include "GUI/Panel.hpp"
 
-namespace SW {
-
+namespace SW
+{
 	class SceneViewportPanel;
 
 	/**
@@ -26,24 +25,17 @@ namespace SW {
 	public:
 		/**
 		 * @brief Constructs a SceneHierarchyPanel object with an optional name.
-		 * 
 		 * @param context Current scene context.
 		 */
-		explicit SceneHierarchyPanel(SceneViewportPanel* sceneViewportPanel);
-
-		/**
-		 * @brief Default destructor for the SceneHierarchyPanel class.
-		 */
+		SceneHierarchyPanel(SceneViewportPanel* sceneViewportPanel);
 		~SceneHierarchyPanel() override = default;
 
-		/** @brief Copy constructor (deleted). */
-		SceneHierarchyPanel(const SceneHierarchyPanel& other) = delete;
-		/** @brief Move constructor (deleted). */
-		SceneHierarchyPanel(SceneHierarchyPanel&& other) = delete;
-		/** @brief Copy assignment operator (deleted). */
+		SceneHierarchyPanel(const SceneHierarchyPanel& other)            = delete;
+		SceneHierarchyPanel(SceneHierarchyPanel&& other)                 = delete;
 		SceneHierarchyPanel& operator=(const SceneHierarchyPanel& other) = delete;
-		/** @brief Move assignment operator (deleted). */
-		SceneHierarchyPanel& operator=(SceneHierarchyPanel&& other) = delete;
+		SceneHierarchyPanel& operator=(SceneHierarchyPanel&& other)      = delete;
+
+		PanelType GetPanelType() const override { return PanelType::SceneHierarchyPanel; }
 
 		/**
 		 * @brief Called every frame to update the panel.
@@ -58,7 +50,7 @@ namespace SW {
 
 		/**
 		 * @brief Draws the entity node in the scene hierarchy panel. Recursively calls itself for each child entity.
-		 * 
+		 *
 		 * @param entity The entity to draw.
 		 * @param id The unique id of the entity.
 		 * @param tc The tag component of the entity.
@@ -66,18 +58,20 @@ namespace SW {
 		 * @param depth The depth of the entity in the hierarchy.
 		 * @return ImRect The rectangle of the created entity node.
 		 */
-		ImRect RenderEntityNode(Entity entity, u64 id, TagComponent& tc, const RelationshipComponent& rsc, u32 depth = 0);
+		ImRect RenderEntityNode(Entity entity, u64 id, TagComponent& tc, const RelationshipComponent& rsc,
+		                        u32 depth = 0);
 
 	private:
-		Entity m_DraggedEntity;			/**< The entity that is currently being dragged. */
-		Entity m_DraggedEntityTarget;	/**< The entity that the dragged entity is being dragged onto. */
-		Entity m_EntityToDelete;		/**< The entity that is currently being deleted. */
-		Entity m_RenamingEntity;		/**< The entity that is currently being renamed. */
+		Entity m_DraggedEntity;       /**< The entity that is currently being dragged. */
+		Entity m_DraggedEntityTarget; /**< The entity that the dragged entity is being dragged onto. */
+		Entity m_EntityToDelete;      /**< The entity that is currently being deleted. */
+		Entity m_RenamingEntity;      /**< The entity that is currently being renamed. */
 
-		std::string m_SearchString;		/**< The search string used to filter entities in the scene hierarchy. */
+		std::string m_SearchString; /**< The search string used to filter entities in the scene hierarchy. */
 
-		SceneViewportPanel* m_SceneViewportPanel = nullptr;	/**< The current scene viewport context. */
+		SceneViewportPanel* m_SceneViewportPanel = nullptr; /**< The current scene viewport context. */
 
+	private:
 		/**
 		 * @brief Draws the entity creation menu in the scene hierarchy panel.
 		 *
@@ -89,4 +83,4 @@ namespace SW {
 		bool OnKeyPressed(KeyCode code);
 	};
 
-}
+} // namespace SW

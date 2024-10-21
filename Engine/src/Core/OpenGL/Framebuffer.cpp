@@ -1,9 +1,10 @@
 #include "Framebuffer.hpp"
 
-#include <glad/glad.h>
 #include "Core/Renderer/RendererAPI.hpp"
+#include <glad/glad.h>
 
-namespace SW {
+namespace SW
+{
 
 	static GLenum TextureTarget(bool multisampled)
 	{
@@ -20,13 +21,16 @@ namespace SW {
 		glBindTexture(TextureTarget(multisampled), id);
 	}
 
-	static void AttachColorTexture(u32 id, int samples, GLenum internalFormat, GLenum format, u32 width, u32 height, int index)
+	static void AttachColorTexture(u32 id, int samples, GLenum internalFormat, GLenum format, u32 width, u32 height,
+	                               int index)
 	{
 		bool multisampled = samples > 1;
-		if (multisampled) {
+		if (multisampled)
+		{
 			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height, GL_FALSE);
 		}
-		else {
+		else
+		{
 			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -42,10 +46,12 @@ namespace SW {
 	static void AttachDepthTexture(u32 id, int samples, GLenum format, GLenum attachmentType, u32 width, u32 height)
 	{
 		bool multisampled = samples > 1;
-		if (multisampled) {
+		if (multisampled)
+		{
 			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, GL_FALSE);
 		}
-		else {
+		else
+		{
 			glTexStorage2D(GL_TEXTURE_2D, 1, format, width, height);
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -60,8 +66,10 @@ namespace SW {
 
 	static bool IsDepthFormat(FramebufferTextureFormat format)
 	{
-		switch (format) {
-			case FramebufferTextureFormat::DEPTH24STENCIL8:  return true;
+		switch (format)
+		{
+		case FramebufferTextureFormat::DEPTH24STENCIL8:
+			return true;
 		}
 
 		return false;
@@ -69,20 +77,23 @@ namespace SW {
 
 	static GLenum TextureFormatToGL(FramebufferTextureFormat format)
 	{
-		switch (format) {
-			case FramebufferTextureFormat::RGBA8:       return GL_RGBA8;
-			case FramebufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
-			default:
-				ASSERT(false, "Unknown FramebufferTextureFormat!");
+		switch (format)
+		{
+		case FramebufferTextureFormat::RGBA8:
+			return GL_RGBA8;
+		case FramebufferTextureFormat::RED_INTEGER:
+			return GL_RED_INTEGER;
+		default:
+			ASSERT(false, "Unknown FramebufferTextureFormat!");
 		}
 
 		return 0;
 	}
 
-	Framebuffer::Framebuffer(const FramebufferSpecification& specification)
-		: m_Specification(specification)
+	Framebuffer::Framebuffer(const FramebufferSpecification& specification) : m_Specification(specification)
 	{
-		for (auto spec : m_Specification.Attachments.Attachments) {
+		for (auto spec : m_Specification.Attachments.Attachments)
+		{
 			if (!IsDepthFormat(spec.TextureFormat))
 				m_ColorAttachmentSpecifications.emplace_back(spec);
 			else
@@ -110,7 +121,7 @@ namespace SW {
 
 	void Framebuffer::Resize(u32 width, u32 height)
 	{
-		m_Specification.Width = width;
+		m_Specification.Width  = width;
 		m_Specification.Height = height;
 
 		Invalidate();
@@ -142,13 +153,14 @@ namespace SW {
 
 		int pixelData = 1;
 		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
-		
+
 		return pixelData;
 	}
 
 	void Framebuffer::Invalidate()
 	{
-		if (m_RendererID) {
+		if (m_RendererID)
+		{
 			glDeleteFramebuffers(1, &m_RendererID);
 			glDeleteTextures((GLsizei)m_ColorAttachments.size(), m_ColorAttachments.data());
 			glDeleteTextures(1, &m_DepthAttachment);
@@ -159,42 +171,54 @@ namespace SW {
 
 		bool multisample = m_Specification.Samples > 1;
 
-		if (m_ColorAttachmentSpecifications.size()) {
+		if (m_ColorAttachmentSpecifications.size())
+		{
 			m_ColorAttachments.resize(m_ColorAttachmentSpecifications.size());
 
 			CreateTextures(multisample, m_ColorAttachments.data(), (u32)m_ColorAttachments.size());
 
-			for (size_t i = 0; i < m_ColorAttachments.size(); i++) {
+			for (size_t i = 0; i < m_ColorAttachments.size(); i++)
+			{
 				BindTexture(multisample, m_ColorAttachments[i]);
 
-				switch (m_ColorAttachmentSpecifications[i].TextureFormat) {
-					case FramebufferTextureFormat::RGBA8:
-						AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_RGBA8, GL_RGBA, m_Specification.Width, m_Specification.Height, (int)i);
-						break;
-					case FramebufferTextureFormat::RED_INTEGER:
-						AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_R32I, GL_RED_INTEGER, m_Specification.Width, m_Specification.Height, (int)i);
-						break;
+				switch (m_ColorAttachmentSpecifications[i].TextureFormat)
+				{
+				case FramebufferTextureFormat::RGBA8:
+					AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_RGBA8, GL_RGBA,
+					                   m_Specification.Width, m_Specification.Height, (int)i);
+					break;
+				case FramebufferTextureFormat::RED_INTEGER:
+					AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_R32I, GL_RED_INTEGER,
+					                   m_Specification.Width, m_Specification.Height, (int)i);
+					break;
 				}
 			}
 		}
 
-		if (m_DepthAttachmentSpecification.TextureFormat != FramebufferTextureFormat::None) {
+		if (m_DepthAttachmentSpecification.TextureFormat != FramebufferTextureFormat::None)
+		{
 			CreateTextures(multisample, &m_DepthAttachment, 1);
 			BindTexture(multisample, m_DepthAttachment);
 
-			switch (m_DepthAttachmentSpecification.TextureFormat) {
-				case FramebufferTextureFormat::DEPTH24STENCIL8:
-					AttachDepthTexture(m_DepthAttachment, m_Specification.Samples, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, m_Specification.Width, m_Specification.Height);
-					break;
+			switch (m_DepthAttachmentSpecification.TextureFormat)
+			{
+			case FramebufferTextureFormat::DEPTH24STENCIL8:
+				AttachDepthTexture(m_DepthAttachment, m_Specification.Samples, GL_DEPTH24_STENCIL8,
+				                   GL_DEPTH_STENCIL_ATTACHMENT, m_Specification.Width, m_Specification.Height);
+				break;
 			}
 		}
 
-		if (m_ColorAttachments.size() > 1) {
+		if (m_ColorAttachments.size() > 1)
+		{
 			ASSERT(m_ColorAttachments.size() <= 4, "Too many color attachments, increase the limit or dont do that!");
-			GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+			GLenum buffers[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
+			                     GL_COLOR_ATTACHMENT3};
 
 			glDrawBuffers((GLsizei)m_ColorAttachments.size(), buffers);
-		} else if (m_ColorAttachments.empty()) {
+		}
+		else if (m_ColorAttachments.empty())
+		{
 			// Only depth-pass
 			glDrawBuffer(GL_NONE);
 		}
@@ -203,4 +227,4 @@ namespace SW {
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
-}
+} // namespace SW

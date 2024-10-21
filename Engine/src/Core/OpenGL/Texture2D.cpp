@@ -3,26 +3,32 @@
 #include <glad/glad.h>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-#include "Core/Project/ProjectContext.hpp"
 #include "Core/Project/Project.hpp"
+#include "Core/Project/ProjectContext.hpp"
+#include <stb_image.h>
 
-namespace SW {
+namespace SW
+{
 
 	static int DataFormatToChannels(GLenum format)
 	{
-		switch (format) {
-			case GL_RED: return 1;
-			case GL_RG: return 2;
-			case GL_RGB: return 3;
-			case GL_RGBA: return 4;
+		switch (format)
+		{
+		case GL_RED:
+			return 1;
+		case GL_RG:
+			return 2;
+		case GL_RGB:
+			return 3;
+		case GL_RGBA:
+			return 4;
 		}
 
-		SW_ERROR("Unknown format: {}", format);
+		SYSTEM_ERROR("Unknown format: {}", format);
 		return 0;
 	}
 
-    Texture2D::Texture2D(const char* filepath, bool flipped /*= true*/)
+	Texture2D::Texture2D(const char* filepath, bool flipped /*= true*/)
 	{
 		LoadTextureData(filepath, flipped);
 	}
@@ -30,10 +36,10 @@ namespace SW {
 	Texture2D::Texture2D(u32 width, u32 height)
 	{
 		m_InternalFormat = GL_RGBA8;
-		m_DataFormat = GL_RGBA;
+		m_DataFormat     = GL_RGBA;
 
-		m_Width = (i32)width;
-		m_Height = (i32)height;
+		m_Width    = (i32)width;
+		m_Height   = (i32)height;
 		m_Channels = 0;
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_Handle);
@@ -55,20 +61,27 @@ namespace SW {
 
 	Texture2D::Texture2D(const TextureSpecification& spec)
 	{
-		switch (spec.Format) {
-			case ImageFormat::RED: {
-				m_DataFormat = GL_RED; m_InternalFormat = GL_RED; break;
-			}
-			case ImageFormat::RGB8: {
-				m_DataFormat = GL_RGB; m_InternalFormat = GL_RGB8; break;
-			}
-			case ImageFormat::RGBA8: {
-				m_DataFormat = GL_RGBA; m_InternalFormat = GL_RGBA8; break;
-			}
+		switch (spec.Format)
+		{
+		case ImageFormat::RED: {
+			m_DataFormat     = GL_RED;
+			m_InternalFormat = GL_RED;
+			break;
+		}
+		case ImageFormat::RGB8: {
+			m_DataFormat     = GL_RGB;
+			m_InternalFormat = GL_RGB8;
+			break;
+		}
+		case ImageFormat::RGBA8: {
+			m_DataFormat     = GL_RGBA;
+			m_InternalFormat = GL_RGBA8;
+			break;
+		}
 		}
 
-		m_Width = (i32)spec.Width;
-		m_Height = (i32)spec.Height;
+		m_Width    = (i32)spec.Width;
+		m_Height   = (i32)spec.Height;
 		m_Channels = DataFormatToChannels(m_DataFormat);
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_Handle);
@@ -89,10 +102,10 @@ namespace SW {
 	void Texture2D::Bind(u32 slot) const
 	{
 		glBindTextureUnit(slot, m_Handle);
-    }
+	}
 
-    void Texture2D::ChangeSize(i32 newWidth, i32 newHeight)
-    {
+	void Texture2D::ChangeSize(i32 newWidth, i32 newHeight)
+	{
 		u32 newTextureHandle;
 		glCreateTextures(GL_TEXTURE_2D, 1, &newTextureHandle);
 		glTextureStorage2D(newTextureHandle, 1, m_InternalFormat, newWidth, newHeight);
@@ -102,34 +115,30 @@ namespace SW {
 
 		glTextureParameteri(newTextureHandle, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(newTextureHandle, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    
+
 		// https://stackoverflow.com/questions/30286424/what-is-texture-downsampling-downscaling-using-opengl
-		GLuint fboIds[2] = { 0 };
+		GLuint fboIds[2] = {0};
 		glGenFramebuffers(2, fboIds);
 
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, fboIds[0]);
-		glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-							   GL_TEXTURE_2D, m_Handle, 0);
+		glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Handle, 0);
 
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboIds[1]);
-		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-							   GL_TEXTURE_2D, newTextureHandle, 0);
+		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, newTextureHandle, 0);
 
-		glBlitFramebuffer(0, 0, m_Width, m_Height,
-						  0, 0, newWidth, newHeight,
-						  GL_COLOR_BUFFER_BIT, GL_LINEAR);
-		
+		glBlitFramebuffer(0, 0, m_Width, m_Height, 0, 0, newWidth, newHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+
 		glDeleteTextures(1, &m_Handle);
 		glDeleteFramebuffers(2, fboIds);
 
 		m_Handle = newTextureHandle;
-		m_Width = newWidth;
+		m_Width  = newWidth;
 		m_Height = newHeight;
 	}
 
 	const char* Texture2D::GetBytes() const
 	{
-		GLint bpp = DataFormatToChannels(m_DataFormat);
+		GLint bpp  = DataFormatToChannels(m_DataFormat);
 		GLint size = m_Width * m_Height * bpp;
 
 		char* data = new char[size];
@@ -159,14 +168,19 @@ namespace SW {
 
 		GLenum internalFormat = 0, dataFormat = 0;
 
-		if (m_Channels == 4) {
+		if (m_Channels == 4)
+		{
 			internalFormat = GL_RGBA8;
-			dataFormat = GL_RGBA;
-		} else if (m_Channels == 3) {
+			dataFormat     = GL_RGBA;
+		}
+		else if (m_Channels == 3)
+		{
 			internalFormat = GL_RGB8;
-			dataFormat = GL_RGB;
-		} else {
-			SW_ERROR("Texture2D format not yet supported!");
+			dataFormat     = GL_RGB;
+		}
+		else
+		{
+			SYSTEM_ERROR("Texture2D format not yet supported!");
 		}
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_Handle);
@@ -183,10 +197,10 @@ namespace SW {
 
 		stbi_image_free(data);
 
-		m_DataFormat = dataFormat;
+		m_DataFormat     = dataFormat;
 		m_InternalFormat = internalFormat;
 
-		SW_INFO("Texture2D `{}` created successfully!", filepath);
+		SYSTEM_INFO("Texture2D `{}` created successfully!", filepath);
 	}
 
-}
+} // namespace SW

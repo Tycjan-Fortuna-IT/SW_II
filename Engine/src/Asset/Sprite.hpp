@@ -10,14 +10,15 @@
 
 #include "Asset/Asset.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	class Texture2D;
 
 	class Sprite final : public Asset
 	{
 	public:
-		Sprite() = default;
+		Sprite()  = default;
 		~Sprite() = default;
 
 		static AssetType GetStaticType() { return AssetType::Sprite; }
@@ -29,13 +30,13 @@ namespace SW {
 		void SetTexture(Texture2D** texture) { m_Texture = texture; }
 
 	public:
-		glm::vec2 TexCordLeftDown = glm::vec2(0.f);
+		glm::vec2 TexCordLeftDown  = glm::vec2(0.f);
 		glm::vec2 TexCordRightDown = glm::vec2(0.f);
-		glm::vec2 TexCordUpRight = glm::vec2(0.f);
-		glm::vec2 TexCordUpLeft = glm::vec2(0.f);
+		glm::vec2 TexCordUpRight   = glm::vec2(0.f);
+		glm::vec2 TexCordUpLeft    = glm::vec2(0.f);
 
 	private:
 		Texture2D** m_Texture = nullptr;
 	};
 
-}
+} // namespace SW

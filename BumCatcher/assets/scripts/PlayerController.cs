@@ -18,6 +18,8 @@ namespace BumCatcher
 
 		private HealthBar m_HPBar = default!;
 
+		private AudioSourceComponent PickupSound = default!;
+
 		protected override void OnCreate()
 		{
 			Transform = GetComponent<TransformComponent>()!;
@@ -27,10 +29,15 @@ namespace BumCatcher
 			ScoreText = Scene.GetEntityByTag("ScoreText").GetComponent<TextComponent>()!;
 
 			OnCollision2DBegin += PlayerController_OnCollision2DBegin;
+			//OnCollision2DEnd += PlayerController_OnCollision2DEnd;
+			//OnSensor2DBegin += PlayerController_OnSensor2DBegin;
+			//OnSensor2DEnd += PlayerController_OnSensor2DEnd;
+
 			m_HoveringTextManager = Scene.GetEntityByTag("HoveringTextManager").As<HoveringTextManager>()!;
 
 			m_HPBar = Scene.GetEntityByTag("Main HP Bar").As<HealthBar>()!;
 			m_HPBar.OnHealthBarEmpty += PlayerController_OnHealthBarEmpty;
+			PickupSound = Scene.GetEntityByTag("PickupSound").GetComponent<AudioSourceComponent>()!;
 		}
 
 		private void PlayerController_OnHealthBarEmpty()
@@ -43,12 +50,15 @@ namespace BumCatcher
 			string tag = obj.GetComponent<TagComponent>()!.Tag;
 
 			if (tag == "Beer") {
+				PickupSound.Play();
 				obj.Destroy();
 
 				m_Exp += 30;
 				m_HoveringTextManager.SpawnHoveringText(Transform.Position, "+30 exp", new Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 				ScoreText.Text = string.Format("Exp: {0}", m_Exp);
 			} else if (tag == "Denature") {
+				PickupSound.Play();
+				PickupSound.Stop();
 				obj.Destroy();
 
 				m_Exp -= 15;
@@ -58,6 +68,7 @@ namespace BumCatcher
 				m_HoveringTextManager.SpawnHoveringText(Transform.Position, "-15 exp", new Vector4(1.0f, 0.25f, 0.25f, 1.0f));
 				ScoreText.Text = string.Format("Exp: {0}", m_Exp);
 			} else if (tag == "Wine") {
+				PickupSound.Play();
 				obj.Destroy();
 
 				m_HPBar.HealDamage(10);

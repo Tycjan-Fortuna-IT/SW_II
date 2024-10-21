@@ -1,8 +1,10 @@
 #include "Layer.hpp"
 
-namespace SW {
+namespace SW
+{
 
-    Layer::Layer(const std::string& name)
-        : m_Name(name) {}
+	Layer::Layer(const std::string& name) : m_Name(name)
+	{
+	}
 
-}
+} // namespace SW

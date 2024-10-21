@@ -10,9 +10,6 @@
 [submodule "vendor/doxygen-awesome"]
 	path = vendor/doxygen-awesome
 	url = https://github.com/jothepro/doxygen-awesome-css.git
-[submodule "Engine/vendor/spdlog"]
-	path = Engine/vendor/spdlog
-	url = https://github.com/Tycjan-Fortuna-IT/spdlog.git
 [submodule "Engine/vendor/YamlCpp"]
 	path = Engine/vendor/YamlCpp
 	url = https://github.com/Tycjan-Fortuna-IT/yaml-cpp.git
@@ -37,3 +34,9 @@
 [submodule "Engine/vendor/imgui-node-editor"]
 	path = Engine/vendor/imgui-node-editor
 	url = https://github.com/thedmd/imgui-node-editor.git
+[submodule "vendor/FancyBuildSystem"]
+	path = vendor/FancyBuildSystem
+	url = https://github.com/Tycjan-Fortuna-IT/FancyBuildSystem.git
+[submodule "Engine/modules/Logger"]
+	path = Engine/modules/Logger
+	url = https://github.com/SW-II/Logger.git

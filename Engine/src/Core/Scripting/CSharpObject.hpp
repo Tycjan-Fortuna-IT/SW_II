@@ -10,13 +10,15 @@
 
 #include <Coral/ManagedObject.hpp>
 
-namespace SW {
+namespace SW
+{
 
 	/**
 	 * @class CSharpObject
 	 * @brief Represents a C# object that can be invoked from C++ code.
 	 */
-	class CSharpObject {
+	class CSharpObject
+	{
 	public:
 		/**
 		 * @brief Invokes a method on the C# object.
@@ -24,7 +26,7 @@ namespace SW {
 		 * @param methodName The name of the method to invoke.
 		 * @param args The arguments to pass to the method.
 		 */
-		template<typename... TArgs>
+		template <typename... TArgs>
 		void Invoke(std::string_view methodName, TArgs&&... args)
 		{
 			if (!m_Handle)
@@ -51,4 +53,4 @@ namespace SW {
 		friend class ScriptingCore;
 	};
 
-}
+} // namespace SW

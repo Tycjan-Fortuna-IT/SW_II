@@ -12,8 +12,8 @@
 
 #define NOT_SELECTED 0u
 
-namespace SW {
-
+namespace SW
+{
 	/**
 	 * @brief The SelectionManager class is responsible for managing the selection of objects.
 	 */
@@ -47,4 +47,4 @@ namespace SW {
 		static u64 s_SelectedID; /** @brief The ID of the currently selected object. */
 	};
 
-}
+} // namespace SW

@@ -8,14 +8,15 @@
  */
 #pragma once
 
-namespace SW {
+namespace SW
+{
 
 	class Hash
 	{
 	public:
 		static constexpr u32 GenerateFNVHash(std::string_view str)
 		{
-			constexpr u32 FNV_PRIME = 16777619u;
+			constexpr u32 FNV_PRIME    = 16777619u;
 			constexpr u32 OFFSET_BASIS = 2166136261u;
 
 			const u64 length = str.length();
@@ -23,11 +24,12 @@ namespace SW {
 
 			u32 hash = OFFSET_BASIS;
 
-			for (u64 i = 0; i < length; ++i) {
+			for (u64 i = 0; i < length; ++i)
+			{
 				hash ^= *data++;
 				hash *= FNV_PRIME;
 			}
-			
+
 			hash ^= '\0';
 			hash *= FNV_PRIME;
 
@@ -35,4 +37,4 @@ namespace SW {
 		}
 	};
 
-}
+} // namespace SW

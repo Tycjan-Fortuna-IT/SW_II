@@ -2,7 +2,8 @@
 
 #include "AssetLoader.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	void AssetManager::Initialize()
 	{
@@ -14,4 +15,4 @@ namespace SW {
 		AssetLoader::Shutdown();
 	}
 
-}
+} // namespace SW

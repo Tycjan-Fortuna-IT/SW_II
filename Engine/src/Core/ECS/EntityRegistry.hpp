@@ -10,14 +10,15 @@
 
 #include <entt.hpp>
 
-namespace SW {
+namespace SW
+{
 
-    class Entity;
+	class Entity;
 	class Scene;
 
 	/**
 	 * @brief The EntityRegistry class is responsible for managing entities in the ECS system.
-	 * 
+	 *
 	 * It provides functionality to create and destroy entities, as well as access to the underlying entt::registry.
 	 */
 	class EntityRegistry final
@@ -35,14 +36,14 @@ namespace SW {
 
 		/**
 		 * @brief Creates a new entity.
-		 * 
+		 *
 		 * @return The created entity.
 		 */
 		Entity CreateEntity();
 
 		/**
 		 * @brief Destroys an entity.
-		 * 
+		 *
 		 * @param entity The entity to destroy.
 		 */
 		void DestroyEntity(Entity entity);
@@ -54,7 +55,7 @@ namespace SW {
 
 		/**
 		 * @brief Gets a view of entities with the given components.
-		 * 
+		 *
 		 * @tparam Args The component types.
 		 * @return A view of entities with the given components.
 		 */
@@ -66,14 +67,14 @@ namespace SW {
 
 		/**
 		 * @brief Gets the underlying entt::registry instance.
-		 * 
+		 *
 		 * @return A reference to the entt::registry instance.
 		 */
 		entt::registry& GetRegistryHandle() { return s_EnttHandle; }
 
 	private:
-		entt::registry s_EnttHandle;			///< The underlying entt::registry instance.
-		Scene* m_Scene = nullptr;				/** @brief The scene to which the entity belongs. */
+		entt::registry s_EnttHandle; ///< The underlying entt::registry instance.
+		Scene* m_Scene = nullptr;    /** @brief The scene to which the entity belongs. */
 	};
 
-}
+} // namespace SW

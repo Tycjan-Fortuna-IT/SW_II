@@ -10,18 +10,19 @@
 
 #include "Core/Renderer/Camera.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	enum class ProjectionType : u8
 	{
-		Perspective = 0,
+		Perspective  = 0,
 		Orthographic = 1
 	};
 
 	/**
 	 * @class SceneCamera
 	 * @brief Represents a camera used in a scene.
-	 * 
+	 *
 	 * The SceneCamera class inherits from the Camera class and provides additional functionality
 	 * specific to scene cameras, such as viewport resizing, mouse scrolling, and camera movement.
 	 */
@@ -56,36 +57,64 @@ namespace SW {
 		void SetOrthographic(f32 size, f32 nearClip, f32 farClip);
 
 		f32 GetPerspectiveVerticalFOV() const { return m_PerspectiveFOV; }
-		void SetPerspectiveVerticalFOV(f32 verticalFov) { m_PerspectiveFOV = verticalFov; RecalculateProjection(); }
+		void SetPerspectiveVerticalFOV(f32 verticalFov)
+		{
+			m_PerspectiveFOV = verticalFov;
+			RecalculateProjection();
+		}
 
 		f32 GetPerspectiveNearClip() const { return m_PerspectiveNear; }
-		void SetPerspectiveNearClip(f32 nearClip) { m_PerspectiveNear = nearClip; RecalculateProjection(); }
+		void SetPerspectiveNearClip(f32 nearClip)
+		{
+			m_PerspectiveNear = nearClip;
+			RecalculateProjection();
+		}
 
 		f32 GetPerspectiveFarClip() const { return m_PerspectiveFar; }
-		void SetPerspectiveFarClip(f32 farClip) { m_PerspectiveFar = farClip; RecalculateProjection(); }
+		void SetPerspectiveFarClip(f32 farClip)
+		{
+			m_PerspectiveFar = farClip;
+			RecalculateProjection();
+		}
 
 		f32 GetOrthographicSize() const { return m_OrthographicSize; }
-		void SetOrthographicSize(f32 size) { m_OrthographicSize = size; RecalculateProjection(); }
+		void SetOrthographicSize(f32 size)
+		{
+			m_OrthographicSize = size;
+			RecalculateProjection();
+		}
 
 		f32 GetOrthographicNearClip() const { return m_OrthographicNear; }
-		void SetOrthographicNearClip(f32 nearClip) { m_OrthographicNear = nearClip; RecalculateProjection(); }
+		void SetOrthographicNearClip(f32 nearClip)
+		{
+			m_OrthographicNear = nearClip;
+			RecalculateProjection();
+		}
 
 		f32 GetOrthographicFarClip() const { return m_OrthographicFar; }
-		void SetOrthographicFarClip(f32 farClip) { m_OrthographicFar = farClip; RecalculateProjection(); }
+		void SetOrthographicFarClip(f32 farClip)
+		{
+			m_OrthographicFar = farClip;
+			RecalculateProjection();
+		}
 
 		ProjectionType GetProjectionType() const { return m_ProjectionType; }
-		void SetProjectionType(ProjectionType type) { m_ProjectionType = type; RecalculateProjection(); }
+		void SetProjectionType(ProjectionType type)
+		{
+			m_ProjectionType = type;
+			RecalculateProjection();
+		}
 
 	private:
-		f32 m_OrthographicSize = 10.0f;		/**< The orthographic size of the camera. */
-		f32 m_OrthographicNear = -1.0f;		/**< The near clip distance of the orthographic projection. */
-		f32 m_OrthographicFar = 1.0f;		/**< The far clip distance of the orthographic projection. */
+		f32 m_OrthographicSize = 10.0f; /**< The orthographic size of the camera. */
+		f32 m_OrthographicNear = -1.0f; /**< The near clip distance of the orthographic projection. */
+		f32 m_OrthographicFar  = 1.0f;  /**< The far clip distance of the orthographic projection. */
 
-		f32 m_PerspectiveFOV = glm::radians(45.0f);
+		f32 m_PerspectiveFOV  = glm::radians(45.0f);
 		f32 m_PerspectiveNear = 0.01f;
-		f32 m_PerspectiveFar = 1000.0f;
+		f32 m_PerspectiveFar  = 1000.0f;
 
-		f32 m_AspectRatio = 0.0f;	/**< The aspect ratio of the camera. */
+		f32 m_AspectRatio = 0.0f; /**< The aspect ratio of the camera. */
 
 		ProjectionType m_ProjectionType = ProjectionType::Orthographic;
 
@@ -95,4 +124,4 @@ namespace SW {
 		void RecalculateProjection();
 	};
 
-}
+} // namespace SW

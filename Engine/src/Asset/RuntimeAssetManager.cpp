@@ -1,5 +1,6 @@
 #include "RuntimeAssetManager.hpp"
 
-namespace SW {
-	
+namespace SW
+{
+
 }
