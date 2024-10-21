@@ -23,17 +23,6 @@ project "Engine"
 
     forceincludes { "pch.hpp" }
 
-    defines {
-        "GLFW_INCLUDE_NONE",
-        "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
-        "SPDLOG_COMPILED_LIB",
-        "SPDLOG_USE_STD_FORMAT",
-        "YAML_CPP_STATIC_DEFINE",
-        "TRACY_ENABLE",
-		"TRACY_ON_DEMAND",
-        "TRACY_CALLSTACK=10",
-    }
-
     includedirs {
         "src"
     }
@@ -56,12 +45,14 @@ project "Engine"
 
     filter "configurations:Debug"
         FBS.IncludeDependencies(FBS.Configurations.Debug)
+        FBS.IncludeDefines(FBS.Configurations.Debug)
         defines { "SW_DEBUG_BUILD" }
         runtime "Debug"
         symbols "On"
 
     filter "configurations:Release"
         FBS.IncludeDependencies(FBS.Configurations.Release)
+        FBS.IncludeDefines(FBS.Configurations.Release)
         defines { "SW_RELEASE_BUILD" }
         runtime "Release"
         optimize "On"
@@ -69,6 +60,7 @@ project "Engine"
 
     filter "configurations:Dist"
         FBS.IncludeDependencies(FBS.Configurations.Dist)
+        FBS.IncludeDefines(FBS.Configurations.Dist)
         defines { "SW_DIST_BUILD" }
         runtime "Release"
         optimize "On"
@@ -77,7 +69,6 @@ project "Engine"
     group "Engine/Dependencies"
         include "Engine/vendor/GLFW"
         include "Engine/vendor/GLAD"
-        include "Engine/vendor/spdlog"
         include "Engine/vendor/ImGui"
         include "Engine/vendor/YamlCpp"
         include "Engine/vendor/NFD-Extended"
@@ -85,6 +76,8 @@ project "Engine"
         include "Engine/vendor/msdf-atlas-gen"
         include "Engine/vendor/tracy"
         include "Engine/vendor/Coral/Coral.Native"
+
+        include "modules/Logger/Build-Logger.lua"
     group ""
     
     group "Engine"

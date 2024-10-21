@@ -8,7 +8,6 @@
  */
 #pragma once
 
-#include "Core/Debug/LogSystem.hpp"
 #include "EntityRegistry.hpp"
 #include "Components.hpp"
 #include "Core/Scene/Scene.hpp"

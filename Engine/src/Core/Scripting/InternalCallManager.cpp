@@ -23,7 +23,7 @@
 #define INTERNAL_CALL_VALIDATE_PARAM_VALUE(param, value)														\
 	if (!(param))																								\
 	{																											\
-		SW_FATAL("{} called with an invalid value ({}) for parameter '{}'.", SW_FUNCTION_NAME, value, #param);	\
+		SYSTEM_FATAL("{} called with an invalid value ({}) for parameter '{}'.", SW_FUNCTION_NAME, value, #param);	\
 	}
 
 namespace SW {
@@ -329,7 +329,7 @@ namespace SW {
 			RigidBody2DComponent& rbc = entity.GetComponent<RigidBody2DComponent>();
 
 			if (rbc.Type != PhysicBodyType::Static) {
-				SW_WARN("[SCRIPT]: Trying to set translation for non-static RigidBody2D for entity {}. This isn't allowed, and would result in unstable physics behavior.", entityID);
+				SYSTEM_WARN("[SCRIPT]: Trying to set translation for non-static RigidBody2D for entity {}. This isn't allowed, and would result in unstable physics behavior.", entityID);
 				return;
 			}
 
@@ -545,7 +545,7 @@ namespace SW {
 		ASSERT(rbc.Handle);
 
 		if (rbc.Type != PhysicBodyType::Dynamic) {
-			SW_WARN("[SCRIPT]: Trying to apply force for non-dynamic RigidBody2D for entity with ID: {}.", entityID);
+			SYSTEM_WARN("[SCRIPT]: Trying to apply force for non-dynamic RigidBody2D for entity with ID: {}.", entityID);
 			return;
 		}
 

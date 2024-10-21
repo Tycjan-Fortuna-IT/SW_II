@@ -87,7 +87,7 @@ namespace SW {
 			return std::filesystem::path();
 		}
 
-		SW_ERROR("NFD-Extended threw an error: {}", NFD::GetError());
+		SYSTEM_ERROR("NFD-Extended threw an error: {}", NFD::GetError());
 
 		return std::filesystem::path();
     }
@@ -104,7 +104,7 @@ namespace SW {
 			return std::filesystem::path();
 		}
 
-		SW_ERROR("NFD-Extended threw an error: {}", NFD::GetError());
+		SYSTEM_ERROR("NFD-Extended threw an error: {}", NFD::GetError());
 
 		return std::filesystem::path();
 	}

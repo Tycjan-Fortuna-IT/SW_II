@@ -82,7 +82,7 @@ namespace SW {
 		msdfgen::destroyFont(font);
 		msdfgen::deinitializeFreetype(ft);
 
-		SW_INFO("Font `{}` created successfully!", path);
+		SYSTEM_INFO("Font `{}` created successfully!", path);
 	}
 
 	Font::~Font()

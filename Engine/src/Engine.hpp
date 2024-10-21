@@ -19,8 +19,9 @@
 #include <vector>
 #include <filesystem>
 
+#include <Logger/Logger.hpp>
+
 #include "Core/Defines.hpp"
-#include "Core/Debug/LogSystem.hpp"
 #include "Core/Base.hpp"
 #include "Core/Debug/Profiler.hpp"
 

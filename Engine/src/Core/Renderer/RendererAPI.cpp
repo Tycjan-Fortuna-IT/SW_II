@@ -11,10 +11,10 @@ namespace SW {
 		u32 source, UNUSED u32 type, UNUSED u32 id, u32 severity, UNUSED i32 length, const char* message, UNUSED const void* userParam
 	) {
 		switch (severity) {
-			case GL_DEBUG_SEVERITY_HIGH:         SW_ERROR(message); return;
-			case GL_DEBUG_SEVERITY_MEDIUM:       SW_ERROR(message); return;
-			case GL_DEBUG_SEVERITY_LOW:          SW_WARN(message); return;
-			case GL_DEBUG_SEVERITY_NOTIFICATION: SW_TRACE(message); return;
+			case GL_DEBUG_SEVERITY_HIGH:         SYSTEM_ERROR(message); return;
+			case GL_DEBUG_SEVERITY_MEDIUM:       SYSTEM_ERROR(message); return;
+			case GL_DEBUG_SEVERITY_LOW:          SYSTEM_WARN(message); return;
+			case GL_DEBUG_SEVERITY_NOTIFICATION: SYSTEM_TRACE(message); return;
 			default:
 				ASSERT(false, "Unknown severity level!");
 		}
@@ -22,7 +22,7 @@ namespace SW {
 
 	void RendererAPI::Initialize()
 	{
-#ifdef SW_DEBUG
+#ifdef SW_DEBUG_BUILD
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		glDebugMessageCallback(OpenGLMessageCallback, nullptr);

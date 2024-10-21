@@ -53,7 +53,7 @@ namespace SW {
 		YAML::Node data = file["Sprite"];
 
 		if (!data) {
-			SW_ERROR("Error while deserializing the sprite: {}", metadata.Path.string());
+			SYSTEM_ERROR("Error while deserializing the sprite: {}", metadata.Path.string());
 
 			return new Sprite();
 		}
@@ -131,7 +131,7 @@ namespace SW {
 		YAML::Node data = file["Spritesheet"];
 
 		if (!data) {
-			SW_ERROR("Error while deserializing the spritesheet: {}", metadata.Path.string());
+			SYSTEM_ERROR("Error while deserializing the spritesheet: {}", metadata.Path.string());
 			
 			return new Spritesheet();
 		}
@@ -177,7 +177,7 @@ namespace SW {
 		YAML::Node data = file["Font"];
 
 		if (!data) {
-			SW_ERROR("Error while deserializing the font: {}", metadata.Path.string());
+			SYSTEM_ERROR("Error while deserializing the font: {}", metadata.Path.string());
 
 			return nullptr;
 		}
@@ -256,7 +256,7 @@ namespace SW {
 		YAML::Node data = file["Animation"];
 
 		if (!data) {
-			SW_ERROR("Error while deserializing the animation: {}", metadata.Path.string());
+			SYSTEM_ERROR("Error while deserializing the animation: {}", metadata.Path.string());
 
 			return new Animation2D();
 		}

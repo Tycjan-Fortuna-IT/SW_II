@@ -18,7 +18,7 @@ namespace SW {
 			case GL_RGBA: return 4;
 		}
 
-		SW_ERROR("Unknown format: {}", format);
+		SYSTEM_ERROR("Unknown format: {}", format);
 		return 0;
 	}
 
@@ -166,7 +166,7 @@ namespace SW {
 			internalFormat = GL_RGB8;
 			dataFormat = GL_RGB;
 		} else {
-			SW_ERROR("Texture2D format not yet supported!");
+			SYSTEM_ERROR("Texture2D format not yet supported!");
 		}
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_Handle);
@@ -186,7 +186,7 @@ namespace SW {
 		m_DataFormat = dataFormat;
 		m_InternalFormat = internalFormat;
 
-		SW_INFO("Texture2D `{}` created successfully!", filepath);
+		SYSTEM_INFO("Texture2D `{}` created successfully!", filepath);
 	}
 
 }

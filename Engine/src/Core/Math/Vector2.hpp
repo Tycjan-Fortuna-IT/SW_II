@@ -8,8 +8,6 @@
  */
 #pragma once
 
-#include "Core/Debug/LogSystem.hpp"
-
 namespace SW {
 
 	/**
@@ -61,7 +59,7 @@ namespace SW {
 		Vector2(std::initializer_list<T> values)
 		{
 			if (values.size() > 2) {
-				SW_WARN("Too many arguments passed for the Vector2D constructor! Expected 0, 1 or 2, received: {}", values.size());
+				SYSTEM_WARN("Too many arguments passed for the Vector2D constructor! Expected 0, 1 or 2, received: {}", values.size());
 			}
 
 			auto it = values.begin();
@@ -174,7 +172,7 @@ namespace SW {
 		Vector2<T> operator/(const Vector2<T>& other) const
 		{
 			if (other.x == static_cast<T>(0) || other.y == static_cast<T>(0)) {
-				SW_WARN("Cannot divide component of Vector2<T> by zero!");
+				SYSTEM_WARN("Cannot divide component of Vector2<T> by zero!");
 				return *this;
 			}
 
@@ -190,7 +188,7 @@ namespace SW {
 		Vector2<T> operator/(const T& other) const
 		{
 			if (other == static_cast<T>(0)) {
-				SW_WARN("Cannot divide component of Vector2<T> by zero!");
+				SYSTEM_WARN("Cannot divide component of Vector2<T> by zero!");
 				return *this;
 			}
 
@@ -291,7 +289,7 @@ namespace SW {
         Vector2<T>& operator/=(const Vector2<T>& other)
         {
             if (other.x == static_cast<T>(0) || other.y == static_cast<T>(0)) {
-                SW_WARN("Cannot divide component of Vector2<T> by zero!");
+                SYSTEM_WARN("Cannot divide component of Vector2<T> by zero!");
                 return *this;
             }
 
@@ -310,7 +308,7 @@ namespace SW {
 		Vector2<T>& operator/=(const T& other)
 		{
 			if (other == static_cast<T>(0)) {
-				SW_WARN("Cannot divide component of Vector2<T> by zero!");
+				SYSTEM_WARN("Cannot divide component of Vector2<T> by zero!");
 				return *this;
 			}
 
@@ -387,7 +385,7 @@ namespace SW {
 			const T length = Length();
 
 			if (length == static_cast<T>(0)) {
-				SW_WARN("Cant normalize Vector2<T> with length of 0!");
+				SYSTEM_WARN("Cant normalize Vector2<T> with length of 0!");
 				return;
 			}
 
@@ -407,7 +405,7 @@ namespace SW {
 			Vector2<T> result = *this;
 
 			if (length == static_cast<T>(0)) {
-				SW_WARN("Cant normalize Vector2<T> with length of 0!");
+				SYSTEM_WARN("Cant normalize Vector2<T> with length of 0!");
 				return result;
 			}
 

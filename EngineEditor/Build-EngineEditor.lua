@@ -20,18 +20,6 @@ project "EngineEditor"
 
     forceincludes { "pch.hpp" }
 
-    defines { 
-        "GLFW_INCLUDE_NONE",
-        "IMGUI_DEFINE_MATH_OPERATORS",
-        "SPDLOG_COMPILED_LIB",
-        "SPDLOG_USE_STD_FORMAT",
-        "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
-        "YAML_CPP_STATIC_DEFINE",
-        "TRACY_ENABLE",
-		"TRACY_ON_DEMAND",
-        "TRACY_CALLSTACK=10",
-    }
-
     links { "Engine" }
 
     includedirs {

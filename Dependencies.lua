@@ -2,6 +2,18 @@ FBS.Configurations = FBS.Enum { "Debug", "Release", "Dist" }
 
 FBS.Dependencies = {
     {
+        name = "Defines",
+        Defines = { 
+            "GLFW_INCLUDE_NONE",
+            "IMGUI_DEFINE_MATH_OPERATORS",
+            "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
+            "YAML_CPP_STATIC_DEFINE",
+            "TRACY_ENABLE",
+            "TRACY_ON_DEMAND",
+            "TRACY_CALLSTACK=10",
+        },
+    },
+    {
         Name = "GLFW",
         IncludeDirs = { "%{wks.location}/Engine/vendor/GLFW/include" },
         LibsToLink = { "GLFW" },
@@ -18,11 +30,6 @@ FBS.Dependencies = {
     {
         Name = "STB Image",
         IncludeDirs = { "%{wks.location}/Engine/vendor/stb_image" },
-    },
-    {
-        Name = "spdlog",
-        IncludeDirs = { "%{wks.location}/Engine/vendor/spdlog/include" },
-        LibsToLink = { "spdlog" },
     },
     {
         Name = "ImGui",
@@ -91,5 +98,15 @@ FBS.Dependencies = {
     {
         Name = "MiniAudio",
         IncludeDirs = { "%{wks.location}/Engine/vendor/miniaudio" },
-    }
+    },
+
+    -- SW Modules
+    {
+		Name = "SW Logger Module",
+		LibsToLink = { "Logger" },
+		IncludeDirs = {
+			"%{wks.location}/Engine/modules/Logger/src",
+			"%{wks.location}/Engine/modules/Logger/vendor/spdlog/include"
+		},
+	},
 }

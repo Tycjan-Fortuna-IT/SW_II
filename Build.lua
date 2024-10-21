@@ -41,7 +41,7 @@ workspace "SW_II"
 	}
 
     -- Include editorconfig file for consistent coding style
-    solution_items { ".editorconfig" }
+    solution_items { ".clang-format", ".clang-tidy" }
 
     -- Enable Visual Studio to use multiple compiler processes when building.
     flags { "MultiProcessorCompile" }

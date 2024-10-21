@@ -28,20 +28,20 @@ namespace SW {
 	{
 		switch (level) {
 			case Coral::MessageLevel::Info:
-				SW_INFO("CORAL: {}", std::string(message));
+				SYSTEM_INFO("CORAL: {}", std::string(message));
 				break;
 			case Coral::MessageLevel::Warning:
-				SW_WARN("CORAL: {}", std::string(message));
+				SYSTEM_WARN("CORAL: {}", std::string(message));
 				break;
 			case Coral::MessageLevel::Error:
-				SW_ERROR("CORAL: {}", std::string(message));
+				SYSTEM_ERROR("CORAL: {}", std::string(message));
 				break;
 		}
 	}
 
 	static void OnCSharpException(std::string_view message)
 	{
-		SW_FATAL("C# Exception: {}", message);
+		SYSTEM_FATAL("C# Exception: {}", message);
 	}
 
     void ScriptingCore::InitializeHost()
@@ -57,7 +57,7 @@ namespace SW {
 
 		ASSERT(m_Host->Initialize(settings), "Failed to initialize C# Host");
 
-		SW_INFO("C# host initialized successfully.");
+		SYSTEM_INFO("C# host initialized successfully.");
     }
 
     void ScriptingCore::ShutdownHost()
@@ -67,7 +67,7 @@ namespace SW {
 		m_Host->Shutdown();
 		delete m_Host;
 
-		SW_INFO("C# host has been properly shut down");
+		SYSTEM_INFO("C# host has been properly shut down");
     }
 
 	void ScriptingCore::Initialize()

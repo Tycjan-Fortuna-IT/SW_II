@@ -17,7 +17,7 @@ namespace SW {
     Window::Window(const WindowSpecification& specification)
         : m_Specification(specification)
 	{
-        SW_INFO("Creating window: {}, width: {} px, height: {} px", m_Specification.Title, m_Specification.Width, m_Specification.Height);
+        SYSTEM_INFO("Creating window: {}, width: {} px, height: {} px", m_Specification.Title, m_Specification.Width, m_Specification.Height);
 
         glfwSetErrorCallback(errorCallback);
 
@@ -60,12 +60,12 @@ namespace SW {
         ASSERT(status, "Failed to initialize GLAD");
         ASSERT(GLVersion.major == 4 && GLVersion.minor >= 5, "Engine requires at least OpenGL version 4.6!")
 
-        SW_WARN("Vendor: {}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
-        SW_WARN("Renderer: {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
-        SW_WARN("Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
-        SW_WARN("GLSL Version: {}", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
-        SW_WARN("OpenGL Context Initialized!");
-        SW_WARN("OpenGL Version: {}.{}", GLVersion.major, GLVersion.minor);
+        SYSTEM_WARN("Vendor: {}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+        SYSTEM_WARN("Renderer: {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+        SYSTEM_WARN("Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+        SYSTEM_WARN("GLSL Version: {}", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+        SYSTEM_WARN("OpenGL Context Initialized!");
+        SYSTEM_WARN("OpenGL Version: {}.{}", GLVersion.major, GLVersion.minor);
 
         glfwSetWindowUserPointer(m_Handle, &m_Specification);
 
@@ -122,7 +122,7 @@ namespace SW {
 					break;
 				}
 				default:
-					SW_WARN("Unsupported key event action: {}");
+					SYSTEM_WARN("Unsupported key event action: {}");
             }
         });
 
@@ -156,7 +156,7 @@ namespace SW {
 					break;
 				}
 				default:
-					SW_WARN("Unsupported mouse event action: {}");
+					SYSTEM_WARN("Unsupported mouse event action: {}");
 			}
 		});
 

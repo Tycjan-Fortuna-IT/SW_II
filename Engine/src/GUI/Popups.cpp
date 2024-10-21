@@ -89,28 +89,28 @@ namespace SW::GUI::Popups {
 						std::filesystem::path newDirPath = destinationDir / name;
 
 						if (!FileSystem::CreateEmptyDirectory(newDirPath))
-							SW_ERROR("Failed to create new directory: {}", name);
+							SYSTEM_ERROR("Failed to create new directory: {}", name);
 					} break;
 					case AssetType::Scene:
 					{
 						std::filesystem::path newFilePath = destinationDir / name += ".sw_scene";
 
 						if (!FileSystem::CreateFileWithContent(newFilePath, EMPTY_SCENE_CONTENT))
-							SW_ERROR("Failed to create new file: {}", name);
+							SYSTEM_ERROR("Failed to create new file: {}", name);
 					} break;
 					case AssetType::Spritesheet:
 					{
 						std::filesystem::path newFilePath = destinationDir / name += ".sw_spritesh";
 
 						if (!FileSystem::CreateFileWithContent(newFilePath, EMPTY_SPRITESHEET_CONTENT))
-							SW_ERROR("Failed to create new spritesheet: {}", name);
+							SYSTEM_ERROR("Failed to create new spritesheet: {}", name);
 					} break;
 					case AssetType::Animation2D:
 					{
 						std::filesystem::path newFilePath = destinationDir / name += ".sw_anim";
 
 						if (!FileSystem::CreateFileWithContent(newFilePath, EMPTY_ANIMATION2D_CONTENT))
-							SW_ERROR("Failed to create new animation 2D: {}", name);
+							SYSTEM_ERROR("Failed to create new animation 2D: {}", name);
 					} break;
 				}
 
@@ -203,7 +203,7 @@ namespace SW::GUI::Popups {
 
 			if (ImGui::Button("OK", ImVec2(120, 0))) {
 				if (!FileSystem::RenameFile(filepath, filename))
-					SW_ERROR("Failed to rename the file: {}", filepath.string());
+					SYSTEM_ERROR("Failed to rename the file: {}", filepath.string());
 
 				*opened = false;
 				filename.clear();

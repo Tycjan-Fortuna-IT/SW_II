@@ -2,38 +2,39 @@
 
 #define TESTBED
 
-#include "Core/Renderer/RendererAPI.hpp"
-#include "Core/Project/ProjectSerializer.hpp"
-#include "Core/Project/Project.hpp"
-#include "Core/Project/ProjectContext.hpp"
-#include "Asset/AssetManager.hpp"
-#include "GUI/Editor/EditorResources.hpp"
+#include "../../EngineEditor/src/AssetPanels/AnimationEditor.cpp"
+#include "../../EngineEditor/src/AssetPanels/AnimationEditor.hpp"
 #include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.cpp"
 #include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.hpp"
 #include "../../EngineEditor/src/AssetPanels/SpritesheetEditor.cpp"
 #include "../../EngineEditor/src/AssetPanels/SpritesheetEditor.hpp"
-#include "../../EngineEditor/src/AssetPanels/AnimationEditor.cpp"
-#include "../../EngineEditor/src/AssetPanels/AnimationEditor.hpp"
+#include "../../EngineEditor/src/EditorConsoleSink.hpp"
 #include "../../EngineEditor/src/Panels/AssetPanel.cpp"
 #include "../../EngineEditor/src/Panels/AssetPanel.hpp"
 #include "../../EngineEditor/src/Panels/ConsolePanel.cpp"
 #include "../../EngineEditor/src/Panels/ConsolePanel.hpp"
-#include "GUI/GUI.hpp"
+#include "Asset/AssetManager.hpp"
 #include "Audio/AudioEngine.hpp"
-#include "Core/Debug/LogSystem.hpp"
-#include "../../EngineEditor/src/EditorConsoleSink.hpp"
+#include "Core/Project/Project.hpp"
+#include "Core/Project/ProjectContext.hpp"
+#include "Core/Project/ProjectSerializer.hpp"
+#include "Core/Renderer/RendererAPI.hpp"
+#include "GUI/Editor/EditorResources.hpp"
+#include "GUI/GUI.hpp"
 
-namespace SW {
+namespace SW
+{
 
-	static AssetPanel* assetPanel = nullptr;
+	static AssetPanel* assetPanel     = nullptr;
 	static ConsolePanel* consolePanel = nullptr;
-	static Project* newProject = nullptr;
+	static Project* newProject        = nullptr;
 
 	void TestbedLayer::OnAttach()
 	{
-		const GUI::FontSpecification fontSpec("assets/fonts/Roboto/Roboto-Regular.ttf", "assets/fonts/Roboto/Roboto-Bold.ttf");
+		const GUI::FontSpecification fontSpec("assets/fonts/Roboto/Roboto-Regular.ttf",
+		                                      "assets/fonts/Roboto/Roboto-Bold.ttf");
 
-		GUI::Appearance::ApplyStyle(GUI::Style()); 
+		GUI::Appearance::ApplyStyle(GUI::Style());
 		GUI::Appearance::ApplyColors(GUI::Colors());
 		GUI::Appearance::ApplyFonts(fontSpec);
 
@@ -47,12 +48,12 @@ namespace SW {
 		AssetManager::Initialize();
 
 		consolePanel = new ConsolePanel();
-		
+
 		spdlog::sink_ptr logger = std::make_shared<EditorConsoleSink<std::mutex>>(consolePanel);
 		logger->set_pattern("%v");
 
-		LogSystem::AddClientSink(logger);
-		//assetPanel = new AssetPanel();
+		LogSystem::AddAppSink(logger);
+		// assetPanel = new AssetPanel();
 
 		newProject = ProjectSerializer::Deserialize(R"(C:\Users\tycja\Desktop\SW_II\BumCatcher\BumCatcher.swproj)");
 		ProjectContext::Set(newProject); // TODO: Make projects switchable
@@ -67,7 +68,7 @@ namespace SW {
 		AssetEditorPanelManager::Shutdown();
 		AssetManager::Shutdown();
 
-		//delete assetPanel;
+		// delete assetPanel;
 		delete consolePanel;
 		delete newProject;
 	}
@@ -75,8 +76,8 @@ namespace SW {
 	void TestbedLayer::OnUpdate(Timestep dt)
 	{
 		RendererAPI::Clear();
-		//AssetEditorPanelManager::OnUpdate(dt);
-		//assetPanel->OnUpdate(dt);
+		// AssetEditorPanelManager::OnUpdate(dt);
+		// assetPanel->OnUpdate(dt);
 		consolePanel->OnUpdate(dt);
 		AudioEngine::OnUpdate(dt);
 	}
@@ -87,21 +88,30 @@ namespace SW {
 
 		ImGui::Begin("Trace");
 
-		if (ImGui::Button("Trace")) {
-			APP_TRACE("Trace messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessages");
-			APP_INFO("Info messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessages");
-			APP_WARN("Warn messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessages");
-			APP_ERROR("Error messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessages");
+		if (ImGui::Button("Trace"))
+		{
+			APP_TRACE("Trace "
+			          "messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessages"
+			          "messages");
+			APP_INFO("Info "
+			         "messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesm"
+			         "essages");
+			APP_WARN("Warn "
+			         "messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesm"
+			         "essages");
+			APP_ERROR("Error "
+			          "messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessages"
+			          "messages");
 		}
 
 		ImGui::End();
 
-		//AssetEditorPanelManager::OnRender();
+		// AssetEditorPanelManager::OnRender();
 
-		//assetPanel->OnRender();
+		// assetPanel->OnRender();
 		consolePanel->OnRender();
 
-		//ImGui::Begin("New GUI API");
+		// ImGui::Begin("New GUI API");
 #if 0
 		static std::string search;
 		static std::string search2;
@@ -405,9 +415,9 @@ namespace SW {
 			GUI::Properties::EndProperties();
 		}
 #endif
-		//ImGui::End();
+		// ImGui::End();
 
 		ImGui::ShowDemoWindow();
 	}
 
-}
+} // namespace SW

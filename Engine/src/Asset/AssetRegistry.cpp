@@ -42,7 +42,7 @@ namespace SW {
 
 					it->second.ModificationTime = FileSystem::GetLastWriteTime(entry);
 
-					SW_INFO("Asset {} [{}] was reloaded!", it->second.Path.string(), it->second.Handle);
+					SYSTEM_INFO("Asset {} [{}] was reloaded!", it->second.Path.string(), it->second.Handle);
 				}
 
 				m_AvailableAssets[it->second.Handle] = it->second;
@@ -79,7 +79,7 @@ namespace SW {
 
 			ASSERT(result, "Could not unload asset {} [{}]", path.string(), metadata.Handle);
 
-			SW_INFO("Asset {} [{}] was unloaded!", path.string(), metadata.Handle);
+			SYSTEM_INFO("Asset {} [{}] was unloaded!", path.string(), metadata.Handle);
 		}
 
 		SaveRegistryToFile();

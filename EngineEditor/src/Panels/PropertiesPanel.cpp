@@ -320,7 +320,7 @@ namespace SW {
 									}
 								} break;
 								default:
-									SW_WARN("{}", (int)fieldType);
+									SYSTEM_WARN("{}", (int)fieldType);
 									break;
 							}
 						}

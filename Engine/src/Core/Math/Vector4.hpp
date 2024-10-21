@@ -8,8 +8,6 @@
  */
 #pragma once
 
-#include "Core/Debug/LogSystem.hpp"
-
 namespace SW {
 
 	/**
@@ -67,7 +65,7 @@ namespace SW {
 		Vector4(std::initializer_list<T> values)
 		{
 			if (values.size() > 4) {
-				SW_WARN("Too many arguments passed for the Vector3D constructor! Expected 0, 1, 2, 3 or 4, received: {}", values.size());
+				SYSTEM_WARN("Too many arguments passed for the Vector3D constructor! Expected 0, 1, 2, 3 or 4, received: {}", values.size());
 			}
 
 			auto it = values.begin();
@@ -184,7 +182,7 @@ namespace SW {
 		Vector4<T> operator/(const Vector4<T>& other) const
 		{
 			if (other.x == static_cast<T>(0) || other.y == static_cast<T>(0) || other.z == static_cast<T>(0) || other.w == static_cast<T>(0)) {
-				SW_WARN("Cannot divide component of Vector4<T> by zero!");
+				SYSTEM_WARN("Cannot divide component of Vector4<T> by zero!");
 				return *this;
 			}
 
@@ -200,7 +198,7 @@ namespace SW {
 		Vector4<T> operator/(const T& other) const
 		{
 			if (other == static_cast<T>(0)) {
-				SW_WARN("Cannot divide component of Vector4<T> by zero!");
+				SYSTEM_WARN("Cannot divide component of Vector4<T> by zero!");
 				return *this;
 			}
 
@@ -313,7 +311,7 @@ namespace SW {
 		Vector4<T>& operator/=(const Vector4<T>& other)
 		{
 			if (other.x == static_cast<T>(0) || other.y == static_cast<T>(0) || other.z == static_cast<T>(0) || other.w == static_cast<T>(0)) {
-				SW_WARN("Cannot divide component of Vector4<T> by zero!");
+				SYSTEM_WARN("Cannot divide component of Vector4<T> by zero!");
 				return *this;
 			}
 
@@ -334,7 +332,7 @@ namespace SW {
 		Vector4<T>& operator/=(const T& other)
 		{
 			if (other == static_cast<T>(0)) {
-				SW_WARN("Cannot divide component of Vector4<T> by zero!");
+				SYSTEM_WARN("Cannot divide component of Vector4<T> by zero!");
 				return *this;
 			}
 

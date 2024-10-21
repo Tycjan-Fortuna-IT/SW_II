@@ -18,7 +18,7 @@ namespace SW {
         : m_Specification(specification)
 	{
         if (!this->OnInit())
-            SW_ERROR("Application failed to initialize!");
+            SYSTEM_ERROR("Application failed to initialize!");
     }
 
     bool Application::OnInit()
@@ -59,7 +59,7 @@ namespace SW {
 		m_GuiLayer = new GuiLayer();
 		m_GuiLayer->OnAttach();
 
-		SW_INFO("Application has been properly initialized");
+		SYSTEM_INFO("Application has been properly initialized");
 
 		return true;
 	}
@@ -79,7 +79,7 @@ namespace SW {
 		delete m_Window;
 		delete m_GuiLayer;
 
-		SW_INFO("Application has been properly shut down");
+		SYSTEM_INFO("Application has been properly shut down");
 
 		return true;
 	}
@@ -117,7 +117,7 @@ namespace SW {
 		}
 
 		if (!this->OnShutdown())
-			SW_ERROR("Application failed to shut down!");
+			SYSTEM_ERROR("Application failed to shut down!");
 	}
 
 	void Application::Close()
@@ -135,7 +135,7 @@ namespace SW {
 	void Application::PopLayer()
 	{
         if (m_Layers.empty())
-            SW_FATAL("No Layer to pop!");
+            SYSTEM_FATAL("No Layer to pop!");
 
         Layer* back = m_Layers.back();
         back->OnDetach();

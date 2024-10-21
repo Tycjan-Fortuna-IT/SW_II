@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Core/Application.hpp"
-#include "Core/Debug/LogSystem.hpp"
 
 extern SW::Application* CreateApplication();
 

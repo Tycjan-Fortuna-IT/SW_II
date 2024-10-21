@@ -33,7 +33,7 @@ namespace SW {
 	{
         state = new EventSystemState();
 
-		SW_INFO("Event system has been properly initialized");
+		SYSTEM_INFO("Event system has been properly initialized");
 
         return true;
     }
@@ -44,7 +44,7 @@ namespace SW {
 
         state = nullptr;
 
-		SW_INFO("Event system has been properly shut down");
+		SYSTEM_INFO("Event system has been properly shut down");
 
         return true;
     }
@@ -57,7 +57,7 @@ namespace SW {
             if (
                 AreEventCallbacksEqual(state->registered[code].events[i].callback, handler)
             ) {
-                SW_WARN("Event has already been registered with the code {} and the same callback!", (int)code);
+                SYSTEM_WARN("Event has already been registered with the code {} and the same callback!", (int)code);
                 return false;
             }
         }
@@ -76,7 +76,7 @@ namespace SW {
         ASSERT(state, "Event system must be initialized before unregistering a listener!");
 
         if (state->registered[code].events.empty()) {
-            SW_WARN("No event is registered for the code {}", (int)code);
+            SYSTEM_WARN("No event is registered for the code {}", (int)code);
 
             return false;
         }
@@ -99,7 +99,7 @@ namespace SW {
         ASSERT(state, "Event system must be initialized before emitting an event!");
 
         if (state->registered[event.Code].events.empty()) {
-            SW_WARN("No event listener is registered for the code {}", (int)event.Code);
+            SYSTEM_WARN("No event listener is registered for the code {}", (int)event.Code);
 
             return false;
         }
@@ -115,7 +115,7 @@ namespace SW {
 			}
         }
 
-        SW_DEBUG("Event with the code {} has not been fully handled!", (int)event.Code);
+        SYSTEM_DEBUG("Event with the code {} has not been fully handled!", (int)event.Code);
 
         return false;
     }

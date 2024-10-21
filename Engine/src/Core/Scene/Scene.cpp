@@ -563,7 +563,7 @@ namespace SW {
 			if (toDelete) {
 				DestroyEntity(toDelete);
 			} else {
-				SW_WARN("Entity could not be found {}", id);
+				SYSTEM_WARN("Entity could not be found {}", id);
 			}
 
 			m_EntitiesToDelete.pop();
@@ -896,7 +896,7 @@ namespace SW {
 	void Scene::CreatePolygonCollider2D(Entity entity, const RigidBody2DComponent& rbc, PolygonCollider2DComponent& pcc)
 	{
 		if (pcc.Vertices.size() < 3) {
-			SW_ERROR("Cannot create polygon collider with less than 3 vertices! Currently: {}", pcc.Vertices.size());
+			SYSTEM_ERROR("Cannot create polygon collider with less than 3 vertices! Currently: {}", pcc.Vertices.size());
 			return;
 		}
 

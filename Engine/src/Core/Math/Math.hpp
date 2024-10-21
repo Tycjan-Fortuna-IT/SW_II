@@ -146,7 +146,7 @@ namespace SW {
 		//	T det = d1 - d2 + d3 - d4;
 
 		//	if (det == static_cast<T>(0)) {
-		//		SW_ERROR("Matrix4::Inverse() - Matrix is not invertible. {}", matrix.ToString());
+		//		SYSTEM_ERROR("Matrix4::Inverse() - Matrix is not invertible. {}", matrix.ToString());
 		//		return result;
 		//	}
 
