@@ -25,7 +25,7 @@ typedef float f32;
 typedef double f64;
 
 #ifndef char8_t
-	typedef char char8_t; // Filthy disgusting way to disable char8_t from used libraries since we use /Zc:char8_t- flag!
+typedef char char8_t; // Filthy disgusting way to disable char8_t from used libraries since we use /Zc:char8_t- flag!
 #endif
 
 // Ensure all types are of the correct size.
@@ -42,34 +42,34 @@ static_assert(sizeof(i64) == 8, "Expected i64 to be 8 bytes.");
 static_assert(sizeof(f32) == 4, "Expected f32 to be 4 bytes.");
 static_assert(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 
-#define EXPAND_MACRO(x) x
+#define EXPAND_MACRO(x)    x
 #define STRINGIFY_MACRO(x) #x
 
 #define UNUSED [[maybe_unused]]
 
 #ifdef EXPORT
     // Exports
-    #ifdef _MSC_VER
-        #define API __declspec(dllexport)
-    #else
-        #define API __attribute__((visibility("default")))
-    #endif
+	#ifdef _MSC_VER
+		#define API __declspec(dllexport)
+	#else
+		#define API __attribute__((visibility("default")))
+	#endif
 #else
     // Imports
-    #ifdef _MSC_VER
-        /** @brief Import/export qualifier */
-        #define API __declspec(dllimport)
-    #else
-        /** @brief Import/export qualifier */
-        #define API
-    #endif
+	#ifdef _MSC_VER
+	    /** @brief Import/export qualifier */
+		#define API __declspec(dllimport)
+	#else
+	    /** @brief Import/export qualifier */
+		#define API
+	#endif
 #endif
 
 #ifdef SW_WINDOWS
-    #define DEBUG_BREAK() __debugbreak()
+	#define DEBUG_BREAK() __debugbreak()
 #elif defined(SW_LINUX)
-    #include <signal.h>
-    #define DEBUG_BREAK() raise(SIGTRAP)
+	#include <signal.h>
+	#define DEBUG_BREAK() raise(SIGTRAP)
 #else
-    #error "Platform not supported!"
+	#error "Platform not supported!"
 #endif

@@ -2,11 +2,12 @@
 
 #include <miniaudio.h>
 
+#include "AudioEvent.hpp"
 #include "Core/Timestep.hpp"
 #include "SoundInstance.hpp"
-#include "AudioEvent.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	class Sound;
 
@@ -19,12 +20,13 @@ namespace SW {
 		static void OnUpdate(Timestep dt);
 
 		static void PlaySoundOnce(const Sound* sound);
-		
+
 		static SoundInstance** PlaySound(const Sound* sound);
 
 		static SoundInstance** PlaySound(const SoundSpecification& spec);
 
-		static SoundInstance** PlaySound3D(const SoundSpecification& spec, const glm::vec3& position, const glm::vec3& direction);
+		static SoundInstance** PlaySound3D(const SoundSpecification& spec, const glm::vec3& position,
+		                                   const glm::vec3& direction);
 
 		static SoundInstance** DispatchAudioEvent(const std::string& name);
 
@@ -40,4 +42,4 @@ namespace SW {
 		static std::unordered_map<std::string, AudioEvent> s_AudioEvents;
 	};
 
-}
+} // namespace SW

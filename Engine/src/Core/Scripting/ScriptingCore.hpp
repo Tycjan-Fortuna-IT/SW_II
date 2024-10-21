@@ -8,56 +8,61 @@
  */
 #pragma once
 
-#include <Coral/ManagedObject.hpp>
-#include <Coral/Type.hpp>
-#include <Coral/StableVector.hpp>
 #include <Coral/Array.hpp>
 #include <Coral/Assembly.hpp>
+#include <Coral/ManagedObject.hpp>
+#include <Coral/StableVector.hpp>
+#include <Coral/Type.hpp>
 
-#include "ScriptStorage.hpp"
-#include "Core/Buffer.hpp"
 #include "CSharpObject.hpp"
+#include "Core/Buffer.hpp"
+#include "ScriptStorage.hpp"
 
-namespace Coral {
-	class AssemblyLoadContext; 
+namespace Coral
+{
+	class AssemblyLoadContext;
 	class HostInstance;
-}
+} // namespace Coral
 
-namespace SW {
+namespace SW
+{
 
 	class Scene;
 	class Project;
 
 	struct AssemblyData
 	{
-		Coral::ManagedAssembly* Assembly; 					/**< The managed assembly used for scripting. */
-		std::unordered_map<u64, Coral::Type*> CachedTypes;  /**< A map of cached types for efficient lookup. */
+		Coral::ManagedAssembly* Assembly;                  /**< The managed assembly used for scripting. */
+		std::unordered_map<u64, Coral::Type*> CachedTypes; /**< A map of cached types for efficient lookup. */
 	};
 
 	struct FieldMetadata
 	{
-		std::string Name;			/**< The name of the field. */
-		DataType Type;				/**< The type of the field. */
-		Coral::Type* ManagedType;	/**< The managed type of the field. */
+		std::string Name;         /**< The name of the field. */
+		DataType Type;            /**< The type of the field. */
+		Coral::Type* ManagedType; /**< The managed type of the field. */
 
-		Buffer DefaultValue;		/**< The default value of the field. */
+		Buffer DefaultValue; /**< The default value of the field. */
 
 		/**
 		 * Sets the default value for a given ManagedObject field.
-		 * 
+		 *
 		 * @tparam T The type of the field.
 		 * @param temp The ManagedObject instance.
 		 */
-		template<typename T>
+		template <typename T>
 		void SetDefaultValue(Coral::ManagedObject& temp)
 		{
-			if (ManagedType->IsSZArray()) {
+			if (ManagedType->IsSZArray())
+			{
 				Coral::Array<T> value = temp.GetFieldValue<Coral::Array<T>>(Name);
 
 				DefaultValue = Buffer::Copy(value.Data(), (u32)value.ByteLength());
 
 				Coral::Array<T>::Free(value);
-			} else {
+			}
+			else
+			{
 				DefaultValue.Allocate(sizeof(T));
 
 				T value = temp.GetFieldValue<T>(Name);
@@ -69,16 +74,17 @@ namespace SW {
 
 	struct ScriptMetadata
 	{
-		std::string FullName;							/**< The full name of the script. */
-		std::unordered_map<u32, FieldMetadata> Fields;	/**< A map of fields for the script. */
+		std::string FullName;                          /**< The full name of the script. */
+		std::unordered_map<u32, FieldMetadata> Fields; /**< A map of fields for the script. */
 	};
 
 	/**
 	 * @class ScriptingCore
 	 * @brief The ScriptingCore class is responsible for managing the scripting functionality of the engine.
 	 *
-	 * It provides methods for initializing and shutting down the scripting host, as well as managing scripts and their metadata.
-	 * The ScriptingCore class also allows for instantiating and destroying script instances, and accessing script types and fields.
+	 * It provides methods for initializing and shutting down the scripting host, as well as managing scripts and their
+	 * metadata. The ScriptingCore class also allows for instantiating and destroying script instances, and accessing
+	 * script types and fields.
 	 */
 	class ScriptingCore
 	{
@@ -103,13 +109,12 @@ namespace SW {
 		 */
 		void Shutdown();
 
-
 		/**
 		 * @brief Sets the current scene.
 		 * @param scene The pointer to the current scene.
 		 */
 		void SetCurrentScene(Scene* scene) { m_CurrentScene = scene; }
-		
+
 		/**
 		 * @brief Gets the current scene.
 		 * @return The pointer to the current scene.
@@ -167,7 +172,7 @@ namespace SW {
 		 * @param args The constructor arguments.
 		 * @return The instantiated C# object.
 		 */
-		template<typename... TArgs>
+		template <typename... TArgs>
 		CSharpObject Instantiate(u64 entityID, ScriptStorage& storage, TArgs&&... args)
 		{
 			ASSERT(storage.EntityStorage.contains(entityID), "Not present in storage");
@@ -177,44 +182,53 @@ namespace SW {
 			if (!IsValidScript(entityStorage.ScriptID))
 				return {};
 
-			Coral::Type* type = m_AppAssemblyData->CachedTypes[entityStorage.ScriptID];
-			auto instance = type->CreateInstance(std::forward<TArgs>(args)...);
+			Coral::Type* type    = m_AppAssemblyData->CachedTypes[entityStorage.ScriptID];
+			auto instance        = type->CreateInstance(std::forward<TArgs>(args)...);
 			auto [index, handle] = m_ManagedObjects.Insert(std::move(instance));
 
 			entityStorage.Instance = &handle;
 
-			for (auto& [fieldID, fieldStorage] : entityStorage.Fields) {
+			for (auto& [fieldID, fieldStorage] : entityStorage.Fields)
+			{
 				const auto& fieldMetadata = m_ScriptMetadata[entityStorage.ScriptID].Fields[fieldID];
 
-				auto& editorAssignableAttribType = m_CoreAssemblyData->Assembly->GetType("SW.EditorAssignableAttribute");
+				auto& editorAssignableAttribType =
+				    m_CoreAssemblyData->Assembly->GetType("SW.EditorAssignableAttribute");
 
-				if (fieldMetadata.ManagedType->HasAttribute(editorAssignableAttribType)) {
+				if (fieldMetadata.ManagedType->HasAttribute(editorAssignableAttribType))
+				{
 
-					Coral::ManagedObject value = fieldMetadata.ManagedType->CreateInstance(fieldStorage.GetValue<u64>());
+					Coral::ManagedObject value =
+					    fieldMetadata.ManagedType->CreateInstance(fieldStorage.GetValue<u64>());
 
 					handle.SetFieldValue(fieldStorage.GetName(), value);
 
 					value.Destroy();
+				}
+				else if (fieldMetadata.ManagedType->IsSZArray())
+				{
 
-				} else if (fieldMetadata.ManagedType->IsSZArray()) {
-
-					if (fieldMetadata.ManagedType->GetElementType().HasAttribute(editorAssignableAttribType)) {
+					if (fieldMetadata.ManagedType->GetElementType().HasAttribute(editorAssignableAttribType))
+					{
 						ASSERT(false, "TODO");
-					} else {
+					}
+					else
+					{
 
-						struct ArrayContainer {
+						struct ArrayContainer
+						{
 							void* Data;
 							u32 Length;
 						} array;
 
-						array.Data = fieldStorage.m_ValueBuffer.Data;
+						array.Data   = fieldStorage.m_ValueBuffer.Data;
 						array.Length = (u32)fieldStorage.GetLength();
 
 						handle.SetFieldValueRaw(fieldStorage.GetName(), &array);
-
 					}
-
-				} else {
+				}
+				else
+				{
 					handle.SetFieldValueRaw(fieldStorage.GetName(), fieldStorage.m_ValueBuffer.Data);
 				}
 
@@ -240,8 +254,7 @@ namespace SW {
 
 			ASSERT(IsValidScript(entityStorage.ScriptID), "Script not valid");
 
-			for (auto& [fieldID, fieldStorage] : entityStorage.Fields)
-				fieldStorage.m_Instance = nullptr;
+			for (auto& [fieldID, fieldStorage] : entityStorage.Fields) fieldStorage.m_Instance = nullptr;
 
 			entityStorage.Instance->Destroy();
 			entityStorage.Instance = nullptr;
@@ -251,19 +264,19 @@ namespace SW {
 		ScriptingCore() = default;
 
 		ScriptingCore(const ScriptingCore&) = delete;
-		ScriptingCore(ScriptingCore&&) = delete;
+		ScriptingCore(ScriptingCore&&)      = delete;
 
 		ScriptingCore& operator=(const ScriptingCore&) = delete;
-		ScriptingCore& operator=(ScriptingCore&&) = delete;
+		ScriptingCore& operator=(ScriptingCore&&)      = delete;
 
-		Coral::HostInstance* m_Host = nullptr;
+		Coral::HostInstance* m_Host                   = nullptr;
 		Coral::AssemblyLoadContext* m_AssemblyContext = nullptr;
 
 		Scene* m_CurrentScene = nullptr;
 
 		AssemblyData* m_CoreAssemblyData = nullptr;
-		AssemblyData* m_AppAssemblyData = nullptr;
-	
+		AssemblyData* m_AppAssemblyData  = nullptr;
+
 		std::unordered_map<u64, ScriptMetadata> m_ScriptMetadata;
 
 		Coral::StableVector<Coral::ManagedObject> m_ManagedObjects;
@@ -274,5 +287,4 @@ namespace SW {
 		void LoadProjectAssembly();
 	};
 
-}
-
+} // namespace SW

@@ -1,6 +1,7 @@
 #pragma once
 
-namespace SW {
+namespace SW
+{
 
 	class SoundListener
 	{
@@ -15,5 +16,4 @@ namespace SW {
 		u32 m_ListenerIndex = 0u;
 	};
 
-}
-
+} // namespace SW

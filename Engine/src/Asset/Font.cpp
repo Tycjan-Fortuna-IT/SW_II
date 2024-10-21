@@ -1,45 +1,53 @@
 #include "Font.hpp"
 
 #include "Core/OpenGL/Texture2D.hpp"
-#include "Core/Project/ProjectContext.hpp"
 #include "Core/Project/Project.hpp"
+#include "Core/Project/ProjectContext.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	Font::Font(const FontSpecification& spec)
 	{
-		std::string path = spec.Path.string();
+		std::string path            = spec.Path.string();
 		msdfgen::FreetypeHandle* ft = msdfgen::initializeFreetype();
 
 		ASSERT(ft, "MSDFGEN failed to initialize");
 
 		msdfgen::FontHandle* font = msdfgen::loadFont(ft, path.c_str());
-		
+
 		ASSERT(font, "Failed to load the font: {}", path);
 		msdf_atlas::Charset charset;
 
-		if (spec.Charset == FontCharsetType::ASCII) {
+		if (spec.Charset == FontCharsetType::ASCII)
+		{
 			charset = msdf_atlas::Charset::ASCII;
-		} else {
+		}
+		else
+		{
 			for (i32 i = 0x0020; i <= 0x00FF; i++) // range [0x0020, 0x00FF]
 
-			charset.add(i);
+				charset.add(i);
 		}
 
 		m_Data.FontGeometry = msdf_atlas::FontGeometry(&m_Data.Glyphs);
 		m_Data.FontGeometry.loadCharset(font, 1.0, charset);
 
-		if (spec.ApplyMSDFColoring) {
-			const f64 maxCornerAngle = 3.0; 
+		if (spec.ApplyMSDFColoring)
+		{
+			const f64 maxCornerAngle = 3.0;
 			for (msdf_atlas::GlyphGeometry& glyph : m_Data.Glyphs) // Apply MSDF edge coloring.
 				glyph.edgeColoring(&msdfgen::edgeColoringInkTrap, maxCornerAngle, 0);
 		}
 
 		msdf_atlas::TightAtlasPacker packer;
-		
-		if (spec.ForceHeight && spec.ForceWidth) {
+
+		if (spec.ForceHeight && spec.ForceWidth)
+		{
 			packer.setDimensions(spec.ForceWidth, spec.ForceHeight);
-		} else {
+		}
+		else
+		{
 			packer.setPadding(0);
 			packer.setScale(40.f);
 		}
@@ -50,19 +58,23 @@ namespace SW {
 		i32 width = 0, height = 0;
 		packer.getDimensions(width, height);
 
-		if (spec.PreloadedAtlas) {
+		if (spec.PreloadedAtlas)
+		{
 			m_AtlasTexture = spec.PreloadedAtlas;
-		} else {
+		}
+		else
+		{
 			msdf_atlas::ImmediateAtlasGenerator<
-				f32, // pixel type of buffer for individual glyphs depends on generator function
-				3, // number of atlas color channels
-				msdf_atlas::msdfGenerator, // function to generate bitmaps for individual glyphs
-				msdf_atlas::BitmapAtlasStorage<msdf_atlas::byte, 3> // class that stores the atlas bitmap
-			> generator(width, height);
+			    f32,                       // pixel type of buffer for individual glyphs depends on generator function
+			    3,                         // number of atlas color channels
+			    msdf_atlas::msdfGenerator, // function to generate bitmaps for individual glyphs
+			    msdf_atlas::BitmapAtlasStorage<msdf_atlas::byte, 3> // class that stores the atlas bitmap
+			    >
+			    generator(width, height);
 
 			msdf_atlas::GeneratorAttributes attributes;
 			attributes.config.overlapSupport = true;
-			attributes.scanlinePass = true;
+			attributes.scanlinePass          = true;
 
 			generator.setAttributes(attributes);
 			generator.setThreadCount(4);
@@ -71,7 +83,7 @@ namespace SW {
 			msdfgen::BitmapConstRef<u8, 3> bitmap = (msdfgen::BitmapConstRef<u8, 3>)generator.atlasStorage();
 
 			TextureSpecification texSpec;
-			texSpec.Width = bitmap.width;
+			texSpec.Width  = bitmap.width;
 			texSpec.Height = bitmap.height;
 			texSpec.Format = ImageFormat::RGB8;
 
@@ -90,4 +102,4 @@ namespace SW {
 		delete m_AtlasTexture;
 	}
 
-}
+} // namespace SW

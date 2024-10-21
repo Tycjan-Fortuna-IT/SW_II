@@ -1,49 +1,50 @@
 #include "Scene.hpp"
 
-#include <entt.hpp>
 #include <box2d/box2d.h>
+#include <entt.hpp>
 
+#include "Asset/AssetManager.hpp"
+#include "Asset/Prefab.hpp"
+#include "Audio/AudioEngine.hpp"
+#include "Audio/SoundListener.hpp"
 #include "Core/ECS/Components.hpp"
-#include "Core/Renderer/Camera.hpp"
-#include "Core/Renderer/Renderer2D.hpp"
-#include "Core/Utils/Random.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Editor/EditorCamera.hpp"
 #include "Core/Physics/Physics2DContactListener.hpp"
+#include "Core/Renderer/Camera.hpp"
+#include "Core/Renderer/Renderer2D.hpp"
 #include "Core/Scripting/ScriptingCore.hpp"
-#include "Asset/Prefab.hpp"
-#include "Asset/AssetManager.hpp"
-#include "Audio/AudioEngine.hpp"
-#include "Audio/SoundListener.hpp"
+#include "Core/Utils/Random.hpp"
 
-namespace SW {
+namespace SW
+{
 
 // WELP
-#define CopyReferencedEntities(T) \
-	{ \
-		if (src.HasComponent<T>()) { \
-			T& component = src.GetComponent<T>(); \
-			if (component.ConnectedEntityID) { \
-				Entity connectedEntity = GetEntityByID(component.ConnectedEntityID); \
+#define CopyReferencedEntities(T)                                                                        \
+	{                                                                                                    \
+		if (src.HasComponent<T>())                                                                       \
+		{                                                                                                \
+			T& component = src.GetComponent<T>();                                                        \
+			if (component.ConnectedEntityID)                                                             \
+			{                                                                                            \
+				Entity connectedEntity           = GetEntityByID(component.ConnectedEntityID);           \
 				Entity duplicatedConnectedEntity = DuplicateEntity(connectedEntity, duplicatedEntities); \
-				T& newComponent = dst.GetComponent<T>(); \
-				newComponent.ConnectedEntityID = duplicatedConnectedEntity.GetID(); \
-			} \
-		} \
+				T& newComponent                  = dst.GetComponent<T>();                                \
+				newComponent.ConnectedEntityID   = duplicatedConnectedEntity.GetID();                    \
+			}                                                                                            \
+		}                                                                                                \
 	}
 
-	Scene::Scene()
-		: m_Registry(this)
+	Scene::Scene() : m_Registry(this)
 	{
-		//entt::registry& reg = m_Registry.GetRegistryHandle();
+		// entt::registry& reg = m_Registry.GetRegistryHandle();
 
 		// This enables creating entities in runtime
-		//reg.on_construct<RigidBody2DComponent>().connect<&Scene::OnRigidBody2DComponentCreated>(this);
+		// reg.on_construct<RigidBody2DComponent>().connect<&Scene::OnRigidBody2DComponentCreated>(this);
 	}
-	
+
 	Scene::~Scene()
 	{
-
 	}
 
 	Entity Scene::CreateEntity(const std::string& tag /*= "Entity"*/)
@@ -53,7 +54,7 @@ namespace SW {
 
 	Entity Scene::CreateEntityWithID(u64 id, const std::string& tag /*= "Entity"*/)
 	{
-		Entity entity = { m_Registry.GetRegistryHandle().create(), this };
+		Entity entity = {m_Registry.GetRegistryHandle().create(), this};
 
 		entity.AddComponent<IDComponent>(id);
 		entity.AddComponent<TagComponent>(tag);
@@ -68,7 +69,8 @@ namespace SW {
 	template <typename T>
 	static void RemoveReferencedConnections(entt::registry& registry, u64 id)
 	{
-		for (entt::entity handle : registry.view<T>()) {
+		for (entt::entity handle : registry.view<T>())
+		{
 			T& component = registry.get<T>(handle);
 
 			if (component.ConnectedEntityID == id)
@@ -83,8 +85,9 @@ namespace SW {
 		RelationshipComponent& rc = entity.GetRelations();
 
 		const std::vector<u64> children = rc.ChildrenIDs;
-		
-		for (u64 childId : children) {
+
+		for (u64 childId : children)
+		{
 			Entity childToDelete = GetEntityByID(childId);
 
 			DestroyEntity(childToDelete);
@@ -100,16 +103,19 @@ namespace SW {
 		RemoveReferencedConnections<SpringJoint2DComponent>(registry, id);
 		RemoveReferencedConnections<WheelJoint2DComponent>(registry, id);
 
-		if (IsPlaying() &&entity.HasComponent<RigidBody2DComponent>()) {
+		if (IsPlaying() && entity.HasComponent<RigidBody2DComponent>())
+		{
 			b2Body* body = (b2Body*)entity.GetComponent<RigidBody2DComponent>().Handle;
 
 			m_PhysicsWorld2D->DestroyBody(body);
 		}
 
-		if (entity.HasComponent<ScriptComponent>()) {
+		if (entity.HasComponent<ScriptComponent>())
+		{
 			ScriptComponent& sc = entity.GetComponent<ScriptComponent>();
 
-			if (sc.ScriptID) {
+			if (sc.ScriptID)
+			{
 				if (sc.Instance.IsValid())
 					sc.Instance.Invoke("OnDestroy");
 
@@ -129,11 +135,11 @@ namespace SW {
 	}
 
 	void Scene::DestroyAllEntities()
-    {
+	{
 		m_Registry.DestroyAllEntities();
 
 		m_EntityMap.clear();
-    }
+	}
 
 	void Scene::SortEntities()
 	{
@@ -145,10 +151,10 @@ namespace SW {
 		});
 	}
 
-	Entity Scene::InstantiatePrefab(
-		const Prefab* prefab, const glm::vec3* position /*= nullptr*/, const glm::vec3* rotation /*= nullptr*/,
-		const glm::vec3* scale /*= nullptr*/
-	) {
+	Entity Scene::InstantiatePrefab(const Prefab* prefab, const glm::vec3* position /*= nullptr*/,
+	                                const glm::vec3* rotation /*= nullptr*/, const glm::vec3* scale /*= nullptr*/
+	)
+	{
 		std::unordered_map<u64, Entity> duplicatedEntities;
 
 		return CreatePrefabricatedEntity(prefab->GetRootEntity(), duplicatedEntities, position, rotation, scale);
@@ -156,34 +162,43 @@ namespace SW {
 
 	void Scene::SortSpritesByDepth()
 	{
-		m_Registry.GetRegistryHandle().sort<SpriteComponent>([](const SpriteComponent& lhs, const SpriteComponent& rhs) {
-			return lhs.ZIndex < rhs.ZIndex;
-		});
+		m_Registry.GetRegistryHandle().sort<SpriteComponent>(
+		    [](const SpriteComponent& lhs, const SpriteComponent& rhs) {
+			    return lhs.ZIndex < rhs.ZIndex;
+		    });
 	}
 
-#define CopyReferencedEntitiesPref(T) \
-{ \
-	if (src.HasComponent<T>()) { \
-		T& component = src.GetComponent<T>(); \
-		T& newComponent = dst.GetComponent<T>(); \
-		if (component.ConnectedEntityID) { \
-			if (duplicatedEntities.contains(component.ConnectedEntityID)) { \
-				newComponent.ConnectedEntityID = duplicatedEntities.at(component.ConnectedEntityID).GetID(); \
-			} else { \
-				Entity connectedEntity = srcScene->GetEntityByID(component.ConnectedEntityID); \
-				Entity duplicatedConnectedEntity = CreatePrefabricatedEntity(connectedEntity, duplicatedEntities); \
-				newComponent.ConnectedEntityID = duplicatedConnectedEntity.GetID(); \
-				duplicatedEntities[component.ConnectedEntityID] = duplicatedConnectedEntity; \
-			} \
-		} \
-	} \
-}
+#define CopyReferencedEntitiesPref(T)                                                                                  \
+	{                                                                                                                  \
+		if (src.HasComponent<T>())                                                                                     \
+		{                                                                                                              \
+			T& component    = src.GetComponent<T>();                                                                   \
+			T& newComponent = dst.GetComponent<T>();                                                                   \
+			if (component.ConnectedEntityID)                                                                           \
+			{                                                                                                          \
+				if (duplicatedEntities.contains(component.ConnectedEntityID))                                          \
+				{                                                                                                      \
+					newComponent.ConnectedEntityID = duplicatedEntities.at(component.ConnectedEntityID).GetID();       \
+				}                                                                                                      \
+				else                                                                                                   \
+				{                                                                                                      \
+					Entity connectedEntity           = srcScene->GetEntityByID(component.ConnectedEntityID);           \
+					Entity duplicatedConnectedEntity = CreatePrefabricatedEntity(connectedEntity, duplicatedEntities); \
+					newComponent.ConnectedEntityID   = duplicatedConnectedEntity.GetID();                              \
+					duplicatedEntities[component.ConnectedEntityID] = duplicatedConnectedEntity;                       \
+				}                                                                                                      \
+			}                                                                                                          \
+		}                                                                                                              \
+	}
 
-	Entity Scene::CreatePrefabricatedEntity(
-		Entity src, std::unordered_map<u64, Entity>& duplicatedEntities, const glm::vec3* position /*= nullptr*/,
-		const glm::vec3* rotation /*= nullptr*/, const glm::vec3* scale /*= nullptr*/
-	) {
-		if (duplicatedEntities.count(src.GetID()) > 0) {
+	Entity Scene::CreatePrefabricatedEntity(Entity src, std::unordered_map<u64, Entity>& duplicatedEntities,
+	                                        const glm::vec3* position /*= nullptr*/,
+	                                        const glm::vec3* rotation /*= nullptr*/,
+	                                        const glm::vec3* scale /*= nullptr*/
+	)
+	{
+		if (duplicatedEntities.count(src.GetID()) > 0)
+		{
 			return duplicatedEntities[src.GetID()];
 		}
 
@@ -223,19 +238,22 @@ namespace SW {
 
 		if (rotation)
 			dst.GetTransform().Rotation = *rotation;
-		
+
 		if (scale)
 			dst.GetTransform().Scale = *scale;
 
-		if (IsPlaying()) {
-			if (src.HasComponent<RigidBody2DComponent>()) {
+		if (IsPlaying())
+		{
+			if (src.HasComponent<RigidBody2DComponent>())
+			{
 				RigidBody2DComponent& rbc = dst.GetComponent<RigidBody2DComponent>();
 
 				CreateRigidbody2D(dst, dst.GetWorldSpaceTransform(), rbc);
 			}
 		}
 
-		if (src.HasComponent<ScriptComponent>()) {
+		if (src.HasComponent<ScriptComponent>())
+		{
 			ScriptComponent& sc = dst.GetComponent<ScriptComponent>();
 
 			ASSERT(ScriptingCore::Get().IsValidScript(sc.ScriptID), "Prefab's script ID is invalid!");
@@ -244,7 +262,8 @@ namespace SW {
 			srcScene->GetScriptStorage().CopyEntityStorage(src.GetID(), dst.GetID(), m_ScriptStorage);
 			ScriptingCore& scriptEngine = ScriptingCore::Get();
 
-			if (IsPlaying() && scriptEngine.IsValidScript(sc.ScriptID)) {
+			if (IsPlaying() && scriptEngine.IsValidScript(sc.ScriptID))
+			{
 				sc.Instance = scriptEngine.Instantiate(dst.GetID(), m_ScriptStorage, u64(dst.GetID()));
 				sc.Instance.Invoke("OnCreate");
 			}
@@ -254,7 +273,8 @@ namespace SW {
 
 		std::vector<u64> childIds = src.GetRelations().ChildrenIDs;
 
-		for (u64 childId : childIds) {
+		for (u64 childId : childIds)
+		{
 			Entity childDuplicate = CreatePrefabricatedEntity(srcScene->GetEntityByID(childId), duplicatedEntities);
 
 			childDuplicate.SetParent(dst);
@@ -269,12 +289,13 @@ namespace SW {
 
 		m_PhysicsFrameAccumulator = 0.0f;
 
-		m_PhysicsWorld2D = new b2World({ Gravity.x, Gravity.y });
+		m_PhysicsWorld2D           = new b2World({Gravity.x, Gravity.y});
 		m_PhysicsContactListener2D = new Physics2DContactListener(this);
 		m_PhysicsWorld2D->SetContactListener(m_PhysicsContactListener2D);
 
-		for (auto&& [handle, id, sc] : m_Registry.GetEntitiesWith<IDComponent, ScriptComponent>().each()) {
-			Entity entity = { handle, this };
+		for (auto&& [handle, id, sc] : m_Registry.GetEntitiesWith<IDComponent, ScriptComponent>().each())
+		{
+			Entity entity = {handle, this};
 
 			if (!sc.ScriptID)
 				continue;
@@ -283,69 +304,88 @@ namespace SW {
 			sc.Instance.Invoke("OnCreate");
 		}
 
-		for (auto&& [handle, rbc] : m_Registry.GetEntitiesWith<RigidBody2DComponent>().each()) {
-			Entity entity = { handle, this };
+		for (auto&& [handle, rbc] : m_Registry.GetEntitiesWith<RigidBody2DComponent>().each())
+		{
+			Entity entity = {handle, this};
 
 			CreateRigidbody2D(entity, entity.GetWorldSpaceTransform(), rbc);
 		}
 
-		for (auto&& [handle, rbc, djc] : m_Registry.GetEntitiesWith<RigidBody2DComponent, DistanceJoint2DComponent>().each()) {
+		for (auto&& [handle, rbc, djc] :
+		     m_Registry.GetEntitiesWith<RigidBody2DComponent, DistanceJoint2DComponent>().each())
+		{
 			CreateDistanceJoint2D(rbc, djc);
 		}
 
-		for (auto&& [handle, rbc, rjc] : m_Registry.GetEntitiesWith<RigidBody2DComponent, RevolutionJoint2DComponent>().each()) {
+		for (auto&& [handle, rbc, rjc] :
+		     m_Registry.GetEntitiesWith<RigidBody2DComponent, RevolutionJoint2DComponent>().each())
+		{
 			CreateRevolutionJoint2D(rbc, rjc);
 		}
 
-		for (auto&& [handle, rbc, pjc] : m_Registry.GetEntitiesWith<RigidBody2DComponent, PrismaticJoint2DComponent>().each()) {
+		for (auto&& [handle, rbc, pjc] :
+		     m_Registry.GetEntitiesWith<RigidBody2DComponent, PrismaticJoint2DComponent>().each())
+		{
 			CreatePrismaticJoint2D(rbc, pjc);
 		}
 
-		for (auto&& [handle, rbc, sjc] : m_Registry.GetEntitiesWith<RigidBody2DComponent, SpringJoint2DComponent>().each()) {
+		for (auto&& [handle, rbc, sjc] :
+		     m_Registry.GetEntitiesWith<RigidBody2DComponent, SpringJoint2DComponent>().each())
+		{
 			CreateSpringJoint2D(rbc, sjc);
 		}
 
-		for (auto&& [handle, rbc, wjc] : m_Registry.GetEntitiesWith<RigidBody2DComponent, WheelJoint2DComponent>().each()) {
+		for (auto&& [handle, rbc, wjc] :
+		     m_Registry.GetEntitiesWith<RigidBody2DComponent, WheelJoint2DComponent>().each())
+		{
 			CreateWheelJoint2D(rbc, wjc);
 		}
 
-		for (auto&& [handle, tc, asc] : m_Registry.GetEntitiesWith<TransformComponent, AudioSourceComponent>().each()) {
+		for (auto&& [handle, tc, asc] : m_Registry.GetEntitiesWith<TransformComponent, AudioSourceComponent>().each())
+		{
 			if (!asc.Handle)
 				continue;
 
-			if (asc.PlayOnCreate) {
+			if (asc.PlayOnCreate)
+			{
 				Sound* sound = *AssetManager::GetAssetRaw<Sound>(asc.Handle);
 
 				SoundSpecification spec;
-				spec.Sound = sound;
-				spec.Pitch = asc.Pitch;
-				spec.Volume = asc.Volume;
+				spec.Sound   = sound;
+				spec.Pitch   = asc.Pitch;
+				spec.Volume  = asc.Volume;
 				spec.Looping = asc.Looping;
 
-				if (asc.Is3D) {
-					spec.Is3D = asc.Is3D;
+				if (asc.Is3D)
+				{
+					spec.Is3D        = asc.Is3D;
 					spec.Attenuation = asc.Attenuation;
-					spec.RollOff = asc.RollOff;
-					spec.MinGain = asc.MinGain;
-					spec.MaxGain = asc.MaxGain;
+					spec.RollOff     = asc.RollOff;
+					spec.MinGain     = asc.MinGain;
+					spec.MaxGain     = asc.MaxGain;
 					spec.MinDistance = asc.MinDistance;
 					spec.MaxDistance = asc.MaxDistance;
-					//spec.ConeInnerAngle = asc.ConeInnerAngle;
-					//spec.ConeOuterAngle = asc.ConeOuterAngle;
-					//spec.ConeOuterGain = asc.ConeOuterGain;
-					//spec.DopplerFactor = asc.DopplerFactor;
+					// spec.ConeInnerAngle = asc.ConeInnerAngle;
+					// spec.ConeOuterAngle = asc.ConeOuterAngle;
+					// spec.ConeOuterGain = asc.ConeOuterGain;
+					// spec.DopplerFactor = asc.DopplerFactor;
 
-					const glm::mat4 invertedTransform = glm::inverse(Entity(handle, this).GetWorldSpaceTransformMatrix());
-					const glm::vec3 forward = glm::normalize(glm::vec3(invertedTransform * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
+					const glm::mat4 invertedTransform =
+					    glm::inverse(Entity(handle, this).GetWorldSpaceTransformMatrix());
+					const glm::vec3 forward =
+					    glm::normalize(glm::vec3(invertedTransform * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
 
 					asc.Instance = AudioEngine::PlaySound3D(spec, tc.Position, forward);
-				} else {
+				}
+				else
+				{
 					asc.Instance = AudioEngine::PlaySound(spec);
 				}
 			}
 		}
 
-		for (auto&& [handle, tc, alc] : m_Registry.GetEntitiesWith<TransformComponent, AudioListenerComponent>().each()) {
+		for (auto&& [handle, tc, alc] : m_Registry.GetEntitiesWith<TransformComponent, AudioListenerComponent>().each())
+		{
 			SoundListener* listener = new SoundListener(/*alc.ConeInnerAngle, alc.ConeOuterAngle, alc.ConeOuterGain*/);
 
 			const glm::mat4 invertedTransform = glm::inverse(Entity(handle, this).GetWorldSpaceTransformMatrix());
@@ -360,8 +400,9 @@ namespace SW {
 
 	void Scene::OnRuntimeStop()
 	{
-		for (auto&& [handle, id, sc] : m_Registry.GetEntitiesWith<IDComponent, ScriptComponent>().each()) {
-			Entity entity = { handle, this };
+		for (auto&& [handle, id, sc] : m_Registry.GetEntitiesWith<IDComponent, ScriptComponent>().each())
+		{
+			Entity entity = {handle, this};
 
 			if (!sc.ScriptID)
 				continue;
@@ -370,8 +411,10 @@ namespace SW {
 			ScriptingCore::Get().DestroyInstance(id.ID, m_ScriptStorage);
 		}
 
-		for (auto&& [handle, tc, alc] : m_Registry.GetEntitiesWith<TransformComponent, AudioListenerComponent>().each()) {
-			if (alc.Listener) {
+		for (auto&& [handle, tc, alc] : m_Registry.GetEntitiesWith<TransformComponent, AudioListenerComponent>().each())
+		{
+			if (alc.Listener)
+			{
 				delete alc.Listener;
 				alc.Listener = nullptr;
 			}
@@ -386,22 +429,24 @@ namespace SW {
 		m_PhysicsContactListener2D = nullptr;
 	}
 
-    void Scene::OnUpdateEditor(Timestep dt, EditorCamera* camera)
-    {
+	void Scene::OnUpdateEditor(Timestep dt, EditorCamera* camera)
+	{
 		PROFILE_FUNCTION();
 
 		m_AnimationTime += dt;
 
 		Renderer2D::BeginScene(camera);
 
-		for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<SpriteComponent>().each()) {
-			Entity entity = { handle, this };
+		for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<SpriteComponent>().each())
+		{
+			Entity entity = {handle, this};
 
 			Renderer2D::DrawQuad(entity.GetWorldSpaceTransformMatrix(), sc, (int)handle);
 		}
 
-		for (auto&& [handle, asc] : m_Registry.GetEntitiesWith<AnimatedSpriteComponent>().each()) {
-			Entity entity = { handle, this };
+		for (auto&& [handle, asc] : m_Registry.GetEntitiesWith<AnimatedSpriteComponent>().each())
+		{
+			Entity entity = {handle, this};
 
 			if (!asc.CurrentAnimation)
 				continue;
@@ -409,14 +454,16 @@ namespace SW {
 			Renderer2D::DrawQuad(entity.GetWorldSpaceTransformMatrix(), asc, m_AnimationTime, (int)handle);
 		}
 
-		for (auto&& [handle, cc] : m_Registry.GetEntitiesWith<CircleComponent>().each()) {
-			Entity entity = { handle, this };
+		for (auto&& [handle, cc] : m_Registry.GetEntitiesWith<CircleComponent>().each())
+		{
+			Entity entity = {handle, this};
 
 			Renderer2D::DrawCircle(entity.GetWorldSpaceTransformMatrix(), cc, (int)handle);
 		}
 
-		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TextComponent>().each()) {
-			Entity entity = { handle, this };
+		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TextComponent>().each())
+		{
+			Entity entity = {handle, this};
 
 			if (!tc.Handle)
 				continue;
@@ -432,22 +479,27 @@ namespace SW {
 		m_AnimationTime += dt;
 
 #pragma region Physics
-		if (m_SceneState != SceneState::Pause) {
+		if (m_SceneState != SceneState::Pause)
+		{
 			PROFILE_SCOPE("Scene::OnUpdateRuntime() - Physics update");
 
 			constexpr f32 physicsStepRate = 50.0f;
-			constexpr f32 physicsTs = 1.0f / physicsStepRate;
+			constexpr f32 physicsTs       = 1.0f / physicsStepRate;
 
 			m_PhysicsFrameAccumulator += dt;
 
-			while (m_PhysicsFrameAccumulator >= physicsTs) {
+			while (m_PhysicsFrameAccumulator >= physicsTs)
+			{
 				m_PhysicsContactListener2D->Step(physicsTs);
-				m_PhysicsWorld2D->Step(physicsTs, static_cast<int32_t>(m_VelocityIterations), static_cast<int32_t>(m_PositionIterations));
+				m_PhysicsWorld2D->Step(physicsTs, static_cast<int32_t>(m_VelocityIterations),
+				                       static_cast<int32_t>(m_PositionIterations));
 
 				m_PhysicsFrameAccumulator -= physicsTs;
 			}
 
-			for (auto&& [handle, tc, rbc] : m_Registry.GetEntitiesWith<TransformComponent, RigidBody2DComponent>().each()) {
+			for (auto&& [handle, tc, rbc] :
+			     m_Registry.GetEntitiesWith<TransformComponent, RigidBody2DComponent>().each())
+			{
 				const b2Body* body = static_cast<b2Body*>(rbc.Handle);
 
 				if (!body->IsAwake())
@@ -455,7 +507,7 @@ namespace SW {
 
 				const b2Vec2 position = body->GetPosition();
 
-				Entity entity = { handle, this };
+				Entity entity = {handle, this};
 
 				tc.Position.x = position.x;
 				tc.Position.y = position.y;
@@ -464,11 +516,15 @@ namespace SW {
 				entity.ConvertToLocalSpace();
 			}
 
-			for (auto&& [handle, djc] : m_Registry.GetEntitiesWith<DistanceJoint2DComponent>().each()) {
-				if (djc.RuntimeJoint) {
+			for (auto&& [handle, djc] : m_Registry.GetEntitiesWith<DistanceJoint2DComponent>().each())
+			{
+				if (djc.RuntimeJoint)
+				{
 					b2Joint* joint = (b2Joint*)(djc.RuntimeJoint);
 
-					if (joint->GetReactionForce(physicsStepRate).LengthSquared() > djc.BreakingForce * djc.BreakingForce) {
+					if (joint->GetReactionForce(physicsStepRate).LengthSquared() >
+					    djc.BreakingForce * djc.BreakingForce)
+					{
 						m_PhysicsWorld2D->DestroyJoint(joint);
 
 						djc.RuntimeJoint = nullptr;
@@ -476,14 +532,16 @@ namespace SW {
 				}
 			}
 
-			for (auto&& [handle, rjc] : m_Registry.GetEntitiesWith<RevolutionJoint2DComponent>().each()) {
-				if (rjc.RuntimeJoint) {
+			for (auto&& [handle, rjc] : m_Registry.GetEntitiesWith<RevolutionJoint2DComponent>().each())
+			{
+				if (rjc.RuntimeJoint)
+				{
 					b2Joint* joint = (b2Joint*)(rjc.RuntimeJoint);
 
-					if (
-						joint->GetReactionForce(physicsStepRate).LengthSquared() > rjc.BreakingForce * rjc.BreakingForce ||
-						joint->GetReactionTorque(physicsStepRate) > rjc.BreakingTorque
-					) {
+					if (joint->GetReactionForce(physicsStepRate).LengthSquared() >
+					        rjc.BreakingForce * rjc.BreakingForce ||
+					    joint->GetReactionTorque(physicsStepRate) > rjc.BreakingTorque)
+					{
 						m_PhysicsWorld2D->DestroyJoint(joint);
 
 						rjc.RuntimeJoint = nullptr;
@@ -491,14 +549,16 @@ namespace SW {
 				}
 			}
 
-			for (auto&& [handle, pjc] : m_Registry.GetEntitiesWith<PrismaticJoint2DComponent>().each()) {
-				if (pjc.RuntimeJoint) {
+			for (auto&& [handle, pjc] : m_Registry.GetEntitiesWith<PrismaticJoint2DComponent>().each())
+			{
+				if (pjc.RuntimeJoint)
+				{
 					b2Joint* joint = (b2Joint*)(pjc.RuntimeJoint);
 
-					if (
-						joint->GetReactionForce(physicsStepRate).LengthSquared() > pjc.BreakingForce * pjc.BreakingForce ||
-						joint->GetReactionTorque(physicsStepRate) > pjc.BreakingTorque
-					) {
+					if (joint->GetReactionForce(physicsStepRate).LengthSquared() >
+					        pjc.BreakingForce * pjc.BreakingForce ||
+					    joint->GetReactionTorque(physicsStepRate) > pjc.BreakingTorque)
+					{
 						m_PhysicsWorld2D->DestroyJoint(joint);
 
 						pjc.RuntimeJoint = nullptr;
@@ -506,11 +566,15 @@ namespace SW {
 				}
 			}
 
-			for (auto&& [handle, sjc] : m_Registry.GetEntitiesWith<SpringJoint2DComponent>().each()) {
-				if (sjc.RuntimeJoint) {
+			for (auto&& [handle, sjc] : m_Registry.GetEntitiesWith<SpringJoint2DComponent>().each())
+			{
+				if (sjc.RuntimeJoint)
+				{
 					b2Joint* joint = (b2Joint*)(sjc.RuntimeJoint);
 
-					if (joint->GetReactionForce(physicsStepRate).LengthSquared() > sjc.BreakingForce * sjc.BreakingForce) {
+					if (joint->GetReactionForce(physicsStepRate).LengthSquared() >
+					    sjc.BreakingForce * sjc.BreakingForce)
+					{
 						m_PhysicsWorld2D->DestroyJoint(joint);
 
 						sjc.RuntimeJoint = nullptr;
@@ -518,14 +582,16 @@ namespace SW {
 				}
 			}
 
-			for (auto&& [handle, wjc] : m_Registry.GetEntitiesWith<WheelJoint2DComponent>().each()) {
-				if (wjc.RuntimeJoint) {
+			for (auto&& [handle, wjc] : m_Registry.GetEntitiesWith<WheelJoint2DComponent>().each())
+			{
+				if (wjc.RuntimeJoint)
+				{
 					b2Joint* joint = (b2Joint*)(wjc.RuntimeJoint);
 
-					if (
-						joint->GetReactionForce(physicsStepRate).LengthSquared() > wjc.BreakingForce * wjc.BreakingForce ||
-						joint->GetReactionTorque(physicsStepRate) > wjc.BreakingTorque
-					) {
+					if (joint->GetReactionForce(physicsStepRate).LengthSquared() >
+					        wjc.BreakingForce * wjc.BreakingForce ||
+					    joint->GetReactionTorque(physicsStepRate) > wjc.BreakingTorque)
+					{
 						m_PhysicsWorld2D->DestroyJoint(joint);
 
 						wjc.RuntimeJoint = nullptr;
@@ -533,7 +599,9 @@ namespace SW {
 				}
 			}
 
-			for (auto&& [handle, tc, asc] : m_Registry.GetEntitiesWith<TransformComponent, AudioSourceComponent>().each()) {
+			for (auto&& [handle, tc, asc] :
+			     m_Registry.GetEntitiesWith<TransformComponent, AudioSourceComponent>().each())
+			{
 				if (!asc.Handle)
 					continue;
 
@@ -541,28 +609,36 @@ namespace SW {
 					continue;
 
 				const glm::mat4 invertedTransform = glm::inverse(Entity(handle, this).GetWorldSpaceTransformMatrix());
-				const glm::vec3 forward = glm::normalize(glm::vec3(invertedTransform * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
-			
+				const glm::vec3 forward =
+				    glm::normalize(glm::vec3(invertedTransform * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
+
 				(*asc.Instance)->SetPosition(tc.Position);
 				(*asc.Instance)->SetDirection(forward);
 			}
 
-			for (auto&& [handle, tc, alc] : m_Registry.GetEntitiesWith<TransformComponent, AudioListenerComponent>().each()) {
+			for (auto&& [handle, tc, alc] :
+			     m_Registry.GetEntitiesWith<TransformComponent, AudioListenerComponent>().each())
+			{
 				const glm::mat4 invertedTransform = glm::inverse(Entity(handle, this).GetWorldSpaceTransformMatrix());
-				const glm::vec3 forward = glm::normalize(glm::vec3(invertedTransform * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
+				const glm::vec3 forward =
+				    glm::normalize(glm::vec3(invertedTransform * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
 
 				alc.Listener->SetPosition(tc.Position);
 				alc.Listener->SetDirection(-forward);
 			}
 		}
 
-		while (!m_EntitiesToDelete.empty()) {
-			u64 id = m_EntitiesToDelete.front();
+		while (!m_EntitiesToDelete.empty())
+		{
+			u64 id          = m_EntitiesToDelete.front();
 			Entity toDelete = TryGetEntityByID(id);
 
-			if (toDelete) {
+			if (toDelete)
+			{
 				DestroyEntity(toDelete);
-			} else {
+			}
+			else
+			{
 				SYSTEM_WARN("Entity could not be found {}", id);
 			}
 
@@ -574,7 +650,8 @@ namespace SW {
 		{
 			PROFILE_SCOPE("Scene::OnUpdate - C# OnUpdate");
 
-			for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<ScriptComponent>().each()) {
+			for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<ScriptComponent>().each())
+			{
 				sc.Instance.Invoke<f32>("OnUpdate", dt);
 			}
 		}
@@ -582,7 +659,8 @@ namespace SW {
 		{
 			PROFILE_SCOPE("Scene::OnUpdate - C# OnLateUpdate");
 
-			for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<ScriptComponent>().each()) {
+			for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<ScriptComponent>().each())
+			{
 				sc.Instance.Invoke<f32>("OnLateUpdate", dt);
 			}
 		}
@@ -590,10 +668,12 @@ namespace SW {
 		glm::mat4 cameraTransform;
 		SceneCamera* mainCamera = nullptr;
 
-		for (auto&& [handle, cc] : m_Registry.GetEntitiesWith<CameraComponent>().each()) {
-			Entity entity = { handle, this };
+		for (auto&& [handle, cc] : m_Registry.GetEntitiesWith<CameraComponent>().each())
+		{
+			Entity entity = {handle, this};
 
-			if (cc.Primary) {
+			if (cc.Primary)
+			{
 				mainCamera = &cc.Camera;
 
 				glm::mat4 worldTransform = entity.GetWorldSpaceTransformMatrix();
@@ -604,27 +684,31 @@ namespace SW {
 				Math::DecomposeTransformForTranslationAndRotation(worldTransform, position, rotation);
 
 				cameraTransform = glm::translate(glm::mat4(1.0f), position) // do not apply scale to the camera
-					* glm::toMat4(glm::quat(rotation));
+				                  * glm::toMat4(glm::quat(rotation));
 
 				break;
 			}
 		}
 
-		if (!mainCamera) {
-			Renderer2D::StartBatch(); // fix to a bug where camera is not present, but leftovers from edit state were present.
+		if (!mainCamera)
+		{
+			Renderer2D::StartBatch(); // fix to a bug where camera is not present, but leftovers from edit state were
+			                          // present.
 			return;
 		}
 
 		Renderer2D::BeginScene(*mainCamera, cameraTransform);
 
-		for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<SpriteComponent>().each()) {
-			Entity entity = { handle, this };
+		for (auto&& [handle, sc] : m_Registry.GetEntitiesWith<SpriteComponent>().each())
+		{
+			Entity entity = {handle, this};
 
 			Renderer2D::DrawQuad(entity.GetWorldSpaceTransformMatrix(), sc, (int)handle);
 		}
 
-		for (auto&& [handle, asc] : m_Registry.GetEntitiesWith<AnimatedSpriteComponent>().each()) {
-			Entity entity = { handle, this };
+		for (auto&& [handle, asc] : m_Registry.GetEntitiesWith<AnimatedSpriteComponent>().each())
+		{
+			Entity entity = {handle, this};
 
 			if (!asc.CurrentAnimation)
 				continue;
@@ -632,14 +716,16 @@ namespace SW {
 			Renderer2D::DrawQuad(entity.GetWorldSpaceTransformMatrix(), asc, m_AnimationTime, (int)handle);
 		}
 
-		for (auto&& [handle, cc] : m_Registry.GetEntitiesWith<CircleComponent>().each()) {
-			Entity entity = { handle, this };
+		for (auto&& [handle, cc] : m_Registry.GetEntitiesWith<CircleComponent>().each())
+		{
+			Entity entity = {handle, this};
 
 			Renderer2D::DrawCircle(entity.GetWorldSpaceTransformMatrix(), cc, (int)handle);
 		}
 
-		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TextComponent>().each()) {
-			Entity entity = { handle, this };
+		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TextComponent>().each())
+		{
+			Entity entity = {handle, this};
 
 			if (!tc.Handle)
 				continue;
@@ -650,10 +736,11 @@ namespace SW {
 
 	void Scene::OnViewportResize(u32 width, u32 height)
 	{
-		m_ViewportWidth = width;
+		m_ViewportWidth  = width;
 		m_ViewportHeight = height;
 
-		for (auto&& [entity, cc] : m_Registry.GetEntitiesWith<CameraComponent>().each()) {
+		for (auto&& [entity, cc] : m_Registry.GetEntitiesWith<CameraComponent>().each())
+		{
 			cc.Camera.SetViewportSize(width, height);
 		}
 	}
@@ -676,34 +763,40 @@ namespace SW {
 		return {};
 	}
 
-    Entity Scene::GetEntityByTag(const std::string& tag)
-    {
-		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TagComponent>().each()) {
-			if (tc.Tag == tag) {
-				return { handle, this };
+	Entity Scene::GetEntityByTag(const std::string& tag)
+	{
+		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TagComponent>().each())
+		{
+			if (tc.Tag == tag)
+			{
+				return {handle, this};
 			}
 		}
 
 		ASSERT(false, "Entity with tag: {} does not exist!", tag);
 
 		return {};
-    }
+	}
 
 	Entity Scene::TryGetEntityByTag(const std::string& tag)
 	{
-		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TagComponent>().each()) {
-			if (tc.Tag == tag) {
-				return { handle, this };
+		for (auto&& [handle, tc] : m_Registry.GetEntitiesWith<TagComponent>().each())
+		{
+			if (tc.Tag == tag)
+			{
+				return {handle, this};
 			}
 		}
 
 		return {};
 	}
 
-	template<typename T>
-	inline static void CopyComponent(entt::registry& dstRegistry, entt::registry& srcRegistry, const std::unordered_map<u64, entt::entity>& enttMap)
+	template <typename T>
+	inline static void CopyComponent(entt::registry& dstRegistry, entt::registry& srcRegistry,
+	                                 const std::unordered_map<u64, entt::entity>& enttMap)
 	{
-		for (entt::entity srcEntity : srcRegistry.view<T>()) {
+		for (entt::entity srcEntity : srcRegistry.view<T>())
+		{
 			entt::entity destEntity = enttMap.at(srcRegistry.get<IDComponent>(srcEntity).ID);
 
 			T& srcComponent = srcRegistry.get<T>(srcEntity);
@@ -711,18 +804,19 @@ namespace SW {
 		}
 	}
 
-    Scene* Scene::DeepCopy()
-    {
+	Scene* Scene::DeepCopy()
+	{
 		Scene* copy = new Scene();
 		copy->SetHandle(this->GetHandle());
 
 		std::unordered_map<u64, entt::entity> enttMap;
 
 		entt::registry& currentRegistry = m_Registry.GetRegistryHandle();
-		entt::registry& copyRegistry = copy->GetRegistry().GetRegistryHandle();
+		entt::registry& copyRegistry    = copy->GetRegistry().GetRegistryHandle();
 
-		for (auto entity : currentRegistry.view<IDComponent>()) {
-			u64 uuid = currentRegistry.get<IDComponent>(entity).ID;
+		for (auto entity : currentRegistry.view<IDComponent>())
+		{
+			u64 uuid          = currentRegistry.get<IDComponent>(entity).ID;
 			std::string& name = currentRegistry.get<TagComponent>(entity).Tag;
 
 			enttMap[uuid] = copy->CreateEntityWithID(uuid, name);
@@ -752,11 +846,12 @@ namespace SW {
 		m_ScriptStorage.CopyTo(copy->m_ScriptStorage);
 
 		return copy;
-    }
+	}
 
 	Entity Scene::DuplicateEntity(Entity src, std::unordered_map<u64, Entity>& duplicatedEntities)
 	{
-		if (duplicatedEntities.count(src.GetID()) > 0) {
+		if (duplicatedEntities.count(src.GetID()) > 0)
+		{
 			return duplicatedEntities[src.GetID()];
 		}
 
@@ -791,7 +886,8 @@ namespace SW {
 		CopyReferencedEntities(SpringJoint2DComponent);
 		CopyReferencedEntities(WheelJoint2DComponent);
 
-		if (dst.HasComponent<ScriptComponent>()) {
+		if (dst.HasComponent<ScriptComponent>())
+		{
 			const ScriptComponent& sc = dst.GetComponent<ScriptComponent>();
 
 			m_ScriptStorage.InitializeEntityStorage(sc.ScriptID, dst.GetID());
@@ -802,13 +898,15 @@ namespace SW {
 
 		std::vector<u64> childIds = src.GetRelations().ChildrenIDs;
 
-		if (Entity parent = src.GetParent()) {
+		if (Entity parent = src.GetParent())
+		{
 			dst.SetParent(parent);
 		}
 
-		for (u64 childId : childIds) {
+		for (u64 childId : childIds)
+		{
 			Entity childDuplicate = DuplicateEntity(GetEntityByID(childId), duplicatedEntities);
-			
+
 			childDuplicate.SetParent(dst);
 		}
 
@@ -818,76 +916,83 @@ namespace SW {
 	void Scene::CreateRigidbody2D(Entity entity, const TransformComponent& tc, RigidBody2DComponent& rbc)
 	{
 		b2BodyDef definition;
-		definition.type = static_cast<b2BodyType>(rbc.Type);
-		definition.allowSleep = rbc.AllowSleep;
-		definition.awake = rbc.InitiallyAwake;
+		definition.type          = static_cast<b2BodyType>(rbc.Type);
+		definition.allowSleep    = rbc.AllowSleep;
+		definition.awake         = rbc.InitiallyAwake;
 		definition.fixedRotation = rbc.FixedRotation;
-		definition.bullet = rbc.IsBullet;
-		definition.gravityScale = rbc.GravityScale;
+		definition.bullet        = rbc.IsBullet;
+		definition.gravityScale  = rbc.GravityScale;
 		definition.position.Set(tc.Position.x, tc.Position.y);
-		definition.angle = tc.Rotation.z;
-		definition.linearDamping = rbc.LinearDamping;
+		definition.angle          = tc.Rotation.z;
+		definition.linearDamping  = rbc.LinearDamping;
 		definition.angularDamping = rbc.AngularDamping;
 
 		b2Body* rb = m_PhysicsWorld2D->CreateBody(&definition);
 
-		if (!rbc.AutoMass && rbc.Mass > 0.01f) {
+		if (!rbc.AutoMass && rbc.Mass > 0.01f)
+		{
 			b2MassData massData = rb->GetMassData();
-			massData.mass = rbc.Mass;
+			massData.mass       = rbc.Mass;
 			rb->SetMassData(&massData);
 		}
 
 		rbc.Handle = rb;
 
-		if (entity.HasComponent<BoxCollider2DComponent>()) {
+		if (entity.HasComponent<BoxCollider2DComponent>())
+		{
 			CreateBoxCollider2D(entity, tc, rbc, entity.GetComponent<BoxCollider2DComponent>());
 		}
 
-		if (entity.HasComponent<CircleCollider2DComponent>()) {
+		if (entity.HasComponent<CircleCollider2DComponent>())
+		{
 			CreateCircleCollider2D(entity, tc, rbc, entity.GetComponent<CircleCollider2DComponent>());
 		}
 
-		if (entity.HasComponent<PolygonCollider2DComponent>()) {
+		if (entity.HasComponent<PolygonCollider2DComponent>())
+		{
 			CreatePolygonCollider2D(entity, rbc, entity.GetComponent<PolygonCollider2DComponent>());
 		}
 	}
 
-	void Scene::CreateBoxCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, BoxCollider2DComponent& bcc)
+	void Scene::CreateBoxCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc,
+	                                BoxCollider2DComponent& bcc)
 	{
 		b2PolygonShape boxShape;
-		boxShape.SetAsBox(tc.Scale.x * bcc.Size.x, tc.Scale.y * bcc.Size.y, b2Vec2(tc.Scale.x * bcc.Offset.x, tc.Scale.y * bcc.Offset.y), 0.0f);
+		boxShape.SetAsBox(tc.Scale.x * bcc.Size.x, tc.Scale.y * bcc.Size.y,
+		                  b2Vec2(tc.Scale.x * bcc.Offset.x, tc.Scale.y * bcc.Offset.y), 0.0f);
 
 		b2FixtureDef fixtureDef;
-		fixtureDef.shape = &boxShape;
-		fixtureDef.userData.pointer = static_cast<u32>(entity);
-		fixtureDef.density = bcc.Density;
-		fixtureDef.friction = rbc.Friction;
-		fixtureDef.restitution = rbc.Restitution;
+		fixtureDef.shape                = &boxShape;
+		fixtureDef.userData.pointer     = static_cast<u32>(entity);
+		fixtureDef.density              = bcc.Density;
+		fixtureDef.friction             = rbc.Friction;
+		fixtureDef.restitution          = rbc.Restitution;
 		fixtureDef.restitutionThreshold = rbc.RestitutionThreshold;
-		fixtureDef.isSensor = bcc.IsSensor;
+		fixtureDef.isSensor             = bcc.IsSensor;
 
-		b2Body* body = static_cast<b2Body*>(rbc.Handle);
+		b2Body* body       = static_cast<b2Body*>(rbc.Handle);
 		b2Fixture* fixture = body->CreateFixture(&fixtureDef);
 
 		bcc.Handle = fixture;
 	}
 
-	void Scene::CreateCircleCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc, CircleCollider2DComponent& ccc)
+	void Scene::CreateCircleCollider2D(Entity entity, const TransformComponent& tc, const RigidBody2DComponent& rbc,
+	                                   CircleCollider2DComponent& ccc)
 	{
 		b2CircleShape circleShape;
 		circleShape.m_radius = ccc.Radius * glm::max(tc.Scale.x, tc.Scale.y);
 		circleShape.m_p.Set(ccc.Offset.x, ccc.Offset.y);
 
 		b2FixtureDef fixtureDef;
-		fixtureDef.shape = &circleShape;
-		fixtureDef.userData.pointer = static_cast<u32>(entity);
-		fixtureDef.density = ccc.Density;
-		fixtureDef.friction = rbc.Friction;
-		fixtureDef.restitution = rbc.Restitution;
+		fixtureDef.shape                = &circleShape;
+		fixtureDef.userData.pointer     = static_cast<u32>(entity);
+		fixtureDef.density              = ccc.Density;
+		fixtureDef.friction             = rbc.Friction;
+		fixtureDef.restitution          = rbc.Restitution;
 		fixtureDef.restitutionThreshold = rbc.RestitutionThreshold;
-		fixtureDef.isSensor = ccc.IsSensor;
+		fixtureDef.isSensor             = ccc.IsSensor;
 
-		b2Body* body = static_cast<b2Body*>(rbc.Handle);
+		b2Body* body       = static_cast<b2Body*>(rbc.Handle);
 		b2Fixture* fixture = body->CreateFixture(&fixtureDef);
 
 		ccc.Handle = fixture;
@@ -895,12 +1000,15 @@ namespace SW {
 
 	void Scene::CreatePolygonCollider2D(Entity entity, const RigidBody2DComponent& rbc, PolygonCollider2DComponent& pcc)
 	{
-		if (pcc.Vertices.size() < 3) {
-			SYSTEM_ERROR("Cannot create polygon collider with less than 3 vertices! Currently: {}", pcc.Vertices.size());
+		if (pcc.Vertices.size() < 3)
+		{
+			SYSTEM_ERROR("Cannot create polygon collider with less than 3 vertices! Currently: {}",
+			             pcc.Vertices.size());
 			return;
 		}
 
-		for (u64 i = 0; i < pcc.Vertices.size(); ++i) {
+		for (u64 i = 0; i < pcc.Vertices.size(); ++i)
+		{
 			pcc.Vertices[i] += pcc.Offset;
 		}
 
@@ -908,15 +1016,15 @@ namespace SW {
 		polygonShape.Set((const b2Vec2*)pcc.Vertices.data(), (i32)pcc.Vertices.size());
 
 		b2FixtureDef fixtureDef;
-		fixtureDef.shape = &polygonShape;
-		fixtureDef.userData.pointer = static_cast<u32>(entity);
-		fixtureDef.density = pcc.Density;
-		fixtureDef.friction = rbc.Friction;
-		fixtureDef.restitution = rbc.Restitution;
+		fixtureDef.shape                = &polygonShape;
+		fixtureDef.userData.pointer     = static_cast<u32>(entity);
+		fixtureDef.density              = pcc.Density;
+		fixtureDef.friction             = rbc.Friction;
+		fixtureDef.restitution          = rbc.Restitution;
 		fixtureDef.restitutionThreshold = rbc.RestitutionThreshold;
-		fixtureDef.isSensor = pcc.IsSensor;
+		fixtureDef.isSensor             = pcc.IsSensor;
 
-		b2Body* body = static_cast<b2Body*>(rbc.Handle);
+		b2Body* body       = static_cast<b2Body*>(rbc.Handle);
 		b2Fixture* fixture = body->CreateFixture(&fixtureDef);
 
 		pcc.Handle = fixture;
@@ -932,11 +1040,11 @@ namespace SW {
 		if (!connectedEntity.HasComponent<RigidBody2DComponent>())
 			return;
 
-		b2Body* originBody = (b2Body*)rbc.Handle;
+		b2Body* originBody    = (b2Body*)rbc.Handle;
 		b2Body* connectedBody = (b2Body*)connectedEntity.GetComponent<RigidBody2DComponent>().Handle;
 
-		b2Vec2 originAnchor = originBody->GetWorldPoint({ djc.OriginAnchor.x, djc.OriginAnchor.y });
-		b2Vec2 connectedAnchor = connectedBody->GetWorldPoint({ djc.ConnectedAnchor.x, djc.ConnectedAnchor.y });
+		b2Vec2 originAnchor    = originBody->GetWorldPoint({djc.OriginAnchor.x, djc.OriginAnchor.y});
+		b2Vec2 connectedAnchor = connectedBody->GetWorldPoint({djc.ConnectedAnchor.x, djc.ConnectedAnchor.y});
 
 		b2DistanceJointDef jointDef;
 		jointDef.Initialize(originBody, connectedBody, originAnchor, connectedAnchor);
@@ -959,20 +1067,20 @@ namespace SW {
 		if (!connectedEntity.HasComponent<RigidBody2DComponent>())
 			return;
 
-		b2Body* originBody = (b2Body*)rbc.Handle;
+		b2Body* originBody    = (b2Body*)rbc.Handle;
 		b2Body* connectedBody = (b2Body*)connectedEntity.GetComponent<RigidBody2DComponent>().Handle;
 
-		b2Vec2 originAnchor = originBody->GetWorldPoint({ rjc.OriginAnchor.x, rjc.OriginAnchor.y });
+		b2Vec2 originAnchor = originBody->GetWorldPoint({rjc.OriginAnchor.x, rjc.OriginAnchor.y});
 
 		b2RevoluteJointDef jointDef;
 		jointDef.Initialize(originBody, connectedBody, originAnchor);
 		jointDef.collideConnected = rjc.EnableCollision;
-		jointDef.enableLimit = rjc.EnableLimit;
-		jointDef.lowerAngle = rjc.LowerAngle;
-		jointDef.upperAngle = rjc.UpperAngle;
-		jointDef.enableMotor = rjc.EnableMotor;
-		jointDef.motorSpeed = rjc.MotorSpeed;
-		jointDef.maxMotorTorque = rjc.MaxMotorTorque;
+		jointDef.enableLimit      = rjc.EnableLimit;
+		jointDef.lowerAngle       = rjc.LowerAngle;
+		jointDef.upperAngle       = rjc.UpperAngle;
+		jointDef.enableMotor      = rjc.EnableMotor;
+		jointDef.motorSpeed       = rjc.MotorSpeed;
+		jointDef.maxMotorTorque   = rjc.MaxMotorTorque;
 
 		rjc.RuntimeJoint = m_PhysicsWorld2D->CreateJoint(&jointDef);
 	}
@@ -987,21 +1095,22 @@ namespace SW {
 		if (!connectedEntity.HasComponent<RigidBody2DComponent>())
 			return;
 
-		b2Body* originBody = (b2Body*)rbc.Handle;
+		b2Body* originBody    = (b2Body*)rbc.Handle;
 		b2Body* connectedBody = (b2Body*)connectedEntity.GetComponent<RigidBody2DComponent>().Handle;
 
 		b2Vec2 worldAxis(1.0f, 0.0f);
 
 		b2PrismaticJointDef jointDef;
-		jointDef.Initialize(originBody, connectedBody, originBody->GetWorldPoint({pjc.OriginAnchor.x, pjc.OriginAnchor.y}), worldAxis);
+		jointDef.Initialize(originBody, connectedBody,
+		                    originBody->GetWorldPoint({pjc.OriginAnchor.x, pjc.OriginAnchor.y}), worldAxis);
 		jointDef.collideConnected = pjc.EnableCollision;
-		jointDef.referenceAngle = pjc.Angle;
-		jointDef.enableLimit = pjc.EnableLimit;
+		jointDef.referenceAngle   = pjc.Angle;
+		jointDef.enableLimit      = pjc.EnableLimit;
 		jointDef.lowerTranslation = pjc.LowerTranslation;
 		jointDef.upperTranslation = pjc.UpperTranslation;
-		jointDef.enableMotor = pjc.EnableMotor;
-		jointDef.motorSpeed = pjc.MotorSpeed;
-		jointDef.maxMotorForce = pjc.MaxMotorForce;
+		jointDef.enableMotor      = pjc.EnableMotor;
+		jointDef.motorSpeed       = pjc.MotorSpeed;
+		jointDef.maxMotorForce    = pjc.MaxMotorForce;
 
 		pjc.RuntimeJoint = m_PhysicsWorld2D->CreateJoint(&jointDef);
 	}
@@ -1016,11 +1125,11 @@ namespace SW {
 		if (!connectedEntity.HasComponent<RigidBody2DComponent>())
 			return;
 
-		b2Body* originBody = (b2Body*)rbc.Handle;
+		b2Body* originBody    = (b2Body*)rbc.Handle;
 		b2Body* connectedBody = (b2Body*)connectedEntity.GetComponent<RigidBody2DComponent>().Handle;
 
-		b2Vec2 originAnchor = originBody->GetWorldPoint({ sjc.OriginAnchor.x, sjc.OriginAnchor.y });
-		b2Vec2 connectedAnchor = connectedBody->GetWorldPoint({ sjc.ConnectedAnchor.x, sjc.ConnectedAnchor.y });
+		b2Vec2 originAnchor    = originBody->GetWorldPoint({sjc.OriginAnchor.x, sjc.OriginAnchor.y});
+		b2Vec2 connectedAnchor = connectedBody->GetWorldPoint({sjc.ConnectedAnchor.x, sjc.ConnectedAnchor.y});
 
 		b2DistanceJointDef jointDef;
 		jointDef.Initialize(originBody, connectedBody, originAnchor, connectedAnchor);
@@ -1030,7 +1139,8 @@ namespace SW {
 		jointDef.minLength = glm::min(jointDef.length, sjc.MinLength);
 		jointDef.maxLength = jointDef.length + glm::max(sjc.MaxLength, 0.0f);
 
-		b2LinearStiffness(jointDef.stiffness, jointDef.damping, sjc.Frequency, sjc.DampingRatio, originBody, connectedBody);
+		b2LinearStiffness(jointDef.stiffness, jointDef.damping, sjc.Frequency, sjc.DampingRatio, originBody,
+		                  connectedBody);
 
 		sjc.RuntimeJoint = m_PhysicsWorld2D->CreateJoint(&jointDef);
 	}
@@ -1045,30 +1155,31 @@ namespace SW {
 		if (!connectedEntity.HasComponent<RigidBody2DComponent>())
 			return;
 
-		b2Body* originBody = (b2Body*)rbc.Handle;
+		b2Body* originBody    = (b2Body*)rbc.Handle;
 		b2Body* connectedBody = (b2Body*)connectedEntity.GetComponent<RigidBody2DComponent>().Handle;
 
 		b2Vec2 axis(0.0f, 1.0f);
 
-		f32 mass = originBody->GetMass();
+		f32 mass  = originBody->GetMass();
 		f32 omega = 2.0f * b2_pi * wjc.Frequency;
 
 		b2WheelJointDef jointDef;
-		jointDef.Initialize(originBody, connectedBody, originBody->GetWorldPoint({ wjc.OriginAnchor.x, wjc.OriginAnchor.y }), axis);
+		jointDef.Initialize(originBody, connectedBody,
+		                    originBody->GetWorldPoint({wjc.OriginAnchor.x, wjc.OriginAnchor.y}), axis);
 		jointDef.collideConnected = wjc.EnableCollision;
-		jointDef.stiffness = mass * omega * omega;
-		jointDef.damping = 2.0f * mass * wjc.DampingRatio * omega;
-		jointDef.enableMotor = wjc.EnableMotor;
-		jointDef.motorSpeed = wjc.MotorSpeed;
-		jointDef.maxMotorTorque = wjc.MaxMotorTorque;
-		jointDef.enableLimit = wjc.EnableLimit;
+		jointDef.stiffness        = mass * omega * omega;
+		jointDef.damping          = 2.0f * mass * wjc.DampingRatio * omega;
+		jointDef.enableMotor      = wjc.EnableMotor;
+		jointDef.motorSpeed       = wjc.MotorSpeed;
+		jointDef.maxMotorTorque   = wjc.MaxMotorTorque;
+		jointDef.enableLimit      = wjc.EnableLimit;
 		jointDef.lowerTranslation = wjc.LowerTranslation;
 		jointDef.upperTranslation = wjc.UpperTranslation;
 
 		wjc.RuntimeJoint = m_PhysicsWorld2D->CreateJoint(&jointDef);
 	}
 
-	//void Scene::OnRigidBody2DComponentCreated(entt::registry& registry, entt::entity handle)
+	// void Scene::OnRigidBody2DComponentCreated(entt::registry& registry, entt::entity handle)
 	//{
 	//	if (!IsPlaying())
 	//		return;
@@ -1080,4 +1191,4 @@ namespace SW {
 	//	CreateRigidbody2D(entity, entity.GetWorldSpaceTransform(), rbc);
 	//}
 
-}
+} // namespace SW

@@ -10,20 +10,22 @@
 
 #ifdef ENABLE_PROFILING
 
-#include <tracy/Tracy.hpp>
+	#include <tracy/Tracy.hpp>
 
-#define HZ_PROFILE_MARK_FRAME			FrameMark;
-#define PROFILE_FUNCTION(...)			ZoneScoped##__VA_OPT__(N(__VA_ARGS__))
-#define PROFILE_SCOPE(...)				PROFILE_FUNCTION(__VA_ARGS__)
-#define PROFILE_SCOPE_DYNAMIC(NAME)		ZoneScoped; ZoneName(NAME, strlen(NAME))
-#define PROFILE_THREAD(...)				tracy::SetThreadName(__VA_ARGS__)
+	#define HZ_PROFILE_MARK_FRAME FrameMark;
+	#define PROFILE_FUNCTION(...) ZoneScoped##__VA_OPT__(N(__VA_ARGS__))
+	#define PROFILE_SCOPE(...)    PROFILE_FUNCTION(__VA_ARGS__)
+	#define PROFILE_SCOPE_DYNAMIC(NAME) \
+		ZoneScoped;                     \
+		ZoneName(NAME, strlen(NAME))
+	#define PROFILE_THREAD(...) tracy::SetThreadName(__VA_ARGS__)
 
 #else
 
-#define PROFILE_MARK_FRAME
-#define PROFILE_FUNCTION(...)
-#define PROFILE_SCOPE(...)
-#define PROFILE_SCOPE_DYNAMIC(NAME)
-#define PROFILE_THREAD(...)
+	#define PROFILE_MARK_FRAME
+	#define PROFILE_FUNCTION(...)
+	#define PROFILE_SCOPE(...)
+	#define PROFILE_SCOPE_DYNAMIC(NAME)
+	#define PROFILE_THREAD(...)
 
 #endif

@@ -10,7 +10,8 @@
 
 #include "BufferElement.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	/**
 	 * @brief Class representing layout of the buffer.
@@ -29,8 +30,7 @@ namespace SW {
 		 * @brief Constructor.
 		 * @param elements List of elements that we want to store in the buffer.
 		 */
-		BufferLayout(const std::initializer_list<BufferElement>& elements)
-			: m_Elements(elements)
+		BufferLayout(const std::initializer_list<BufferElement>& elements) : m_Elements(elements)
 		{
 			CalculateOffsetsAndStride();
 		}
@@ -72,9 +72,9 @@ namespace SW {
 		std::vector<BufferElement>::const_iterator end() const { return m_Elements.end(); }
 
 	private:
-		std::vector<BufferElement> m_Elements;	/** @brief List of elements. */
+		std::vector<BufferElement> m_Elements; /** @brief List of elements. */
 
-		u32 m_Stride = 0;						/** @brief Stride of the buffer. */
+		u32 m_Stride = 0; /** @brief Stride of the buffer. */
 
 		/**
 		 * @brief Calculates the offsets and stride of the buffer.
@@ -82,5 +82,5 @@ namespace SW {
 		 */
 		void CalculateOffsetsAndStride();
 	};
-	
-}
+
+} // namespace SW

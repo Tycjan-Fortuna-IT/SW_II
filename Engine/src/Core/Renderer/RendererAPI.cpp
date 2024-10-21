@@ -2,21 +2,31 @@
 
 #include <glad/glad.h>
 
-#include "Core/OpenGL/VertexArray.hpp"
 #include "Core/OpenGL/IndexBuffer.hpp"
+#include "Core/OpenGL/VertexArray.hpp"
 
-namespace SW {
+namespace SW
+{
 
-	void OpenGLMessageCallback(
-		u32 source, UNUSED u32 type, UNUSED u32 id, u32 severity, UNUSED i32 length, const char* message, UNUSED const void* userParam
-	) {
-		switch (severity) {
-			case GL_DEBUG_SEVERITY_HIGH:         SYSTEM_ERROR(message); return;
-			case GL_DEBUG_SEVERITY_MEDIUM:       SYSTEM_ERROR(message); return;
-			case GL_DEBUG_SEVERITY_LOW:          SYSTEM_WARN(message); return;
-			case GL_DEBUG_SEVERITY_NOTIFICATION: SYSTEM_TRACE(message); return;
-			default:
-				ASSERT(false, "Unknown severity level!");
+	void OpenGLMessageCallback(u32 source, UNUSED u32 type, UNUSED u32 id, u32 severity, UNUSED i32 length,
+	                           const char* message, UNUSED const void* userParam)
+	{
+		switch (severity)
+		{
+		case GL_DEBUG_SEVERITY_HIGH:
+			SYSTEM_ERROR(message);
+			return;
+		case GL_DEBUG_SEVERITY_MEDIUM:
+			SYSTEM_ERROR(message);
+			return;
+		case GL_DEBUG_SEVERITY_LOW:
+			SYSTEM_WARN(message);
+			return;
+		case GL_DEBUG_SEVERITY_NOTIFICATION:
+			SYSTEM_TRACE(message);
+			return;
+		default:
+			ASSERT(false, "Unknown severity level!");
 		}
 	}
 
@@ -39,7 +49,6 @@ namespace SW {
 
 	void RendererAPI::Shutdown()
 	{
-
 	}
 
 	void RendererAPI::DrawIndexed(VertexArray* vertexArray, u32 indexCount)
@@ -73,4 +82,4 @@ namespace SW {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-}
+} // namespace SW

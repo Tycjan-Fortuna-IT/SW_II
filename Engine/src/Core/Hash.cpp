@@ -1,7 +1,6 @@
 #include "Hash.hpp"
 
-namespace SW {
-
-
+namespace SW
+{
 
 }

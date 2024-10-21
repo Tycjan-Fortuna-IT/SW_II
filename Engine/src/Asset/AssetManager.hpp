@@ -12,7 +12,8 @@
 #include "Core/Project/Project.hpp"
 #include "Core/Project/ProjectContext.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	class AssetManager
 	{
@@ -32,17 +33,20 @@ namespace SW {
 		/**
 		 * @brief Get the asset metadata.
 		 * @warning The asset must be available. (means registered in the asset registry)
-		 * 
+		 *
 		 * @param handle The handle of the asset.
 		 * @return const AssetMetaData& The metadata of the asset.
 		 */
-		static const AssetMetaData& GetAssetMetaData(AssetHandle handle) { return GetRegistry().GetAssetMetaData(handle); }
+		static const AssetMetaData& GetAssetMetaData(AssetHandle handle)
+		{
+			return GetRegistry().GetAssetMetaData(handle);
+		}
 
 		/**
 		 * @brief Creates a new instance of an asset of type T and returns a pointer to it.
 		 * 		  The asset is created using the provided path and optional arguments.
 		 * @warning Path is expected to be valid!
-		 * 
+		 *
 		 * @tparam T The type of asset to create. Must be derived from Asset.
 		 * @tparam Args The types of the optional arguments.
 		 * @param path The path to the asset.
@@ -50,7 +54,7 @@ namespace SW {
 		 * @return A pointer to the newly created asset.
 		 */
 		template <typename T, typename... Args>
-			requires std::is_base_of_v<Asset, T> && std::is_constructible_v<T, Args...>
+		    requires std::is_base_of_v<Asset, T> && std::is_constructible_v<T, Args...>
 		static T** CreateNew(const std::filesystem::path& path, Args&&... args)
 		{
 			return ProjectContext::Get()->GetEditorAssetManager()->CreateNew<T>(path, std::forward<Args>(args)...);
@@ -59,7 +63,7 @@ namespace SW {
 		/**
 		 * @brief Get the asset metadata.
 		 * @warning If the asset is not available, the nullptr will be returned.
-		 * 
+		 *
 		 * @param handle The handle of the asset.
 		 * @return const AssetMetaData& The metadata of the asset.
 		 */
@@ -71,7 +75,7 @@ namespace SW {
 		/**
 		 * @brief Get the asset metadata.
 		 * @warning If the asset is not available, the nullptr will be returned.
-		 * 
+		 *
 		 * @param handle The handle of the asset.
 		 * @return const AssetMetaData& The metadata of the asset.
 		 */
@@ -84,7 +88,7 @@ namespace SW {
 		/**
 		 * @brief Get the asset metadata.
 		 * @warning If the asset is not available, the nullptr will be returned.
-		 * 
+		 *
 		 * @param handle The handle of the asset.
 		 * @return const AssetMetaData& The metadata of the asset.
 		 */
@@ -96,7 +100,7 @@ namespace SW {
 		/**
 		 * @brief Get the asset metadata.
 		 * @warning If the asset is not available, the nullptr will be returned.
-		 * 
+		 *
 		 * @param handle The handle of the asset.
 		 * @return const AssetMetaData& The metadata of the asset.
 		 */
@@ -108,15 +112,12 @@ namespace SW {
 
 		/**
 		 * @brief Check if the asset is valid.
-		 * 
+		 *
 		 * @param handle The handle of the asset.
 		 * @returns If the asset is valid.
 		 */
-		static bool IsValid(AssetHandle handle)
-		{
-			return ProjectContext::Get()->GetAssetManager()->IsValid(handle);
-		}
-		
+		static bool IsValid(AssetHandle handle) { return ProjectContext::Get()->GetAssetManager()->IsValid(handle); }
+
 		/**
 		 * @brief Force unload the asset.
 		 * @param handle The handle of the asset.
@@ -140,7 +141,7 @@ namespace SW {
 		 * @returns The asset registry.
 		 */
 		static const AssetRegistry& GetRegistry() { return ProjectContext::Get()->GetAssetManager()->GetRegistry(); }
-		
+
 		/**
 		 * @brief Get the asset registry.
 		 * @returns The asset registry.
@@ -152,7 +153,10 @@ namespace SW {
 		 *
 		 * @return const std::unordered_map<AssetHandle, Asset*> The registry.
 		 */
-		static const std::unordered_map<AssetHandle, Asset*> GetLoadedAssets() { return ProjectContext::Get()->GetEditorAssetManager()->GetLoadedAssets(); }
+		static const std::unordered_map<AssetHandle, Asset*> GetLoadedAssets()
+		{
+			return ProjectContext::Get()->GetEditorAssetManager()->GetLoadedAssets();
+		}
 	};
 
-}
+} // namespace SW

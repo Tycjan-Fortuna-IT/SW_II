@@ -8,9 +8,13 @@
  */
 #pragma once
 
-namespace Coral { class ManagedAssembly; }
+namespace Coral
+{
+	class ManagedAssembly;
+}
 
-namespace SW {
+namespace SW
+{
 
 	class InternalCallManager
 	{
@@ -22,5 +26,4 @@ namespace SW {
 		static void RegisterInternalCalls(Coral::ManagedAssembly* coreAssembly);
 	};
 
-}
-
+} // namespace SW

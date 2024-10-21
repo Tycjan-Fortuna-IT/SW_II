@@ -2,7 +2,8 @@
 
 #include <miniaudio.h>
 
-namespace SW {
+namespace SW
+{
 
 	class Sound;
 
@@ -17,23 +18,23 @@ namespace SW {
 	struct SoundSpecification
 	{
 		Sound* Sound = nullptr;
-		f32 Volume = 1.0f;
-		f32 Pitch = 1.0f;
+		f32 Volume   = 1.0f;
+		f32 Pitch    = 1.0f;
 		bool Looping = false;
-		
-		bool Is3D = false;
+
+		bool Is3D                   = false;
 		AttenuationType Attenuation = AttenuationType::None;
-		
-		f32 RollOff = 1.0f;
-		f32 MinGain = 0.0f;
-		f32 MaxGain = 1.0f;
+
+		f32 RollOff     = 1.0f;
+		f32 MinGain     = 0.0f;
+		f32 MaxGain     = 1.0f;
 		f32 MinDistance = 0.3f;
 		f32 MaxDistance = 100.0f;
-		//f32 ConeInnerAngle = glm::radians(360.0f);
-		//f32 ConeOuterAngle = glm::radians(360.0f);
-		//f32 ConeOuterGain = 0.0f;
-		
-		//f32 DopplerFactor = 1.0f;
+		// f32 ConeInnerAngle = glm::radians(360.0f);
+		// f32 ConeOuterAngle = glm::radians(360.0f);
+		// f32 ConeOuterGain = 0.0f;
+
+		// f32 DopplerFactor = 1.0f;
 	};
 
 	class SoundInstance
@@ -76,7 +77,7 @@ namespace SW {
 		void Stop();
 
 		/**
-		* @brief Checks if the sound is playing.
+		 * @brief Checks if the sound is playing.
 		 */
 		bool IsPlaying() const;
 
@@ -88,4 +89,4 @@ namespace SW {
 		ma_sound m_Instance;
 	};
 
-}
+} // namespace SW

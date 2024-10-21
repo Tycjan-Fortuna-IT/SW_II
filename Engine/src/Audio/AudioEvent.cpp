@@ -1,7 +1,6 @@
 #include "AudioEvent.hpp"
 
-namespace SW {
-
-
+namespace SW
+{
 
 }

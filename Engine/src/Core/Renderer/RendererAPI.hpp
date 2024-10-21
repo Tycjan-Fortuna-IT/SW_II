@@ -8,7 +8,8 @@
  */
 #pragma once
 
-namespace SW {
+namespace SW
+{
 
 	class VertexArray;
 
@@ -60,5 +61,4 @@ namespace SW {
 		static void Clear();
 	};
 
-}
-
+} // namespace SW

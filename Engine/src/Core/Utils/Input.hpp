@@ -13,22 +13,23 @@
 #include "Core/KeyCode.hpp"
 #include "Core/MouseCode.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	/**
 	 * @brief The state of a key or mouse button.
 	 */
 	enum class ClickableState : u8
 	{
-		Released,	/**< The key or mouse button was released. */
-		Pressed,	/**< The key or mouse button was pressed. */
-		Repeated,	/**< The key or mouse button was repeated. */
-		None		/**< The key or mouse button was not touched */
+		Released, /**< The key or mouse button was released. */
+		Pressed,  /**< The key or mouse button was pressed. */
+		Repeated, /**< The key or mouse button was repeated. */
+		None      /**< The key or mouse button was not touched */
 	};
 
 	/**
 	 * @brief Input class. Provides methods for handling and checking input.
-	 * 
+	 *
 	 * @warning Check the global GLFW key state! Do not use inside ImGui code, use there ImGui functions for that!
 	 */
 	class Input final
@@ -51,14 +52,14 @@ namespace SW {
 		/**
 		 * @brief Update pressed keys state to held if pressed for one frame.
 		 *	      Updates the state faster that GLFW wait after press.
-		 * 
+		 *
 		 * @warning Be aware that this function should be called at the beginning of the frame.
 		 */
 		static void UpdateKeysStateIfNecessary();
 
 		/**
 		 * @brief Clears the released keys.
-		 * 
+		 *
 		 * @warning Be aware that this function should be called at the end of the frame.
 		 */
 		static void ClearReleasedKeys();
@@ -132,9 +133,9 @@ namespace SW {
 		static void SetMousePosition(const glm::vec2& position);
 
 	private:
-		static std::map<KeyCode, ClickableState> s_KeyStates;		/**< The cached states of the keys. */
+		static std::map<KeyCode, ClickableState> s_KeyStates; /**< The cached states of the keys. */
 
-		static std::map<MouseCode, ClickableState> s_MouseStates;	/**< The cached states of the mouse buttons. */
+		static std::map<MouseCode, ClickableState> s_MouseStates; /**< The cached states of the mouse buttons. */
 	};
 
-}
+} // namespace SW

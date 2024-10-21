@@ -2,14 +2,15 @@
 
 #include <yaml-cpp/yaml.h>
 
+#include "AssetManager.hpp"
 #include "Core/Project/Project.hpp"
 #include "Core/Project/ProjectContext.hpp"
-#include "Core/Utils/Random.hpp"
-#include "AssetManager.hpp"
 #include "Core/Utils/FileSystem.hpp"
+#include "Core/Utils/Random.hpp"
 #include "Core/Utils/SerializationUtils.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	AssetRegistry::AssetRegistry()
 	{
@@ -26,18 +27,23 @@ namespace SW {
 		SaveRegistryToFile();
 	}
 
-	void AssetRegistry::FetchDirectory(std::map<std::filesystem::path, AssetMetaData>& registered, const std::filesystem::path& dir, bool reload)
+	void AssetRegistry::FetchDirectory(std::map<std::filesystem::path, AssetMetaData>& registered,
+	                                   const std::filesystem::path& dir, bool reload)
 	{
 		if (dir.filename() == "build" || dir.filename() == "cache")
 			return;
 
-		for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(dir)) {
-			const std::filesystem::path& rel = std::filesystem::relative(entry.path(), ProjectContext::Get()->GetAssetDirectory());
+		for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(dir))
+		{
+			const std::filesystem::path& rel =
+			    std::filesystem::relative(entry.path(), ProjectContext::Get()->GetAssetDirectory());
 
 			auto it = registered.find(rel);
 
-			if (it != registered.end()) {
-				if (reload && it->second.ModificationTime != FileSystem::GetLastWriteTime(entry)) {
+			if (it != registered.end())
+			{
+				if (reload && it->second.ModificationTime != FileSystem::GetLastWriteTime(entry))
+				{
 					AssetManager::ForceReload(it->second.Handle);
 
 					it->second.ModificationTime = FileSystem::GetLastWriteTime(entry);
@@ -48,11 +54,15 @@ namespace SW {
 				m_AvailableAssets[it->second.Handle] = it->second;
 
 				registered.erase(it);
-			} else {
+			}
+			else
+			{
 				AssetMetaData metadata;
-				metadata.Handle = Random::CreateID();
-				metadata.Path = rel;
-				metadata.Type = std::filesystem::is_directory(entry) ? AssetType::Directory : Asset::GetAssetTypeFromExtension(rel.extension().string());
+				metadata.Handle           = Random::CreateID();
+				metadata.Path             = rel;
+				metadata.Type             = std::filesystem::is_directory(entry)
+				                                ? AssetType::Directory
+				                                : Asset::GetAssetTypeFromExtension(rel.extension().string());
 				metadata.ModificationTime = FileSystem::GetLastWriteTime(entry);
 
 				m_AvailableAssets[metadata.Handle] = metadata;
@@ -66,15 +76,18 @@ namespace SW {
 	void AssetRegistry::RefetchAvailableAssets()
 	{
 		std::map<std::filesystem::path, AssetMetaData> registeredEntries;
-		for (auto&& [handle, metadata] : m_AvailableAssets) {
+		for (auto&& [handle, metadata] : m_AvailableAssets)
+		{
 			registeredEntries[metadata.Path] = metadata;
 		}
 
-		//m_AvailableAssets.clear(); // not clearing - looking also for file changes for hot reload of assets
+		// m_AvailableAssets.clear(); // not clearing - looking also for file changes for hot reload of assets
 
-		FetchDirectory(registeredEntries, ProjectContext::Get()->GetAssetDirectory(), true); // erases found registered entries
+		FetchDirectory(registeredEntries, ProjectContext::Get()->GetAssetDirectory(),
+		               true); // erases found registered entries
 
-		for (auto&& [path, metadata] : registeredEntries) { // Not found after reload -> candidates for unloading
+		for (auto&& [path, metadata] : registeredEntries)
+		{ // Not found after reload -> candidates for unloading
 			bool result = AssetManager::ForceUnload(metadata.Handle);
 
 			ASSERT(result, "Could not unload asset {} [{}]", path.string(), metadata.Handle);
@@ -85,14 +98,15 @@ namespace SW {
 		SaveRegistryToFile();
 	}
 
-    const SW::AssetMetaData& AssetRegistry::GetAssetMetaData(AssetHandle handle) const
-    {
-		ASSERT(m_AvailableAssets.find(handle) != m_AvailableAssets.end(), "Asset metadata for ID: {} does not exist!", handle);
+	const SW::AssetMetaData& AssetRegistry::GetAssetMetaData(AssetHandle handle) const
+	{
+		ASSERT(m_AvailableAssets.find(handle) != m_AvailableAssets.end(), "Asset metadata for ID: {} does not exist!",
+		       handle);
 
 		return m_AvailableAssets.at(handle);
-    }
+	}
 
-    void AssetRegistry::FetchAvailableAssets()
+	void AssetRegistry::FetchAvailableAssets()
 	{
 		const std::filesystem::path& assetsDir = ProjectContext::Get()->GetAssetDirectory();
 
@@ -102,12 +116,14 @@ namespace SW {
 
 		std::map<std::filesystem::path, AssetMetaData> registeredEntries;
 
-		for (const YAML::Node& asset : assets) {
+		for (const YAML::Node& asset : assets)
+		{
 			AssetMetaData metadata;
-			metadata.Handle = TryDeserializeNode<AssetHandle>(asset, "Handle", 0);
-			metadata.Path = TryDeserializeNode<std::string>(asset, "Path", "");
+			metadata.Handle           = TryDeserializeNode<AssetHandle>(asset, "Handle", 0);
+			metadata.Path             = TryDeserializeNode<std::string>(asset, "Path", "");
 			metadata.ModificationTime = TryDeserializeNode<u64>(asset, "ModificationTime", 0);
-			metadata.Type = Asset::GetAssetTypeFromStringified(TryDeserializeNode<std::string>(asset, "Type", "Unknown"));
+			metadata.Type =
+			    Asset::GetAssetTypeFromStringified(TryDeserializeNode<std::string>(asset, "Type", "Unknown"));
 
 			registeredEntries[metadata.Path] = metadata;
 		}
@@ -123,7 +139,8 @@ namespace SW {
 		output << YAML::BeginMap;
 		output << YAML::Key << "Assets" << YAML::Value << YAML::BeginSeq;
 
-		for (auto&& [handle, metadata] : m_AvailableAssets) {
+		for (auto&& [handle, metadata] : m_AvailableAssets)
+		{
 			if (metadata.Type == AssetType::Directory) // Skip directories
 				continue;
 
@@ -145,4 +162,4 @@ namespace SW {
 		fout << output.c_str();
 	}
 
-}
+} // namespace SW

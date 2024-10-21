@@ -12,7 +12,8 @@
 #include "Core/ECS/Entity.hpp"
 #include "Core/Scene/Scene.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	class Prefab : public Asset
 	{
@@ -23,7 +24,7 @@ namespace SW {
 		static AssetType GetStaticType() { return AssetType::Prefab; }
 		AssetType GetAssetType() const override { return AssetType::Prefab; }
 
-		const Scene* GetScene() const { return  &m_Scene; }
+		const Scene* GetScene() const { return &m_Scene; }
 
 		Scene* GetSceneRaw() { return &m_Scene; }
 
@@ -38,5 +39,4 @@ namespace SW {
 		Entity DuplicateEntityForPrefab(Entity src, std::unordered_map<u64, Entity>& duplicatedEntities);
 	};
 
-}
-
+} // namespace SW

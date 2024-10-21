@@ -1,9 +1,12 @@
 #include "Panel.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	Panel::Panel(const char* name, const char* icon, bool defaultShow)
-		: m_Open(defaultShow), m_Name(name), m_Icon(icon), m_ID(std::format(" {} {}\t\t###{}", icon, name, name)) {}
+	    : m_Open(defaultShow), m_Name(name), m_Icon(icon), m_ID(std::format(" {} {}\t\t###{}", icon, name, name))
+	{
+	}
 
 	bool Panel::OnBegin(i32 flags)
 	{
@@ -25,4 +28,4 @@ namespace SW {
 		ImGui::End();
 	}
 
-}
+} // namespace SW

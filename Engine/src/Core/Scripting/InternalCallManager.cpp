@@ -3,13 +3,13 @@
 #include <Coral/Assembly.hpp>
 #include <box2d/b2_body.h>
 
-#include "Core/ECS/Entity.hpp"
-#include "Core/Scripting/ScriptingCore.hpp"
-#include "Core/Application.hpp"
-#include "Core/Utils/TypeInfo.hpp"
-#include "Core/Utils/Input.hpp"
 #include "Asset/AssetManager.hpp"
 #include "Audio/AudioEngine.hpp"
+#include "Core/Application.hpp"
+#include "Core/ECS/Entity.hpp"
+#include "Core/Scripting/ScriptingCore.hpp"
+#include "Core/Utils/Input.hpp"
+#include "Core/Utils/TypeInfo.hpp"
 
 #ifdef SW_WINDOWS
 	#define SW_FUNCTION_NAME __func__
@@ -17,34 +17,44 @@
 	#define SW_FUNCTION_NAME __FUNCTION__
 #endif
 
-#define ADD_INTERNAL_CALL(fn) coreAssembly->AddInternalCall("SW.InternalCalls", #fn, &fn);
+#define ADD_INTERNAL_CALL(fn)          coreAssembly->AddInternalCall("SW.InternalCalls", #fn, &fn);
 #define ADD_INTERNAL_CALL_FN(name, fn) coreAssembly->AddInternalCall("SW.InternalCalls", #name, &fn);
 
-#define INTERNAL_CALL_VALIDATE_PARAM_VALUE(param, value)														\
-	if (!(param))																								\
-	{																											\
-		SYSTEM_FATAL("{} called with an invalid value ({}) for parameter '{}'.", SW_FUNCTION_NAME, value, #param);	\
+#define INTERNAL_CALL_VALIDATE_PARAM_VALUE(param, value)                                                           \
+	if (!(param))                                                                                                  \
+	{                                                                                                              \
+		SYSTEM_FATAL("{} called with an invalid value ({}) for parameter '{}'.", SW_FUNCTION_NAME, value, #param); \
 	}
 
-namespace SW {
+namespace SW
+{
 
 	std::unordered_map<Coral::TypeId, std::function<void(Entity&)>> s_AddComponentFuncs;
 	std::unordered_map<Coral::TypeId, std::function<bool(Entity&)>> s_HasComponentFuncs;
 	std::unordered_map<Coral::TypeId, std::function<void(Entity&)>> s_RemoveComponentFuncs;
 
-	template<typename T>
+	template <typename T>
 	static void RegisterManagedComponent(Coral::ManagedAssembly* coreAssembly)
 	{
 		const TypeNameString& componentTypeName = TypeInfo<T, true>().Name(); // demangling
-		std::string componentName = std::format("SW.{}", componentTypeName);
+		std::string componentName               = std::format("SW.{}", componentTypeName);
 
 		Coral::Type& type = coreAssembly->GetType(componentName);
 
-		if (type) {
-			s_AddComponentFuncs[type.GetTypeId()] = [](Entity& entity) { entity.AddComponent<T>(); };
-			s_HasComponentFuncs[type.GetTypeId()] = [](Entity& entity) { return entity.HasComponent<T>(); };
-			s_RemoveComponentFuncs[type.GetTypeId()] = [](Entity& entity) { entity.RemoveComponent<T>(); };
-		} else {
+		if (type)
+		{
+			s_AddComponentFuncs[type.GetTypeId()] = [](Entity& entity) {
+				entity.AddComponent<T>();
+			};
+			s_HasComponentFuncs[type.GetTypeId()] = [](Entity& entity) {
+				return entity.HasComponent<T>();
+			};
+			s_RemoveComponentFuncs[type.GetTypeId()] = [](Entity& entity) {
+				entity.RemoveComponent<T>();
+			};
+		}
+		else
+		{
 			ASSERT(false, "No C# component class found for {}!", componentName);
 		}
 	}
@@ -77,9 +87,9 @@ namespace SW {
 		RegisterInternalCalls(coreAssembly);
 
 		coreAssembly->UploadInternalCalls();
-    }
+	}
 
-    void InternalCallManager::RegisterTypes(Coral::ManagedAssembly* coreAssembly)
+	void InternalCallManager::RegisterTypes(Coral::ManagedAssembly* coreAssembly)
 	{
 		RegisterManagedComponent<TagComponent>(coreAssembly);
 		RegisterManagedComponent<TransformComponent>(coreAssembly);
@@ -88,14 +98,22 @@ namespace SW {
 		RegisterManagedComponent<ScriptComponent>(coreAssembly);
 		RegisterManagedComponent<RigidBody2DComponent>(coreAssembly);
 		RegisterManagedComponent<AudioSourceComponent>(coreAssembly);
-    }
+	}
 
-	u32 Application_GetVieportWidth() { return ScriptingCore::Get().GetCurrentScene()->GetViewportWidth(); }
-	
-	u32 Application_GetVieportHeight() { return ScriptingCore::Get().GetCurrentScene()->GetViewportHeight(); }
-	
-	void Application_Shutdown() { return Application::Get()->Close(); }
+	u32 Application_GetVieportWidth()
+	{
+		return ScriptingCore::Get().GetCurrentScene()->GetViewportWidth();
+	}
 
+	u32 Application_GetVieportHeight()
+	{
+		return ScriptingCore::Get().GetCurrentScene()->GetViewportHeight();
+	}
+
+	void Application_Shutdown()
+	{
+		return Application::Get()->Close();
+	}
 
 	void Log_TraceMessage(Coral::String msg)
 	{
@@ -149,7 +167,7 @@ namespace SW {
 
 	bool Entity_HasComponent(u64 entityID, Coral::ReflectionType componentType)
 	{
-		Entity entity = GetEntityById(entityID);
+		Entity entity     = GetEntityById(entityID);
 		Coral::Type& type = componentType;
 
 		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
@@ -157,13 +175,12 @@ namespace SW {
 		if (!entity || !type)
 			return false;
 
-		if (!s_HasComponentFuncs.contains(type.GetTypeId())) {
-			ASSERT(
-				false,
-				"Cannot check if entity '{}' has a component of type '{}'. That component hasn't been registered with the engine.",
-				entity.GetID(),
-				type.GetFullName().Data()
-			);
+		if (!s_HasComponentFuncs.contains(type.GetTypeId()))
+		{
+			ASSERT(false,
+			       "Cannot check if entity '{}' has a component of type '{}'. That component hasn't been registered "
+			       "with the engine.",
+			       entity.GetID(), type.GetFullName().Data());
 
 			return false;
 		}
@@ -173,7 +190,7 @@ namespace SW {
 
 	void Entity_AddComponent(u64 entityID, Coral::ReflectionType componentType)
 	{
-		Entity entity = GetEntityById(entityID);
+		Entity entity     = GetEntityById(entityID);
 		Coral::Type& type = componentType;
 
 		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
@@ -181,13 +198,12 @@ namespace SW {
 		if (!entity || !type)
 			return;
 
-		if (!s_AddComponentFuncs.contains(type.GetTypeId())) {
-			ASSERT(
-				false,
-				"Cannot add to entity '{}' a component of type '{}'. That component doesn't have create handler registered with the engine.",
-				entity.GetID(),
-				type.GetFullName().Data()
-			);
+		if (!s_AddComponentFuncs.contains(type.GetTypeId()))
+		{
+			ASSERT(false,
+			       "Cannot add to entity '{}' a component of type '{}'. That component doesn't have create handler "
+			       "registered with the engine.",
+			       entity.GetID(), type.GetFullName().Data());
 
 			return;
 		}
@@ -197,7 +213,7 @@ namespace SW {
 
 	void Entity_RemoveComponent(u64 entityID, Coral::ReflectionType componentType)
 	{
-		Entity entity = GetEntityById(entityID);
+		Entity entity     = GetEntityById(entityID);
 		Coral::Type& type = componentType;
 
 		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
@@ -205,13 +221,12 @@ namespace SW {
 		if (!entity || !type)
 			return;
 
-		if (!s_RemoveComponentFuncs.contains(type.GetTypeId())) {
-			ASSERT(
-				false,
-				"Cannot remove from entity '{}' a component of type '{}'. That component doesn't have remove handler registered with the engine.",
-				entity.GetID(),
-				type.GetFullName().Data()
-			);
+		if (!s_RemoveComponentFuncs.contains(type.GetTypeId()))
+		{
+			ASSERT(false,
+			       "Cannot remove from entity '{}' a component of type '{}'. That component doesn't have remove "
+			       "handler registered with the engine.",
+			       entity.GetID(), type.GetFullName().Data());
 
 			return;
 		}
@@ -255,15 +270,15 @@ namespace SW {
 	u64 Scene_InstantiatePrefab(u64 prefabID)
 	{
 		Prefab* prefab = *AssetManager::GetAssetRaw<Prefab>(prefabID);
-		Scene* scene = ScriptingCore::Get().GetCurrentScene();
-		
+		Scene* scene   = ScriptingCore::Get().GetCurrentScene();
+
 		return scene->InstantiatePrefab(prefab).GetID();
 	}
 
 	u64 Scene_InstantiatePrefabWithPosition(u64 prefabID, glm::vec3* inPosition)
 	{
 		Prefab* prefab = *AssetManager::GetAssetRaw<Prefab>(prefabID);
-		Scene* scene = ScriptingCore::Get().GetCurrentScene();
+		Scene* scene   = ScriptingCore::Get().GetCurrentScene();
 
 		return scene->InstantiatePrefab(prefab, inPosition).GetID();
 	}
@@ -271,15 +286,16 @@ namespace SW {
 	u64 Scene_InstantiatePrefabWithPositionRotation(u64 prefabID, glm::vec3* inPosition, glm::vec3* inRotation)
 	{
 		Prefab* prefab = *AssetManager::GetAssetRaw<Prefab>(prefabID);
-		Scene* scene = ScriptingCore::Get().GetCurrentScene();
+		Scene* scene   = ScriptingCore::Get().GetCurrentScene();
 
 		return scene->InstantiatePrefab(prefab, inPosition, inRotation).GetID();
 	}
 
-	u64 Scene_InstantiatePrefabWithPositionRotationScale(u64 prefabID, glm::vec3* inPosition, glm::vec3* inRotation, glm::vec3* inScale)
+	u64 Scene_InstantiatePrefabWithPositionRotationScale(u64 prefabID, glm::vec3* inPosition, glm::vec3* inRotation,
+	                                                     glm::vec3* inScale)
 	{
 		Prefab* prefab = *AssetManager::GetAssetRaw<Prefab>(prefabID);
-		Scene* scene = ScriptingCore::Get().GetCurrentScene();
+		Scene* scene   = ScriptingCore::Get().GetCurrentScene();
 
 		return scene->InstantiatePrefab(prefab, inPosition, inRotation, inScale).GetID();
 	}
@@ -319,22 +335,27 @@ namespace SW {
 
 		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
 
-		if (inPosition == nullptr) {
+		if (inPosition == nullptr)
+		{
 			ASSERT(false, "Attempting to set null translation for entity '{}'", entity.GetID());
 
 			return;
 		}
 
-		if (entity.HasComponent<RigidBody2DComponent>()) {
+		if (entity.HasComponent<RigidBody2DComponent>())
+		{
 			RigidBody2DComponent& rbc = entity.GetComponent<RigidBody2DComponent>();
 
-			if (rbc.Type != PhysicBodyType::Static) {
-				SYSTEM_WARN("[SCRIPT]: Trying to set translation for non-static RigidBody2D for entity {}. This isn't allowed, and would result in unstable physics behavior.", entityID);
+			if (rbc.Type != PhysicBodyType::Static)
+			{
+				SYSTEM_WARN("[SCRIPT]: Trying to set translation for non-static RigidBody2D for entity {}. This isn't "
+				            "allowed, and would result in unstable physics behavior.",
+				            entityID);
 				return;
 			}
 
 			b2Body* body = static_cast<b2Body*>(rbc.Handle);
-			body->SetTransform({ inPosition->x, inPosition->y }, body->GetAngle());
+			body->SetTransform({inPosition->x, inPosition->y}, body->GetAngle());
 		}
 
 		entity.GetComponent<TransformComponent>().Position = *inPosition;
@@ -389,12 +410,13 @@ namespace SW {
 		Coral::String::Free(name);
 
 		auto it = asc.Animations.find(animationName);
-		if (it == asc.Animations.end()) {
+		if (it == asc.Animations.end())
+		{
 			APP_ERROR("Could not find animation {} for entity {}", animationName, entityID);
 			return;
 		}
 
-		asc.CurrentFrame = 0;
+		asc.CurrentFrame     = 0;
 		asc.CurrentAnimation = it->second;
 	}
 
@@ -406,7 +428,7 @@ namespace SW {
 
 		AnimatedSpriteComponent& asc = entity.GetComponent<AnimatedSpriteComponent>();
 
-		asc.CurrentFrame = 0;
+		asc.CurrentFrame     = 0;
 		asc.CurrentAnimation = asc.DefaultAnimation;
 	}
 
@@ -470,7 +492,6 @@ namespace SW {
 		entity.GetComponent<TextComponent>().Kerning = kerning;
 	}
 
-
 	f32 TextComponent_GetLineSpacing(u64 entityID)
 	{
 		Entity entity = GetEntityById(entityID);
@@ -492,7 +513,7 @@ namespace SW {
 	Coral::ManagedObject ScriptComponent_GetInstance(u64 entityID)
 	{
 		Entity entity = GetEntityById(entityID);
-		
+
 		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
 		ASSERT(entity.HasComponent<ScriptComponent>());
 
@@ -513,7 +534,7 @@ namespace SW {
 
 		ASSERT(rbc.Handle);
 
-		b2Body* body = (b2Body*)rbc.Handle;
+		b2Body* body          = (b2Body*)rbc.Handle;
 		const b2Vec2 velocity = body->GetLinearVelocity();
 
 		outVelocity->x = velocity.x;
@@ -531,7 +552,7 @@ namespace SW {
 		ASSERT(rbc.Handle);
 
 		b2Body* body = (b2Body*)rbc.Handle;
-		body->SetLinearVelocity({ inVelocity->x, inVelocity->y });
+		body->SetLinearVelocity({inVelocity->x, inVelocity->y});
 	}
 
 	void RigidBody2DComponent_ApplyForce(u64 entityID, glm::vec2* inForce, glm::vec2* inOffset, bool wake)
@@ -541,11 +562,13 @@ namespace SW {
 		INTERNAL_CALL_VALIDATE_PARAM_VALUE(entity, entityID);
 
 		RigidBody2DComponent& rbc = entity.GetComponent<RigidBody2DComponent>();
-		
+
 		ASSERT(rbc.Handle);
 
-		if (rbc.Type != PhysicBodyType::Dynamic) {
-			SYSTEM_WARN("[SCRIPT]: Trying to apply force for non-dynamic RigidBody2D for entity with ID: {}.", entityID);
+		if (rbc.Type != PhysicBodyType::Dynamic)
+		{
+			SYSTEM_WARN("[SCRIPT]: Trying to apply force for non-dynamic RigidBody2D for entity with ID: {}.",
+			            entityID);
 			return;
 		}
 
@@ -564,30 +587,33 @@ namespace SW {
 		Sound* sound = *AssetManager::GetAssetRaw<Sound>(asc.Handle);
 
 		SoundSpecification spec;
-		spec.Sound = sound;
-		spec.Pitch = asc.Pitch;
-		spec.Volume = asc.Volume;
+		spec.Sound   = sound;
+		spec.Pitch   = asc.Pitch;
+		spec.Volume  = asc.Volume;
 		spec.Looping = asc.Looping;
 
-		if (asc.Is3D) {
-			spec.Is3D = asc.Is3D;
+		if (asc.Is3D)
+		{
+			spec.Is3D        = asc.Is3D;
 			spec.Attenuation = asc.Attenuation;
-			spec.RollOff = asc.RollOff;
-			spec.MinGain = asc.MinGain;
-			spec.MaxGain = asc.MaxGain;
+			spec.RollOff     = asc.RollOff;
+			spec.MinGain     = asc.MinGain;
+			spec.MaxGain     = asc.MaxGain;
 			spec.MinDistance = asc.MinDistance;
 			spec.MaxDistance = asc.MaxDistance;
-			//spec.ConeInnerAngle = asc.ConeInnerAngle;
-			//spec.ConeOuterAngle = asc.ConeOuterAngle;
-			//spec.ConeOuterGain = asc.ConeOuterGain;
-			//spec.DopplerFactor = asc.DopplerFactor;
+			// spec.ConeInnerAngle = asc.ConeInnerAngle;
+			// spec.ConeOuterAngle = asc.ConeOuterAngle;
+			// spec.ConeOuterGain = asc.ConeOuterGain;
+			// spec.DopplerFactor = asc.DopplerFactor;
 
-			const TransformComponent& tc = entity.GetComponent<TransformComponent>();
+			const TransformComponent& tc      = entity.GetComponent<TransformComponent>();
 			const glm::mat4 invertedTransform = glm::inverse(entity.GetWorldSpaceTransformMatrix());
 			const glm::vec3 forward = glm::normalize(glm::vec3(invertedTransform * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
 
 			asc.Instance = AudioEngine::PlaySound3D(spec, tc.Position, forward);
-		} else {
+		}
+		else
+		{
 			asc.Instance = AudioEngine::PlaySound(spec);
 		}
 	}
@@ -600,7 +626,8 @@ namespace SW {
 
 		AudioSourceComponent& asc = entity.GetComponent<AudioSourceComponent>();
 
-		if (asc.Instance && *asc.Instance) {
+		if (asc.Instance && *asc.Instance)
+		{
 			(*asc.Instance)->Stop();
 		}
 	}
@@ -613,7 +640,8 @@ namespace SW {
 
 		AudioSourceComponent& asc = entity.GetComponent<AudioSourceComponent>();
 
-		if (asc.Instance && *asc.Instance) {
+		if (asc.Instance && *asc.Instance)
+		{
 			return (*asc.Instance)->IsPlaying();
 		}
 
@@ -633,10 +661,8 @@ namespace SW {
 
 		glm::vec2 mousePos = Input::GetMousePosition();
 
-		*outMousePosition = {
-			mousePos.x - viewportPosition.x - 5.f, // substracting imgui window padding
-			mousePos.y - viewportPosition.y - 35.f
-		};
+		*outMousePosition = {mousePos.x - viewportPosition.x - 5.f, // substracting imgui window padding
+		                     mousePos.y - viewportPosition.y - 35.f};
 	}
 
 	void InternalCallManager::RegisterInternalCalls(Coral::ManagedAssembly* coreAssembly)
@@ -644,7 +670,6 @@ namespace SW {
 		ADD_INTERNAL_CALL(Application_GetVieportWidth);
 		ADD_INTERNAL_CALL(Application_GetVieportHeight);
 		ADD_INTERNAL_CALL(Application_Shutdown);
-
 
 		ADD_INTERNAL_CALL_FN(Input_IsKeyPressed, Input::IsKeyPressed);
 		ADD_INTERNAL_CALL_FN(Input_IsKeyHeld, Input::IsKeyHeld);
@@ -659,21 +684,17 @@ namespace SW {
 		ADD_INTERNAL_CALL(Input_GetWindowMousePosition);
 		ADD_INTERNAL_CALL(Input_GetViewportMousePosition);
 
-
 		ADD_INTERNAL_CALL(Log_TraceMessage);
 		ADD_INTERNAL_CALL(Log_InfoMessage);
 		ADD_INTERNAL_CALL(Log_DebugMessage);
 		ADD_INTERNAL_CALL(Log_WarnMessage);
 		ADD_INTERNAL_CALL(Log_ErrorMessage);
 
-
 		ADD_INTERNAL_CALL(AssetHandle_IsValid);
-
 
 		ADD_INTERNAL_CALL(Entity_HasComponent);
 		ADD_INTERNAL_CALL(Entity_AddComponent);
 		ADD_INTERNAL_CALL(Entity_RemoveComponent);
-
 
 		ADD_INTERNAL_CALL(Scene_CreateEntity);
 		ADD_INTERNAL_CALL(Scene_DestroyEntity);
@@ -685,10 +706,8 @@ namespace SW {
 		ADD_INTERNAL_CALL(Scene_InstantiatePrefabWithPositionRotation);
 		ADD_INTERNAL_CALL(Scene_InstantiatePrefabWithPositionRotationScale);
 
-
 		ADD_INTERNAL_CALL(TagComponent_GetTag);
 		ADD_INTERNAL_CALL(TagComponent_SetTag);
-
 
 		ADD_INTERNAL_CALL(TransformComponent_GetPosition);
 		ADD_INTERNAL_CALL(TransformComponent_SetPosition);
@@ -698,11 +717,9 @@ namespace SW {
 
 		ADD_INTERNAL_CALL(TransformComponent_GetScale);
 		ADD_INTERNAL_CALL(TransformComponent_SetScale);
-		
 
 		ADD_INTERNAL_CALL(AnimatedSpriteComponent_Play);
 		ADD_INTERNAL_CALL(AnimatedSpriteComponent_Stop);
-
 
 		ADD_INTERNAL_CALL(TextComponent_GetText);
 		ADD_INTERNAL_CALL(TextComponent_SetText);
@@ -716,18 +733,15 @@ namespace SW {
 		ADD_INTERNAL_CALL(TextComponent_GetLineSpacing);
 		ADD_INTERNAL_CALL(TextComponent_SetLineSpacing);
 
-
 		ADD_INTERNAL_CALL(ScriptComponent_GetInstance);
-
 
 		ADD_INTERNAL_CALL(Rigidbody2DComponent_GetVelocity);
 		ADD_INTERNAL_CALL(Rigidbody2DComponent_SetVelocity);
 
 		ADD_INTERNAL_CALL(RigidBody2DComponent_ApplyForce);
 
-
 		ADD_INTERNAL_CALL(AudioSourceComponent_Play);
 		ADD_INTERNAL_CALL(AudioSourceComponent_Stop);
 		ADD_INTERNAL_CALL(AudioSourceComponent_IsPlaying);
-    }
-}
+	}
+} // namespace SW

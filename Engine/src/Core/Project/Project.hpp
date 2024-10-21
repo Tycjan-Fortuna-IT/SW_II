@@ -11,19 +11,22 @@
 #include "Asset/AssetManagerBase.hpp"
 #include "Asset/EditorAssetManager.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	/**
 	 * @brief Represents a project's configuration.
 	 */
 	struct ProjectConfig
 	{
-		std::string Name = "Untitled";											/**< The name of the project. */
-		std::filesystem::path AssetsDirectory = "assets";						/**< The directory where project assets are stored. */
-		std::filesystem::path AssetRegistryPath = "assets/assets.sw_registry";	/**< The path to the asset registry file. */
-		std::filesystem::path AudioRegistryPath = "assets/audio.sw_registry";	/**< The path to the audio registry file. */
+		std::string Name                      = "Untitled"; /**< The name of the project. */
+		std::filesystem::path AssetsDirectory = "assets";   /**< The directory where project assets are stored. */
+		std::filesystem::path AssetRegistryPath =
+		    "assets/assets.sw_registry"; /**< The path to the asset registry file. */
+		std::filesystem::path AudioRegistryPath =
+		    "assets/audio.sw_registry"; /**< The path to the audio registry file. */
 	};
-	
+
 	/**
 	 * @brief Represents a project in the software engine.
 	 */
@@ -77,7 +80,7 @@ namespace SW {
 		 * @return The audio registry path of the project. e.g. C:\Users\x\Desktop\Testbed\assets\audio.sw_registry
 		 */
 		const std::filesystem::path& GetAudioRegistryPath() const { return m_Config.AudioRegistryPath; }
-		
+
 		/**
 		 * @brief Retrieves the name of the project.
 		 * @return The name of the project.
@@ -94,4 +97,4 @@ namespace SW {
 		AssetManagerBase* m_AssetManager = nullptr;
 	};
 
-}
+} // namespace SW

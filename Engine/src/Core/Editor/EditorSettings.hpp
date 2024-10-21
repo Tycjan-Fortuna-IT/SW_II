@@ -8,13 +8,15 @@
  */
 #pragma once
 
-namespace SW {
+namespace SW
+{
 
 	/**
 	 * @brief The EditorSettings struct contains settings for the editor.
 	 */
-	struct EditorSettings final {
-		bool VSync = true; /**< Whether to enable VSync. */
+	struct EditorSettings final
+	{
+		bool VSync                = true;  /**< Whether to enable VSync. */
 		bool ShowPhysicsColliders = false; /**< Whether to show physics colliders. */
 
 		/**
@@ -24,4 +26,4 @@ namespace SW {
 		static EditorSettings& Get();
 	};
 
-}
+} // namespace SW

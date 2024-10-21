@@ -1,24 +1,29 @@
 #include "Prefab.hpp"
 
-namespace SW {
-#define CopyReferencedEntities(T) \
-{ \
-	if (src.HasComponent<T>()) { \
-		T& component = src.GetComponent<T>(); \
-		T& newComponent = dst.GetComponent<T>(); \
-		if (component.ConnectedEntityID) { \
-			if (duplicatedEntities.contains(component.ConnectedEntityID)) { \
-				newComponent.ConnectedEntityID = duplicatedEntities.at(component.ConnectedEntityID).GetID(); \
-			} else { \
-				Entity connectedEntity = srcScene->GetEntityByID(component.ConnectedEntityID); \
-				Entity duplicatedConnectedEntity = DuplicateEntityForPrefab(connectedEntity, duplicatedEntities); \
-				newComponent.ConnectedEntityID = duplicatedConnectedEntity.GetID(); \
-				duplicatedEntities[component.ConnectedEntityID] = duplicatedConnectedEntity; \
-			} \
-		} \
-	} \
-}
-
+namespace SW
+{
+#define CopyReferencedEntities(T)                                                                                     \
+	{                                                                                                                 \
+		if (src.HasComponent<T>())                                                                                    \
+		{                                                                                                             \
+			T& component    = src.GetComponent<T>();                                                                  \
+			T& newComponent = dst.GetComponent<T>();                                                                  \
+			if (component.ConnectedEntityID)                                                                          \
+			{                                                                                                         \
+				if (duplicatedEntities.contains(component.ConnectedEntityID))                                         \
+				{                                                                                                     \
+					newComponent.ConnectedEntityID = duplicatedEntities.at(component.ConnectedEntityID).GetID();      \
+				}                                                                                                     \
+				else                                                                                                  \
+				{                                                                                                     \
+					Entity connectedEntity           = srcScene->GetEntityByID(component.ConnectedEntityID);          \
+					Entity duplicatedConnectedEntity = DuplicateEntityForPrefab(connectedEntity, duplicatedEntities); \
+					newComponent.ConnectedEntityID   = duplicatedConnectedEntity.GetID();                             \
+					duplicatedEntities[component.ConnectedEntityID] = duplicatedConnectedEntity;                      \
+				}                                                                                                     \
+			}                                                                                                         \
+		}                                                                                                             \
+	}
 
 	Prefab::Prefab(Entity entity)
 	{
@@ -29,7 +34,8 @@ namespace SW {
 
 	Entity Prefab::DuplicateEntityForPrefab(Entity src, std::unordered_map<u64, Entity>& duplicatedEntities)
 	{
-		if (duplicatedEntities.count(src.GetID()) > 0) {
+		if (duplicatedEntities.count(src.GetID()) > 0)
+		{
 			return duplicatedEntities[src.GetID()];
 		}
 
@@ -70,7 +76,8 @@ namespace SW {
 
 		std::vector<u64> childIds = src.GetRelations().ChildrenIDs;
 
-		for (u64 childId : childIds) {
+		for (u64 childId : childIds)
+		{
 			Entity childDuplicate = DuplicateEntityForPrefab(srcScene->GetEntityByID(childId), duplicatedEntities);
 
 			childDuplicate.SetParent(dst);
@@ -80,10 +87,11 @@ namespace SW {
 		{
 			const ScriptComponent& sc = dst.GetComponent<ScriptComponent>();
 			dst.GetScene()->GetScriptStorage().InitializeEntityStorage(sc.ScriptID, dst.GetID());
-			src.GetScene()->GetScriptStorage().CopyEntityStorage(src.GetID(), dst.GetID(), dst.GetScene()->GetScriptStorage());
+			src.GetScene()->GetScriptStorage().CopyEntityStorage(src.GetID(), dst.GetID(),
+			                                                     dst.GetScene()->GetScriptStorage());
 		}
 
 		return dst;
 	}
 
-}
+} // namespace SW

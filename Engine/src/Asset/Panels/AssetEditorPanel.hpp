@@ -9,10 +9,11 @@
 #pragma once
 
 #include "Asset/Asset.hpp"
-#include "Core/Timestep.hpp"
 #include "Core/Scene/Scene.hpp"
+#include "Core/Timestep.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	/**
 	 * @class AssetEditorPanel
@@ -22,7 +23,7 @@ namespace SW {
 	 * It defines common functionality and interface that derived panel classes can implement.
 	 */
 	class AssetEditorPanel
-	{		
+	{
 	protected:
 		AssetEditorPanel(const char* name, const char* icon);
 
@@ -34,7 +35,7 @@ namespace SW {
 		 * @param ts The timestep.
 		 */
 		virtual void OnUpdate(Timestep ts) = 0;
-		
+
 		/**
 		 * @brief Renders all the panels.
 		 */
@@ -52,7 +53,7 @@ namespace SW {
 
 		/**
 		 * @brief Returns whether the panel is open.
-		 * 
+		 *
 		 * @return True if the panel is open, false otherwise.
 		 */
 		bool IsOpen() const { return m_IsOpen; }
@@ -67,10 +68,10 @@ namespace SW {
 		 * @brief Set the asset handle for the panel.
 		 * @note This determines the asset that the panel will edit.
 
-		 * @param handle The asset handle. 
+		 * @param handle The asset handle.
 		 */
 		virtual void SetAssetHandle(AssetHandle handle) = 0;
-	
+
 	protected:
 		/**
 		 * @brief Pushes the additional window style for the panel.
@@ -98,17 +99,16 @@ namespace SW {
 		 * @brief After the panel is opened, this function is called.
 		 */
 		virtual void OnOpen() = 0;
-		
+
 		/**
 		 * @brief After the panel is closed, this function is called.
 		 */
 		virtual void OnClose() = 0;
-		
+
 		/**
 		 * @brief Renders the panel.
 		 */
 		virtual void Render() = 0;
 	};
 
-}
-
+} // namespace SW

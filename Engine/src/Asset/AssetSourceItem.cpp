@@ -1,6 +1,7 @@
 #include "AssetSourceItem.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	bool AssetSourceItem::IsParentOfDescendant(const AssetSourceItem* descendant) const
 	{
@@ -17,4 +18,4 @@ namespace SW {
 		return false;
 	}
 
-}
+} // namespace SW

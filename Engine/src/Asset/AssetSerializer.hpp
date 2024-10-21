@@ -2,7 +2,8 @@
 
 #include "AssetRegistry.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	class Asset;
 
@@ -12,9 +13,9 @@ namespace SW {
 	{
 	public:
 		virtual ~AssetSerializer() = default;
-		
+
 		virtual void Serialize(const AssetMetaData& metadata) = 0;
-	
+
 		virtual Asset* TryLoadAsset(const AssetMetaData& metadata) = 0;
 	};
 
@@ -90,4 +91,4 @@ namespace SW {
 		Asset* TryLoadAsset(const AssetMetaData& metadata) override;
 	};
 
-}
+} // namespace SW

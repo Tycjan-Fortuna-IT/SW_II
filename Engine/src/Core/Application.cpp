@@ -1,38 +1,38 @@
 #include "Application.hpp"
 
-#include <GLFW/glfw3.h>
+#include "Asset/AssetManager.hpp"
 #include "Core/KeyCode.hpp"
 #include "Events/Event.hpp"
 #include "GUI/GuiLayer.hpp"
-#include "Utils/FileSystem.hpp"
-#include "Asset/AssetManager.hpp"
 #include "Renderer/RendererAPI.hpp"
 #include "Scripting/ScriptingCore.hpp"
+#include "Utils/FileSystem.hpp"
 #include "Utils/Input.hpp"
+#include <GLFW/glfw3.h>
 
-namespace SW {
+namespace SW
+{
 
-    Application* Application::s_Instance = nullptr;
+	Application* Application::s_Instance = nullptr;
 
-    Application::Application(const ApplicationSpecification& specification)
-        : m_Specification(specification)
+	Application::Application(const ApplicationSpecification& specification) : m_Specification(specification)
 	{
-        if (!this->OnInit())
-            SYSTEM_ERROR("Application failed to initialize!");
-    }
+		if (!this->OnInit())
+			SYSTEM_ERROR("Application failed to initialize!");
+	}
 
-    bool Application::OnInit()
+	bool Application::OnInit()
 	{
-        const WindowSpecification specification = {
-            .Title = m_Specification.Title,
-            .Width = m_Specification.Width,
-            .Height = m_Specification.Height,
-            .VSync = m_Specification.VSync,
-			.Icon = m_Specification.Icon,
-			.DisableToolbar = m_Specification.DisableToolbar,
-        };
+		const WindowSpecification specification = {
+		    .Title          = m_Specification.Title,
+		    .Width          = m_Specification.Width,
+		    .Height         = m_Specification.Height,
+		    .VSync          = m_Specification.VSync,
+		    .Icon           = m_Specification.Icon,
+		    .DisableToolbar = m_Specification.DisableToolbar,
+		};
 
-        m_Window = new Window(specification);
+		m_Window = new Window(specification);
 
 		EventSystem::Initialize();
 		FileSystem::Initialize();
@@ -48,13 +48,14 @@ namespace SW {
 			return true;
 		});
 
-		if (m_Specification.Fullscreen) {
+		if (m_Specification.Fullscreen)
+		{
 			m_Window->Maximize();
 		}
 
-        m_IsRunning = true;
+		m_IsRunning = true;
 
-        s_Instance = this;
+		s_Instance = this;
 
 		m_GuiLayer = new GuiLayer();
 		m_GuiLayer->OnAttach();
@@ -70,7 +71,7 @@ namespace SW {
 		FileSystem::Shutdown();
 		AssetManager::Shutdown();
 		RendererAPI::Shutdown();
-		
+
 		if (m_Specification.EnableCSharpSupport)
 			ScriptingCore::Get().ShutdownHost();
 
@@ -86,10 +87,11 @@ namespace SW {
 
 	void Application::Run()
 	{
-		while (m_IsRunning) {
-			const float time = (float)glfwGetTime();
+		while (m_IsRunning)
+		{
+			const float time  = (float)glfwGetTime();
 			const Timestep dt = time - m_LastFrameTime;
-			m_LastFrameTime = time;
+			m_LastFrameTime   = time;
 
 			Input::UpdateKeysStateIfNecessary();
 
@@ -97,8 +99,9 @@ namespace SW {
 
 			{
 				PROFILE_SCOPE("Application::Update()");
-			
-				for (Layer* layer : m_Layers) {
+
+				for (Layer* layer : m_Layers)
+				{
 					layer->OnUpdate(dt);
 				}
 			}
@@ -107,7 +110,8 @@ namespace SW {
 				PROFILE_SCOPE("Application::Render()");
 
 				m_GuiLayer->Begin();
-				for (Layer* layer : m_Layers) {
+				for (Layer* layer : m_Layers)
+				{
 					layer->OnRender();
 				}
 				m_GuiLayer->End();
@@ -134,15 +138,15 @@ namespace SW {
 
 	void Application::PopLayer()
 	{
-        if (m_Layers.empty())
-            SYSTEM_FATAL("No Layer to pop!");
+		if (m_Layers.empty())
+			SYSTEM_FATAL("No Layer to pop!");
 
-        Layer* back = m_Layers.back();
-        back->OnDetach();
+		Layer* back = m_Layers.back();
+		back->OnDetach();
 
-        m_Layers.pop_back();
+		m_Layers.pop_back();
 
-        delete back;
-    }
+		delete back;
+	}
 
-}
+} // namespace SW

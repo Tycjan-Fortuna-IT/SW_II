@@ -10,12 +10,14 @@
 
 #include "Core/ECS/Entity.hpp"
 
-namespace YAML {
+namespace YAML
+{
 	class Emitter;
 	class Node;
-}
+} // namespace YAML
 
-namespace SW {
+namespace SW
+{
 
 	class Scene;
 
@@ -34,7 +36,7 @@ namespace SW {
 		static void Serialize(Scene* scene, const std::filesystem::path& path);
 
 		static void SerializeEntity(YAML::Emitter& output, Entity entity, const Scene* scene);
-		
+
 		/**
 		 * @brief Deserializes scene from file.
 		 *
@@ -46,4 +48,4 @@ namespace SW {
 		static void DeserializeEntitiesNode(YAML::Node& entitiesNode, Scene* scene);
 	};
 
-}
+} // namespace SW

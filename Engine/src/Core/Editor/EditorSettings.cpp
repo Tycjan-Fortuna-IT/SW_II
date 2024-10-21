@@ -1,6 +1,7 @@
 #include "EditorSettings.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	EditorSettings& EditorSettings::Get()
 	{
@@ -9,4 +10,4 @@ namespace SW {
 		return s_Settings;
 	}
 
-}
+} // namespace SW

@@ -1,16 +1,17 @@
 #pragma once
 
-namespace SW {
+namespace SW
+{
 
 	/**
 	 * @brief Struct representing the data required for a shader.
 	 */
 	struct ShaderData final
 	{
-		std::string vertexSourcePath;    ///< The file path of the vertex shader source code.
-		std::string vertexSource;        ///< The vertex shader source code.
-		std::string fragmentSourcePath;  ///< The file path of the fragment shader source code.
-		std::string fragmentSource;      ///< The fragment shader source code.
+		std::string vertexSourcePath;   ///< The file path of the vertex shader source code.
+		std::string vertexSource;       ///< The vertex shader source code.
+		std::string fragmentSourcePath; ///< The file path of the fragment shader source code.
+		std::string fragmentSource;     ///< The fragment shader source code.
 	};
 
 	/**
@@ -96,4 +97,4 @@ namespace SW {
 		void CompileShaders(const ShaderData& data);
 	};
 
-}
+} // namespace SW

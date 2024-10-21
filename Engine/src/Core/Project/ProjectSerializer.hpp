@@ -8,7 +8,8 @@
  */
 #pragma once
 
-namespace SW {
+namespace SW
+{
 
 	class Project;
 
@@ -32,4 +33,4 @@ namespace SW {
 		[[nodiscard]] static Project* Deserialize(const std::string& path);
 	};
 
-}
+} // namespace SW

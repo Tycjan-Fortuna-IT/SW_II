@@ -12,7 +12,8 @@
 #include "Core/Defines.hpp"
 #include "Core/Timestep.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	enum class PanelType : u8
 	{
@@ -29,7 +30,7 @@ namespace SW {
 
 	/**
 	 * @brief Represents a GUI panel.
-	 * 
+	 *
 	 * The Panel class provides a base class for creating GUI panels in the application.
 	 * It contains common functionality for managing the panel's visibility, name, and icon.
 	 * Derived classes can override the OnUpdate and OnRender methods to implement custom behavior.
@@ -46,10 +47,10 @@ namespace SW {
 		Panel(const char* name = "Unnamed Panel", const char* icon = "", bool defaultShow = false);
 		virtual ~Panel() = default;
 
-		Panel(const Panel& other) = delete;
-		Panel(Panel&& other) = delete;
+		Panel(const Panel& other)            = delete;
+		Panel(Panel&& other)                 = delete;
 		Panel& operator=(const Panel& other) = delete;
-		Panel& operator=(Panel&& other) = delete;
+		Panel& operator=(Panel&& other)      = delete;
 
 		virtual PanelType GetPanelType() const = 0;
 
@@ -97,7 +98,7 @@ namespace SW {
 		const char* m_Name; ///< The name of the panel.
 		const char* m_Icon; ///< The icon of the panel.
 
-		std::string m_ID;   ///< The ID of the panel.
+		std::string m_ID; ///< The ID of the panel.
 	};
 
-}
+} // namespace SW

@@ -1,33 +1,34 @@
-#include "pch.hpp"
 #include "Shader.hpp"
+#include "pch.hpp"
 
 #include <glad/glad.h>
 
 #include "Core/Utils/Utils.hpp"
 
-namespace SW {
-    Shader::Shader(const std::string& vertexFilePath, const std::string& fragmentFilePath)
+namespace SW
+{
+	Shader::Shader(const std::string& vertexFilePath, const std::string& fragmentFilePath)
 	{
-        ShaderData data = this->ProcessShaderFiles(vertexFilePath, fragmentFilePath);
+		ShaderData data = this->ProcessShaderFiles(vertexFilePath, fragmentFilePath);
 
-        this->CompileShaders(data);
-    }
-
-    Shader::~Shader()
-	{
-        glDeleteProgram(m_Handle);
+		this->CompileShaders(data);
 	}
 
-	ShaderData Shader::ProcessShaderFiles(const std::string& vertexFilePath, const std::string& fragmentFilePath) const {
-		return {
-			.vertexSourcePath = vertexFilePath,
-			.vertexSource = Utils::ReadFile(vertexFilePath),
-			.fragmentSourcePath = fragmentFilePath,
-			.fragmentSource = Utils::ReadFile(fragmentFilePath)
-		};
+	Shader::~Shader()
+	{
+		glDeleteProgram(m_Handle);
 	}
 
-	void Shader::CompileShaders(const ShaderData& data) {
+	ShaderData Shader::ProcessShaderFiles(const std::string& vertexFilePath, const std::string& fragmentFilePath) const
+	{
+		return {.vertexSourcePath   = vertexFilePath,
+		        .vertexSource       = Utils::ReadFile(vertexFilePath),
+		        .fragmentSourcePath = fragmentFilePath,
+		        .fragmentSource     = Utils::ReadFile(fragmentFilePath)};
+	}
+
+	void Shader::CompileShaders(const ShaderData& data)
+	{
 		const u32 program = glCreateProgram();
 
 		u32 vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -42,7 +43,8 @@ namespace SW {
 		i32 isVertexCompiled;
 		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &isVertexCompiled);
 
-		if (!isVertexCompiled) {
+		if (!isVertexCompiled)
+		{
 			GLint maxLength = 0;
 			glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &maxLength);
 
@@ -71,7 +73,8 @@ namespace SW {
 		i32 isFragmentCompiled;
 		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &isFragmentCompiled);
 
-		if (!isFragmentCompiled) {
+		if (!isFragmentCompiled)
+		{
 			GLint maxLength = 0;
 			glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &maxLength);
 
@@ -97,7 +100,8 @@ namespace SW {
 		GLint isLinked = 0;
 		glGetProgramiv(program, GL_LINK_STATUS, (int*)&isLinked);
 
-		if (isLinked == GL_FALSE) {
+		if (isLinked == GL_FALSE)
+		{
 			GLint maxLength = 0;
 			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
 
@@ -120,18 +124,22 @@ namespace SW {
 		m_Handle = program;
 	}
 
-	void Shader::Bind() const {
+	void Shader::Bind() const
+	{
 		glUseProgram(m_Handle);
 	}
 
-	void Shader::Unbind() const {
+	void Shader::Unbind() const
+	{
 		glUseProgram(0);
 	}
 
-	i32 Shader::GetUniformLocation(const std::string name) const {
+	i32 Shader::GetUniformLocation(const std::string name) const
+	{
 		auto location = m_UniformLocations.find(name);
 
-		if (location == m_UniformLocations.end()) {
+		if (location == m_UniformLocations.end())
+		{
 			i32 newLocation = glGetUniformLocation(m_Handle, name.c_str());
 
 			m_UniformLocations[name] = newLocation;
@@ -142,18 +150,18 @@ namespace SW {
 		return location->second;
 	}
 
-    void Shader::UploadUniformInt(const std::string& name, int value) const
+	void Shader::UploadUniformInt(const std::string& name, int value) const
 	{
-        glUniform1i(GetUniformLocation(name), value);
-    }
+		glUniform1i(GetUniformLocation(name), value);
+	}
 
-    void Shader::UploadUniformIntArray(const std::string& name, int* values, u32 count) const
+	void Shader::UploadUniformIntArray(const std::string& name, int* values, u32 count) const
 	{
 		glUniform1iv(GetUniformLocation(name), count, values);
-    }
+	}
 
-    void Shader::UploadUniformMat4(const std::string& name, const glm::mat4& value) const
+	void Shader::UploadUniformMat4(const std::string& name, const glm::mat4& value) const
 	{
-        glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
-    }
-}
+		glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
+	}
+} // namespace SW

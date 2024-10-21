@@ -3,7 +3,8 @@
 #include "Asset/Asset.hpp"
 #include "Audio/AudioEngine.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	class Sound : public Asset
 	{
@@ -30,5 +31,4 @@ namespace SW {
 		ma_sound m_Handle;
 	};
 
-}
-
+} // namespace SW

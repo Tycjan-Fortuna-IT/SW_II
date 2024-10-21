@@ -10,7 +10,8 @@
 
 #include "AssetSourceItem.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	class AssetDirectoryTree
 	{
@@ -18,10 +19,10 @@ namespace SW {
 		AssetDirectoryTree() = default;
 		~AssetDirectoryTree();
 
-		AssetDirectoryTree(const AssetDirectoryTree& other) = delete;
-		AssetDirectoryTree(AssetDirectoryTree&& other) = delete;
+		AssetDirectoryTree(const AssetDirectoryTree& other)            = delete;
+		AssetDirectoryTree(AssetDirectoryTree&& other)                 = delete;
 		AssetDirectoryTree& operator=(const AssetDirectoryTree& other) = delete;
-		AssetDirectoryTree& operator=(AssetDirectoryTree&& other) = delete;
+		AssetDirectoryTree& operator=(AssetDirectoryTree&& other)      = delete;
 
 		/**
 		 * @brief Traverse the asset directory and map the assets.
@@ -31,15 +32,15 @@ namespace SW {
 
 		/**
 		 * @brief Get the root item of the tree.
-		 * 
+		 *
 		 * @return AssetSourceItem* The root item.
 		 */
 		AssetSourceItem* GetRootItem() const { return m_Root; }
-		
+
 		/**
 		 * @brief Find a child item by path.
 		 * @warning Might return nullptr.
-		 * 
+		 *
 		 * @param parent The parent item.
 		 * @param dir The path of the child item.
 		 * @return AssetSourceItem* The child item if found, nullptr otherwise.
@@ -49,7 +50,7 @@ namespace SW {
 		/**
 		 * @brief Refetch the changes in the directory.
 		 * 		  Refetches the changes in the directory and updates the tree.
-		 * 
+		 *
 		 * @param dir The directory to refetch.
 		 */
 		void RefetchChanges();
@@ -60,7 +61,7 @@ namespace SW {
 	private:
 		/**
 		 * @brief Recursively clean up the item and its children.
-		 * 
+		 *
 		 * @param item The item to clean up.
 		 */
 		void CleanUp(AssetSourceItem* item);
@@ -68,13 +69,13 @@ namespace SW {
 		/**
 		 * @brief Traverse the directory and emplace the assets.
 		 * 		  Scans the directory and emplaces the assets to the tree.
-		 * 
+		 *
 		 * @param pathToIdMap The map of path to asset handle.
 		 * @param dir The directory to traverse.
 		 * @param item The item to emplace the assets.
 		 */
 		void TraverseAndEmplace(const std::unordered_map<std::filesystem::path, AssetHandle>& pathToIdMap,
-			const std::filesystem::path& dir, AssetSourceItem* item);
+		                        const std::filesystem::path& dir, AssetSourceItem* item);
 	};
 
-}
+} // namespace SW

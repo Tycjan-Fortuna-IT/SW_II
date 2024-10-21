@@ -12,7 +12,8 @@
 
 #include "Core/Timestep.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	class Scene;
 
@@ -37,5 +38,4 @@ namespace SW {
 		std::set<std::pair<b2Fixture*, b2Fixture*>> m_BuoyancyFluidFixturePairs;
 	};
 
-}
-
+} // namespace SW

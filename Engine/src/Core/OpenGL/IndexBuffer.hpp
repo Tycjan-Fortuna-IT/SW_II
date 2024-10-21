@@ -1,14 +1,16 @@
 #pragma once
 
-namespace SW {
+namespace SW
+{
 
 	/**
 	 * @brief Represents an index buffer object in OpenGL.
-	 * 
+	 *
 	 * The IndexBuffer class encapsulates the functionality of an index buffer object (IBO) in OpenGL.
 	 * It provides methods to construct the buffer with a specified size or with specified indices and size,
 	 * bind and unbind the IBO, and destroy the IBO.
-	 * The IBO stores the indices that OpenGL uses to decide which vertices to draw, which can reduce the amount of data that needs to be sent to the GPU.
+	 * The IBO stores the indices that OpenGL uses to decide which vertices to draw, which can reduce the amount of data
+	 * that needs to be sent to the GPU.
 	 */
 	class IndexBuffer final
 	{
@@ -46,5 +48,4 @@ namespace SW {
 		u32 m_Count;  /** @brief The number of indices in the buffer. */
 	};
 
-}
-
+} // namespace SW

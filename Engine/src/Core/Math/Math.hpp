@@ -8,25 +8,27 @@
  */
 #pragma once
 
-//#include "Core/Math/Matrix4.hpp"
+// #include "Core/Math/Matrix4.hpp"
 
 #undef near
 #undef far
 
-namespace SW {
+namespace SW
+{
 
-    namespace Math {
+	namespace Math
+	{
 
 		/**
 		 * @brief Converts degrees to radians.
-		 * 
-		 * @param degrees Degrees to convert. 
-		 * @return constexpr f32 
+		 *
+		 * @param degrees Degrees to convert.
+		 * @return constexpr f32
 		 */
-        constexpr f32 ToRadians(f32 degrees)
+		constexpr f32 ToRadians(f32 degrees)
 		{
-            return degrees * 0.017453292519943295f;
-        }
+			return degrees * 0.017453292519943295f;
+		}
 
 		/**
 		 * Converts the given vector of degrees to vector of radians.
@@ -36,19 +38,19 @@ namespace SW {
 		 */
 		/*static Vector3<f32> ToRadians(const Vector3<f32> degrees)
 		{
-			return { ToRadians(degrees.x), ToRadians(degrees.y), ToRadians(degrees.z) };
+		    return { ToRadians(degrees.x), ToRadians(degrees.y), ToRadians(degrees.z) };
 		}*/
 
 		/**
 		 * @brief Converts radians to degrees.
-		 * 
+		 *
 		 * @param radians Radians to convert.
-		 * @return constexpr f32 
+		 * @return constexpr f32
 		 */
-        constexpr f32 ToDegrees(f32 radians)
+		constexpr f32 ToDegrees(f32 radians)
 		{
-            return radians * 57.29577951308232f;
-        }
+			return radians * 57.29577951308232f;
+		}
 
 		/**
 		 * Converts the given vector of radians to vector of degrees.
@@ -58,18 +60,18 @@ namespace SW {
 		 */
 		/*static Vector3<f32> ToDegrees(const Vector3<f32> radians)
 		{
-			return { ToDegrees(radians.x), ToDegrees(radians.y), ToDegrees(radians.z) };
+		    return { ToDegrees(radians.x), ToDegrees(radians.y), ToDegrees(radians.z) };
 		}*/
 
 		/**
 		 * @brief Approximation of PI constant.
 		 */
-        constexpr f32 PI = 3.14159265358979323846264338327950288f;
+		constexpr f32 PI = 3.14159265358979323846264338327950288f;
 
 		/**
 		 * @brief Constructs a right-handed orthographic projection matrix.
-		 * 
-		 * @param left The left edge of the view frustum. 
+		 *
+		 * @param left The left edge of the view frustum.
 		 * @param right The right edge of the view frustum.
 		 * @param bottom The bottom edge of the view frustum.
 		 * @param top The top edge of the view frustum.
@@ -78,30 +80,30 @@ namespace SW {
 		 * @return Matrix4<T>
 		 */
 		/*template <typename T>
-    		requires std::is_arithmetic_v<T>
+		    requires std::is_arithmetic_v<T>
 		static Matrix4<T> OrthogonalProjection(T left, T right, T bottom, T top, T near, T far)
 		{
-			Matrix4<T> result = { static_cast<T>(1) };
+		    Matrix4<T> result = { static_cast<T>(1) };
 
-			result[0] = static_cast<T>(2) / (right - left);
-			result[5] = static_cast<T>(2) / (top - bottom);
-			result[10] = -static_cast<T>(2) / (far - near);
-			result[12] = -(right + left) / (right - left);
-			result[13] = -(top + bottom) / (top - bottom);
-			result[14] = -(far + near) / (far - near);
+		    result[0] = static_cast<T>(2) / (right - left);
+		    result[5] = static_cast<T>(2) / (top - bottom);
+		    result[10] = -static_cast<T>(2) / (far - near);
+		    result[12] = -(right + left) / (right - left);
+		    result[13] = -(top + bottom) / (top - bottom);
+		    result[14] = -(far + near) / (far - near);
 
-			return result;
+		    return result;
 		}*/
 
 		/**
 		 * @brief Performs inverse of a matrix.
-		 * 
+		 *
 		 * @param matrix Matrix to be inverted.
-		 * @return Matrix4<T> Inverted matrix. 
+		 * @return Matrix4<T> Inverted matrix.
 		 */
-		//template <typename T>
+		// template <typename T>
 		//	requires std::is_arithmetic_v<T>
-		//static Matrix4<T> Inverse(const Matrix4<T>& matrix)
+		// static Matrix4<T> Inverse(const Matrix4<T>& matrix)
 		//{
 		//	Matrix4<T> result;
 
@@ -243,58 +245,59 @@ namespace SW {
 		 * @return Matrix4<T> scaled matrix.
 		 */
 		/*template <typename T>
-			requires std::is_arithmetic_v<T>
+		    requires std::is_arithmetic_v<T>
 		static Matrix4<T> Scale(const Matrix4<T>& matrix, const Vector3<f32> vector)
 		{
-			Matrix4<T> result = matrix;
+		    Matrix4<T> result = matrix;
 
-			result[0] = vector.x;
-			result[5] = vector.y;
-			result[10] = vector.z;
+		    result[0] = vector.x;
+		    result[5] = vector.y;
+		    result[10] = vector.z;
 
-			return result;
+		    return result;
 		}*/
 
 		/*template <typename T>
-			requires std::is_arithmetic_v<T>
+		    requires std::is_arithmetic_v<T>
 		static Matrix4<T> Translate(const Matrix4<T>& matrix, const Vector3<f32> vector)
 		{
-			Matrix4<T> result = matrix;
+		    Matrix4<T> result = matrix;
 
-			result[3] = vector.x;
-			result[7] = vector.y;
-			result[11] = vector.z;
+		    result[3] = vector.x;
+		    result[7] = vector.y;
+		    result[11] = vector.z;
 
-			return result;
+		    return result;
 		}*/
 
 		/*template <typename T>
-			requires std::is_arithmetic_v<T>
+		    requires std::is_arithmetic_v<T>
 		static Matrix4<T> RotateZ(const Matrix4<T>& matrix, f32 radians)
 		{
-			Matrix4<T> result = matrix;
+		    Matrix4<T> result = matrix;
 
-			const f32 c = std::cos(radians);
-			const f32 s = std::sin(radians);
+		    const f32 c = std::cos(radians);
+		    const f32 s = std::sin(radians);
 
-			result[0] = c;
-			result[1] = s;
-			result[4] = -s;
-			result[5] = c;
+		    result[0] = c;
+		    result[1] = s;
+		    result[4] = -s;
+		    result[5] = c;
 
-			return result;
+		    return result;
 		}*/
 
 		/**
 		 * @brief Decomposes a transformation matrix into its translation, rotation and scale components.
-		 * 
+		 *
 		 * @param transform The transformation matrix to decompose.
 		 * @param translation Output parameter for the translation component.
 		 * @param rotation Output parameter for the rotation component.
 		 * @param scale Output parameter for the scale component.
 		 * @return True if the decomposition was successful, false otherwise.
 		 */
-		static bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale)
+		static bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation,
+		                               glm::vec3& scale)
 		{
 			// From glm::decompose in matrix_decompose.inl
 			using namespace glm;
@@ -307,40 +310,41 @@ namespace SW {
 				return false;
 
 			// First, isolate perspective.  This is the messiest.
-			if (
-				epsilonNotEqual(LocalMatrix[0][3], static_cast<T>(0), epsilon<T>()) ||
-				epsilonNotEqual(LocalMatrix[1][3], static_cast<T>(0), epsilon<T>()) ||
-				epsilonNotEqual(LocalMatrix[2][3], static_cast<T>(0), epsilon<T>())) {
+			if (epsilonNotEqual(LocalMatrix[0][3], static_cast<T>(0), epsilon<T>()) ||
+			    epsilonNotEqual(LocalMatrix[1][3], static_cast<T>(0), epsilon<T>()) ||
+			    epsilonNotEqual(LocalMatrix[2][3], static_cast<T>(0), epsilon<T>()))
+			{
 				// Clear the perspective partition
 				LocalMatrix[0][3] = LocalMatrix[1][3] = LocalMatrix[2][3] = static_cast<T>(0);
-				LocalMatrix[3][3] = static_cast<T>(1);
+				LocalMatrix[3][3]                                         = static_cast<T>(1);
 			}
 
 			// Next take care of translation (easy).
-			translation = vec3(LocalMatrix[3]);
+			translation    = vec3(LocalMatrix[3]);
 			LocalMatrix[3] = vec4(0, 0, 0, LocalMatrix[3].w);
 
 			vec3 Row[3];
 
 			// Now get scale and shear.
 			for (length_t i = 0; i < 3; ++i)
-				for (length_t j = 0; j < 3; ++j)
-					Row[i][j] = LocalMatrix[i][j];
+				for (length_t j = 0; j < 3; ++j) Row[i][j] = LocalMatrix[i][j];
 
 			// Compute X scale factor and normalize first row.
 			scale.x = length(Row[0]);
-			Row[0] = detail::scale(Row[0], static_cast<T>(1));
+			Row[0]  = detail::scale(Row[0], static_cast<T>(1));
 			scale.y = length(Row[1]);
-			Row[1] = detail::scale(Row[1], static_cast<T>(1));
+			Row[1]  = detail::scale(Row[1], static_cast<T>(1));
 			scale.z = length(Row[2]);
-			Row[2] = detail::scale(Row[2], static_cast<T>(1));
+			Row[2]  = detail::scale(Row[2], static_cast<T>(1));
 
 			rotation.y = asin(-Row[0][2]);
-			if (cos(rotation.y) != 0.0f) {
+			if (cos(rotation.y) != 0.0f)
+			{
 				rotation.x = atan2(Row[1][2], Row[2][2]);
 				rotation.z = atan2(Row[0][1], Row[0][0]);
 			}
-			else {
+			else
+			{
 				rotation.x = atan2(-Row[2][0], Row[1][1]);
 				rotation.z = 0;
 			}
@@ -350,7 +354,7 @@ namespace SW {
 
 		/**
 		 * @brief Decomposes a transformation matrix into its translation.
-		 * 
+		 *
 		 * @param transform The transformation matrix to decompose.
 		 * @param translation Output parameter for the translation component.
 		 * @return True if the decomposition was successful, false otherwise.
@@ -368,13 +372,13 @@ namespace SW {
 				return false;
 
 			// First, isolate perspective.  This is the messiest.
-			if (
-				epsilonNotEqual(LocalMatrix[0][3], static_cast<T>(0), epsilon<T>()) ||
-				epsilonNotEqual(LocalMatrix[1][3], static_cast<T>(0), epsilon<T>()) ||
-				epsilonNotEqual(LocalMatrix[2][3], static_cast<T>(0), epsilon<T>())) {
+			if (epsilonNotEqual(LocalMatrix[0][3], static_cast<T>(0), epsilon<T>()) ||
+			    epsilonNotEqual(LocalMatrix[1][3], static_cast<T>(0), epsilon<T>()) ||
+			    epsilonNotEqual(LocalMatrix[2][3], static_cast<T>(0), epsilon<T>()))
+			{
 				// Clear the perspective partition
 				LocalMatrix[0][3] = LocalMatrix[1][3] = LocalMatrix[2][3] = static_cast<T>(0);
-				LocalMatrix[3][3] = static_cast<T>(1);
+				LocalMatrix[3][3]                                         = static_cast<T>(1);
 			}
 
 			// Next take care of translation (easy).
@@ -385,13 +389,14 @@ namespace SW {
 
 		/**
 		 * @brief Decomposes a transformation matrix into its translation and rotation components.
-		 * 
+		 *
 		 * @param transform The transformation matrix to decompose.
 		 * @param translation Output parameter for the translation component.
 		 * @param rotation Output parameter for the rotation component.
 		 * @return True if the decomposition was successful, false otherwise.
 		 */
-		static bool DecomposeTransformForTranslationAndRotation(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation)
+		static bool DecomposeTransformForTranslationAndRotation(const glm::mat4& transform, glm::vec3& translation,
+		                                                        glm::vec3& rotation)
 		{
 			// From glm::decompose in matrix_decompose.inl
 			using namespace glm;
@@ -404,32 +409,33 @@ namespace SW {
 				return false;
 
 			// First, isolate perspective.  This is the messiest.
-			if (
-				epsilonNotEqual(LocalMatrix[0][3], static_cast<T>(0), epsilon<T>()) ||
-				epsilonNotEqual(LocalMatrix[1][3], static_cast<T>(0), epsilon<T>()) ||
-				epsilonNotEqual(LocalMatrix[2][3], static_cast<T>(0), epsilon<T>())) {
+			if (epsilonNotEqual(LocalMatrix[0][3], static_cast<T>(0), epsilon<T>()) ||
+			    epsilonNotEqual(LocalMatrix[1][3], static_cast<T>(0), epsilon<T>()) ||
+			    epsilonNotEqual(LocalMatrix[2][3], static_cast<T>(0), epsilon<T>()))
+			{
 				// Clear the perspective partition
 				LocalMatrix[0][3] = LocalMatrix[1][3] = LocalMatrix[2][3] = static_cast<T>(0);
-				LocalMatrix[3][3] = static_cast<T>(1);
+				LocalMatrix[3][3]                                         = static_cast<T>(1);
 			}
 
 			// Next take care of translation (easy).
-			translation = vec3(LocalMatrix[3]);
+			translation    = vec3(LocalMatrix[3]);
 			LocalMatrix[3] = vec4(0, 0, 0, LocalMatrix[3].w);
 
 			vec3 Row[3];
 
 			// Now get scale and shear.
 			for (length_t i = 0; i < 3; ++i)
-				for (length_t j = 0; j < 3; ++j)
-					Row[i][j] = LocalMatrix[i][j];
+				for (length_t j = 0; j < 3; ++j) Row[i][j] = LocalMatrix[i][j];
 
 			rotation.y = asin(-Row[0][2]);
-			if (cos(rotation.y) != 0.0f) {
+			if (cos(rotation.y) != 0.0f)
+			{
 				rotation.x = atan2(Row[1][2], Row[2][2]);
 				rotation.z = atan2(Row[0][1], Row[0][0]);
 			}
-			else {
+			else
+			{
 				rotation.x = atan2(-Row[2][0], Row[1][1]);
 				rotation.z = 0;
 			}
@@ -438,8 +444,9 @@ namespace SW {
 		}
 
 		/**
-		 * Smoothly interpolates between the current value and the target value over time using the SmoothDamp algorithm.
-		 * 
+		 * Smoothly interpolates between the current value and the target value over time using the SmoothDamp
+		 * algorithm.
+		 *
 		 * @tparam T The type of the values being interpolated.
 		 * @param current The current value.
 		 * @param target The target value.
@@ -449,31 +456,33 @@ namespace SW {
 		 * @param deltaTime The time elapsed since the last update.
 		 * @return The interpolated value.
 		 */
-		template<typename T>
-		static T SmoothDamp(const T& current, const T& target, T& currentVelocity, f32 smoothTime, f32 maxSpeed, f32 deltaTime)
+		template <typename T>
+		static T SmoothDamp(const T& current, const T& target, T& currentVelocity, f32 smoothTime, f32 maxSpeed,
+		                    f32 deltaTime)
 		{
 			// Based on Game Programming Gems 4 Chapter 1.10
-			smoothTime = glm::max(0.0001F, smoothTime);
+			smoothTime      = glm::max(0.0001F, smoothTime);
 			const f32 omega = 2.0f / smoothTime;
 
-			const f32 x = omega * deltaTime;
+			const f32 x   = omega * deltaTime;
 			const f32 exp = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
 
-			T change = current - target;
+			T change           = current - target;
 			const T originalTo = target;
 
 			// Clamp maximum speed
 			const f32 maxChange = maxSpeed * smoothTime;
 
 			const f32 maxChangeSq = maxChange * maxChange;
-			const f32 sqDist = glm::length2(change);
-			if (sqDist > maxChangeSq) {
+			const f32 sqDist      = glm::length2(change);
+			if (sqDist > maxChangeSq)
+			{
 				const f32 mag = glm::sqrt(sqDist);
-				change = change / mag * maxChange;
+				change        = change / mag * maxChange;
 			}
 
 			const T newTarget = current - change;
-			const T temp = (currentVelocity + omega * change) * deltaTime;
+			const T temp      = (currentVelocity + omega * change) * deltaTime;
 
 			currentVelocity = (currentVelocity - omega * temp) * exp;
 
@@ -481,14 +490,15 @@ namespace SW {
 
 			// Prevent overshooting
 			const T origMinusCurrent = originalTo - current;
-			const T outMinusOrig = output - originalTo;
+			const T outMinusOrig     = output - originalTo;
 
-			if (glm::compAdd(origMinusCurrent * outMinusOrig) > 0.0f) {
-				output = originalTo;
+			if (glm::compAdd(origMinusCurrent * outMinusOrig) > 0.0f)
+			{
+				output          = originalTo;
 				currentVelocity = (output - originalTo) / deltaTime;
 			}
 			return output;
 		}
-    }
+	} // namespace Math
 
-}
+} // namespace SW

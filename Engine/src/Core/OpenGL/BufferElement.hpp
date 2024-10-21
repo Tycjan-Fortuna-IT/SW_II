@@ -3,14 +3,15 @@
  * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
  * @version 0.0.3
  * @date 2024-01-29
- * 
+ *
  * @copyright Copyright (c) 2024 Tycjan Fortuna
  */
 #pragma once
 
 typedef unsigned int GLenum;
 
-namespace SW {
+namespace SW
+{
 
 	/**
 	 * @brief Enumeration defining different shader data types
@@ -20,11 +21,11 @@ namespace SW {
 	{
 		None = 0, /**< Shader data type for undefined data. */
 		Float,    /**< Shader data type for single-precision floating point number. */
-		Float2,	  /**< Shader data type for 2D vector of single-precision floating point numbers. */
+		Float2,   /**< Shader data type for 2D vector of single-precision floating point numbers. */
 		Float3,   /**< Shader data type for 3D vector of single-precision floating point numbers. */
 		Float4,   /**< Shader data type for 4D vector of single-precision floating point numbers. */
 		Mat3,     /**< Shader data type for 3x3 matrix of single-precision floating point numbers. */
-		Mat4,	  /**< Shader data type for 4x4 matrix of single-precision floating point numbers. */
+		Mat4,     /**< Shader data type for 4x4 matrix of single-precision floating point numbers. */
 		Int,      /**< Shader data type for signed integer. */
 		Int2,     /**< Shader data type for 2D vector of signed integers. */
 		Int3,     /**< Shader data type for 3D vector of signed integers. */
@@ -52,10 +53,10 @@ namespace SW {
 	 */
 	struct BufferElement
 	{
-		std::string Name;		/**< The name of the element. */
-		ShaderDataType Type;	/**< The data type of the element. */
-		u32 Size;				/**< The size of the element. */
-		u32 Offset;				/**< The offset of the element. */
+		std::string Name;    /**< The name of the element. */
+		ShaderDataType Type; /**< The data type of the element. */
+		u32 Size;            /**< The size of the element. */
+		u32 Offset;          /**< The offset of the element. */
 
 		/**
 		 * @brief Constructs a BufferElement object.
@@ -64,7 +65,9 @@ namespace SW {
 		 * @param offset The offset of the element (default is 0).
 		 */
 		BufferElement(ShaderDataType type, const std::string& name, u32 offset = 0)
-			: Name(name), Type(type), Size(GetShaderDataTypeSize(type)), Offset(offset) {}
+		    : Name(name), Type(type), Size(GetShaderDataTypeSize(type)), Offset(offset)
+		{
+		}
 
 		/**
 		 * @brief Gets the number of components in the element.
@@ -72,25 +75,38 @@ namespace SW {
 		 */
 		u32 GetComponentCount() const
 		{
-			switch (Type) {
-				case ShaderDataType::None: ASSERT(false, "Unknown ShaderDataType!");
-				case ShaderDataType::Float:  return 1;
-				case ShaderDataType::Float2: return 2;
-				case ShaderDataType::Float3: return 3;
-				case ShaderDataType::Float4: return 4;
-				case ShaderDataType::Mat3:   return 3 * 3;
-				case ShaderDataType::Mat4:   return 4 * 4;
-				case ShaderDataType::Int:    return 1;
-				case ShaderDataType::Int2:   return 2;
-				case ShaderDataType::Int3:   return 3;
-				case ShaderDataType::Int4:   return 4;
-				case ShaderDataType::Bool:   return 1;
-				default:
-					ASSERT(false, "Unknown ShaderDataType! {}", (int)Type);
+			switch (Type)
+			{
+			case ShaderDataType::None:
+				ASSERT(false, "Unknown ShaderDataType!");
+			case ShaderDataType::Float:
+				return 1;
+			case ShaderDataType::Float2:
+				return 2;
+			case ShaderDataType::Float3:
+				return 3;
+			case ShaderDataType::Float4:
+				return 4;
+			case ShaderDataType::Mat3:
+				return 3 * 3;
+			case ShaderDataType::Mat4:
+				return 4 * 4;
+			case ShaderDataType::Int:
+				return 1;
+			case ShaderDataType::Int2:
+				return 2;
+			case ShaderDataType::Int3:
+				return 3;
+			case ShaderDataType::Int4:
+				return 4;
+			case ShaderDataType::Bool:
+				return 1;
+			default:
+				ASSERT(false, "Unknown ShaderDataType! {}", (int)Type);
 			}
 
 			return 0;
 		}
 	};
 
-}
+} // namespace SW

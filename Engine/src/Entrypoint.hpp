@@ -8,11 +8,11 @@ int main(void)
 {
 	SW::LogSystem::Initialize();
 
-    SW::Application* instance = CreateApplication();
+	SW::Application* instance = CreateApplication();
 
-    instance->Run();
+	instance->Run();
 
-    delete instance;
+	delete instance;
 
 	SW::LogSystem::Shutdown();
 

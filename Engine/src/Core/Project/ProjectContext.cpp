@@ -2,7 +2,8 @@
 
 #include "Project.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	SW::Project* ProjectContext::s_CurrentProject = nullptr;
 

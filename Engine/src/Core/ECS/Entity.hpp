@@ -8,39 +8,40 @@
  */
 #pragma once
 
-#include "EntityRegistry.hpp"
 #include "Components.hpp"
 #include "Core/Scene/Scene.hpp"
+#include "EntityRegistry.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	/**
 	 * @brief Represents an entity in the ECS (Entity Component System).
 	 */
-    class Entity final
-    {
-    public:
+	class Entity final
+	{
+	public:
 		/**
 		 * @brief Default constructor.
 		 */
-        Entity() = default;
-		
+		Entity() = default;
+
 		/**
 		 * @brief Constructs an Entity object with the given entity handle.
 		 * @param entity The entity handle.
 		 */
-        Entity(entt::entity entity, Scene* scene);
-	
+		Entity(entt::entity entity, Scene* scene);
+
 		/**
 		 * @brief Checks if the entity has a component of type T.
 		 * @tparam T The component type.
 		 * @return True if the entity has the component, false otherwise.
 		 */
-        template <typename T>
-        bool HasComponent() const
+		template <typename T>
+		bool HasComponent() const
 		{
-            return m_Scene->GetRegistry().GetRegistryHandle().all_of<T>(m_Handle);
-        }
+			return m_Scene->GetRegistry().GetRegistryHandle().all_of<T>(m_Handle);
+		}
 
 		/**
 		 * @brief Adds a component of type T to the entity.
@@ -49,12 +50,12 @@ namespace SW {
 		 * @param args The arguments for constructing the component.
 		 * @return The reference to the added component.
 		 */
-        template <typename T, typename... Args>
-        T& AddComponent(Args&&... args)
+		template <typename T, typename... Args>
+		T& AddComponent(Args&&... args)
 		{
-            ASSERT(!HasComponent<T>(), "Entity already has {} component!", typeid(T).name());
+			ASSERT(!HasComponent<T>(), "Entity already has {} component!", typeid(T).name());
 
-            return m_Scene->GetRegistry().GetRegistryHandle().emplace<T>(m_Handle, std::forward<Args>(args)...);
+			return m_Scene->GetRegistry().GetRegistryHandle().emplace<T>(m_Handle, std::forward<Args>(args)...);
 		}
 
 		/**
@@ -80,7 +81,7 @@ namespace SW {
 			ASSERT(HasComponent<T>(), "Entity does not have {} component!", typeid(T).name());
 
 			m_Scene->GetRegistry().GetRegistryHandle().remove<T>(m_Handle);
-        }
+		}
 
 		/**
 		 * @brief Gets scene to which the entity belongs.
@@ -89,14 +90,14 @@ namespace SW {
 
 		/**
 		 * @brief Gets the entity ID.
-		 * 
+		 *
 		 * @return u64 The entity ID.
 		 */
 		u64 GetID() { return GetComponent<IDComponent>().ID; }
 
 		/**
 		 * @brief Gets the entity tag.
-		 * 
+		 *
 		 * @return const std::string& The entity tag.
 		 */
 		const std::string& GetTag() { return GetComponent<TagComponent>().Tag; }
@@ -112,11 +113,11 @@ namespace SW {
 
 		/**
 		 * @brief Retrieves all components of the specified types associated with the entity.
-		 * 
+		 *
 		 * @tparam Components The types of components to retrieve.
 		 * @return A tuple containing references to the components.
 		 */
-		template<typename... Components>
+		template <typename... Components>
 		[[nodiscard]] inline auto GetAllComponents() const
 		{
 			return m_Scene->GetRegistry().GetRegistryHandle().get<Components...>(m_Handle);
@@ -126,24 +127,24 @@ namespace SW {
 		 * @brief Conversion operator to check if the entity is valid.
 		 * @return True if the entity is valid, false otherwise.
 		 */
-        operator bool() const { return m_Handle != entt::null; }
-		
+		operator bool() const { return m_Handle != entt::null; }
+
 		/**
 		 * @brief Conversion operator to get the entity handle.
 		 * @return The entity handle.
 		 */
-        operator entt::entity() const { return m_Handle; }
+		operator entt::entity() const { return m_Handle; }
 
 		/**
 		 * @brief Conversion operator to get the entity handle as an unsigned integer.
 		 *        Basically it's internal id.
 		 * @return The entity handle as an unsigned integer.
 		 */
-        operator u32() const { return (u32)m_Handle; }
+		operator u32() const { return (u32)m_Handle; }
 
 		/**
 		 * @brief Overloaded equality operator for comparing two Entity objects.
-		 * 
+		 *
 		 * @param other The Entity object to compare with.
 		 * @return true if the two Entity objects are equal, false otherwise.
 		 */
@@ -154,10 +155,7 @@ namespace SW {
 		 * @param entity The entity to check.
 		 * @return True if the current entity is the parent of the given entity, false otherwise.
 		 */
-		bool IsParentOf(Entity entity)
-		{
-			return GetID() == entity.GetRelations().ParentID;
-		}
+		bool IsParentOf(Entity entity) { return GetID() == entity.GetRelations().ParentID; }
 
 		/**
 		 * Checks if the entity is a child of the specified entity.
@@ -165,39 +163,39 @@ namespace SW {
 		 * @param entity The entity to check if it is the parent.
 		 * @return True if the entity is a child of the specified entity, false otherwise.
 		 */
-		bool IsChildOf(Entity entity)
-		{
-			return GetRelations().ParentID == entity.GetID();
-		}
+		bool IsChildOf(Entity entity) { return GetRelations().ParentID == entity.GetID(); }
 
 		/**
 		 * @brief Retrieves the parent entity of the current entity.
 		 * @warning If the entity has no parent, an empty entity is returned.
-		 * 
+		 *
 		 * @return The parent entity, or an empty entity if there is no parent.
 		 */
 		Entity GetParent()
 		{
-			RelationshipComponent& rc  = GetComponent<RelationshipComponent>();
+			RelationshipComponent& rc = GetComponent<RelationshipComponent>();
 
 			return rc.ParentID != 0 ? m_Scene->GetEntityByID(rc.ParentID) : Entity{};
 		}
 
 		/**
 		 * @brief Retrieves the root parent entity of the current entity.
-		 * 
+		 *
 		 * This function retrieves the root parent entity of the current entity by traversing the parent-child hierarchy
 		 * until the root parent is found. The root parent is the entity that has no parent.
-		 * 
+		 *
 		 * @return The root parent entity.
 		 */
 		Entity GetRootParent()
 		{
 			RelationshipComponent& rc = GetComponent<RelationshipComponent>();
 
-			if (rc.ParentID) {
+			if (rc.ParentID)
+			{
 				return m_Scene->GetEntityByID(rc.ParentID).GetRootParent();
-			} else {
+			}
+			else
+			{
 				return *this;
 			}
 		}
@@ -212,32 +210,35 @@ namespace SW {
 		{
 			RelationshipComponent& rc = GetComponent<RelationshipComponent>();
 
-			if (rc.ParentID == 0) {
+			if (rc.ParentID == 0)
+			{
 				rc.ParentID = parent.GetID();
 				parent.GetRelations().ChildrenIDs.emplace_back(GetID());
 				return;
 			}
 
-			Entity oldParent = GetParent();
+			Entity oldParent                          = GetParent();
 			RelationshipComponent& oldParentRelations = oldParent.GetRelations();
 
-			for (auto it = oldParentRelations.ChildrenIDs.begin(); it != oldParentRelations.ChildrenIDs.end(); it++) {
-				if (*it == GetID()) {
+			for (auto it = oldParentRelations.ChildrenIDs.begin(); it != oldParentRelations.ChildrenIDs.end(); it++)
+			{
+				if (*it == GetID())
+				{
 					oldParentRelations.ChildrenIDs.erase(it);
 					break;
 				}
 			}
-			
+
 			rc.ParentID = parent.GetID();
 			parent.GetRelations().ChildrenIDs.emplace_back(GetID());
 		}
 
 		/**
 		 * @brief Removes the parent relationship of the entity.
-		 * 
+		 *
 		 * This function removes the parent relationship of the entity by updating the RelationshipComponent
 		 * of both the entity and its parent. It removes the entity's ID from the parent's list of children IDs.
-		 * 
+		 *
 		 * @note If the entity does not have a parent, this function does nothing.
 		 */
 		void RemoveParent()
@@ -246,14 +247,17 @@ namespace SW {
 
 			Entity oldParent = GetParent();
 
-			if (!oldParent) {
+			if (!oldParent)
+			{
 				return;
 			}
 
 			RelationshipComponent& oldParentRelations = oldParent.GetRelations();
 
-			for (auto it = oldParentRelations.ChildrenIDs.begin(); it != oldParentRelations.ChildrenIDs.end(); it++) {
-				if (*it == GetID()) {
+			for (auto it = oldParentRelations.ChildrenIDs.begin(); it != oldParentRelations.ChildrenIDs.end(); it++)
+			{
+				if (*it == GetID())
+				{
 					oldParentRelations.ChildrenIDs.erase(it);
 					break;
 				}
@@ -265,9 +269,9 @@ namespace SW {
 		/**
 		 * @brief Returns the world space transformation matrix of the entity.
 		 *
-		 * This function calculates the world space transformation matrix of the entity by traversing the parent-child hierarchy
-		 * and multiplying the local transformation matrix of each parent entity. The resulting matrix represents the entity's
-		 * transformation in world space.
+		 * This function calculates the world space transformation matrix of the entity by traversing the parent-child
+		 * hierarchy and multiplying the local transformation matrix of each parent entity. The resulting matrix
+		 * represents the entity's transformation in world space.
 		 *
 		 * @return The world space transformation matrix of the entity.
 		 */
@@ -278,16 +282,16 @@ namespace SW {
 			if (Entity parent = GetParent())
 				transform = parent.GetWorldSpaceTransformMatrix();
 
-			//return std::move(transform * GetTransform().GetTransform()); copy elision? TODO: BENCHMARK
+			// return std::move(transform * GetTransform().GetTransform()); copy elision? TODO: BENCHMARK
 			return transform * GetTransform().GetTransform();
 		}
 
 		/**
 		 * @brief Returns the world space transformation of the entity.
 		 *
-		 * This function calculates the world space transformation of the entity by traversing the parent-child hierarchy
-		 * and multiplying the local transformation matrix of each parent entity. The resulting transformation represents the entity's
-		 * transformation in world space.
+		 * This function calculates the world space transformation of the entity by traversing the parent-child
+		 * hierarchy and multiplying the local transformation matrix of each parent entity. The resulting transformation
+		 * represents the entity's transformation in world space.
 		 *
 		 * @return The world space transformation of the entity.
 		 */
@@ -304,7 +308,7 @@ namespace SW {
 		/**
 		 * @brief Converts the entity's transform to local space relative to its parent.
 		 * 		  If the entity has no parent, the function does nothing.
-		 * 
+		 *
 		 * @return void
 		 */
 		void ConvertToLocalSpace()
@@ -323,9 +327,9 @@ namespace SW {
 			transform.SetTransform(localTransform);
 		}
 
-    private:
-        entt::entity m_Handle{ entt::null };	/** @brief The internal entity handle. */
-		Scene* m_Scene = nullptr;				/** @brief The scene to which the entity belongs. */
-    };
+	private:
+		entt::entity m_Handle{entt::null}; /** @brief The internal entity handle. */
+		Scene* m_Scene = nullptr;          /** @brief The scene to which the entity belongs. */
+	};
 
-}
+} // namespace SW

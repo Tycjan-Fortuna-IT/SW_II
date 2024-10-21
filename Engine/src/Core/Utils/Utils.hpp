@@ -1,14 +1,16 @@
 #pragma once
 
-namespace SW {
+namespace SW
+{
 
-    class Utils final
-    {
-    public:
-        static std::string ReadFile(const std::string& filepath);
-    };
+	class Utils final
+	{
+	public:
+		static std::string ReadFile(const std::string& filepath);
+	};
 
-	namespace String {
+	namespace String
+	{
 
 		///**
 		// * @brief Converts a pointer to a char8_t string to a pointer to a char string.
@@ -26,14 +28,14 @@ namespace SW {
 
 		/**
 		 * @brief Returns a string representation of the given bytes.
-		 * 
+		 *
 		 * @param bytes The bytes to convert to a string.
 		 * @return std::string The string representation of the given bytes.
 		 */
 		std::string BytesToString(u32 bytes);
 
 		/**
-		 * @brief Returns a string representation of the sum of allocated memory 
+		 * @brief Returns a string representation of the sum of allocated memory
 		 *		  in the program.
 		 *
 		 * @return std::string The string representation of the sum of allocated memory.
@@ -51,12 +53,12 @@ namespace SW {
 		/**
 		 * @brief Removes the extension from the given filename.
 		 * 		  e.g. "file.txt" -> "file"
-		 * 
+		 *
 		 * @param filename The filename to remove the extension from.
 		 * @return std::string The filename without the extension.
 		 */
 		std::string RemoveExtension(const std::string& filename);
 
-	}
+	} // namespace String
 
-}
+} // namespace SW

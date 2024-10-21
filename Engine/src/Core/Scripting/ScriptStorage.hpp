@@ -14,7 +14,8 @@
 
 #include "Core/Buffer.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	enum class DataType
 	{
@@ -37,19 +38,32 @@ namespace SW {
 
 	inline u64 DataTypeSize(DataType type)
 	{
-		switch (type) {
-			case DataType::Byte: return sizeof(u8);
-			case DataType::Short: return sizeof(i16);
-			case DataType::UShort: return sizeof(u16);
-			case DataType::Int: return sizeof(i32);
-			case DataType::UInt: return sizeof(u32);
-			case DataType::Long: return sizeof(i64);
-			case DataType::ULong: return sizeof(u64);
-			case DataType::Float: return sizeof(f32);
-			case DataType::Double: return sizeof(f64);
-			case DataType::Bool: return sizeof(Coral::Bool32);
-			case DataType::Entity: return sizeof(u64);
-			case DataType::Prefab: return sizeof(u64);
+		switch (type)
+		{
+		case DataType::Byte:
+			return sizeof(u8);
+		case DataType::Short:
+			return sizeof(i16);
+		case DataType::UShort:
+			return sizeof(u16);
+		case DataType::Int:
+			return sizeof(i32);
+		case DataType::UInt:
+			return sizeof(u32);
+		case DataType::Long:
+			return sizeof(i64);
+		case DataType::ULong:
+			return sizeof(u64);
+		case DataType::Float:
+			return sizeof(f32);
+		case DataType::Double:
+			return sizeof(f64);
+		case DataType::Bool:
+			return sizeof(Coral::Bool32);
+		case DataType::Entity:
+			return sizeof(u64);
+		case DataType::Prefab:
+			return sizeof(u64);
 		}
 
 		return 0;
@@ -57,41 +71,66 @@ namespace SW {
 
 	inline std::string DataTypeToString(DataType type)
 	{
-		switch (type) {
-			case DataType::Byte:	return "Byte";
-			case DataType::Short:	return "Short";
-			case DataType::UShort:	return "UShort";
-			case DataType::Int:		return "Int";
-			case DataType::UInt:	return "UInt";
-			case DataType::Long:	return "Long";
-			case DataType::ULong:	return "ULong";
-			case DataType::Float:	return "Float";
-			case DataType::Double:	return "Double";
-			case DataType::Bool:	return "Bool";
-			case DataType::Entity:	return "Entity";
-			case DataType::Prefab:	return "Prefab";
+		switch (type)
+		{
+		case DataType::Byte:
+			return "Byte";
+		case DataType::Short:
+			return "Short";
+		case DataType::UShort:
+			return "UShort";
+		case DataType::Int:
+			return "Int";
+		case DataType::UInt:
+			return "UInt";
+		case DataType::Long:
+			return "Long";
+		case DataType::ULong:
+			return "ULong";
+		case DataType::Float:
+			return "Float";
+		case DataType::Double:
+			return "Double";
+		case DataType::Bool:
+			return "Bool";
+		case DataType::Entity:
+			return "Entity";
+		case DataType::Prefab:
+			return "Prefab";
 		}
 
 		return "Unknown";
 	}
 
-	 inline DataType DataTypeFromString(const std::string& type)
-	 {
-		 if (type == "Byte") 	return DataType::Byte;
-		 if (type == "Short") 	return DataType::Short;
-		 if (type == "UShort") 	return DataType::UShort;
-		 if (type == "Int") 	return DataType::Int;
-		 if (type == "UInt") 	return DataType::UInt;
-		 if (type == "Long") 	return DataType::Long;
-		 if (type == "ULong") 	return DataType::ULong;
-		 if (type == "Float") 	return DataType::Float;
-		 if (type == "Double") 	return DataType::Double;
-		 if (type == "Bool") 	return DataType::Bool;
-		 if (type == "Entity") 	return DataType::Entity;
-		 if (type == "Prefab") 	return DataType::Prefab;
+	inline DataType DataTypeFromString(const std::string& type)
+	{
+		if (type == "Byte")
+			return DataType::Byte;
+		if (type == "Short")
+			return DataType::Short;
+		if (type == "UShort")
+			return DataType::UShort;
+		if (type == "Int")
+			return DataType::Int;
+		if (type == "UInt")
+			return DataType::UInt;
+		if (type == "Long")
+			return DataType::Long;
+		if (type == "ULong")
+			return DataType::ULong;
+		if (type == "Float")
+			return DataType::Float;
+		if (type == "Double")
+			return DataType::Double;
+		if (type == "Bool")
+			return DataType::Bool;
+		if (type == "Entity")
+			return DataType::Entity;
+		if (type == "Prefab")
+			return DataType::Prefab;
 
-		 return DataType::Byte;
-	 }
+		return DataType::Byte;
+	}
 
 	struct FieldMetadata;
 
@@ -110,27 +149,28 @@ namespace SW {
 
 			/*if (m_Instance)
 			{
-				auto arr = m_Instance->GetFieldValue<Coral::Array<T>>(m_Name);
-				u32 length = arr.Length();
-				Coral::Array<T>::Free(arr);
-				return length;
+			    auto arr = m_Instance->GetFieldValue<Coral::Array<T>>(m_Name);
+			    u32 length = arr.Length();
+			    Coral::Array<T>::Free(arr);
+			    return length;
 			}*/
 
 			return m_ValueBuffer.Size / DataTypeSize(m_DataType);
 		}
 
-		template<typename T>
+		template <typename T>
 		T GetValue() const
 		{
 			return m_Instance ? m_Instance->GetFieldValue<T>(m_Name) : m_ValueBuffer.Read<T>();
 		}
 
-		template<typename T>
+		template <typename T>
 		T GetValue(u32 index) const
 		{
-			if (m_Instance) {
+			if (m_Instance)
+			{
 				auto arr = m_Instance->GetFieldValue<Coral::Array<T>>(m_Name);
-				T value = arr[index];
+				T value  = arr[index];
 				Coral::Array<T>::Free(arr);
 				return value;
 			}
@@ -138,27 +178,33 @@ namespace SW {
 			return m_ValueBuffer.Read<T>(index * sizeof(T));
 		}
 
-		template<typename T>
+		template <typename T>
 		void SetValue(const T& value)
 		{
-			if (m_Instance) {
+			if (m_Instance)
+			{
 				m_Instance->SetFieldValue(m_Name, value);
-			} else {
+			}
+			else
+			{
 				m_ValueBuffer.Write(&value, sizeof(T));
 			}
 		}
 
-		template<typename T>
+		template <typename T>
 		void SetValue(const T& value, u64 index)
 		{
 			ASSERT(m_Type->IsSZArray(), "Not an array!");
 
-			if (m_Instance) {
-				auto arr = m_Instance->GetFieldValue<Coral::Array<T>>(m_Name);
+			if (m_Instance)
+			{
+				auto arr   = m_Instance->GetFieldValue<Coral::Array<T>>(m_Name);
 				arr[index] = value;
 				m_Instance->SetFieldValue(m_Name, arr);
 				Coral::Array<T>::Free(arr);
-			} else {
+			}
+			else
+			{
 				u64 offset = index * sizeof(T);
 				m_ValueBuffer.Write(&value, sizeof(T), offset);
 			}
@@ -168,15 +214,18 @@ namespace SW {
 		{
 			u64 size = newLength * DataTypeSize(m_DataType);
 
-			if (m_Instance) {
+			if (m_Instance)
+			{
 				/*auto arr = m_Instance->GetFieldValue<Coral::Array<T>>(m_Name);
 				auto newArr = Coral::Array<T>::New(arr.Length() + 1);
 				newArr.Assign(arr);
 				Coral::Array<T>::Free(arr);
 				m_Instance->SetFieldValue(m_Name, newArr);
 				Coral::Array<T>::Free(newArr);*/
-			} else {
-				u64 copySize = std::min<u64>(size, m_ValueBuffer.Size);
+			}
+			else
+			{
+				u64 copySize     = std::min<u64>(size, m_ValueBuffer.Size);
 				Buffer oldBuffer = Buffer::Copy(m_ValueBuffer.Data, (u32)copySize);
 				m_ValueBuffer.Allocate((u32)size);
 				m_ValueBuffer.ZeroInitialize();
@@ -193,16 +242,18 @@ namespace SW {
 			m_ValueBuffer.Release();
 			m_ValueBuffer.Allocate((u32)(newLength * DataTypeSize(m_DataType)));
 
-			if (index != 0) {
+			if (index != 0)
+			{
 				u64 indexOffset = index * DataTypeSize(m_DataType);
 				memcpy(m_ValueBuffer.Data, oldBuffer.Data, indexOffset);
-				memcpy(
-					reinterpret_cast<std::byte*>(m_ValueBuffer.Data) + indexOffset,
-					reinterpret_cast<std::byte*>(oldBuffer.Data) + indexOffset + DataTypeSize(m_DataType),
-					(newLength - index) * DataTypeSize(m_DataType)
-				);
-			} else {
-				memcpy(m_ValueBuffer.Data, reinterpret_cast<std::byte*>(oldBuffer.Data) + DataTypeSize(m_DataType), newLength * DataTypeSize(m_DataType));
+				memcpy(reinterpret_cast<std::byte*>(m_ValueBuffer.Data) + indexOffset,
+				       reinterpret_cast<std::byte*>(oldBuffer.Data) + indexOffset + DataTypeSize(m_DataType),
+				       (newLength - index) * DataTypeSize(m_DataType));
+			}
+			else
+			{
+				memcpy(m_ValueBuffer.Data, reinterpret_cast<std::byte*>(oldBuffer.Data) + DataTypeSize(m_DataType),
+				       newLength * DataTypeSize(m_DataType));
 			}
 
 			oldBuffer.Release();
@@ -220,13 +271,15 @@ namespace SW {
 		friend class ScriptingCore;
 	};
 
-	struct EntityScriptStorage {
+	struct EntityScriptStorage
+	{
 		u64 ScriptID;
 		std::unordered_map<u32, FieldStorage> Fields;
 		Coral::ManagedObject* Instance = nullptr;
 	};
 
-	struct ScriptStorage {
+	struct ScriptStorage
+	{
 		std::unordered_map<u64, EntityScriptStorage> EntityStorage;
 
 		void InitializeEntityStorage(u64 scriptID, u64 entityID);
@@ -242,4 +295,4 @@ namespace SW {
 		void InitializeFieldStorage(EntityScriptStorage& storage, u32 fieldID, const FieldMetadata& fieldMetadata);
 	};
 
-}
+} // namespace SW

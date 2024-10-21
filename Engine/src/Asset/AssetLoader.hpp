@@ -10,7 +10,8 @@
 
 #include "AssetRegistry.hpp"
 
-namespace SW {
+namespace SW
+{
 
 	class AssetSerializer;
 
@@ -31,14 +32,14 @@ namespace SW {
 
 		/**
 		 * @brief Serialize the asset.
-		 * 
+		 *
 		 * @param metadata The metadata to serialize.
 		 */
 		static void Serialize(const AssetMetaData& metadata);
 
 		/**
 		 * @brief Try to load the asset.
-		 * 
+		 *
 		 * @param metadata The metadata of the asset.
 		 * @return Asset* The loaded asset if successful, placeholder otherwise.
 		 */
@@ -48,4 +49,4 @@ namespace SW {
 		static std::unordered_map<AssetType, Scope<AssetSerializer>> s_Serializers;
 	};
 
-}
+} // namespace SW

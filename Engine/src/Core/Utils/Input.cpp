@@ -1,9 +1,10 @@
 #include "Input.hpp"
 
-#include <GLFW/glfw3.h>
 #include "Core/Application.hpp"
+#include <GLFW/glfw3.h>
 
-namespace SW {
+namespace SW
+{
 
 	std::map<SW::KeyCode, SW::ClickableState> Input::s_KeyStates;
 
@@ -21,14 +22,18 @@ namespace SW {
 
 	void Input::UpdateKeysStateIfNecessary()
 	{
-		for (auto& [code, state] : s_KeyStates) {
-			if (state == ClickableState::Pressed) {
+		for (auto& [code, state] : s_KeyStates)
+		{
+			if (state == ClickableState::Pressed)
+			{
 				state = ClickableState::Repeated;
 			}
 		}
 
-		for (auto& [code, state] : s_MouseStates) {
-			if (state == ClickableState::Pressed) {
+		for (auto& [code, state] : s_MouseStates)
+		{
+			if (state == ClickableState::Pressed)
+			{
 				state = ClickableState::Repeated;
 			}
 		}
@@ -36,14 +41,18 @@ namespace SW {
 
 	void Input::ClearReleasedKeys()
 	{
-		for (auto& [code, state] : s_KeyStates) {
-			if (state == ClickableState::Released) {
+		for (auto& [code, state] : s_KeyStates)
+		{
+			if (state == ClickableState::Released)
+			{
 				state = ClickableState::None;
 			}
 		}
 
-		for (auto& [code, state] : s_MouseStates) {
-			if (state == ClickableState::Released) {
+		for (auto& [code, state] : s_MouseStates)
+		{
+			if (state == ClickableState::Released)
+			{
 				state = ClickableState::None;
 			}
 		}
@@ -59,7 +68,7 @@ namespace SW {
 	bool Input::IsKeyHeld(KeyCode key)
 	{
 		auto val = s_KeyStates.find(key);
-		
+
 		return val == s_KeyStates.end() ? false : val->second == ClickableState::Repeated;
 	}
 
@@ -67,7 +76,9 @@ namespace SW {
 	{
 		auto val = s_KeyStates.find(key);
 
-		return val == s_KeyStates.end() ? false : (val->second == ClickableState::Pressed || val->second == ClickableState::Repeated);
+		return val == s_KeyStates.end()
+		           ? false
+		           : (val->second == ClickableState::Pressed || val->second == ClickableState::Repeated);
 	}
 
 	bool Input::IsKeyReleased(KeyCode key)
@@ -95,7 +106,9 @@ namespace SW {
 	{
 		auto val = s_MouseStates.find(button);
 
-		return val == s_MouseStates.end() ? false : (val->second == ClickableState::Pressed || val->second == ClickableState::Repeated);
+		return val == s_MouseStates.end()
+		           ? false
+		           : (val->second == ClickableState::Pressed || val->second == ClickableState::Repeated);
 	}
 
 	bool Input::IsMouseButtonReleased(MouseCode button)
@@ -110,17 +123,14 @@ namespace SW {
 		f64 x, y;
 		glfwGetCursorPos(Application::Get()->GetWindow()->GetHandle(), &x, &y);
 
-		return {
-			static_cast<f32>(x),
-			static_cast<f32>(y)
-		};
+		return {static_cast<f32>(x), static_cast<f32>(y)};
 	}
 
 	void Input::SetMousePosition(const glm::vec2& position)
 	{
 		GLFWwindow* window = Application::Get()->GetWindow()->GetHandle();
-		
+
 		glfwSetCursorPos(window, static_cast<double>(position.x), static_cast<double>(position.y));
 	}
 
-}
+} // namespace SW
