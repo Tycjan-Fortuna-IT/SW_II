@@ -86,63 +86,63 @@ namespace SW
 		m_Messages.push_back(message);
 	}
 
-	ImVec4 ConsolePanel::GetLevelColor(LogLevel level) const
+	ImVec4 ConsolePanel::GetLevelColor(Logger::LogLevel level) const
 	{
 		switch (level)
 		{
-		case LogLevel::LOG_LEVEL_TRACE:
+		case Logger::LogLevel::LOG_LEVEL_TRACE:
 			return {0.50f, 0.50f, 0.50f, 1.00f}; // Grey
-		case LogLevel::LOG_LEVEL_INFO:
+		case Logger::LogLevel::LOG_LEVEL_INFO:
 			return {0.10f, 0.60f, 0.10f, 1.00f}; // Green
-		case LogLevel::LOG_LEVEL_DEBUG:
+		case Logger::LogLevel::LOG_LEVEL_DEBUG:
 			return {0.00f, 0.50f, 0.50f, 1.00f}; // Cyan
-		case LogLevel::LOG_LEVEL_WARN:
+		case Logger::LogLevel::LOG_LEVEL_WARN:
 			return {0.60f, 0.60f, 0.10f, 1.00f}; // Yellow
-		case LogLevel::LOG_LEVEL_ERROR:
+		case Logger::LogLevel::LOG_LEVEL_ERROR:
 			return {0.90f, 0.25f, 0.25f, 1.00f}; // Red
-		case LogLevel::LOG_LEVEL_FATAL:
+		case Logger::LogLevel::LOG_LEVEL_FATAL:
 			return {0.60f, 0.20f, 0.80f, 1.00f}; // Purple
 		}
 
 		return {1.00f, 1.00f, 1.00f, 1.00f};
 	}
 
-	const char* ConsolePanel::GetLevelName(LogLevel level) const
+	const char* ConsolePanel::GetLevelName(Logger::LogLevel level) const
 	{
 		switch (level)
 		{
-		case LogLevel::LOG_LEVEL_TRACE:
+		case Logger::LogLevel::LOG_LEVEL_TRACE:
 			return "Trace";
-		case LogLevel::LOG_LEVEL_INFO:
+		case Logger::LogLevel::LOG_LEVEL_INFO:
 			return "Info";
-		case LogLevel::LOG_LEVEL_DEBUG:
+		case Logger::LogLevel::LOG_LEVEL_DEBUG:
 			return "Debug";
-		case LogLevel::LOG_LEVEL_WARN:
+		case Logger::LogLevel::LOG_LEVEL_WARN:
 			return "Warning";
-		case LogLevel::LOG_LEVEL_ERROR:
+		case Logger::LogLevel::LOG_LEVEL_ERROR:
 			return "Error";
-		case LogLevel::LOG_LEVEL_FATAL:
+		case Logger::LogLevel::LOG_LEVEL_FATAL:
 			return "Critical";
 		}
 
 		return "Unknown name";
 	}
 
-	const char* ConsolePanel::GetLevelIcon(LogLevel level) const
+	const char* ConsolePanel::GetLevelIcon(Logger::LogLevel level) const
 	{
 		switch (level)
 		{
-		case LogLevel::LOG_LEVEL_TRACE:
+		case Logger::LogLevel::LOG_LEVEL_TRACE:
 			return SW_ICON_MESSAGE_TEXT;
-		case LogLevel::LOG_LEVEL_INFO:
+		case Logger::LogLevel::LOG_LEVEL_INFO:
 			return SW_ICON_INFORMATION;
-		case LogLevel::LOG_LEVEL_DEBUG:
+		case Logger::LogLevel::LOG_LEVEL_DEBUG:
 			return SW_ICON_BUG;
-		case LogLevel::LOG_LEVEL_WARN:
+		case Logger::LogLevel::LOG_LEVEL_WARN:
 			return SW_ICON_ALERT;
-		case LogLevel::LOG_LEVEL_ERROR:
+		case Logger::LogLevel::LOG_LEVEL_ERROR:
 			return SW_ICON_CLOSE_OCTAGON;
-		case LogLevel::LOG_LEVEL_FATAL:
+		case Logger::LogLevel::LOG_LEVEL_FATAL:
 			return SW_ICON_ALERT_OCTAGON;
 		}
 

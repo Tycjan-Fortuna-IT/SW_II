@@ -49,7 +49,7 @@ namespace SW::GUI
 	 */
 	inline static ImTextureID GetTextureID(const Texture2D& texture)
 	{
-		return reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(texture.GetTexHandle()));
+		return (ImTextureID)texture.GetTexHandle();
 	}
 
 	/**
@@ -61,7 +61,7 @@ namespace SW::GUI
 	 */
 	inline static ImTextureID GetTextureID(const Texture2D* texture)
 	{
-		return reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(texture->GetTexHandle()));
+		return (ImTextureID)texture->GetTexHandle();
 	}
 
 	/**
@@ -73,7 +73,7 @@ namespace SW::GUI
 	 */
 	inline static ImTextureID GetTextureID(u32 rendererID)
 	{
-		return reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(rendererID));
+		return (ImTextureID)rendererID;
 	}
 
 	/**

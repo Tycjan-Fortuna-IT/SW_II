@@ -228,6 +228,8 @@ namespace SW
 			std::string FontPath;     /** @brief Path to the .ttf file with normal font */
 			std::string BoldFontPath; /** @brief Path to the .ttf file with bold font */
 
+			FontSpecification() = default;
+
 			FontSpecification(const std::string& fontPath, const std::string& boldFontPath)
 			    : FontPath(fontPath), BoldFontPath(boldFontPath)
 			{
@@ -242,6 +244,9 @@ namespace SW
 			f32 SmallSize   = 12.f; /** @brief Size of the small font */
 			f32 DefaultSize = 16.f; /** @brief Size of the default font */
 			f32 BigSize     = 20.f; /** @brief Size of the big font */
+
+			std::string FontPath;     /** @brief Path to the .ttf file with normal font*/
+			std::string BoldFontPath; /** @brief Path to the .ttf file with bold font */
 
 			ImFont* SmallFont   = nullptr;
 			ImFont* DefaultFont = nullptr;

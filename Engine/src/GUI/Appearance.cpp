@@ -24,7 +24,7 @@ namespace SW::GUI
 		s.WindowBorderSize         = style.WindowBorderSize;
 		s.WindowMinSize            = style.WindowMinSize;
 		s.WindowTitleAlign         = style.WindowTitleAlign;
-		s.WindowMenuButtonPosition = style.WindowMenuButtonPosition;
+		s.WindowMenuButtonPosition = (ImGuiDir)style.WindowMenuButtonPosition;
 
 		s.ChildRounding   = style.ChildRounding;
 		s.ChildBorderSize = style.ChildBorderSize;
@@ -55,7 +55,7 @@ namespace SW::GUI
 
 		s.TabMinWidthForCloseButton = style.TabMinWidthForCloseButton;
 
-		s.ColorButtonPosition = style.ColorButtonPosition;
+		s.ColorButtonPosition = (ImGuiDir)style.ColorButtonPosition;
 		s.ButtonTextAlign     = style.ButtonTextAlign;
 		s.SelectableTextAlign = style.SelectableTextAlign;
 	}
@@ -150,7 +150,7 @@ namespace SW::GUI
 		c[ImGuiCol_PlotHistogramHovered] = s_Colors.PlotHistogramHovered;
 
 		ImGuizmo::Style* imguizmoStyle = &ImGuizmo::GetStyle();
-		ImVec4* gc                     = imguizmoStyle->Colors;
+		// ImVec4* gc                     = imguizmoStyle->Colors;
 
 		// imguizmoStyle->TranslationLineThickness = 4.f;		// Thickness of lines for translation gizmo
 		// imguizmoStyle->TranslationLineArrowSize = 4.f;		// Size of arrow at the end of lines for translation
@@ -167,19 +167,28 @@ namespace SW::GUI
 	{
 		const ImGuiIO& io = ImGui::GetIO();
 
-		s_Fonts.SmallSize   = spec.SmallSize;
-		s_Fonts.DefaultSize = spec.DefaultSize;
-		s_Fonts.BigSize     = spec.BigSize;
+		s_Fonts.SmallSize    = spec.SmallSize;
+		s_Fonts.DefaultSize  = spec.DefaultSize;
+		s_Fonts.BigSize      = spec.BigSize;
+		s_Fonts.FontPath     = spec.FontPath;
+		s_Fonts.BoldFontPath = spec.BoldFontPath;
 
-		s_Fonts.DefaultFont = io.Fonts->AddFontFromFileTTF(spec.FontPath.c_str(), spec.DefaultSize);
-		AppendIconFont(spec.DefaultSize);
+		io.Fonts->Clear();
 
-		s_Fonts.SmallFont = io.Fonts->AddFontFromFileTTF(spec.FontPath.c_str(), spec.SmallSize);
-		s_Fonts.BigFont   = io.Fonts->AddFontFromFileTTF(spec.FontPath.c_str(), spec.BigSize);
+		s_Fonts.DefaultFont = io.Fonts->AddFontFromFileTTF(s_Fonts.FontPath.c_str(), s_Fonts.DefaultSize);
 
-		s_Fonts.DefaultBoldFont = io.Fonts->AddFontFromFileTTF(spec.BoldFontPath.c_str(), spec.DefaultSize);
-		s_Fonts.SmallBoldFont   = io.Fonts->AddFontFromFileTTF(spec.BoldFontPath.c_str(), spec.SmallSize);
-		s_Fonts.BigBoldFont     = io.Fonts->AddFontFromFileTTF(spec.BoldFontPath.c_str(), spec.BigSize);
+		AppendIconFont(s_Fonts.DefaultSize);
+
+		s_Fonts.SmallFont = io.Fonts->AddFontFromFileTTF(s_Fonts.FontPath.c_str(), s_Fonts.SmallSize);
+		s_Fonts.BigFont   = io.Fonts->AddFontFromFileTTF(s_Fonts.FontPath.c_str(), s_Fonts.BigSize);
+
+		s_Fonts.DefaultBoldFont = io.Fonts->AddFontFromFileTTF(s_Fonts.BoldFontPath.c_str(), s_Fonts.DefaultSize);
+		s_Fonts.SmallBoldFont   = io.Fonts->AddFontFromFileTTF(s_Fonts.BoldFontPath.c_str(), s_Fonts.SmallSize);
+		s_Fonts.BigBoldFont     = io.Fonts->AddFontFromFileTTF(s_Fonts.BoldFontPath.c_str(), s_Fonts.BigSize);
+
+		io.Fonts->Build();
+
+		ImGui::GetIO().FontDefault = s_Fonts.DefaultFont;
 	}
 
 	void Appearance::AppendIconFont(f32 size)
@@ -200,4 +209,5 @@ namespace SW::GUI
 		io.Fonts->AddFontFromMemoryCompressedTTF(MaterialDesign_compressed_data, MaterialDesign_compressed_size, size,
 		                                         &iconsConfig, icons_ranges);
 	}
+
 } // namespace SW::GUI

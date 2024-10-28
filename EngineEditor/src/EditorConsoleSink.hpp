@@ -20,21 +20,21 @@ namespace SW
 			spdlog::memory_buf_t formatted;
 			spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
 
-			LogLevel logLevel = [&msg]() -> LogLevel {
+			Logger::LogLevel logLevel = [&msg]() -> Logger::LogLevel {
 				if (msg.level == spdlog::level::trace)
-					return LogLevel::LOG_LEVEL_TRACE;
+					return Logger::LogLevel::LOG_LEVEL_TRACE;
 				else if (msg.level == spdlog::level::debug)
-					return LogLevel::LOG_LEVEL_DEBUG;
+					return Logger::LogLevel::LOG_LEVEL_DEBUG;
 				else if (msg.level == spdlog::level::info)
-					return LogLevel::LOG_LEVEL_INFO;
+					return Logger::LogLevel::LOG_LEVEL_INFO;
 				else if (msg.level == spdlog::level::warn)
-					return LogLevel::LOG_LEVEL_WARN;
+					return Logger::LogLevel::LOG_LEVEL_WARN;
 				else if (msg.level == spdlog::level::err)
-					return LogLevel::LOG_LEVEL_ERROR;
+					return Logger::LogLevel::LOG_LEVEL_ERROR;
 				else if (msg.level == spdlog::level::critical)
-					return LogLevel::LOG_LEVEL_FATAL;
+					return Logger::LogLevel::LOG_LEVEL_FATAL;
 
-				return LogLevel::LOG_LEVEL_TRACE;
+				return Logger::LogLevel::LOG_LEVEL_TRACE;
 			}();
 
 			m_Messages[(size_t)m_MessageCount++] = {.Level   = logLevel,

@@ -13,7 +13,7 @@ namespace SW
 {
 	struct ConsoleMessage
 	{
-		LogLevel Level = LogLevel::LOG_LEVEL_TRACE;
+		Logger::LogLevel Level = Logger::LogLevel::LOG_LEVEL_TRACE;
 		std::string Message;
 		time_t Time;
 	};
@@ -53,11 +53,11 @@ namespace SW
 		void AddMessage(const ConsoleMessage& message);
 
 	private:
-		const char* GetLevelName(LogLevel level) const;
+		const char* GetLevelName(Logger::LogLevel level) const;
 
-		ImVec4 GetLevelColor(LogLevel level) const;
+		ImVec4 GetLevelColor(Logger::LogLevel level) const;
 
-		const char* GetLevelIcon(LogLevel level) const;
+		const char* GetLevelIcon(Logger::LogLevel level) const;
 
 	private:
 		std::vector<ConsoleMessage> m_Messages;

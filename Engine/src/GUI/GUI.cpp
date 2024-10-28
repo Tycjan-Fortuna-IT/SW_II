@@ -85,8 +85,8 @@ namespace SW::GUI
 					ImGui::FocusWindow(window);
 					ImGui::SetNavID(window->NavLastIds[layer], layer, 0, window->NavRectRel[layer]);
 
-					g.NavDisableHighlight  = true;
-					g.NavDisableMouseHover = g.NavMousePosDirty = true;
+					g.NavCursorVisible         = false;
+					g.NavHighlightItemUnderNav = g.NavMousePosDirty = true;
 
 					ImGui::NavMoveRequestForward(g.NavMoveDir, g.NavMoveClipDir, g.NavMoveFlags, g.NavMoveScrollFlags);
 				}

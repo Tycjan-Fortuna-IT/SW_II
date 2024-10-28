@@ -51,7 +51,7 @@ namespace SW
 		spdlog::sink_ptr logger = std::make_shared<EditorConsoleSink<std::mutex>>(console);
 		logger->set_pattern("%v");
 
-		LogSystem::AddAppSink(logger);
+		Logger::LogSystem::AddAppSink(logger);
 
 		PanelManager::AddPanel(PanelType::AssetPanel, new AssetPanel());
 		PanelManager::AddPanel(PanelType::ConsolePanel, console);

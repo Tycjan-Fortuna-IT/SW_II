@@ -6,7 +6,7 @@ extern SW::Application* CreateApplication();
 
 int main(void)
 {
-	SW::LogSystem::Initialize();
+	SW::Logger::LogSystem::Initialize();
 
 	SW::Application* instance = CreateApplication();
 
@@ -14,7 +14,7 @@ int main(void)
 
 	delete instance;
 
-	SW::LogSystem::Shutdown();
+	SW::Logger::LogSystem::Shutdown();
 
 	return 0;
 }
