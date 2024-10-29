@@ -4,7 +4,6 @@
 #include <glad/glad.h>
 #include <stb_image.h>
 
-#include "Core/Events/Event.hpp"
 #include "Core/Utils/Input.hpp"
 
 namespace SW
@@ -66,83 +65,95 @@ namespace SW
 		SYSTEM_WARN("OpenGL Context Initialized!");
 		SYSTEM_WARN("OpenGL Version: {}.{}", GLVersion.major, GLVersion.minor);
 
-		glfwSetWindowUserPointer(m_Handle, &m_Specification);
+		glfwSetWindowUserPointer(m_Handle, this);
 
 		glViewport(0, 0, m_Specification.Width, m_Specification.Height);
 
 		this->SetVSync(m_Specification.VSync);
 
-		glfwSetWindowCloseCallback(m_Handle, [](UNUSED GLFWwindow* window) {
-			EventSystem::Emit({.Code = EVENT_CODE_APPLICATION_QUIT});
+		glfwSetWindowCloseCallback(m_Handle, [](GLFWwindow* glfwWindow) {
+			Window* window = (Window*)glfwGetWindowUserPointer(glfwWindow);
+
+			window->CloseEvent.Invoke();
 		});
 
-		glfwSetKeyCallback(m_Handle,
-		                   [](UNUSED GLFWwindow* window, i32 key, UNUSED i32 scancode, i32 action, UNUSED i32 mods) {
-			                   switch (action)
-			                   {
-			                   case GLFW_RELEASE: {
-				                   Input::UpdateKeyState((KeyCode)key, ClickableState::Released);
+		glfwSetKeyCallback(m_Handle, [](GLFWwindow* glfwWindow, i32 key, i32 /*scancode*/, i32 action, i32 /*mods*/) {
+			Window* window  = (Window*)glfwGetWindowUserPointer(glfwWindow);
+			KeyCode keyCode = (KeyCode)key;
 
-				                   EventSystem::Emit({.Code = EVENT_CODE_KEY_RELEASED, .Payload = {.u16 = {(u16)key}}});
+			switch (action)
+			{
+			case GLFW_RELEASE: {
+				Input::UpdateKeyState(keyCode, ClickableState::Released);
 
-				                   break;
-			                   }
-			                   case GLFW_PRESS: {
-				                   Input::UpdateKeyState((KeyCode)key, ClickableState::Pressed);
+				window->KeyReleasedEvent.Invoke(keyCode);
 
-				                   EventSystem::Emit({.Code = EVENT_CODE_KEY_PRESSED, .Payload = {.u16 = {(u16)key}}});
+				break;
+			}
+			case GLFW_PRESS: {
+				Input::UpdateKeyState((KeyCode)key, ClickableState::Pressed);
 
-				                   break;
-			                   }
-			                   case GLFW_REPEAT: {
-				                   Input::UpdateKeyState((KeyCode)key, ClickableState::Repeated);
+				window->KeyPressedEvent.Invoke(keyCode);
 
-				                   EventSystem::Emit({.Code = EVENT_CODE_KEY_REPEAT, .Payload = {.u16 = {(u16)key}}});
+				break;
+			}
+			case GLFW_REPEAT: {
+				Input::UpdateKeyState((KeyCode)key, ClickableState::Repeated);
 
-				                   break;
-			                   }
-			                   default:
-				                   SYSTEM_WARN("Unsupported key event action: {}");
-			                   }
-		                   });
+				window->KeyRepeatEvent.Invoke(keyCode);
 
-		glfwSetMouseButtonCallback(m_Handle, [](UNUSED GLFWwindow* window, int button, int action, UNUSED int mods) {
+				break;
+			}
+			default:
+				ASSERT(false, "Unsupported key event action: {}");
+			}
+		});
+
+		glfwSetMouseButtonCallback(m_Handle, [](GLFWwindow* glfwWindow, i32 button, i32 action, i32 /*mods*/) {
+			Window* window      = (Window*)glfwGetWindowUserPointer(glfwWindow);
+			MouseCode mouseCode = (MouseCode)button;
+
 			switch (action)
 			{
 			case GLFW_RELEASE: {
 				Input::UpdateMouseState((MouseCode)button, ClickableState::Released);
 
-				EventSystem::Emit({.Code = EVENT_CODE_MOUSE_BUTTON_RELEASED, .Payload = {.u16 = {(u16)button}}});
+				window->MouseReleasedEvent.Invoke(mouseCode);
 
 				break;
 			}
 			case GLFW_PRESS: {
 				Input::UpdateMouseState((MouseCode)button, ClickableState::Pressed);
 
-				EventSystem::Emit({.Code = EVENT_CODE_MOUSE_BUTTON_PRESSED, .Payload = {.u16 = {(u16)button}}});
+				window->MousePressedEvent.Invoke(mouseCode);
 
 				break;
 			}
 			default:
-				SYSTEM_WARN("Unsupported mouse event action: {}");
+				ASSERT(false, "Unsupported mouse event action: {}");
 			}
 		});
 
-		glfwSetWindowSizeCallback(m_Handle, [](GLFWwindow* window, i32 width, i32 height) {
-			WindowSpecification* spec = (WindowSpecification*)glfwGetWindowUserPointer(window);
+		glfwSetWindowSizeCallback(m_Handle, [](GLFWwindow* glfwWindow, i32 width, i32 height) {
+			Window* window            = (Window*)glfwGetWindowUserPointer(glfwWindow);
+			WindowSpecification& spec = window->GetSpecificationMutable();
 
-			spec->Width  = (u16)width;
-			spec->Height = (u16)height;
+			spec.Width  = (u16)width;
+			spec.Height = (u16)height;
 
-			EventSystem::Emit({.Code = EVENT_CODE_WINDOW_RESIZED, .Payload = {.i32 = {width, height}}});
+			window->ResizedEvent.Invoke(width, height);
 		});
 
-		glfwSetScrollCallback(m_Handle, [](UNUSED GLFWwindow* window, f64 xOffset, f64 yOffset) {
-			EventSystem::Emit({.Code = EVENT_CODE_MOUSE_WHEEL, .Payload = {.f32 = {(f32)xOffset, (f32)yOffset}}});
+		glfwSetScrollCallback(m_Handle, [](GLFWwindow* glfwWindow, f64 xOffset, f64 yOffset) {
+			Window* window = (Window*)glfwGetWindowUserPointer(glfwWindow);
+
+			window->MouseScrollWheelEvent.Invoke((f32)xOffset, (f32)yOffset);
 		});
 
-		glfwSetTitlebarHitTestCallback(m_Handle, [](GLFWwindow* window, UNUSED int xPos, UNUSED int yPos, int* hit) {
-			*hit = static_cast<WindowSpecification*>(glfwGetWindowUserPointer(window))->OverTitlebar ? 1 : 0;
+		glfwSetTitlebarHitTestCallback(m_Handle, [](GLFWwindow* window, int /*xPos*/, int /*yPos*/, int* hit) {
+			const WindowSpecification& spec = ((Window*)glfwGetWindowUserPointer(window))->GetSpecification();
+
+			*hit = spec.OverTitlebar ? 1 : 0;
 		});
 	}
 

@@ -8,6 +8,9 @@
  */
 #pragma once
 
+#include "Core/KeyCode.hpp"
+#include "Core/MouseCode.hpp"
+
 struct GLFWwindow;
 
 namespace SW
@@ -81,6 +84,20 @@ namespace SW
 		GLFWwindow* GetHandle() const { return m_Handle; }
 
 		/**
+		 * @brief Get the window specification.
+		 * 
+		 * @return const WindowSpecification& 
+		 */
+		const WindowSpecification& GetSpecification() const { return m_Specification; }
+
+		/**
+		 * @brief Get the mutable window specification.
+		 * 
+		 * @return WindowSpecification& 
+		 */
+		WindowSpecification& GetSpecificationMutable() { return m_Specification; }
+
+		/**
 		 * @brief Enable or disable vertical synchronization.
 		 *
 		 * @param enabled Whether to enable or disable vertical synchronization.
@@ -115,6 +132,20 @@ namespace SW
 		 * @return Whether the windows is currently maximized.
 		 */
 		bool IsCurrentlyMaximized() const;
+
+	public:
+		Eventing::Event<KeyCode> KeyPressedEvent; // Event for key press.
+		Eventing::Event<KeyCode> KeyReleasedEvent; // Event for key release.
+		Eventing::Event<KeyCode> KeyRepeatEvent; // Event for key repeat.
+
+		Eventing::Event<MouseCode> MousePressedEvent; // Event for mouse button press.
+		Eventing::Event<MouseCode> MouseReleasedEvent; // Event for mouse button release.
+
+		Eventing::Event<f32, f32> MouseScrollWheelEvent; // Event for mouse scroll wheel.
+
+		Eventing::Event<f32, f32> ResizedEvent; // Event for window resize.
+
+		Eventing::Event<> CloseEvent; // Event for window close.
 
 	private:
 		WindowSpecification m_Specification; /** @brief Window specification. */

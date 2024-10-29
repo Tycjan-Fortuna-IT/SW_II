@@ -1,7 +1,8 @@
 #include "Popups.hpp"
 
 #include "Core/Utils/FileSystem.hpp"
-#include "GUI.hpp"
+#include "EngineEditor.hpp"
+#include "GUI/GUI.hpp"
 
 #define EMPTY_SCENE_CONTENT "Entities: \n"
 
@@ -312,6 +313,8 @@ namespace SW::GUI::Popups
 			if (ImGui::Button("Import", ImVec2(width / 2.f, 30.f)))
 			{
 				FontAssetImporter::Import(m_Data);
+
+				EngineEditor::AssetDirContentChangedEvent.Invoke();
 
 				ImGui::CloseCurrentPopup();
 			}

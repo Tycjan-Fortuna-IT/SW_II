@@ -9,6 +9,7 @@
 #include "Core/Scripting/ScriptingCore.hpp"
 #include "Core/Utils/FileSystem.hpp"
 #include "EditorConsoleSink.hpp"
+#include "EngineEditor.hpp"
 #include "GUI/Editor/EditorResources.hpp"
 #include "GUI/GUI.hpp"
 #include "Managers/SelectionManager.hpp"
@@ -34,11 +35,8 @@ namespace SW
 		GUI::Appearance::ApplyColors(GUI::Colors());
 		GUI::Appearance::ApplyFonts(fontSpec);
 
-		EventSystem::Register(EVENT_CODE_KEY_PRESSED, [this](Event event) -> bool {
-			KeyCode code = (KeyCode)event.Payload.u16[0];
-
-			return OnKeyPressed(code);
-		});
+		m_WindowKeyPressedListener = Application::Get()->GetWindow()->KeyPressedEvent +=
+		    std::bind_front(&EditorLayer::OnKeyPressed, this);
 
 		EditorResources::Initialize();
 		AudioEngine::Initialize();
@@ -79,6 +77,8 @@ namespace SW
 		AssetEditorPanelManager::Shutdown();
 		Renderer2D::Shutdown();
 		AudioEngine::Shutdown();
+
+		Application::Get()->GetWindow()->KeyPressedEvent -= m_WindowKeyPressedListener;
 
 		if (ProjectContext::HasContext())
 			delete ProjectContext::Get();
@@ -155,7 +155,6 @@ namespace SW
 
 		if (GUI::IsItemHovered())
 		{
-			APP_TRACE("asdasdasd {} --- {}", 12, "test");
 			Application::Get()->GetWindow()->RegisterOverTitlebar(true);
 		}
 
@@ -529,6 +528,8 @@ namespace SW
 
 			Project* newProject = ProjectSerializer::Deserialize(path);
 			ProjectContext::Set(newProject); // TODO: Make projects switchable
+
+			EngineEditor::ProjectLoadedEvent.Invoke();
 
 			ScriptingCore::Get().Initialize();
 		}

@@ -1,4 +1,5 @@
 #include "ProjectSettingsPanel.hpp"
+#include "EngineEditor.hpp"
 
 namespace SW
 {
@@ -35,7 +36,8 @@ namespace SW
 						if (!projectPath.empty())
 						{
 							ProjectContext::Get()->GetConfig().AssetsDirectory = projectPath;
-							EventSystem::Emit(EVENT_CODE_ASSET_DIR_CONTENT_CHANGED);
+
+							EngineEditor::AssetDirContentChangedEvent.Invoke();
 						}
 					}
 

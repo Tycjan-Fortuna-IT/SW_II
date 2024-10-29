@@ -12,7 +12,7 @@
 #include "GUI/Appearance.hpp"
 #include "GUI/Editor/EditorResources.hpp"
 #include "GUI/Icons.hpp"
-#include "GUI/Popups.hpp"
+
 #ifdef TESTBED
 	#include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.hpp" // TODO - remove (because of Testbed)
 #else
@@ -20,30 +20,30 @@
 #endif
 #include "Asset/Animation2D.hpp"
 #include "Asset/Prefab.hpp"
+#include "EngineEditor.hpp"
 #include "GUI/GUI.hpp"
+#include "Utils/Popups.hpp"
 
 namespace SW
 {
 	AssetPanel::AssetPanel() : Panel("Assets", SW_ICON_FOLDER_STAR, true), m_AssetTree(new AssetDirectoryTree())
 	{
-		EventSystem::Register(EVENT_CODE_PROJECT_LOADED, [this](Event /*event*/) -> bool {
+		m_ProjectLoadedListener = EngineEditor::ProjectLoadedEvent += [this]() {
 			m_AssetsDirectory = ProjectContext::Get()->GetAssetDirectory();
 
 			m_AssetTree->TraverseDirectoryAndMapAssets();
 			m_SelectedItem = m_AssetTree->GetRootItem();
+		};
 
-			return false;
-		});
-
-		EventSystem::Register(EVENT_CODE_ASSET_DIR_CONTENT_CHANGED, [this](Event /*event*/) -> bool {
-			LoadDirectoryEntries();
-
-			return true;
-		});
+		m_AssetDirContentChangedListener = EngineEditor::AssetDirContentChangedEvent +=
+		    std::bind_front(&AssetPanel::LoadDirectoryEntries, this);
 	}
 
 	AssetPanel::~AssetPanel()
 	{
+		EngineEditor::ProjectLoadedEvent -= m_ProjectLoadedListener;
+		EngineEditor::AssetDirContentChangedEvent -= m_AssetDirContentChangedListener;
+
 		delete m_AssetTree;
 	}
 

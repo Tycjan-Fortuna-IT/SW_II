@@ -78,6 +78,7 @@ project "Engine"
         include "Engine/vendor/Coral/Coral.Native"
 
         include "modules/Logger/Build-Logger.lua"
+        include "modules/Eventing/Build-Eventing.lua"
     group ""
     
     group "Engine"

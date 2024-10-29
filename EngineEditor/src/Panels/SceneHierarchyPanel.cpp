@@ -12,11 +12,13 @@ namespace SW
 	SceneHierarchyPanel::SceneHierarchyPanel(SceneViewportPanel* sceneViewportPanel)
 	    : Panel("Scene Hierarchy", SW_ICON_VIEW_LIST, true), m_SceneViewportPanel(sceneViewportPanel)
 	{
-		EventSystem::Register(EVENT_CODE_KEY_PRESSED, [this](Event event) -> bool {
-			KeyCode code = (KeyCode)event.Payload.u16[0];
+		m_WindowKeyPressedListener = Application::Get()->GetWindow()->KeyPressedEvent +=
+		    std::bind_front(&SceneHierarchyPanel::OnKeyPressed, this);
+	}
 
-			return OnKeyPressed(code);
-		});
+	SceneHierarchyPanel::~SceneHierarchyPanel()
+	{
+		Application::Get()->GetWindow()->KeyPressedEvent -= m_WindowKeyPressedListener;
 	}
 
 	void SceneHierarchyPanel::OnRender()

@@ -1,12 +1,14 @@
 /**
  * @file Event.hpp
- * @author Tycjan Fortuna (242213@edu.p.lodz.pl)
+ * @author SW
  * @version 0.1.3
  * @date 2024-05-04
  *
- * @copyright Copyright (c) 2024 Tycjan Fortuna
+ * @copyright Copyright (c) 2024 SW
  */
 #pragma once
+
+#if 0
 
 namespace SW
 {
@@ -186,3 +188,5 @@ namespace SW
 	};
 
 } // namespace SW
+
+#endif

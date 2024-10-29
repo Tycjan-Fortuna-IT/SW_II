@@ -9,7 +9,7 @@
 
 #include "Core/Editor/EditorCamera.hpp"
 #include "GUI/Panel.hpp"
-#include "GUI/Popups.hpp"
+#include "Utils/Popups.hpp"
 
 namespace SW
 {
@@ -133,6 +133,11 @@ namespace SW
 		 * @param startCursorPos Initial cursor position.
 		 */
 		void RenderGizmoToolbar(ImVec2 startCursorPos);
+
+	private:
+		Eventing::ListenerID m_WindowResizedListener;
+		Eventing::ListenerID m_WindowMousePressedListener;
+		Eventing::ListenerID m_WindowKeyPressedListener;
 	};
 
 } // namespace SW

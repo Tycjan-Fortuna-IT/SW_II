@@ -33,6 +33,9 @@ namespace SW
 		void SaveProjectAs();
 
 		void ReloadCSharpScripts();
+
+	private:
+		Eventing::ListenerID m_WindowKeyPressedListener;
 	};
 
 } // namespace SW

@@ -100,13 +100,6 @@ FBS.Dependencies = {
         IncludeDirs = { "%{wks.location}/Engine/vendor/miniaudio" },
     },
 
-    -- SW Modules
-    {
-		Name = "SW Logger Module",
-		LibsToLink = { "Logger" },
-		IncludeDirs = {
-			"%{wks.location}/Engine/modules/Logger/src",
-			"%{wks.location}/Engine/modules/Logger/vendor/spdlog/include"
-		},
-	},
+    FBS.ImportModule("Engine/modules/Logger");
+    FBS.ImportModule("Engine/modules/Eventing");
 }

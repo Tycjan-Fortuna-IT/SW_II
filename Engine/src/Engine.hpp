@@ -19,6 +19,7 @@
 #include <string>
 #include <vector>
 
+#include <Eventing/Eventing.hpp>
 #include <Logger/Logger.hpp>
 
 #include "Core/Base.hpp"
@@ -48,8 +49,6 @@
 #include "Core/Scene/SceneCamera.hpp"
 
 #include "Core/ECS/Components.hpp"
-
-#include "Core/Events/Event.hpp"
 
 #include "GUI/Appearance.hpp"
 #include "GUI/Colors.hpp"

@@ -1,4 +1,6 @@
-#include "Event.hpp"
+#if 0
+
+	#include "Event.hpp"
 
 namespace SW
 {
@@ -15,7 +17,7 @@ namespace SW
 	};
 
 // To be expanded if necessary
-#define MAX_EVENT_CODES 24
+	#define MAX_EVENT_CODES 24
 
 	struct EventSystemState final
 	{
@@ -130,3 +132,5 @@ namespace SW
 	}
 
 } // namespace SW
+
+#endif

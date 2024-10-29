@@ -28,7 +28,7 @@ namespace SW
 		 * @param context Current scene context.
 		 */
 		SceneHierarchyPanel(SceneViewportPanel* sceneViewportPanel);
-		~SceneHierarchyPanel() override = default;
+		~SceneHierarchyPanel() override;
 
 		SceneHierarchyPanel(const SceneHierarchyPanel& other)            = delete;
 		SceneHierarchyPanel(SceneHierarchyPanel&& other)                 = delete;
@@ -81,6 +81,9 @@ namespace SW
 		void DrawEntityCreateMenu(Scene* scene, Entity toParent = {});
 
 		bool OnKeyPressed(KeyCode code);
+
+	private:
+		Eventing::ListenerID m_WindowKeyPressedListener;
 	};
 
 } // namespace SW

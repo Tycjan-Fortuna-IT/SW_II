@@ -1,30 +1,16 @@
-#include <Entrypoint.hpp>
+#include "EngineEditor.hpp"
 
 #include "EditorLayer.hpp"
 
-#include "icons/embed/SW_Icon.embed"
+SW::Eventing::Event<> EngineEditor::ProjectLoadedEvent;
+SW::Eventing::Event<> EngineEditor::AssetDirContentChangedEvent;
 
-class EngineEditor final : public SW::Application
+EngineEditor::EngineEditor(const SW::ApplicationSpecification& specification) : SW::Application(specification)
 {
-public:
-	explicit EngineEditor(const SW::ApplicationSpecification& specification) : SW::Application(specification)
-	{
-		this->PushLayer(new SW::EditorLayer("Editor Layer"));
-	}
+	this->PushLayer(new SW::EditorLayer("Editor Layer"));
+}
 
-protected:
-	~EngineEditor() override { this->PopLayer(); }
-};
-
-SW::Application* CreateApplication()
+EngineEditor::~EngineEditor()
 {
-	return new EngineEditor({
-	    .Title          = "SW Editor",
-	    .Width          = 1280,
-	    .Height         = 720,
-	    .VSync          = false,
-	    .Icon           = {.Data = e_SW_Icon, .Size = sizeof(e_SW_Icon)},
-	    .DisableToolbar = true,
-	    .Fullscreen     = true,
-	});
+	this->PopLayer();
 }

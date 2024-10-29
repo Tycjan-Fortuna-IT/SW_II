@@ -17,29 +17,18 @@ namespace SW
 
 	SceneViewportPanel::SceneViewportPanel() : Panel("Scene Viewport", SW_ICON_TERRAIN, true)
 	{
-		EventSystem::Register(EVENT_CODE_WINDOW_RESIZED, [this](Event event) -> bool {
-			const i32 width  = event.Payload.i32[0];
-			const i32 height = event.Payload.i32[1];
-
+		m_WindowResizedListener = Application::Get()->GetWindow()->ResizedEvent += [this](f32 width, f32 height) {
 			if (!m_IsViewportFocused)
 				return false;
 
-			m_EditorCamera->SetViewportSize((f32)width, (f32)height);
+			m_EditorCamera->SetViewportSize(width, height);
+		};
 
-			return false;
-		});
+		m_WindowMousePressedListener = Application::Get()->GetWindow()->MousePressedEvent +=
+		    std::bind_front(&SceneViewportPanel::OnMouseButtonPressed, this);
 
-		EventSystem::Register(EVENT_CODE_MOUSE_BUTTON_PRESSED, [this](Event event) -> bool {
-			MouseCode code = (MouseCode)event.Payload.u16[0];
-
-			return OnMouseButtonPressed(code);
-		});
-
-		EventSystem::Register(EVENT_CODE_KEY_PRESSED, [this](Event event) -> bool {
-			KeyCode code = (KeyCode)event.Payload.u16[0];
-
-			return OnKeyPressed(code);
-		});
+		m_WindowKeyPressedListener = Application::Get()->GetWindow()->KeyPressedEvent +=
+		    std::bind_front(&SceneViewportPanel::OnKeyPressed, this);
 
 		const FramebufferSpecification spec = {.Width       = 1280,
 		                                       .Height      = 720,
@@ -55,6 +44,10 @@ namespace SW
 
 	SceneViewportPanel::~SceneViewportPanel()
 	{
+		Application::Get()->GetWindow()->ResizedEvent -= m_WindowResizedListener;
+		Application::Get()->GetWindow()->MousePressedEvent -= m_WindowMousePressedListener;
+		Application::Get()->GetWindow()->KeyPressedEvent -= m_WindowKeyPressedListener;
+
 		delete m_EditorCamera;
 		delete m_Framebuffer;
 	}

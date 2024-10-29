@@ -8,7 +8,6 @@
  */
 #pragma once
 
-#include "Core/Events/Event.hpp"
 #include "Project.hpp"
 
 namespace SW
@@ -34,8 +33,6 @@ namespace SW
 		{
 			s_CurrentProject = project;
 			s_CurrentProject->Initialize();
-
-			EventSystem::Emit(EVENT_CODE_PROJECT_LOADED);
 		}
 
 		/**

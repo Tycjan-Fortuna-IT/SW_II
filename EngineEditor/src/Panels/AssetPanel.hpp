@@ -102,6 +102,10 @@ namespace SW
 		 * @brief Draws the popup for the asset panel.
 		 */
 		void DrawAssetPanelPopup();
+
+	private:
+		Eventing::ListenerID m_AssetDirContentChangedListener;
+		Eventing::ListenerID m_ProjectLoadedListener;
 	};
 
 } // namespace SW

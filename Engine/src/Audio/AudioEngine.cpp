@@ -23,19 +23,20 @@ namespace SW
 
 		ASSERT(result == MA_SUCCESS, "Failed to initialize the audio engine");
 
-		EventSystem::Register(EVENT_CODE_PROJECT_LOADED, [](Event /*event*/) -> bool {
-			const std::filesystem::path& regPath = ProjectContext::Get()->GetAudioRegistryPath();
+		// TO DO add this back 
+		// EventSystem::Register(EVENT_CODE_PROJECT_LOADED, [](Event /*event*/) -> bool {
+		// 	const std::filesystem::path& regPath = ProjectContext::Get()->GetAudioRegistryPath();
 
-			if (!FileSystem::Exists(regPath))
-				FileSystem::CreateFileWithContent(regPath, "AudioEvents:\n");
+		// 	if (!FileSystem::Exists(regPath))
+		// 		FileSystem::CreateFileWithContent(regPath, "AudioEvents:\n");
 
-			ClearActiveInstances();
-			s_AudioEvents.clear();
+		// 	ClearActiveInstances();
+		// 	s_AudioEvents.clear();
 
-			AudioEventSerializer::Deserialize(regPath, s_AudioEvents);
+		// 	AudioEventSerializer::Deserialize(regPath, s_AudioEvents);
 
-			return false;
-		});
+		// 	return false;
+		// });
 	}
 
 	void AudioEngine::Shutdown()

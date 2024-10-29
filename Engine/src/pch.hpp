@@ -17,6 +17,7 @@
 #include <functional>
 #include <utility>
 
+#include <Eventing/Eventing.hpp>
 #include <Logger/Logger.hpp>
 
 #include "Core/Base.hpp"

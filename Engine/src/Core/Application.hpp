@@ -120,7 +120,7 @@ namespace SW
 		/**
 		 * @brief Destroy the Application object
 		 */
-		virtual ~Application() = default;
+		virtual ~Application();
 
 	private:
 		/** @brief Copy constructor - not allowed. */
@@ -145,6 +145,9 @@ namespace SW
 		GuiLayer* m_GuiLayer = nullptr; /** @brief Gui layer of the application. */
 
 		friend int ::main();
+
+	private:
+		Eventing::ListenerID m_WindowCloseEventListener;
 	};
 
 } // namespace SW

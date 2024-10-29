@@ -2,7 +2,6 @@
 
 #include "Asset/AssetManager.hpp"
 #include "Core/KeyCode.hpp"
-#include "Events/Event.hpp"
 #include "GUI/GuiLayer.hpp"
 #include "Renderer/RendererAPI.hpp"
 #include "Scripting/ScriptingCore.hpp"
@@ -21,6 +20,12 @@ namespace SW
 			SYSTEM_ERROR("Application failed to initialize!");
 	}
 
+	Application::~Application()
+	{
+		delete m_GuiLayer;
+		delete m_Window;
+	}
+
 	bool Application::OnInit()
 	{
 		const WindowSpecification specification = {
@@ -34,7 +39,6 @@ namespace SW
 
 		m_Window = new Window(specification);
 
-		EventSystem::Initialize();
 		FileSystem::Initialize();
 		AssetManager::Initialize();
 		RendererAPI::Initialize();
@@ -42,16 +46,10 @@ namespace SW
 		if (m_Specification.EnableCSharpSupport)
 			ScriptingCore::Get().InitializeHost();
 
-		EventSystem::Register(EventCode::EVENT_CODE_APPLICATION_QUIT, [this](UNUSED Event event) -> bool {
-			Application::Close();
-
-			return true;
-		});
+		m_WindowCloseEventListener = m_Window->CloseEvent += std::bind_front(&Application::Close, this);
 
 		if (m_Specification.Fullscreen)
-		{
 			m_Window->Maximize();
-		}
 
 		m_IsRunning = true;
 
@@ -67,7 +65,6 @@ namespace SW
 
 	bool Application::OnShutdown()
 	{
-		EventSystem::Shutdown();
 		FileSystem::Shutdown();
 		AssetManager::Shutdown();
 		RendererAPI::Shutdown();
@@ -77,8 +74,7 @@ namespace SW
 
 		m_GuiLayer->OnDetach();
 
-		delete m_Window;
-		delete m_GuiLayer;
+		m_Window->CloseEvent -= m_WindowCloseEventListener;
 
 		SYSTEM_INFO("Application has been properly shut down");
 

@@ -1,7 +1,6 @@
 #include "AssetImporter.hpp"
 #include "Core/Utils/SerializationUtils.hpp"
 
-#include "Core/Events/Event.hpp"
 #include "Core/Project/ProjectContext.hpp"
 
 namespace SW
@@ -24,8 +23,6 @@ namespace SW
 
 		std::ofstream fout(ProjectContext::Get()->GetAssetDirectory() / data.OutputPath);
 		fout << output.c_str();
-
-		EventSystem::Emit(EVENT_CODE_ASSET_DIR_CONTENT_CHANGED);
 	}
 
 } // namespace SW
