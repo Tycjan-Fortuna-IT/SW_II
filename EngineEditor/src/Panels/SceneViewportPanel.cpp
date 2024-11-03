@@ -17,14 +17,14 @@ namespace SW
 
 	SceneViewportPanel::SceneViewportPanel() : Panel("Scene Viewport", SW_ICON_TERRAIN, true)
 	{
-		m_WindowResizedListener = Application::Get()->GetWindow()->ResizedEvent += [this](f32 width, f32 height) {
+		m_WindowResizedListener = Application::Get()->GetWindow()->ResizeEvent += [this](f32 width, f32 height) {
 			if (!m_IsViewportFocused)
 				return false;
 
 			m_EditorCamera->SetViewportSize(width, height);
 		};
 
-		m_WindowMousePressedListener = Application::Get()->GetWindow()->MousePressedEvent +=
+		m_WindowMousePressedListener = Application::Get()->GetWindow()->MouseButtonPressedEvent +=
 		    std::bind_front(&SceneViewportPanel::OnMouseButtonPressed, this);
 
 		m_WindowKeyPressedListener = Application::Get()->GetWindow()->KeyPressedEvent +=
@@ -44,8 +44,8 @@ namespace SW
 
 	SceneViewportPanel::~SceneViewportPanel()
 	{
-		Application::Get()->GetWindow()->ResizedEvent -= m_WindowResizedListener;
-		Application::Get()->GetWindow()->MousePressedEvent -= m_WindowMousePressedListener;
+		Application::Get()->GetWindow()->ResizeEvent -= m_WindowResizedListener;
+		Application::Get()->GetWindow()->MouseButtonPressedEvent -= m_WindowMousePressedListener;
 		Application::Get()->GetWindow()->KeyPressedEvent -= m_WindowKeyPressedListener;
 
 		delete m_EditorCamera;

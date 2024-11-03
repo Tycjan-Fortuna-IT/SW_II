@@ -1,7 +1,6 @@
 #include "Application.hpp"
 
 #include "Asset/AssetManager.hpp"
-#include "Core/KeyCode.hpp"
 #include "GUI/GuiLayer.hpp"
 #include "Renderer/RendererAPI.hpp"
 #include "Scripting/ScriptingCore.hpp"
@@ -14,30 +13,27 @@ namespace SW
 
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application(const ApplicationSpecification& specification) : m_Specification(specification)
+	Application::Application(const ApplicationSpecification& spec) : m_Specification(spec)
 	{
-		if (!this->OnInit())
-			SYSTEM_ERROR("Application failed to initialize!");
-	}
-
-	Application::~Application()
-	{
-		delete m_GuiLayer;
-		delete m_Window;
-	}
-
-	bool Application::OnInit()
-	{
-		const WindowSpecification specification = {
-		    .Title          = m_Specification.Title,
-		    .Width          = m_Specification.Width,
-		    .Height         = m_Specification.Height,
-		    .VSync          = m_Specification.VSync,
-		    .Icon           = m_Specification.Icon,
-		    .DisableToolbar = m_Specification.DisableToolbar,
+		const OpenGL::WindowSpecification windowSpec = {
+		    .Title       = m_Specification.Title,
+		    .Width       = m_Specification.Width,
+		    .Height      = m_Specification.Height,
+		    .Icon        = m_Specification.Icon,
+		    .HasTitlebar = !m_Specification.DisableToolbar,
 		};
 
-		m_Window = new Window(specification);
+		const OpenGL::DeviceSpecification deviceSpec = {.DebugProfile = true};
+
+		m_Device = new OpenGL::Device(deviceSpec);
+		m_Device->SetVSync(m_Specification.VSync);
+
+		m_Window = new OpenGL::Window(m_Device, windowSpec);
+		m_Window->MakeContextCurrent();
+
+		const OpenGL::DriverSpecification driverSpec = {.DebugProfile = true};
+
+		m_Driver = new OpenGL::Driver(driverSpec);
 
 		FileSystem::Initialize();
 		AssetManager::Initialize();
@@ -46,12 +42,8 @@ namespace SW
 		if (m_Specification.EnableCSharpSupport)
 			ScriptingCore::Get().InitializeHost();
 
-		m_WindowCloseEventListener = m_Window->CloseEvent += std::bind_front(&Application::Close, this);
-
 		if (m_Specification.Fullscreen)
 			m_Window->Maximize();
-
-		m_IsRunning = true;
 
 		s_Instance = this;
 
@@ -59,11 +51,9 @@ namespace SW
 		m_GuiLayer->OnAttach();
 
 		SYSTEM_INFO("Application has been properly initialized");
-
-		return true;
 	}
 
-	bool Application::OnShutdown()
+	Application::~Application()
 	{
 		FileSystem::Shutdown();
 		AssetManager::Shutdown();
@@ -74,16 +64,18 @@ namespace SW
 
 		m_GuiLayer->OnDetach();
 
-		m_Window->CloseEvent -= m_WindowCloseEventListener;
+		delete m_GuiLayer;
+
+		delete m_Driver;
+		delete m_Window;
+		delete m_Device;
 
 		SYSTEM_INFO("Application has been properly shut down");
-
-		return true;
 	}
 
 	void Application::Run()
 	{
-		while (m_IsRunning)
+		while (!m_Window->ShouldClose())
 		{
 			const float time  = (float)glfwGetTime();
 			const Timestep dt = time - m_LastFrameTime;
@@ -91,7 +83,8 @@ namespace SW
 
 			Input::UpdateKeysStateIfNecessary();
 
-			m_Window->OnUpdate();
+			m_Device->PollEvents();
+			m_Window->SwapBuffers();
 
 			{
 				PROFILE_SCOPE("Application::Update()");
@@ -115,14 +108,11 @@ namespace SW
 
 			Input::ClearReleasedKeys();
 		}
-
-		if (!this->OnShutdown())
-			SYSTEM_ERROR("Application failed to shut down!");
 	}
 
 	void Application::Close()
 	{
-		m_IsRunning = false;
+		m_Window->SetShouldClose(true);
 	}
 
 	void Application::PushLayer(Layer* layer)
@@ -134,8 +124,7 @@ namespace SW
 
 	void Application::PopLayer()
 	{
-		if (m_Layers.empty())
-			SYSTEM_FATAL("No Layer to pop!");
+		VERIFY(!m_Layers.empty(), "No Layer to pop!");
 
 		Layer* back = m_Layers.back();
 		back->OnDetach();

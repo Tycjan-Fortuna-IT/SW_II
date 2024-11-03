@@ -41,7 +41,7 @@ workspace "SW_II"
 	}
 
     -- Include editorconfig file for consistent coding style
-    solution_items { ".clang-format", ".clang-tidy" }
+    solution_items { ".clang-format", ".clang-tidy", "Setup-Windows-VS2022.bat" }
 
     -- Enable Visual Studio to use multiple compiler processes when building.
     flags { "MultiProcessorCompile" }
@@ -49,7 +49,7 @@ workspace "SW_II"
     -- Workspace-wide build options for MSVC
     filter "system:windows"
         systemversion "latest"
-        defines { "SW_WINDOWS" }
+        defines { "SW_WINDOWS", "SW_PLATFORM_WINDOWS" }
         buildoptions {
             -- This option specifies the model of exception handling to be used by the compiler.
             -- "EHsc" is the standard C++ exception handling model.
@@ -64,7 +64,7 @@ workspace "SW_II"
         }
 
     filter "system:linux"
-        defines { "SW_LINUX" }
+        defines { "SW_LINUX", "SW_PLATFORM_LINUX" }
         toolset "clang"
         buildoptions {
             "-fno-char8_t"
@@ -82,4 +82,4 @@ group "Engine"
 group ""
 
 include "EngineEditor/Build-EngineEditor.lua"
--- include "Testbed/Build-Testbed.lua"
+include "Testbed/Build-Testbed.lua"

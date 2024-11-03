@@ -61,8 +61,6 @@ namespace SW
 		PanelManager::AddPanel(PanelType::AudioEventsPanel, new AudioEventsPanel());
 		PanelManager::AddPanel(PanelType::ProjectSettingsPanel, new ProjectSettingsPanel());
 
-		Application::Get()->GetWindow()->SetVSync(true);
-
 		Renderer2D::Initialize();
 
 #ifdef SW_DEBUG_BUILD
@@ -389,10 +387,10 @@ namespace SW
 	{
 		PROFILE_FUNCTION();
 
-		Window* window = Application::Get()->GetWindow();
+		OpenGL::Window* window = Application::Get()->GetWindow();
 
 		window->RegisterOverTitlebar(false);
-		m_WindowMaximized = window->IsCurrentlyMaximized();
+		m_WindowMaximized = window->IsMaximized();
 
 		GUI::Layout::CreateDockspace("Main dockspace", [this]() -> f32 {
 			return DrawTitleBar();

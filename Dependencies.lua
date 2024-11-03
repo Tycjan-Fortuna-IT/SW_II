@@ -4,7 +4,6 @@ FBS.Dependencies = {
     {
         name = "Defines",
         Defines = { 
-            "GLFW_INCLUDE_NONE",
             "IMGUI_DEFINE_MATH_OPERATORS",
             "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
             "YAML_CPP_STATIC_DEFINE",
@@ -14,22 +13,8 @@ FBS.Dependencies = {
         },
     },
     {
-        Name = "GLFW",
-        IncludeDirs = { "%{wks.location}/Engine/vendor/GLFW/include" },
-        LibsToLink = { "GLFW" },
-    },
-    {
-        Name = "GLAD",
-        IncludeDirs = { "%{wks.location}/Engine/vendor/GLAD/include" },
-        LibsToLink = { "GLAD" },
-    },
-    {
         Name = "ENTT",
         IncludeDirs = { "%{wks.location}/Engine/vendor/entt" },
-    },
-    {
-        Name = "STB Image",
-        IncludeDirs = { "%{wks.location}/Engine/vendor/stb_image" },
     },
     {
         Name = "ImGui",
@@ -62,10 +47,6 @@ FBS.Dependencies = {
         Name = "Box 2D",
         IncludeDirs = { "%{wks.location}/Engine/vendor/box2d/include" },
         LibsToLink = { "Box2D" },
-    },
-    {
-        Name = "GLM",
-        IncludeDirs = { "%{wks.location}/Engine/vendor/glm" },
     },
     {
         Name = "msdfgen",
@@ -102,4 +83,5 @@ FBS.Dependencies = {
 
     FBS.ImportModule("Engine/modules/Logger");
     FBS.ImportModule("Engine/modules/Eventing");
+    FBS.ImportModule("Engine/modules/OpenGL");
 }

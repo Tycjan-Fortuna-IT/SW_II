@@ -22,12 +22,14 @@
 #include <Eventing/Eventing.hpp>
 #include <Logger/Logger.hpp>
 
+#include <OpenGL/Input/KeyCode.hpp>
+#include <OpenGL/Input/MouseCode.hpp>
+
 #include "Core/Base.hpp"
 #include "Core/Debug/Profiler.hpp"
 #include "Core/Defines.hpp"
 
 #include "Core/Application.hpp"
-#include "Core/KeyCode.hpp"
 #include "Core/Layer.hpp"
 #include "Core/Timestep.hpp"
 

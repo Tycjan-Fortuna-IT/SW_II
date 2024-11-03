@@ -33,13 +33,6 @@ namespace SW
 		m_Data.FontGeometry = msdf_atlas::FontGeometry(&m_Data.Glyphs);
 		m_Data.FontGeometry.loadCharset(font, 1.0, charset);
 
-		if (spec.ApplyMSDFColoring)
-		{
-			const f64 maxCornerAngle = 3.0;
-			for (msdf_atlas::GlyphGeometry& glyph : m_Data.Glyphs) // Apply MSDF edge coloring.
-				glyph.edgeColoring(&msdfgen::edgeColoringInkTrap, maxCornerAngle, 0);
-		}
-
 		msdf_atlas::TightAtlasPacker packer;
 
 		if (spec.ForceHeight && spec.ForceWidth)
@@ -64,6 +57,13 @@ namespace SW
 		}
 		else
 		{
+			if (spec.ApplyMSDFColoring)
+			{
+				const f64 maxCornerAngle = 3.0;
+				for (msdf_atlas::GlyphGeometry& glyph : m_Data.Glyphs) // Apply MSDF edge coloring.
+					glyph.edgeColoring(&msdfgen::edgeColoringInkTrap, maxCornerAngle, 0);
+			}
+
 			msdf_atlas::ImmediateAtlasGenerator<
 			    f32,                       // pixel type of buffer for individual glyphs depends on generator function
 			    3,                         // number of atlas color channels

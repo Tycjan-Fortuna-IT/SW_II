@@ -83,7 +83,7 @@ namespace SW
 				GUI::Properties::BeginProperties("##editor_settings");
 				if (GUI::Properties::CheckboxProperty(&EditorSettings::Get().VSync, "Enable / Disable VSync"))
 				{
-					Application::Get()->GetWindow()->SetVSync(EditorSettings::Get().VSync);
+					Application::Get()->GetDevice()->SetVSync(EditorSettings::Get().VSync);
 				}
 				GUI::Properties::CheckboxProperty(&EditorSettings::Get().ShowPhysicsColliders,
 				                                  "Show Physics Colliders");

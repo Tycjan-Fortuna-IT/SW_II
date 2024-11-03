@@ -10,8 +10,8 @@
 
 #include <map>
 
-#include "Core/KeyCode.hpp"
-#include "Core/MouseCode.hpp"
+#include "OpenGL/Input/KeyCode.hpp"
+#include "OpenGL/Input/MouseCode.hpp"
 
 namespace SW
 {

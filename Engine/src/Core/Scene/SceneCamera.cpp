@@ -1,8 +1,5 @@
 #include "SceneCamera.hpp"
 
-#include "Core/KeyCode.hpp"
-#include "Core/Utils/Input.hpp"
-
 namespace SW
 {
 

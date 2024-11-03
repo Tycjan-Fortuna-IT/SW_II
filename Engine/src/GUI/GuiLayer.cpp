@@ -24,7 +24,7 @@ namespace SW
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
 
-		ImGui_ImplGlfw_InitForOpenGL(Application::Get()->GetWindow()->GetHandle(), true);
+		ImGui_ImplGlfw_InitForOpenGL(Application::Get()->GetWindow()->GetWindowHandle(), true);
 		ImGui_ImplOpenGL3_Init("#version 450");
 	}
 
