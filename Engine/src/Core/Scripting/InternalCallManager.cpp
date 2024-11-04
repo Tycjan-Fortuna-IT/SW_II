@@ -8,7 +8,6 @@
 #include "Core/Application.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Scripting/ScriptingCore.hpp"
-#include "Core/Utils/Input.hpp"
 #include "Core/Utils/TypeInfo.hpp"
 
 #ifdef SW_WINDOWS
@@ -648,9 +647,51 @@ namespace SW
 		return false;
 	}
 
+	void Input_IsKeyPressed(KeyCode key)
+	{
+		Application::Get()->GetInputManager()->IsKeyPressed(key);
+	}
+
+	void Input_IsKeyHeld(KeyCode key)
+	{
+		Application::Get()->GetInputManager()->IsKeyHeld(key);
+	}
+
+	void Input_IsKeyDown(KeyCode key)
+	{
+		Application::Get()->GetInputManager()->IsKeyDown(key);
+	}
+
+	void Input_IsKeyReleased(KeyCode key)
+	{
+		Application::Get()->GetInputManager()->IsKeyReleased(key);
+	}
+
+	void Input_IsMouseButtonPressed(MouseCode key)
+	{
+		Application::Get()->GetInputManager()->IsMouseButtonPressed(key);
+	}
+
+	void Input_IsMouseButtonHeld(MouseCode key)
+	{
+		Application::Get()->GetInputManager()->IsMouseButtonHeld(key);
+	}
+
+	void Input_IsMouseButtonDown(MouseCode key)
+	{
+		Application::Get()->GetInputManager()->IsMouseButtonDown(key);
+	}
+
+	void Input_IsMouseButtonReleased(MouseCode key)
+	{
+		Application::Get()->GetInputManager()->IsMouseButtonReleased(key);
+	}
+
 	void Input_GetWindowMousePosition(glm::vec2* outMousePosition)
 	{
-		*outMousePosition = Input::GetMousePosition();
+		const std::pair<float, float> mousePos = Application::Get()->GetInputManager()->GetMousePosition();
+
+		*outMousePosition = {mousePos.first, mousePos.second};
 	}
 
 	void Input_GetViewportMousePosition(glm::vec2* outMousePosition)
@@ -659,10 +700,10 @@ namespace SW
 
 		glm::vec2 viewportPosition = scene->GetViewportPosition();
 
-		glm::vec2 mousePos = Input::GetMousePosition();
+		const std::pair<float, float> mousePos = Application::Get()->GetInputManager()->GetMousePosition();
 
-		*outMousePosition = {mousePos.x - viewportPosition.x - 5.f, // substracting imgui window padding
-		                     mousePos.y - viewportPosition.y - 35.f};
+		*outMousePosition = {mousePos.first - viewportPosition.x - 5.f, // substracting imgui window padding
+		                     mousePos.second - viewportPosition.y - 35.f};
 	}
 
 	void InternalCallManager::RegisterInternalCalls(Coral::ManagedAssembly* coreAssembly)
@@ -671,15 +712,15 @@ namespace SW
 		ADD_INTERNAL_CALL(Application_GetVieportHeight);
 		ADD_INTERNAL_CALL(Application_Shutdown);
 
-		ADD_INTERNAL_CALL_FN(Input_IsKeyPressed, Input::IsKeyPressed);
-		ADD_INTERNAL_CALL_FN(Input_IsKeyHeld, Input::IsKeyHeld);
-		ADD_INTERNAL_CALL_FN(Input_IsKeyDown, Input::IsKeyDown);
-		ADD_INTERNAL_CALL_FN(Input_IsKeyReleased, Input::IsKeyReleased);
+		ADD_INTERNAL_CALL(Input_IsKeyPressed);
+		ADD_INTERNAL_CALL(Input_IsKeyHeld);
+		ADD_INTERNAL_CALL(Input_IsKeyDown);
+		ADD_INTERNAL_CALL(Input_IsKeyReleased);
 
-		ADD_INTERNAL_CALL_FN(Input_IsMouseButtonPressed, Input::IsMouseButtonPressed);
-		ADD_INTERNAL_CALL_FN(Input_IsMouseButtonHeld, Input::IsMouseButtonHeld);
-		ADD_INTERNAL_CALL_FN(Input_IsMouseButtonDown, Input::IsMouseButtonDown);
-		ADD_INTERNAL_CALL_FN(Input_IsMouseButtonReleased, Input::IsMouseButtonReleased);
+		ADD_INTERNAL_CALL(Input_IsMouseButtonPressed);
+		ADD_INTERNAL_CALL(Input_IsMouseButtonHeld);
+		ADD_INTERNAL_CALL(Input_IsMouseButtonDown);
+		ADD_INTERNAL_CALL(Input_IsMouseButtonReleased);
 
 		ADD_INTERNAL_CALL(Input_GetWindowMousePosition);
 		ADD_INTERNAL_CALL(Input_GetViewportMousePosition);

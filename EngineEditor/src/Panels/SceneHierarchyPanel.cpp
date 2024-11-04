@@ -425,7 +425,9 @@ namespace SW
 		if (!entity)
 			return false;
 
-		const bool ctrl = Input::IsKeyDown(KeyCode::LeftControl) || Input::IsKeyDown(KeyCode::RightControl);
+		InputManager* manager = Application::Get()->GetInputManager();
+
+		const bool ctrl = manager->IsKeyDown(KeyCode::LeftControl) || manager->IsKeyDown(KeyCode::RightControl);
 
 		switch (code)
 		{

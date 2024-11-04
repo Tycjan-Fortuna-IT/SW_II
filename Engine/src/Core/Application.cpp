@@ -5,7 +5,6 @@
 #include "Renderer/RendererAPI.hpp"
 #include "Scripting/ScriptingCore.hpp"
 #include "Utils/FileSystem.hpp"
-#include "Utils/Input.hpp"
 #include <GLFW/glfw3.h>
 
 namespace SW
@@ -30,6 +29,8 @@ namespace SW
 
 		m_Window = new OpenGL::Window(m_Device, windowSpec);
 		m_Window->MakeContextCurrent();
+
+		m_InputManager = new InputManager(m_Window);
 
 		const OpenGL::DriverSpecification driverSpec = {.DebugProfile = true};
 
@@ -66,6 +67,7 @@ namespace SW
 
 		delete m_GuiLayer;
 
+		delete m_InputManager;
 		delete m_Driver;
 		delete m_Window;
 		delete m_Device;
@@ -81,7 +83,7 @@ namespace SW
 			const Timestep dt = time - m_LastFrameTime;
 			m_LastFrameTime   = time;
 
-			Input::UpdateKeysStateIfNecessary();
+			m_InputManager->UpdateKeysStateIfNecessary();
 
 			m_Device->PollEvents();
 			m_Window->SwapBuffers();
@@ -106,7 +108,7 @@ namespace SW
 				m_GuiLayer->End();
 			}
 
-			Input::ClearReleasedKeys();
+			m_InputManager->ClearReleasedKeys();
 		}
 	}
 

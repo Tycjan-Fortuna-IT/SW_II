@@ -17,11 +17,11 @@ namespace SW
 
 	SceneViewportPanel::SceneViewportPanel() : Panel("Scene Viewport", SW_ICON_TERRAIN, true)
 	{
-		m_WindowResizedListener = Application::Get()->GetWindow()->ResizeEvent += [this](f32 width, f32 height) {
+		m_WindowResizedListener = Application::Get()->GetWindow()->ResizeEvent += [this](int width, int height) {
 			if (!m_IsViewportFocused)
-				return false;
+				return;
 
-			m_EditorCamera->SetViewportSize(width, height);
+			m_EditorCamera->SetViewportSize((f32)width, (f32)height);
 		};
 
 		m_WindowMousePressedListener = Application::Get()->GetWindow()->MouseButtonPressedEvent +=
@@ -80,7 +80,11 @@ namespace SW
 		if (ImGui::IsMouseDown(ImGuiMouseButton_Right) && m_IsViewportFocused)
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_None);
-			glm::vec2 newMousePosition = Input::GetMousePosition();
+			InputManager* manager = Application::Get()->GetInputManager();
+
+			const std::pair<float, float>& mousePos = manager->GetMousePosition();
+
+			glm::vec2 newMousePosition = {mousePos.first, mousePos.second};
 
 			if (!m_UsingEditorCamera)
 			{
@@ -88,7 +92,7 @@ namespace SW
 				m_LockedMousePosition = newMousePosition;
 			}
 
-			Input::SetMousePosition(m_LockedMousePosition);
+			manager->SetMousePosition({m_LockedMousePosition.x, m_LockedMousePosition.y});
 
 			const glm::vec2 change = (newMousePosition - m_LockedMousePosition) * m_MouseSensitivity;
 			finalYawPitch.x += change.x;
@@ -629,7 +633,9 @@ namespace SW
 				glm::mat4 transform    = selectedEntity.GetWorldSpaceTransformMatrix();
 
 				// Snapping
-				const bool snap = Input::IsKeyDown(KeyCode::LeftControl);
+				InputManager* manager = Application::Get()->GetInputManager();
+
+				const bool snap = manager->IsKeyDown(KeyCode::LeftControl);
 				f32 snapValue   = 0.5f; // Snap to 0.5m for translation/scale
 
 				// Snap to 45 degrees for rotation
@@ -698,7 +704,9 @@ namespace SW
 			{
 				Entity picked = {(entt::entity)pickedID, m_ActiveScene};
 
-				if (Input::IsKeyDown(KeyCode::LeftControl))
+				InputManager* manager = Application::Get()->GetInputManager();
+
+				if (manager->IsKeyDown(KeyCode::LeftControl))
 				{
 					Entity root = picked.GetRootParent();
 					SelectionManager::SelectByID(root.GetID());

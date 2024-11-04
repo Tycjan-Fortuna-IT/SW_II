@@ -9,6 +9,7 @@
 #pragma once
 
 #include "Core/Layer.hpp"
+#include "OpenGL/Input/InputManager.hpp"
 #include "OpenGL/Rendering/Driver.hpp"
 #include "OpenGL/Windowing/Device.hpp"
 #include "OpenGL/Windowing/Window.hpp"
@@ -45,6 +46,7 @@ namespace SW
 		OpenGL::Device* GetDevice() const { return m_Device; }
 		OpenGL::Driver* GetDriver() const { return m_Driver; }
 		OpenGL::Window* GetWindow() const { return m_Window; }
+		InputManager* GetInputManager() const { return m_InputManager; }
 
 		// Start the main loop of the application
 		void Run();
@@ -77,6 +79,8 @@ namespace SW
 		OpenGL::Device* m_Device = nullptr;
 		OpenGL::Driver* m_Driver = nullptr;
 		OpenGL::Window* m_Window = nullptr;
+
+		InputManager* m_InputManager = nullptr;
 
 		// Time of the last frame.
 		float m_LastFrameTime = 0.f;

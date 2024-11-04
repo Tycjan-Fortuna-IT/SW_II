@@ -454,9 +454,11 @@ namespace SW
 
 	bool EditorLayer::OnKeyPressed(KeyCode code)
 	{
-		const bool shift = Input::IsKeyDown(KeyCode::LeftShift) || Input::IsKeyDown(KeyCode::RightShift);
-		const bool ctrl  = Input::IsKeyDown(KeyCode::LeftControl) || Input::IsKeyDown(KeyCode::RightControl);
-		// const bool alt = Input::IsKeyDown(KeyCode::LeftAlt) || Input::IsKeyDown(KeyCode::RightAlt);
+		InputManager* manager = Application::Get()->GetInputManager();
+
+		const bool shift = manager->IsKeyDown(KeyCode::LeftShift) || manager->IsKeyDown(KeyCode::RightShift);
+		const bool ctrl  = manager->IsKeyDown(KeyCode::LeftControl) || manager->IsKeyDown(KeyCode::RightControl);
+		// const bool alt = manager->IsKeyDown(KeyCode::LeftAlt) || manager->IsKeyDown(KeyCode::RightAlt);
 
 		switch (code)
 		{
