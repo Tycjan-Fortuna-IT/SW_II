@@ -2,114 +2,113 @@
 
 #define TESTBED
 
-#include "../../EngineEditor/src/AssetPanels/AnimationEditor.cpp"
-#include "../../EngineEditor/src/AssetPanels/AnimationEditor.hpp"
-#include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.cpp"
 #include "../../EngineEditor/src/AssetPanels/AssetEditorPanelManager.hpp"
-#include "../../EngineEditor/src/AssetPanels/SpritesheetEditor.cpp"
-#include "../../EngineEditor/src/AssetPanels/SpritesheetEditor.hpp"
-#include "../../EngineEditor/src/EditorConsoleSink.hpp"
-#include "../../EngineEditor/src/Panels/AssetPanel.cpp"
 #include "../../EngineEditor/src/Panels/AssetPanel.hpp"
-#include "../../EngineEditor/src/Panels/ConsolePanel.cpp"
 #include "../../EngineEditor/src/Panels/ConsolePanel.hpp"
 #include "Asset/AssetManager.hpp"
 #include "Audio/AudioEngine.hpp"
 #include "Core/Project/Project.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Project/ProjectSerializer.hpp"
-#include "Core/Renderer/RendererAPI.hpp"
 #include "GUI/Editor/EditorResources.hpp"
 #include "GUI/GUI.hpp"
 
+#include <Eventing/Eventing.hpp>
+
 namespace SW
 {
-
-	static AssetPanel* assetPanel     = nullptr;
-	static ConsolePanel* consolePanel = nullptr;
-	static Project* newProject        = nullptr;
+	// static AssetPanel* assetPanel     = nullptr;
+	// static ConsolePanel* consolePanel = nullptr;
+	// static Project* newProject        = nullptr;
 
 	void TestbedLayer::OnAttach()
 	{
-		const GUI::FontSpecification fontSpec("assets/fonts/Roboto/Roboto-Regular.ttf",
-		                                      "assets/fonts/Roboto/Roboto-Bold.ttf");
+		GUI::FontSpecification fontSpec;
+		fontSpec.FontPath     = "assets/fonts/Roboto/Roboto-Regular.ttf";
+		fontSpec.BoldFontPath = "assets/fonts/Roboto/Roboto-Bold.ttf";
+
+		fontSpec.SmallSize   = 12.f;
+		fontSpec.DefaultSize = 16.f;
+		fontSpec.BigSize     = 20.f;
 
 		GUI::Appearance::ApplyStyle(GUI::Style());
 		GUI::Appearance::ApplyColors(GUI::Colors());
 		GUI::Appearance::ApplyFonts(fontSpec);
 
-		Application::Get()->GetWindow()->SetVSync(true);
+		OpenGL::Driver* driver = Application::Get()->GetDriver();
+		driver->SetClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-		Renderer2D::Initialize();
-		EditorResources::Initialize();
+		Renderer2D::Initialize(driver);
 
-		AudioEngine::Initialize();
-		AssetEditorPanelManager::Initialize();
-		AssetManager::Initialize();
+		// EditorResources::Initialize();
 
-		consolePanel = new ConsolePanel();
+		// AudioEngine::Initialize();
+		// AssetEditorPanelManager::Initialize();
+		// AssetManager::Initialize();
 
-		spdlog::sink_ptr logger = std::make_shared<EditorConsoleSink<std::mutex>>(consolePanel);
-		logger->set_pattern("%v");
+		// consolePanel = new ConsolePanel();
 
-		LogSystem::AddAppSink(logger);
+		// spdlog::sink_ptr logger = std::make_shared<EditorConsoleSink<std::mutex>>(consolePanel);
+		// logger->set_pattern("%v");
+
+		// LogSystem::AddAppSink(logger);
 		// assetPanel = new AssetPanel();
 
-		newProject = ProjectSerializer::Deserialize(R"(C:\Users\tycja\Desktop\SW_II\BumCatcher\BumCatcher.swproj)");
-		ProjectContext::Set(newProject); // TODO: Make projects switchable
+		// newProject = ProjectSerializer::Deserialize(R"(C:\Users\tycja\Desktop\SW_II\BumCatcher\BumCatcher.swproj)");
+		// ProjectContext::Set(newProject); // TODO: Make projects switchable
 	}
 
 	void TestbedLayer::OnDetach()
 	{
 		Renderer2D::Shutdown();
-		EditorResources::Shutdown();
+		// EditorResources::Shutdown();
 
-		AudioEngine::Shutdown();
-		AssetEditorPanelManager::Shutdown();
-		AssetManager::Shutdown();
+		// AudioEngine::Shutdown();
+		// AssetEditorPanelManager::Shutdown();
+		// AssetManager::Shutdown();
 
 		// delete assetPanel;
-		delete consolePanel;
-		delete newProject;
+		//  delete consolePanel;
+		// delete newProject;
 	}
 
 	void TestbedLayer::OnUpdate(Timestep dt)
 	{
-		RendererAPI::Clear();
-		// AssetEditorPanelManager::OnUpdate(dt);
-		// assetPanel->OnUpdate(dt);
-		consolePanel->OnUpdate(dt);
-		AudioEngine::OnUpdate(dt);
+		// RendererAPI::Clear();
+		//    AssetEditorPanelManager::OnUpdate(dt);
+		//    assetPanel->OnUpdate(dt);
+		//    consolePanel->OnUpdate(dt);
+		//    AudioEngine::OnUpdate(dt);
 	}
 
 	void TestbedLayer::OnRender()
 	{
-		GUI::Layout::CreateDockspace("Main Dockspace", nullptr);
+		// GUI::Layout::CreateDockspace("Main Dockspace", nullptr);
 
-		ImGui::Begin("Trace");
+		/*ImGui::Begin("Trace");
 
 		if (ImGui::Button("Trace"))
 		{
-			APP_TRACE("Trace "
-			          "messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessages"
-			          "messages");
-			APP_INFO("Info "
-			         "messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesm"
-			         "essages");
-			APP_WARN("Warn "
-			         "messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesm"
-			         "essages");
-			APP_ERROR("Error "
-			          "messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessages"
-			          "messages");
+		    APP_TRACE("Trace "
+		              "messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessages"
+		              "messages");
+		    APP_INFO("Info "
+		             "messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesm"
+		             "essages");
+		    APP_WARN("Warn "
+		             "messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesm"
+		             "essages");
+		    APP_ERROR("Error "
+		              "messagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessagesmessages"
+		              "messages");
 		}
 
-		ImGui::End();
+		ImGui::End();*/
 
 		// AssetEditorPanelManager::OnRender();
 
 		// assetPanel->OnRender();
-		consolePanel->OnRender();
+		//  consolePanel->OnRender();
 
 		// ImGui::Begin("New GUI API");
 #if 0
@@ -417,7 +416,9 @@ namespace SW
 #endif
 		// ImGui::End();
 
-		ImGui::ShowDemoWindow();
+		// auto x = GUI::Appearance::GetFonts();
+
+		// ImGui::ShowDemoWindow();
 	}
 
 } // namespace SW

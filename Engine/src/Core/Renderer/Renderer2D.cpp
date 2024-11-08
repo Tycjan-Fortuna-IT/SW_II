@@ -4,13 +4,13 @@
 #include "Asset/Font.hpp"
 #include "Asset/Sprite.hpp"
 #include "Core/Editor/EditorCamera.hpp"
-#include "Core/OpenGL/IndexBuffer.hpp"
 #include "Core/OpenGL/Shader.hpp"
 #include "Core/OpenGL/Texture2D.hpp"
-#include "Core/OpenGL/VertexArray.hpp"
-#include "Core/OpenGL/VertexBuffer.hpp"
 #include "GUI/Editor/EditorResources.hpp"
-#include "RendererAPI.hpp"
+#include "OpenGL/Rendering/Driver.hpp"
+#include "OpenGL/Rendering/IndexBuffer.hpp"
+#include "OpenGL/Rendering/VertexArray.hpp"
+#include "OpenGL/Rendering/VertexBuffer.hpp"
 
 namespace SW
 {
@@ -66,17 +66,18 @@ namespace SW
 		static constexpr u32 MaxIndices      = MaxQuads * 6;
 		static constexpr u32 MaxTextureSlots = 32;
 
-		VertexArray* QuadVertexArray = nullptr;
-		std::shared_ptr<VertexBuffer> QuadVertexBuffer;
+		OpenGL::VertexArray* QuadVertexArray   = nullptr;
+		OpenGL::VertexBuffer* QuadVertexBuffer = nullptr;
+		OpenGL::IndexBuffer* QuadIndexBuffer   = nullptr;
 
-		VertexArray* LineVertexArray = nullptr;
-		std::shared_ptr<VertexBuffer> LineVertexBuffer;
+		OpenGL::VertexArray* LineVertexArray   = nullptr;
+		OpenGL::VertexBuffer* LineVertexBuffer = nullptr;
 
-		VertexArray* CircleVertexArray = nullptr;
-		std::shared_ptr<VertexBuffer> CircleVertexBuffer;
+		OpenGL::VertexArray* CircleVertexArray   = nullptr;
+		OpenGL::VertexBuffer* CircleVertexBuffer = nullptr;
 
-		VertexArray* TextVertexArray = nullptr;
-		std::shared_ptr<VertexBuffer> TextVertexBuffer;
+		OpenGL::VertexArray* TextVertexArray   = nullptr;
+		OpenGL::VertexBuffer* TextVertexBuffer = nullptr;
 
 		u32 QuadIndexCount               = 0;
 		QuadVertex* QuadVertexBufferBase = nullptr;
@@ -117,8 +118,12 @@ namespace SW
 	Texture2D* Renderer2D::WhiteTexture = nullptr;
 	Texture2D* Renderer2D::BlackTexture = nullptr;
 
-	void Renderer2D::Initialize()
+	OpenGL::Driver* Renderer2D::s_Driver = nullptr;
+
+	void Renderer2D::Initialize(OpenGL::Driver* driver)
 	{
+		s_Driver = driver;
+
 		WhiteTexture         = new Texture2D(1, 1);
 		u32 whiteTextureData = 0xffffffff;
 		WhiteTexture->SetData(&whiteTextureData, sizeof(u32));
@@ -136,78 +141,77 @@ namespace SW
 		s_Data.TextShader =
 		    new Shader("assets/shaders/Builtin.2D.Text.vert.glsl", "assets/shaders/Builtin.2D.Text.frag.glsl");
 
-		s_Data.QuadVertexArray = new VertexArray();
-		s_Data.QuadVertexBuffer =
-		    std::make_shared<VertexBuffer>(static_cast<u32>(s_Data.MaxVertices * sizeof(QuadVertex)));
-
-		s_Data.QuadVertexBuffer->SetLayout({{ShaderDataType::Float3, "a_Position"},
-		                                    {ShaderDataType::Float4, "a_Color"},
-		                                    {ShaderDataType::Float2, "a_TexCoord"},
-		                                    {ShaderDataType::Float, "a_TexIndex"},
-		                                    {ShaderDataType::Float, "a_TilingFactor"},
-		                                    {ShaderDataType::Int, "a_EntityID"}});
-		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
-
-		s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
-
-		u32* quadIndices = new u32[s_Data.MaxIndices];
-
-		for (u32 i = 0, offset = 0; i < s_Data.MaxIndices; i += 6, offset += 4)
+		// Quads
 		{
-			quadIndices[i + 0] = offset + 0;
-			quadIndices[i + 1] = offset + 1;
-			quadIndices[i + 2] = offset + 2;
+			s_Data.QuadVertexBuffer = new OpenGL::VertexBuffer(s_Data.MaxVertices * sizeof(QuadVertex));
+			s_Data.QuadVertexBuffer->AddAttribute(0, OpenGL::ShaderDataType::Float3, "a_Position");
+			s_Data.QuadVertexBuffer->AddAttribute(1, OpenGL::ShaderDataType::Float4, "a_Color");
+			s_Data.QuadVertexBuffer->AddAttribute(2, OpenGL::ShaderDataType::Float2, "a_TexCoord");
+			s_Data.QuadVertexBuffer->AddAttribute(3, OpenGL::ShaderDataType::Float, "a_TexIndex");
+			s_Data.QuadVertexBuffer->AddAttribute(4, OpenGL::ShaderDataType::Float, "a_TilingFactor");
+			s_Data.QuadVertexBuffer->AddAttribute(5, OpenGL::ShaderDataType::Int, "a_EntityID");
 
-			quadIndices[i + 3] = offset + 2;
-			quadIndices[i + 4] = offset + 3;
-			quadIndices[i + 5] = offset + 0;
+			s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
+
+			u32* quadIndices = new u32[s_Data.MaxIndices];
+
+			for (u32 i = 0, offset = 0; i < s_Data.MaxIndices; i += 6, offset += 4)
+			{
+				quadIndices[i + 0] = offset + 0;
+				quadIndices[i + 1] = offset + 1;
+				quadIndices[i + 2] = offset + 2;
+
+				quadIndices[i + 3] = offset + 2;
+				quadIndices[i + 4] = offset + 3;
+				quadIndices[i + 5] = offset + 0;
+			}
+
+			s_Data.QuadIndexBuffer = new OpenGL::IndexBuffer(quadIndices, s_Data.MaxIndices);
+			s_Data.QuadVertexArray = new OpenGL::VertexArray(s_Data.QuadIndexBuffer, s_Data.QuadVertexBuffer);
+
+			delete[] quadIndices;
 		}
-
-		std::shared_ptr<IndexBuffer> quadIndexBuffer = std::make_shared<IndexBuffer>(quadIndices, s_Data.MaxIndices);
-		s_Data.QuadVertexArray->SetIndexBuffer(quadIndexBuffer);
-
-		delete[] quadIndices;
 
 		// Lines
 		{
-			s_Data.LineVertexArray = new VertexArray();
-			s_Data.LineVertexBuffer =
-			    std::make_shared<VertexBuffer>(static_cast<u32>(s_Data.MaxVertices * sizeof(LineVertex)));
-			s_Data.LineVertexBuffer->SetLayout({{ShaderDataType::Float3, "a_Position"},
-			                                    {ShaderDataType::Float4, "a_Color"},
-			                                    {ShaderDataType::Int, "a_EntityID"}});
-			s_Data.LineVertexArray->AddVertexBuffer(s_Data.LineVertexBuffer);
+			s_Data.LineVertexBuffer = new OpenGL::VertexBuffer(s_Data.MaxVertices * sizeof(LineVertex));
+			s_Data.LineVertexBuffer->AddAttribute(0, OpenGL::ShaderDataType::Float3, "a_Position");
+			s_Data.LineVertexBuffer->AddAttribute(1, OpenGL::ShaderDataType::Float4, "a_Color");
+			s_Data.LineVertexBuffer->AddAttribute(2, OpenGL::ShaderDataType::Int, "a_EntityID");
+
+			s_Data.LineVertexArray = new OpenGL::VertexArray(nullptr, s_Data.LineVertexBuffer);
+
 			s_Data.LineVertexBufferBase = new LineVertex[Renderer2DData::MaxVertices];
 		}
 
 		// Circles
 		{
-			s_Data.CircleVertexArray = new VertexArray();
-			s_Data.CircleVertexBuffer =
-			    std::make_shared<VertexBuffer>(static_cast<u32>(s_Data.MaxVertices * sizeof(CircleVertex)));
-			s_Data.CircleVertexBuffer->SetLayout({{ShaderDataType::Float3, "a_WorldPosition"},
-			                                      {ShaderDataType::Float3, "a_LocalPosition"},
-			                                      {ShaderDataType::Float4, "a_Color"},
-			                                      {ShaderDataType::Float, "a_Thickness"},
-			                                      {ShaderDataType::Float, "a_Fade"},
-			                                      {ShaderDataType::Int, "a_EntityID"}});
-			s_Data.CircleVertexArray->AddVertexBuffer(s_Data.CircleVertexBuffer);
-			s_Data.CircleVertexArray->SetIndexBuffer(quadIndexBuffer); // Use quad IB
+			s_Data.CircleVertexBuffer = new OpenGL::VertexBuffer(s_Data.MaxVertices * sizeof(CircleVertex));
+			s_Data.CircleVertexBuffer->AddAttribute(0, OpenGL::ShaderDataType::Float3, "a_WorldPosition");
+			s_Data.CircleVertexBuffer->AddAttribute(1, OpenGL::ShaderDataType::Float3, "a_LocalPosition");
+			s_Data.CircleVertexBuffer->AddAttribute(2, OpenGL::ShaderDataType::Float4, "a_Color");
+			s_Data.CircleVertexBuffer->AddAttribute(3, OpenGL::ShaderDataType::Float, "a_Thickness");
+			s_Data.CircleVertexBuffer->AddAttribute(4, OpenGL::ShaderDataType::Float, "a_Fade");
+			s_Data.CircleVertexBuffer->AddAttribute(5, OpenGL::ShaderDataType::Int, "a_EntityID");
+
+			// Using quad IB
+			s_Data.CircleVertexArray = new OpenGL::VertexArray(s_Data.QuadIndexBuffer, s_Data.CircleVertexBuffer);
+
 			s_Data.CircleVertexBufferBase = new CircleVertex[s_Data.MaxVertices];
 		}
 
 		// Text
 		{
-			s_Data.TextVertexArray = new VertexArray();
-			s_Data.TextVertexBuffer =
-			    std::make_shared<VertexBuffer>(static_cast<u32>(s_Data.MaxVertices * sizeof(TextVertex)));
-			s_Data.TextVertexBuffer->SetLayout({{ShaderDataType::Float3, "a_Position"},
-			                                    {ShaderDataType::Float4, "a_Color"},
-			                                    {ShaderDataType::Float2, "a_TexCoord"},
-			                                    {ShaderDataType::Float, "a_TexIndex"},
-			                                    {ShaderDataType::Int, "a_EntityID"}});
-			s_Data.TextVertexArray->AddVertexBuffer(s_Data.TextVertexBuffer);
-			s_Data.TextVertexArray->SetIndexBuffer(quadIndexBuffer);
+			s_Data.TextVertexBuffer = new OpenGL::VertexBuffer(s_Data.MaxVertices * sizeof(TextVertex));
+			s_Data.TextVertexBuffer->AddAttribute(0, OpenGL::ShaderDataType::Float3, "a_Position");
+			s_Data.TextVertexBuffer->AddAttribute(1, OpenGL::ShaderDataType::Float4, "a_Color");
+			s_Data.TextVertexBuffer->AddAttribute(2, OpenGL::ShaderDataType::Float2, "a_TexCoord");
+			s_Data.TextVertexBuffer->AddAttribute(3, OpenGL::ShaderDataType::Float, "a_TexIndex");
+			s_Data.TextVertexBuffer->AddAttribute(4, OpenGL::ShaderDataType::Int, "a_EntityID");
+
+			// Using quad IB
+			s_Data.TextVertexArray = new OpenGL::VertexArray(s_Data.QuadIndexBuffer, s_Data.TextVertexBuffer);
+
 			s_Data.TextVertexBufferBase = new TextVertex[s_Data.MaxVertices];
 		}
 
@@ -238,6 +242,20 @@ namespace SW
 
 		delete[] s_Data.QuadVertexBufferBase;
 		delete s_Data.QuadVertexArray;
+		delete s_Data.QuadVertexBuffer;
+		delete s_Data.QuadIndexBuffer;
+
+		delete[] s_Data.LineVertexBufferBase;
+		delete s_Data.LineVertexArray;
+		delete s_Data.LineVertexBuffer;
+
+		delete[] s_Data.CircleVertexBufferBase;
+		delete s_Data.CircleVertexArray;
+		delete s_Data.CircleVertexBuffer;
+
+		delete[] s_Data.TextVertexBufferBase;
+		delete s_Data.TextVertexArray;
+		delete s_Data.TextVertexBuffer;
 
 		delete s_Data.SpriteShader;
 		delete s_Data.LineShader;
@@ -328,7 +346,7 @@ namespace SW
 			for (u32 i = 0; i < s_Data.TextureSlotIndex; i++) s_Data.TextureSlots[i]->Bind(i);
 
 			s_Data.SpriteShader->Bind();
-			RendererAPI::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+			s_Driver->DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
 
 			s_Data.Stats.DrawCalls++;
 		}
@@ -339,8 +357,9 @@ namespace SW
 			s_Data.LineVertexBuffer->SetData(s_Data.LineVertexBufferBase, dataSize);
 
 			s_Data.LineShader->Bind();
-			RendererAPI::SetLineWidth(s_Data.LineWidth);
-			RendererAPI::DrawLines(s_Data.LineVertexArray, s_Data.LineVertexCount);
+			s_Driver->SetLineWidth(s_Data.LineWidth);
+			s_Driver->DrawLines(s_Data.LineVertexArray, s_Data.LineVertexCount);
+
 			s_Data.Stats.DrawCalls++;
 		}
 
@@ -350,7 +369,8 @@ namespace SW
 			s_Data.CircleVertexBuffer->SetData(s_Data.CircleVertexBufferBase, dataSize);
 
 			s_Data.CircleShader->Bind();
-			RendererAPI::DrawIndexed(s_Data.CircleVertexArray, s_Data.CircleIndexCount);
+			s_Driver->DrawIndexed(s_Data.CircleVertexArray, s_Data.CircleIndexCount);
+
 			s_Data.Stats.DrawCalls++;
 		}
 
@@ -362,7 +382,8 @@ namespace SW
 			for (u32 i = 0; i < s_Data.FontTextureSlotIndex; i++) s_Data.FontTextureSlots[i]->Bind(i);
 
 			s_Data.TextShader->Bind();
-			RendererAPI::DrawIndexed(s_Data.TextVertexArray, s_Data.TextIndexCount);
+			s_Driver->DrawIndexed(s_Data.TextVertexArray, s_Data.TextIndexCount);
+
 			s_Data.Stats.DrawCalls++;
 		}
 	}

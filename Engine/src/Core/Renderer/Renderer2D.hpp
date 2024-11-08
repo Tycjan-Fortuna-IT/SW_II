@@ -13,6 +13,10 @@
 
 namespace SW
 {
+	namespace OpenGL
+	{
+		class Driver;
+	}
 
 	class Shader;
 	class VertexArray;
@@ -40,11 +44,13 @@ namespace SW
 		static Texture2D* WhiteTexture;
 		static Texture2D* BlackTexture;
 
+		static OpenGL::Driver* s_Driver;
+
 	public:
 		/**
 		 * @brief Initializes the Renderer2D with the specified shader.
 		 */
-		static void Initialize();
+		static void Initialize(OpenGL::Driver* driver);
 
 		/**
 		 * @brief Shuts down the Renderer2D and releases any allocated resources.

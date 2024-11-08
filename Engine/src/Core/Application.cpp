@@ -2,7 +2,6 @@
 
 #include "Asset/AssetManager.hpp"
 #include "GUI/GuiLayer.hpp"
-#include "Renderer/RendererAPI.hpp"
 #include "Scripting/ScriptingCore.hpp"
 #include "Utils/FileSystem.hpp"
 #include <GLFW/glfw3.h>
@@ -38,7 +37,6 @@ namespace SW
 
 		FileSystem::Initialize();
 		AssetManager::Initialize();
-		RendererAPI::Initialize();
 
 		if (m_Specification.EnableCSharpSupport)
 			ScriptingCore::Get().InitializeHost();
@@ -58,7 +56,6 @@ namespace SW
 	{
 		FileSystem::Shutdown();
 		AssetManager::Shutdown();
-		RendererAPI::Shutdown();
 
 		if (m_Specification.EnableCSharpSupport)
 			ScriptingCore::Get().ShutdownHost();

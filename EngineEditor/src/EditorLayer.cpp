@@ -2,6 +2,7 @@
 
 #include "AssetPanels/AssetEditorPanelManager.hpp"
 #include "Audio/AudioEngine.hpp"
+#include "Core/Application.hpp"
 #include "Core/Project/Project.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Project/ProjectSerializer.hpp"
@@ -61,7 +62,10 @@ namespace SW
 		PanelManager::AddPanel(PanelType::AudioEventsPanel, new AudioEventsPanel());
 		PanelManager::AddPanel(PanelType::ProjectSettingsPanel, new ProjectSettingsPanel());
 
-		Renderer2D::Initialize();
+		OpenGL::Driver* driver = Application::Get()->GetDriver();
+		driver->SetClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
+		Renderer2D::Initialize(driver);
 
 #ifdef SW_DEBUG_BUILD
 		OpenProject();

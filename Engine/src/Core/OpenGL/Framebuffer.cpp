@@ -1,6 +1,5 @@
 #include "Framebuffer.hpp"
 
-#include "Core/Renderer/RendererAPI.hpp"
 #include <glad/glad.h>
 
 namespace SW
@@ -136,11 +135,6 @@ namespace SW
 	void Framebuffer::Unbind() const
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
-
-	void Framebuffer::Clear() const
-	{
-		RendererAPI::Clear();
 	}
 
 	int Framebuffer::ReadPixel(u32 attachmentIndex, int x, int y)

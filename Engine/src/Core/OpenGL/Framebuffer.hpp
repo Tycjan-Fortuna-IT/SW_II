@@ -147,12 +147,6 @@ namespace SW
 		void Unbind() const;
 
 		/**
-		 * @brief Clear the framebuffer.
-		 * @warning Must be called after binding the framebuffer.
-		 */
-		void Clear() const;
-
-		/**
 		 * Reads the pixel value at the specified coordinates from the framebuffer attachment.
 		 *
 		 * @param attachmentIndex The index of the attachment to read from.

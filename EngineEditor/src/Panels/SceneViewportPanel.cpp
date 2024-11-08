@@ -136,8 +136,8 @@ namespace SW
 		Renderer2D::ResetStats();
 
 		m_Framebuffer->Bind();
-
-		m_Framebuffer->Clear();
+		Application::Get()->GetDriver()->Clear(true, true, false); // temp
+		// m_Framebuffer->Clear();
 
 		m_Framebuffer->ClearAttachment(1, -1);
 
