@@ -43,3 +43,6 @@
 [submodule "Engine/modules/Eventing"]
 	path = Engine/modules/Eventing
 	url = https://github.com/Tycjan-Fortuna-IT/Eventing.git
+[submodule "Engine/modules/OpenGL"]
+	path = Engine/modules/OpenGL
+	url = https://github.com/Tycjan-Fortuna-IT/OpenGL.git
