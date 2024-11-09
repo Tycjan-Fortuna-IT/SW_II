@@ -2,7 +2,6 @@
 
 #include "Asset.hpp"
 #include "AssetSourceItem.hpp"
-#include "Core/OpenGL/Texture2D.hpp"
 
 namespace SW
 {

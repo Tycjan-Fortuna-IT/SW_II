@@ -13,7 +13,7 @@
 namespace SW
 {
 
-	class Texture2D;
+	class Texture2DAsset;
 
 	using AssetHandle = u64;
 

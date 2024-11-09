@@ -1,12 +1,12 @@
 #include "FontCache.hpp"
 
-#include "Core/OpenGL/Texture2D.hpp"
+#include "Asset/Texture2DAsset.hpp"
 #include "Core/Project/ProjectContext.hpp"
 
 namespace SW
 {
 
-	Texture2D* FontCache::TryGetCachedAtlas(AssetHandle handle, Timestamp lastModified)
+	Texture2DAsset* FontCache::TryGetCachedAtlas(AssetHandle handle, Timestamp lastModified)
 	{
 		const std::filesystem::path cachePath = ProjectContext::Get()->GetAssetDirectory() / "cache" / "fonts";
 
@@ -40,12 +40,12 @@ namespace SW
 					file.read(data, width * height * channels);
 					file.close();
 
-					TextureSpecification spec;
+					OpenGL::TextureSpecification spec;
 					spec.Height = height;
 					spec.Width  = width;
-					spec.Format = channels == 3 ? ImageFormat::RGB8 : ImageFormat::RGBA8;
+					spec.Format = channels == 3 ? OpenGL::ImageFormat::RGB8 : OpenGL::ImageFormat::RGBA8;
 
-					Texture2D* texture = new Texture2D(spec);
+					Texture2DAsset* texture = new Texture2DAsset(spec);
 					texture->SetData(data, width * height * channels);
 					delete[] data;
 
@@ -63,7 +63,7 @@ namespace SW
 		return nullptr;
 	}
 
-	void FontCache::CacheAtlas(const Texture2D* atlas, AssetHandle handle, Timestamp lastModified)
+	void FontCache::CacheAtlas(const OpenGL::Texture2D* atlas, AssetHandle handle, Timestamp lastModified)
 	{
 		const std::filesystem::path cachePath = ProjectContext::Get()->GetAssetDirectory() / "cache" / "fonts";
 		const std::string newFilename         = std::to_string(handle) + "_" + std::to_string(lastModified) + ".cache";

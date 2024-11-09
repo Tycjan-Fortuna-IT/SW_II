@@ -9,15 +9,15 @@
 #pragma once
 
 #include "Asset.hpp"
-#include "Font.hpp"
+#include "Asset/FontAsset.hpp"
 
 namespace SW
 {
 
 	struct FontImportData
 	{
-		AssetHandle FontSourceHandle = 0u;
-		FontCharsetType CharsetType  = FontCharsetType::ASCII;
+		AssetHandle FontSourceHandle        = 0u;
+		OpenGL::FontCharsetType CharsetType = OpenGL::FontCharsetType::ASCII;
 		std::filesystem::path OutputPath;
 
 		explicit operator bool() { return FontSourceHandle && !OutputPath.empty(); }

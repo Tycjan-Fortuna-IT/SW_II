@@ -16,12 +16,13 @@ namespace SW
 	namespace OpenGL
 	{
 		class Driver;
-	}
+	} // namespace OpenGL
 
 	class Shader;
 	class VertexArray;
 	class EditorCamera;
-	class Font;
+	class FontAsset;
+	class Texture2DAsset;
 
 	/**
 	 * @brief The Renderer2DStatistics struct contains statistics of the Renderer2D.
@@ -41,8 +42,8 @@ namespace SW
 	class Renderer2D final
 	{
 	public:
-		static Texture2D* WhiteTexture;
-		static Texture2D* BlackTexture;
+		static Texture2DAsset* WhiteTexture;
+		static Texture2DAsset* BlackTexture;
 
 		static OpenGL::Driver* s_Driver;
 
@@ -179,7 +180,7 @@ namespace SW
 		 */
 		static void DrawString(const glm::mat4& transform, const TextComponent& text, int entityID = -1);
 
-		static void DrawString(const std::string& string, Font** font, const glm::mat4& transform,
+		static void DrawString(const std::string& string, FontAsset** font, const glm::mat4& transform,
 		                       const glm::vec4& color, f32 kerning = 0.0f, f32 lineSpacing = 0.0f, int entityID = -1);
 	};
 

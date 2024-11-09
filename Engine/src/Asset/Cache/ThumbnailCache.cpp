@@ -1,11 +1,12 @@
 #include "ThumbnailCache.hpp"
 
 #include "Asset/AssetManager.hpp"
-#include "Asset/Font.hpp"
-#include "Core/OpenGL/Texture2D.hpp"
+#include "Asset/FontAsset.hpp"
+#include "Asset/Texture2DAsset.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Utils/FileSystem.hpp"
 #include "Core/Utils/SerializationUtils.hpp"
+#include "OpenGL/Rendering/Font.hpp"
 
 namespace SW
 {
@@ -18,8 +19,8 @@ namespace SW
 		}
 	}
 
-	Texture2D** ThumbnailCache::GetTextureThumbnail(const std::filesystem::path& itemPath, AssetHandle handle,
-	                                                Timestamp lastModified)
+	Texture2DAsset** ThumbnailCache::GetTextureThumbnail(const std::filesystem::path& itemPath, AssetHandle handle,
+	                                                     Timestamp lastModified)
 	{
 		auto it = m_Thumbnails.find(handle);
 
@@ -85,12 +86,12 @@ namespace SW
 					file.read(data, width * height * channels);
 					file.close();
 
-					TextureSpecification spec;
+					OpenGL::TextureSpecification spec;
 					spec.Height = (u32)height;
 					spec.Width  = (u32)width;
-					spec.Format = (u32)channels == 3 ? ImageFormat::RGB8 : ImageFormat::RGBA8;
+					spec.Format = (u32)channels == 3 ? OpenGL::ImageFormat::RGB8 : OpenGL::ImageFormat::RGBA8;
 
-					Texture2D* texture = new Texture2D(spec);
+					Texture2DAsset* texture = new Texture2DAsset(spec);
 					texture->SetData(data, (u32)(width * height * channels));
 					delete[] data;
 
@@ -111,8 +112,8 @@ namespace SW
 		return LoadAndCacheTexture(itemPath, cachePath, handle, lastModified);
 	}
 
-	Texture2D** ThumbnailCache::GetFontAtlasThumbnail(const std::filesystem::path& itemPath, AssetHandle handle,
-	                                                  Timestamp lastModified)
+	Texture2DAsset** ThumbnailCache::GetFontAtlasThumbnail(const std::filesystem::path& itemPath, AssetHandle handle,
+	                                                       Timestamp lastModified)
 	{
 		auto it = m_Thumbnails.find(handle);
 
@@ -162,12 +163,12 @@ namespace SW
 					file.read(data, width * height * channels);
 					file.close();
 
-					TextureSpecification spec;
+					OpenGL::TextureSpecification spec;
 					spec.Height = (u32)height;
 					spec.Width  = (u32)width;
-					spec.Format = channels == 3 ? ImageFormat::RGB8 : ImageFormat::RGBA8;
+					spec.Format = channels == 3 ? OpenGL::ImageFormat::RGB8 : OpenGL::ImageFormat::RGBA8;
 
-					Texture2D* texture = new Texture2D(spec);
+					Texture2DAsset* texture = new Texture2DAsset(spec);
 					texture->SetData(data, (u32)(width * height * channels));
 					delete[] data;
 
@@ -201,7 +202,7 @@ namespace SW
 		                                            "thumbnails");
 	}
 
-	void ThumbnailCache::DownscaleTexture(Texture2D* texture)
+	void ThumbnailCache::DownscaleTexture(Texture2DAsset* texture)
 	{
 		i32 originalWidth  = texture->GetWidth();
 		i32 originalHeight = texture->GetHeight();
@@ -223,13 +224,13 @@ namespace SW
 		texture->ChangeSize(newWidth, newHeight);
 	}
 
-	Texture2D** ThumbnailCache::LoadAndCacheTexture(const std::filesystem::path& itemPath,
-	                                                const std::filesystem::path& cachePath, AssetHandle handle,
-	                                                Timestamp lastModified)
+	Texture2DAsset** ThumbnailCache::LoadAndCacheTexture(const std::filesystem::path& itemPath,
+	                                                     const std::filesystem::path& cachePath, AssetHandle handle,
+	                                                     Timestamp lastModified)
 	{
 		const std::string newFilename = std::to_string(handle) + "_" + std::to_string(lastModified) + ".cache";
 
-		Texture2D* loaded = new Texture2D(ProjectContext::Get()->GetAssetDirectory() / itemPath);
+		Texture2DAsset* loaded = new Texture2DAsset(ProjectContext::Get()->GetAssetDirectory() / itemPath);
 		DownscaleTexture(loaded);
 
 		std::ofstream file(cachePath / newFilename, std::ios::binary | std::ios::trunc);
@@ -252,9 +253,9 @@ namespace SW
 		return &m_Thumbnails[handle].Texture;
 	}
 
-	Texture2D** ThumbnailCache::LoadAndCacheFontAtlas(const std::filesystem::path& itemPath,
-	                                                  const std::filesystem::path& cachePath, AssetHandle handle,
-	                                                  Timestamp lastModified)
+	Texture2DAsset** ThumbnailCache::LoadAndCacheFontAtlas(const std::filesystem::path& itemPath,
+	                                                       const std::filesystem::path& cachePath, AssetHandle handle,
+	                                                       Timestamp lastModified)
 	{
 		const std::string newFilename = std::to_string(handle) + "_" + std::to_string(lastModified) + ".cache";
 
@@ -268,15 +269,16 @@ namespace SW
 
 		const AssetMetaData& sourceMetadata = AssetManager::GetAssetMetaData(fontSourceHandle);
 
-		FontSpecification spec;
-		spec.Path    = ProjectContext::Get()->GetAssetDirectory() / sourceMetadata.Path;
-		spec.Charset = (FontCharsetType)TryDeserializeNode<int>(data, "CharsetType", (int)FontCharsetType::ASCII);
+		OpenGL::FontSpecification spec;
+		spec.Path = ProjectContext::Get()->GetAssetDirectory() / sourceMetadata.Path;
+		spec.Charset =
+		    (OpenGL::FontCharsetType)TryDeserializeNode<int>(data, "CharsetType", (int)OpenGL::FontCharsetType::ASCII);
 		spec.ApplyMSDFColoring = false;
 		spec.ForceHeight       = 512;
 		spec.ForceWidth        = 512;
 
-		Font* font       = new Font(spec);
-		Texture2D* atlas = font->GetAtlasTexture();
+		OpenGL::Font* font       = new OpenGL::Font(spec);
+		OpenGL::Texture2D* atlas = font->GetAtlasTexture();
 
 		std::ofstream file(cachePath / newFilename, std::ios::binary | std::ios::trunc);
 
@@ -294,12 +296,12 @@ namespace SW
 		file.close();
 
 		// Copy the font atlas texture since we delete font afterwards (maybe clean this later on)
-		TextureSpecification texSpec;
+		OpenGL::TextureSpecification texSpec;
 		texSpec.Height = (u32)height;
 		texSpec.Width  = (u32)width;
-		texSpec.Format = channels == 3 ? ImageFormat::RGB8 : ImageFormat::RGBA8;
+		texSpec.Format = channels == 3 ? OpenGL::ImageFormat::RGB8 : OpenGL::ImageFormat::RGBA8;
 
-		Texture2D* texture = new Texture2D(texSpec);
+		Texture2DAsset* texture = new Texture2DAsset(texSpec);
 		texture->SetData((void*)bytes, (u32)(width * height * channels));
 
 		delete font;

@@ -222,6 +222,7 @@ namespace SW
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
 			ImGui::SetItemAllowOverlap();
 
+			GUI::ScopedID id("MinimizeButton");
 			if (GUI::Components::ImageButton(*EditorResources::MinimizeIcon, {40.f, 40.f}))
 			{
 				Application::Get()->GetWindow()->Minimize();
@@ -236,6 +237,8 @@ namespace SW
 			ImGui::SetCursorPosX(rightOffset - windowPadding.x);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
 			ImGui::SetItemAllowOverlap();
+
+			GUI::ScopedID id("MaximizeButton");
 
 			if (m_WindowMaximized)
 			{
@@ -260,6 +263,8 @@ namespace SW
 			ImGui::SetCursorPosX(rightOffset - windowPadding.x);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f + windowPadding.y);
 			ImGui::SetItemAllowOverlap();
+
+			GUI::ScopedID id("CloseButton");
 
 			if (GUI::Components::ImageButton(*EditorResources::CloseIcon, {40.f, 40.f}))
 			{

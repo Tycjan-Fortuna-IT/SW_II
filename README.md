@@ -69,6 +69,8 @@ Start by cloning the repository with `git clone --recursive https://github.com/T
 
 If the repository was cloned non-recursively previously, use `git submodule update --init` to clone the necessary submodules.
 
+Use `git submodule update --init --recursive` to also clone all submodules' dependencies.
+
 ## <ins>**2. Generating solution:**</ins>
 
 - `Windows` - Run the [Setup-Windows-VS2022.bat](https://github.com/Tycjan-Fortuna-IT/SW_II/blob/master/Setup-Windows-VS2022.bat) file. This will (using premake5) generate all neccessary projects, folder structure, links and solution automatically.

@@ -79,11 +79,11 @@ namespace SW
 				                                          ProjectContext::Get()->GetAssetDirectory(), "Export Path");
 
 				AssetHandle handle = (*m_Spritesheet)->GetSpritesheetTexture()
-				                         ? (*m_Spritesheet)->GetSpritesheetTexture()->GetHandle()
+				                         ? (*m_Spritesheet)->GetSpritesheetTexture()->Asset::GetHandle()
 				                         : 0u;
-				if (GUI::Properties::AssetSearchProperty<Texture2D>(&handle, "Spritesheet"))
+				if (GUI::Properties::AssetSearchProperty<Texture2DAsset>(&handle, "Spritesheet"))
 				{
-					Texture2D** texture = handle ? AssetManager::GetAssetRaw<Texture2D>(handle) : nullptr;
+					Texture2DAsset** texture = handle ? AssetManager::GetAssetRaw<Texture2DAsset>(handle) : nullptr;
 
 					(*m_Spritesheet)->SetSpritesheetTexture(texture);
 				}
@@ -171,13 +171,13 @@ namespace SW
 					drawList->AddRectFilled(rect.Min, rect.Max, GUI::Theme::HeaderHovered);
 				}
 
-				Texture2D* spritesheetTexture = (*m_Spritesheet)->GetSpritesheetTexture();
+				Texture2DAsset* spritesheetTexture = (*m_Spritesheet)->GetSpritesheetTexture();
 				if (!spritesheetTexture)
 					spritesheetTexture = EditorResources::MissingAssetIcon;
 
 				const ImVec2 texSize = {(f32)spritesheetTexture->GetWidth(), (f32)spritesheetTexture->GetHeight()};
 
-				ImGui::Image(GUI::GetTextureID(spritesheetTexture->GetTexHandle()), texSize, {0, 1}, {1, 0});
+				ImGui::Image(GUI::GetTextureID(spritesheetTexture), texSize, {0, 1}, {1, 0});
 
 				// in the middle, a dot
 				drawList->AddCircleFilled(ImVec2(0.f, 0.f), 2.0f, GUI::Theme::MissingMesh);
@@ -416,10 +416,10 @@ namespace SW
 
 	void SpritesheetEditor::ExportSprites() const
 	{
-		const Texture2D* texture = (*m_Spritesheet)->GetSpritesheetTexture();
-		const f32 texWidth       = (f32)texture->GetWidth();
-		const f32 texHeight      = (f32)texture->GetHeight();
-		const glm::vec2 offset   = (*m_Spritesheet)->CenterOffset;
+		const Texture2DAsset* texture = (*m_Spritesheet)->GetSpritesheetTexture();
+		const f32 texWidth            = (f32)texture->GetWidth();
+		const f32 texHeight           = (f32)texture->GetHeight();
+		const glm::vec2 offset        = (*m_Spritesheet)->CenterOffset;
 
 		for (const SpriteData& sprite : (*m_Spritesheet)->Sprites)
 		{
@@ -442,7 +442,7 @@ namespace SW
 			output << YAML::Key << "Sprite" << YAML::Value;
 			output << YAML::BeginMap;
 			output << YAML::Key << "SpritesheetTextureHandle" << YAML::Value
-			       << (*m_Spritesheet)->GetSpritesheetTexture()->GetHandle();
+			       << (*m_Spritesheet)->GetSpritesheetTexture()->Asset::GetHandle();
 			output << YAML::Key << "TexCordLeftDown" << YAML::Value << leftDown;
 			output << YAML::Key << "TexCordRightDown" << YAML::Value << rightDown;
 			output << YAML::Key << "TexCordUpRight" << YAML::Value << upRight;
@@ -473,7 +473,7 @@ namespace SW
 
 			GUI::Properties::BeginProperties("##spritesheet_editor_generate_from_grid_options");
 
-			const Texture2D* texture = (*m_Spritesheet)->GetSpritesheetTexture();
+			const Texture2DAsset* texture = (*m_Spritesheet)->GetSpritesheetTexture();
 
 			static glm::vec2 gridSize = {(*m_Spritesheet)->GridSize, (*m_Spritesheet)->GridSize};
 			GUI::Properties::Vector2InputProperty(

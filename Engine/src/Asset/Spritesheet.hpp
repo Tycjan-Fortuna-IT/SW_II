@@ -9,8 +9,8 @@
 #pragma once
 
 #include "Asset.hpp"
+#include "Asset/Texture2DAsset.hpp"
 #include "AssetManager.hpp"
-#include "Core/OpenGL/Texture2D.hpp"
 #include "Sprite.hpp"
 
 namespace SW
@@ -33,10 +33,10 @@ namespace SW
 		static AssetType GetStaticType() { return AssetType::Spritesheet; }
 		AssetType GetAssetType() const override { return AssetType::Spritesheet; }
 
-		Texture2D* GetSpritesheetTexture() const { return m_SpritesheetTexture ? *m_SpritesheetTexture : nullptr; }
-		void SetSpritesheetTexture(Texture2D** texture) { m_SpritesheetTexture = texture; }
+		Texture2DAsset* GetSpritesheetTexture() const { return m_SpritesheetTexture ? *m_SpritesheetTexture : nullptr; }
+		void SetSpritesheetTexture(Texture2DAsset** texture) { m_SpritesheetTexture = texture; }
 
-		Texture2D** GetSpritesheetTextureRaw() const { return m_SpritesheetTexture; }
+		Texture2DAsset** GetSpritesheetTextureRaw() const { return m_SpritesheetTexture; }
 
 	public:
 		std::vector<SpriteData> Sprites;
@@ -53,7 +53,7 @@ namespace SW
 		bool ShowGridCoords   = false;
 
 	private:
-		Texture2D** m_SpritesheetTexture = nullptr;
+		Texture2DAsset** m_SpritesheetTexture = nullptr;
 	};
 
 } // namespace SW

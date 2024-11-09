@@ -288,9 +288,9 @@ namespace SW::GUI::Popups
 			{
 				GUI::Properties::BeginProperties("##font_import_advanced_property");
 
-				GUI::Properties::RadioButtonProperty<FontCharsetType>(
-				    &m_Data.CharsetType, {{"ASCII", FontCharsetType::ASCII}, {"ALL", FontCharsetType::ALL}},
-				    "Charset Type",
+				GUI::Properties::RadioButtonProperty<OpenGL::FontCharsetType>(
+				    &m_Data.CharsetType,
+				    {{"ASCII", OpenGL::FontCharsetType::ASCII}, {"ALL", OpenGL::FontCharsetType::ALL}}, "Charset Type",
 				    "Define which set of characters to use (ALL is much more memory intensive than ASCII)");
 
 				GUI::Properties::EndProperties();
@@ -341,7 +341,7 @@ namespace SW::GUI::Popups
 	void FontSourceImportDialog::Reset()
 	{
 		m_Data.FontSourceHandle = 0u;
-		m_Data.CharsetType      = SW::FontCharsetType::ASCII;
+		m_Data.CharsetType      = OpenGL::FontCharsetType::ASCII;
 		m_Data.OutputPath       = "";
 	}
 

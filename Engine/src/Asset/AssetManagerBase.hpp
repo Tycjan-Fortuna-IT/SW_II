@@ -9,7 +9,6 @@
 #pragma once
 
 #include "AssetRegistry.hpp"
-#include "Core/OpenGL/Texture2D.hpp"
 
 namespace SW
 {

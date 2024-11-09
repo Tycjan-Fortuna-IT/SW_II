@@ -30,13 +30,13 @@ namespace SW
 		m_WindowKeyPressedListener = Application::Get()->GetWindow()->KeyPressedEvent +=
 		    std::bind_front(&SceneViewportPanel::OnKeyPressed, this);
 
-		const FramebufferSpecification spec = {.Width       = 1280,
-		                                       .Height      = 720,
-		                                       .Attachments = {FramebufferTextureFormat::RGBA8,
-		                                                       FramebufferTextureFormat::RED_INTEGER,
-		                                                       FramebufferTextureFormat::Depth}};
+		const OpenGL::FramebufferSpecification spec = {.Width       = 1280,
+		                                               .Height      = 720,
+		                                               .Attachments = {OpenGL::FramebufferTextureFormat::RGBA8,
+		                                                               OpenGL::FramebufferTextureFormat::RED_INTEGER,
+		                                                               OpenGL::FramebufferTextureFormat::Depth}};
 
-		m_Framebuffer = new Framebuffer(spec);
+		m_Framebuffer = new OpenGL::Framebuffer(spec);
 
 		m_EditorCamera = new EditorCamera();
 		m_EditorCamera->SetViewportSize((f32)spec.Width, (f32)spec.Height);
@@ -56,7 +56,7 @@ namespace SW
 	{
 		PROFILE_FUNCTION();
 
-		FramebufferSpecification spec = m_Framebuffer->GetSpecification();
+		OpenGL::FramebufferSpecification spec = m_Framebuffer->GetSpecification();
 
 		if (m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && // if it's a valid size viewport
 		    (spec.Width != (u32)m_ViewportSize.x || spec.Height != (u32)m_ViewportSize.y) // if it changed

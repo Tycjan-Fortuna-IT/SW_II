@@ -11,7 +11,7 @@
 namespace SW
 {
 
-	class Texture2D;
+	class Texture2DAsset;
 
 	struct Thumbnail
 	{
@@ -21,7 +21,7 @@ namespace SW
 		ImVec2 TexCoordMin = {0, 1};
 		ImVec2 TexCoordMax = {1, 0};
 
-		Texture2D** Texture = nullptr;
+		Texture2DAsset** Texture = nullptr;
 
 		// For Animation2D thumbnail
 		// TODO: In the future cleanup the thumbnail system, split it into many derived classes like:

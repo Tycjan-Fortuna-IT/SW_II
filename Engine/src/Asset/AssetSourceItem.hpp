@@ -9,7 +9,6 @@
 #pragma once
 
 #include "Asset.hpp"
-#include "Core/OpenGL/Texture2D.hpp"
 #include "GUI/Icons.hpp"
 
 namespace SW

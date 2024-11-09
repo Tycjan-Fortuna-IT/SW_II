@@ -13,7 +13,7 @@
 namespace SW
 {
 
-	class Texture2D;
+	class Texture2DAsset;
 
 	class Sprite final : public Asset
 	{
@@ -24,10 +24,10 @@ namespace SW
 		static AssetType GetStaticType() { return AssetType::Sprite; }
 		AssetType GetAssetType() const override { return AssetType::Sprite; }
 
-		Texture2D* GetTexture() const { return *m_Texture; }
-		Texture2D** GetTextureRaw() const { return m_Texture; }
+		Texture2DAsset* GetTexture() const { return *m_Texture; }
+		Texture2DAsset** GetTextureRaw() const { return m_Texture; }
 
-		void SetTexture(Texture2D** texture) { m_Texture = texture; }
+		void SetTexture(Texture2DAsset** texture) { m_Texture = texture; }
 
 	public:
 		glm::vec2 TexCordLeftDown  = glm::vec2(0.f);
@@ -36,7 +36,7 @@ namespace SW
 		glm::vec2 TexCordUpLeft    = glm::vec2(0.f);
 
 	private:
-		Texture2D** m_Texture = nullptr;
+		Texture2DAsset** m_Texture = nullptr;
 	};
 
 } // namespace SW

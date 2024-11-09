@@ -1,14 +1,14 @@
 #include "Renderer2D.hpp"
 
 #include "Asset/AssetManager.hpp"
-#include "Asset/Font.hpp"
+#include "Asset/FontAsset.hpp"
 #include "Asset/Sprite.hpp"
 #include "Core/Editor/EditorCamera.hpp"
-#include "Core/OpenGL/Shader.hpp"
-#include "Core/OpenGL/Texture2D.hpp"
 #include "GUI/Editor/EditorResources.hpp"
 #include "OpenGL/Rendering/Driver.hpp"
 #include "OpenGL/Rendering/IndexBuffer.hpp"
+#include "OpenGL/Rendering/Shader.hpp"
+#include "OpenGL/Rendering/Texture2D.hpp"
 #include "OpenGL/Rendering/VertexArray.hpp"
 #include "OpenGL/Rendering/VertexBuffer.hpp"
 
@@ -95,8 +95,8 @@ namespace SW
 		TextVertex* TextVertexBufferBase = nullptr;
 		TextVertex* TextVertexBufferPtr  = nullptr;
 
-		std::array<Texture2D*, MaxTextureSlots> TextureSlots;
-		std::array<Texture2D*, MaxTextureSlots> FontTextureSlots;
+		std::array<Texture2DAsset*, MaxTextureSlots> TextureSlots;
+		std::array<Texture2DAsset*, MaxTextureSlots> FontTextureSlots;
 
 		u32 TextureSlotIndex     = 1; // 0 = white texture
 		u32 FontTextureSlotIndex = 0;
@@ -105,18 +105,18 @@ namespace SW
 
 		glm::vec4 QuadVertexPositions[4] = {};
 
-		Shader* SpriteShader = nullptr;
-		Shader* LineShader   = nullptr;
-		Shader* CircleShader = nullptr;
-		Shader* TextShader   = nullptr;
+		OpenGL::Shader* SpriteShader = nullptr;
+		OpenGL::Shader* LineShader   = nullptr;
+		OpenGL::Shader* CircleShader = nullptr;
+		OpenGL::Shader* TextShader   = nullptr;
 
 		Renderer2DStatistics Stats;
 	};
 
 	static Renderer2DData s_Data;
 
-	Texture2D* Renderer2D::WhiteTexture = nullptr;
-	Texture2D* Renderer2D::BlackTexture = nullptr;
+	Texture2DAsset* Renderer2D::WhiteTexture = nullptr;
+	Texture2DAsset* Renderer2D::BlackTexture = nullptr;
 
 	OpenGL::Driver* Renderer2D::s_Driver = nullptr;
 
@@ -124,22 +124,25 @@ namespace SW
 	{
 		s_Driver = driver;
 
-		WhiteTexture         = new Texture2D(1, 1);
+		WhiteTexture         = new Texture2DAsset(1, 1);
 		u32 whiteTextureData = 0xffffffff;
 		WhiteTexture->SetData(&whiteTextureData, sizeof(u32));
 
-		BlackTexture         = new Texture2D(1, 1);
+		BlackTexture         = new Texture2DAsset(1, 1);
 		u32 blackTextureData = 0x000000ff;
 		BlackTexture->SetData(&blackTextureData, sizeof(u32));
 
-		s_Data.SpriteShader =
-		    new Shader("assets/shaders/Builtin.2D.Sprite.vert.glsl", "assets/shaders/Builtin.2D.Sprite.frag.glsl");
-		s_Data.LineShader =
-		    new Shader("assets/shaders/Builtin.2D.Line.vert.glsl", "assets/shaders/Builtin.2D.Line.frag.glsl");
-		s_Data.CircleShader =
-		    new Shader("assets/shaders/Builtin.2D.Circle.vert.glsl", "assets/shaders/Builtin.2D.Circle.frag.glsl");
-		s_Data.TextShader =
-		    new Shader("assets/shaders/Builtin.2D.Text.vert.glsl", "assets/shaders/Builtin.2D.Text.frag.glsl");
+		s_Data.SpriteShader = new OpenGL::Shader(
+		    {"assets/shaders/Builtin.2D.Sprite.vert.glsl", "assets/shaders/Builtin.2D.Sprite.frag.glsl"});
+
+		s_Data.LineShader = new OpenGL::Shader(
+		    {"assets/shaders/Builtin.2D.Line.vert.glsl", "assets/shaders/Builtin.2D.Line.frag.glsl"});
+
+		s_Data.CircleShader = new OpenGL::Shader(
+		    {"assets/shaders/Builtin.2D.Circle.vert.glsl", "assets/shaders/Builtin.2D.Circle.frag.glsl"});
+
+		s_Data.TextShader = new OpenGL::Shader(
+		    {"assets/shaders/Builtin.2D.Text.vert.glsl", "assets/shaders/Builtin.2D.Text.frag.glsl"});
 
 		// Quads
 		{
@@ -407,7 +410,7 @@ namespace SW
 		{
 			Sprite** spriteAsset = AssetManager::GetAssetRaw<Sprite>(sprite.Handle);
 
-			Texture2D* texture = nullptr;
+			Texture2DAsset* texture = nullptr;
 			if (spriteAsset)
 				texture = (*spriteAsset)->GetTexture();
 			else
@@ -469,8 +472,8 @@ namespace SW
 			asc.CurrentFrame = 0;
 		}
 
-		Sprite** sprite    = (*asc.CurrentAnimation)->Sprites[asc.CurrentFrame];
-		Texture2D* texture = (*sprite)->GetTexture();
+		Sprite** sprite         = (*asc.CurrentAnimation)->Sprites[asc.CurrentFrame];
+		Texture2DAsset* texture = (*sprite)->GetTexture();
 
 		for (u32 i = 1; i < s_Data.TextureSlotIndex; i++)
 		{
@@ -533,7 +536,7 @@ namespace SW
 
 		glm::vec2 texCoords[4] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
 
-		Texture2D* texture = EditorResources::MissingAssetIcon;
+		Texture2DAsset* texture = EditorResources::MissingAssetIcon;
 
 		for (u32 i = 1; i < s_Data.TextureSlotIndex; i++)
 		{
@@ -632,7 +635,7 @@ namespace SW
 
 	void Renderer2D::DrawString(const glm::mat4& transform, const TextComponent& text, int entityID)
 	{
-		Font** fontAsset = AssetManager::GetAssetRaw<Font>(text.Handle);
+		FontAsset** fontAsset = AssetManager::GetAssetRaw<FontAsset>(text.Handle);
 
 		if (!fontAsset)
 		{
@@ -644,13 +647,13 @@ namespace SW
 		DrawString(text.TextString, fontAsset, transform, text.Color, text.Kerning, text.LineSpacing, entityID);
 	}
 
-	void Renderer2D::DrawString(const std::string& string, Font** font, const glm::mat4& transform,
+	void Renderer2D::DrawString(const std::string& string, FontAsset** font, const glm::mat4& transform,
 	                            const glm::vec4& color, f32 kerning /*= 0.0f*/, f32 lineSpacing /*= 0.0f*/,
 	                            int entityID /*= -1*/)
 	{
 		f32 textureIndex = 0.f;
 
-		Texture2D* atlasTexture                      = (*font)->GetAtlasTexture();
+		Texture2DAsset* atlasTexture                 = (*font)->GetTextureAtlasAsset();
 		const msdf_atlas::FontGeometry& fontGeometry = (*font)->GetMSDFData().FontGeometry;
 		const msdfgen::FontMetrics& fontMetrics      = fontGeometry.getMetrics();
 

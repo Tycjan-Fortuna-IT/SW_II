@@ -2,13 +2,15 @@
 
 #include "Animation2D.hpp"
 #include "Asset.hpp"
-#include "Asset/Font.hpp"
+#include "Asset/FontAsset.hpp"
 #include "Audio/Sound.hpp"
 #include "Cache/FontCache.hpp"
 #include "Core/Scene/Scene.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Core/Utils/SerializationUtils.hpp"
 #include "GUI/Editor/EditorResources.hpp"
+#include "OpenGL/Rendering/Font.hpp"
+#include "OpenGL/Rendering/Texture2D.hpp"
 #include "Prefab.hpp"
 #include "Spritesheet.hpp"
 #include "core/Project/ProjectContext.hpp"
@@ -35,7 +37,7 @@ namespace SW
 
 	Asset* Texture2DSerializer::TryLoadAsset(const AssetMetaData& metadata)
 	{
-		Texture2D* texture = new Texture2D(ProjectContext::Get()->GetAssetDirectory() / metadata.Path, true);
+		Texture2DAsset* texture = new Texture2DAsset(ProjectContext::Get()->GetAssetDirectory() / metadata.Path, true);
 
 		return texture;
 	}
@@ -64,8 +66,8 @@ namespace SW
 
 		const u64 handle   = TryDeserializeNode<u64>(data, "SpritesheetTextureHandle", 0);
 		const bool isValid = AssetManager::IsValid(handle);
-		Texture2D** texture =
-		    isValid ? AssetManager::GetAssetRaw<Texture2D>(handle) : &EditorResources::MissingAssetIcon;
+		Texture2DAsset** texture =
+		    isValid ? AssetManager::GetAssetRaw<Texture2DAsset>(handle) : &EditorResources::MissingAssetIcon;
 
 		sprite->SetTexture(texture);
 		sprite->TexCordLeftDown  = isValid
@@ -92,8 +94,8 @@ namespace SW
 		output << YAML::Key << "Spritesheet" << YAML::Value;
 
 		output << YAML::BeginMap;
-		Texture2D* texture = spritesheet->GetSpritesheetTexture();
-		output << YAML::Key << "TextureHandle" << YAML::Value << (texture ? texture->GetHandle() : 0u);
+		Texture2DAsset* texture = spritesheet->GetSpritesheetTexture();
+		output << YAML::Key << "TextureHandle" << YAML::Value << (texture ? texture->Asset::GetHandle() : 0u);
 		output << YAML::Key << "ViewZoom" << YAML::Value << spritesheet->ViewZoom;
 		output << YAML::Key << "GridSize" << YAML::Value << spritesheet->GridSize;
 		output << YAML::Key << "CenterOffset" << YAML::Value << spritesheet->CenterOffset;
@@ -144,8 +146,8 @@ namespace SW
 
 		Spritesheet* spritesheet = new Spritesheet();
 
-		const u64 handle    = TryDeserializeNode<u64>(data, "TextureHandle", 0);
-		Texture2D** texture = handle ? AssetManager::GetAssetRaw<Texture2D>(handle) : nullptr;
+		const u64 handle         = TryDeserializeNode<u64>(data, "TextureHandle", 0);
+		Texture2DAsset** texture = handle ? AssetManager::GetAssetRaw<Texture2DAsset>(handle) : nullptr;
 
 		spritesheet->SetSpritesheetTexture(texture);
 		spritesheet->ViewZoom         = TryDeserializeNode<f32>(data, "ViewZoom", 1.0f);
@@ -194,12 +196,13 @@ namespace SW
 
 		const AssetMetaData& sourceMetadata = AssetManager::GetAssetMetaData(fontSourceHandle);
 
-		FontSpecification spec;
-		spec.Path           = ProjectContext::Get()->GetAssetDirectory() / sourceMetadata.Path;
-		spec.Charset        = (FontCharsetType)TryDeserializeNode<u32>(data, "Charset", (int)FontCharsetType::ASCII);
+		FontAssetSpecification spec;
+		spec.Path = ProjectContext::Get()->GetAssetDirectory() / sourceMetadata.Path;
+		spec.Charset =
+		    (OpenGL::FontCharsetType)TryDeserializeNode<u32>(data, "Charset", (int)OpenGL::FontCharsetType::ASCII);
 		spec.PreloadedAtlas = FontCache::TryGetCachedAtlas(metadata.Handle, metadata.ModificationTime);
 
-		Font* font = new Font(spec);
+		FontAsset* font = new FontAsset(spec);
 
 		if (!spec.PreloadedAtlas)
 			FontCache::CacheAtlas(font->GetAtlasTexture(), metadata.Handle, metadata.ModificationTime);

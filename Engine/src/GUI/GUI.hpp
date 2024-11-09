@@ -22,12 +22,13 @@
 
 #include "Appearance.hpp"
 #include "Asset/AssetManager.hpp"
+#include "Asset/Texture2DAsset.hpp"
 #include "Colors.hpp"
 #include "Core/ECS/Entity.hpp"
-#include "Core/OpenGL/Texture2D.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Utils/FileSystem.hpp"
 #include "Icons.hpp"
+#include "OpenGL/Rendering/Texture2D.hpp"
 
 #define USE_TEXTURE_2D_METHODS
 #define USE_ASSET_MANAGER_PLUGIN
@@ -47,9 +48,9 @@ namespace SW::GUI
 	 * @param texture The texture to cast to ImTextureID.
 	 * @return The ImTextureID of the texture.
 	 */
-	inline static ImTextureID GetTextureID(const Texture2D& texture)
+	inline static ImTextureID GetTextureID(const Texture2DAsset& texture)
 	{
-		return (ImTextureID)texture.GetTexHandle();
+		return (ImTextureID)texture.OpenGL::Texture2D::GetHandle();
 	}
 
 	/**
@@ -59,9 +60,9 @@ namespace SW::GUI
 	 * @param texture The texture to cast to ImTextureID.
 	 * @return The ImTextureID of the texture.
 	 */
-	inline static ImTextureID GetTextureID(const Texture2D* texture)
+	inline static ImTextureID GetTextureID(const Texture2DAsset* texture)
 	{
-		return (ImTextureID)texture->GetTexHandle();
+		return (ImTextureID)texture->OpenGL::Texture2D::GetHandle();
 	}
 
 	/**
@@ -607,7 +608,7 @@ namespace SW::GUI
 		 * @param tintHovered Color of the button's icon when hovered.
 		 * @return bool True if the button was pressed, false otherwise.
 		 */
-		bool ImageButton(const Texture2D& texture, const glm::vec2& size, ImU32 tintHovered = Color::DarkGray);
+		bool ImageButton(const Texture2DAsset& texture, const glm::vec2& size, ImU32 tintHovered = Color::DarkGray);
 
 		/**
 		 * @brief Single option for radio button.
@@ -1921,7 +1922,7 @@ namespace SW::GUI
 		/**
 		 * @brief Draws a part of an image with customizable properties.
 		 *
-		 * @param wholeImage Pointer to the Texture2D object representing the whole image.
+		 * @param wholeImage Pointer to the Texture2DAsset object representing the whole image.
 		 * @param label The label for the property grid.
 		 * @param tooltip Optional tooltip for the property grid.
 		 * @param offset The offset of the image part within the whole image.
@@ -1929,7 +1930,7 @@ namespace SW::GUI
 		 * @param tint The tint color of the image part.
 		 * @param showBorder Show border around the image.
 		 */
-		void DrawImagePartProperty(Texture2D* wholeImage, const char* label, const char* tooltip = nullptr,
+		void DrawImagePartProperty(Texture2DAsset* wholeImage, const char* label, const char* tooltip = nullptr,
 		                           glm::vec2 offset = glm::vec2(0.0f), glm::vec2 size = glm::vec2(0.0f),
 		                           glm::vec4 tint = glm::vec4(1.0f), bool showBorder = false);
 	} // namespace Properties

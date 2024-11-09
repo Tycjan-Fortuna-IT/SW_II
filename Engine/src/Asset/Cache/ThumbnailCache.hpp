@@ -13,13 +13,13 @@
 namespace SW
 {
 
-	class Texture2D;
+	class Texture2DAsset;
 	struct AssetSourceItem;
 
 	struct ThumbnailCacheData
 	{
-		Texture2D* Texture; // The actual thumbnail texture.
-		u64 LastModified;   // The last modified timestamp of the asset.
+		Texture2DAsset* Texture; // The actual thumbnail texture.
+		u64 LastModified;        // The last modified timestamp of the asset.
 	};
 
 	class ThumbnailCache
@@ -39,8 +39,8 @@ namespace SW
 		 * @param lastModified The last modified timestamp of the asset.
 		 * @return A pointer to the thumbnail texture if it exists, nullptr otherwise.
 		 */
-		Texture2D** GetTextureThumbnail(const std::filesystem::path& itemPath, AssetHandle handle,
-		                                Timestamp lastModified);
+		Texture2DAsset** GetTextureThumbnail(const std::filesystem::path& itemPath, AssetHandle handle,
+		                                     Timestamp lastModified);
 
 		/**
 		 * @brief Retrieves the thumbnail texture of the font atlas with the provided handle.
@@ -51,8 +51,8 @@ namespace SW
 		 * @param lastModified The last modified timestamp of the font atlas.
 		 * @return A pointer to the thumbnail texture if it exists, nullptr otherwise.
 		 */
-		Texture2D** GetFontAtlasThumbnail(const std::filesystem::path& itemPath, AssetHandle handle,
-		                                  Timestamp lastModified);
+		Texture2DAsset** GetFontAtlasThumbnail(const std::filesystem::path& itemPath, AssetHandle handle,
+		                                       Timestamp lastModified);
 
 		/**
 		 * @brief Clear the cache of all thumbnails.
@@ -69,7 +69,7 @@ namespace SW
 		 *
 		 * @param texture The texture to downscale.
 		 */
-		void DownscaleTexture(Texture2D* texture);
+		void DownscaleTexture(Texture2DAsset* texture);
 
 		/**
 		 * @brief Load and cache the thumbnail texture of the asset with the provided handle.
@@ -80,8 +80,9 @@ namespace SW
 		 * @param lastModified The last modified timestamp of the asset.
 		 * @return A pointer to the cached thumbnail texture.
 		 */
-		Texture2D** LoadAndCacheTexture(const std::filesystem::path& itemPath, const std::filesystem::path& cachePath,
-		                                AssetHandle handle, Timestamp lastModified);
+		Texture2DAsset** LoadAndCacheTexture(const std::filesystem::path& itemPath,
+		                                     const std::filesystem::path& cachePath, AssetHandle handle,
+		                                     Timestamp lastModified);
 
 		/**
 		 * @brief Load and cache the thumbnail texture of the font atlas with the provided handle.
@@ -90,10 +91,11 @@ namespace SW
 		 * @param cachePath The path of the cache directory.
 		 * @param handle The handle of the font atlas.
 		 * @param lastModified The last modified timestamp of the font atlas.
-		 * @return Texture2D**
+		 * @return Texture2DAsset**
 		 */
-		Texture2D** LoadAndCacheFontAtlas(const std::filesystem::path& itemPath, const std::filesystem::path& cachePath,
-		                                  AssetHandle handle, Timestamp lastModified);
+		Texture2DAsset** LoadAndCacheFontAtlas(const std::filesystem::path& itemPath,
+		                                       const std::filesystem::path& cachePath, AssetHandle handle,
+		                                       Timestamp lastModified);
 	};
 
 } // namespace SW

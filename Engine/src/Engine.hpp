@@ -35,10 +35,6 @@
 
 #include "Core/Renderer/Renderer2D.hpp"
 
-#include "Core/OpenGL/Framebuffer.hpp"
-#include "Core/OpenGL/Shader.hpp"
-#include "Core/OpenGL/Texture2D.hpp"
-
 #include "Core/Utils/Random.hpp"
 #include "Core/Utils/Utils.hpp"
 

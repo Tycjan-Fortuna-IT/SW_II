@@ -1,16 +1,20 @@
 #include "AssetPanel.hpp"
 
+#include "Asset/Animation2D.hpp"
 #include "Asset/AssetDirectoryTree.hpp"
 #include "Asset/AssetManager.hpp"
+#include "Asset/Prefab.hpp"
 #include "Asset/Sprite.hpp"
 #include "Asset/Spritesheet.hpp"
 #include "Asset/Thumbnail.hpp"
-#include "Core/OpenGL/Texture2D.hpp"
+#include "AssetPanels/AssetEditorPanelManager.hpp"
 #include "Core/Project/ProjectContext.hpp"
 #include "Core/Renderer/Renderer2D.hpp"
 #include "Core/Utils/FileSystem.hpp"
+#include "EngineEditor.hpp"
 #include "GUI/Appearance.hpp"
 #include "GUI/Editor/EditorResources.hpp"
+#include "GUI/GUI.hpp"
 #include "GUI/Icons.hpp"
 
 #ifdef TESTBED
@@ -378,7 +382,7 @@ namespace SW
 
 		GUI::ScopedStyle CellPadding(ImGuiStyleVar_CellPadding, ImVec2(4.f, 1.f));
 
-		ImTextureID whiteTexId = GUI::GetTextureID(Renderer2D::WhiteTexture->GetTexHandle());
+		ImTextureID whiteTexId = GUI::GetTextureID(Renderer2D::WhiteTexture);
 
 		bool isAnyItemHovered = false;
 
@@ -478,8 +482,8 @@ namespace SW
 
 					if (item->Type == AssetType::Sprite)
 					{
-						Sprite** spriteAsset = AssetManager::GetAssetRaw<Sprite>(item->Handle);
-						Texture2D* texture   = (*spriteAsset)->GetTexture();
+						Sprite** spriteAsset    = AssetManager::GetAssetRaw<Sprite>(item->Handle);
+						Texture2DAsset* texture = (*spriteAsset)->GetTexture();
 
 						Thumbnail thumbnail; // I keep an eye you - std::roundf!
 						thumbnail.Width =
@@ -496,7 +500,8 @@ namespace SW
 					}
 					else if (item->Type == AssetType::Texture2D)
 					{
-						Texture2D** texture = m_Cache.GetTextureThumbnail(item->Path, item->Handle, modificationTime);
+						Texture2DAsset** texture =
+						    m_Cache.GetTextureThumbnail(item->Path, item->Handle, modificationTime);
 
 						Thumbnail thumbnail;
 						thumbnail.Width   = (f32)(*texture)->GetWidth();
@@ -508,7 +513,7 @@ namespace SW
 					else if (item->Type == AssetType::Spritesheet)
 					{
 						Spritesheet** spritesheetAsset = AssetManager::GetAssetRaw<Spritesheet>(item->Handle);
-						Texture2D** texture            = (*spritesheetAsset)->GetSpritesheetTextureRaw();
+						Texture2DAsset** texture       = (*spritesheetAsset)->GetSpritesheetTextureRaw();
 
 						if (!texture)
 						{
@@ -516,9 +521,10 @@ namespace SW
 						}
 						else
 						{
-							const AssetMetaData& metadata = AssetManager::GetAssetMetaData((*texture)->GetHandle());
+							const AssetMetaData& metadata =
+							    AssetManager::GetAssetMetaData((*texture)->Asset::GetHandle());
 
-							texture = m_Cache.GetTextureThumbnail(metadata.Path, (*texture)->GetHandle(),
+							texture = m_Cache.GetTextureThumbnail(metadata.Path, (*texture)->Asset::GetHandle(),
 							                                      metadata.ModificationTime);
 						}
 
@@ -531,7 +537,8 @@ namespace SW
 					}
 					else if (item->Type == AssetType::Font)
 					{
-						Texture2D** texture = m_Cache.GetFontAtlasThumbnail(item->Path, item->Handle, modificationTime);
+						Texture2DAsset** texture =
+						    m_Cache.GetFontAtlasThumbnail(item->Path, item->Handle, modificationTime);
 
 						Thumbnail thumbnail;
 						thumbnail.Width   = (f32)(*texture)->GetWidth();
@@ -542,7 +549,7 @@ namespace SW
 					}
 					else if (item->Type == AssetType::Animation2D)
 					{
-						Texture2D** texture = &EditorResources::MissingAssetIcon;
+						Texture2DAsset** texture = &EditorResources::MissingAssetIcon;
 
 						Thumbnail thumbnail;
 						thumbnail.Width   = (f32)(*texture)->GetWidth();
@@ -555,8 +562,8 @@ namespace SW
 
 				if (item->Type == AssetType::Animation2D)
 				{
-					Animation2D** animation = AssetManager::GetAssetRaw<Animation2D>(item->Handle);
-					Texture2D** texture     = nullptr;
+					Animation2D** animation  = AssetManager::GetAssetRaw<Animation2D>(item->Handle);
+					Texture2DAsset** texture = nullptr;
 
 					int framesCount = (int)(*animation)->Sprites.size();
 

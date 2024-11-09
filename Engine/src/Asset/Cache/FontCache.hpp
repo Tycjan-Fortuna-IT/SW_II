@@ -11,7 +11,12 @@
 namespace SW
 {
 
-	class Texture2D;
+	namespace OpenGL
+	{
+		class Texture2D;
+	}
+
+	class Texture2DAsset;
 
 	/**
 	 * @brief The FontCache class provides functionality for caching font atlases.
@@ -30,7 +35,7 @@ namespace SW
 		 * @param lastModified The last modified timestamp of the font atlas.
 		 * @return A pointer to the cached atlas texture if it exists, nullptr otherwise.
 		 */
-		static Texture2D* TryGetCachedAtlas(AssetHandle handle, Timestamp lastModified);
+		static Texture2DAsset* TryGetCachedAtlas(AssetHandle handle, Timestamp lastModified);
 
 		/**
 		 * @brief Caches the provided atlas texture with the given handle and last modified timestamp.
@@ -43,7 +48,7 @@ namespace SW
 		 * @param handle The handle of the font atlas.
 		 * @param lastModified The last modified timestamp of the font atlas.
 		 */
-		static void CacheAtlas(const Texture2D* atlas, AssetHandle handle, Timestamp lastModified);
+		static void CacheAtlas(const OpenGL::Texture2D* atlas, AssetHandle handle, Timestamp lastModified);
 	};
 
 } // namespace SW

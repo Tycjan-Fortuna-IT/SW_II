@@ -9,6 +9,7 @@
 
 #include "Core/Editor/EditorCamera.hpp"
 #include "GUI/Panel.hpp"
+#include "OpenGL/Rendering/Framebuffer.hpp"
 #include "Utils/Popups.hpp"
 
 namespace SW
@@ -72,8 +73,8 @@ namespace SW
 		Scene* m_ActiveScene = nullptr; /** @brief The active scene (the one that is visible). */
 		Scene* m_SceneCopy   = nullptr;
 
-		EditorCamera* m_EditorCamera = nullptr; /** @brief The current editor camera. */
-		Framebuffer* m_Framebuffer   = nullptr; /** @brief The current framebuffer. */
+		EditorCamera* m_EditorCamera       = nullptr; /** @brief The current editor camera. */
+		OpenGL::Framebuffer* m_Framebuffer = nullptr; /** @brief The current framebuffer. */
 
 		bool m_IsViewportFocused = false; /** @brief Is the viewport focused. */
 		bool m_IsGizmoBarHovered = false;

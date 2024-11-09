@@ -49,21 +49,6 @@ FBS.Dependencies = {
         LibsToLink = { "Box2D" },
     },
     {
-        Name = "msdfgen",
-        IncludeDirs = { "%{wks.location}/Engine/vendor/msdf-atlas-gen/msdfgen" },
-        LibsToLink = { "msdfgen" },
-    },
-    {
-        Name = "msdf-atlas-gen",
-        IncludeDirs = { "%{wks.location}/Engine/vendor/msdf-atlas-gen" },
-        LibsToLink = { "msdf-atlas-gen" },
-    },
-    {
-        Name = "freetype",
-        IncludeDirs = { "%{wks.location}/Engine/vendor/msdf-atlas-gen/msdfgen/freetype/include" },
-        LibsToLink = { "freetype" },
-    },
-    {
         Name = "Tracy",
         IncludeDirs = { "%{wks.location}/Engine/vendor/tracy/tracy/public" },
         LibsToLink = { "Tracy" },

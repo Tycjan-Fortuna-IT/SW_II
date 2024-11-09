@@ -4,6 +4,7 @@
 #include "Asset/AssetLoader.hpp"
 #include "Asset/AssetManager.hpp"
 #include "Asset/Sprite.hpp"
+#include "Asset/Texture2DAsset.hpp"
 #include "GUI/GUI.hpp"
 
 namespace SW
@@ -88,8 +89,8 @@ namespace SW
 			// Display animation
 			if (m_FramesCount)
 			{
-				Sprite** current         = (*m_Animation)->Sprites[(size_t)m_CurrentFrame];
-				const Texture2D* texture = (*current)->GetTexture();
+				Sprite** current              = (*m_Animation)->Sprites[(size_t)m_CurrentFrame];
+				const Texture2DAsset* texture = (*current)->GetTexture();
 
 				ImVec2 uv0 = {
 				    (*m_Animation)->ReverseAlongX ? (*current)->TexCordUpRight.x : (*current)->TexCordLeftDown.x,

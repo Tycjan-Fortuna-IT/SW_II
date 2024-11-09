@@ -190,7 +190,7 @@ namespace SW
 				    GUI::Properties::BeginProperties("##text_property");
 
 				    AssetHandle handle = component.Handle;
-				    if (GUI::Properties::AssetSearchProperty<Font>(&handle, "Font", "Font to be used"))
+				    if (GUI::Properties::AssetSearchProperty<FontAsset>(&handle, "Font", "Font to be used"))
 				    {
 					    component.Handle = handle;
 				    }

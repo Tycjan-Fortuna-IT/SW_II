@@ -491,11 +491,11 @@ namespace SW::GUI
 			return modified;
 		}
 
-		bool ImageButton(const Texture2D& texture, const glm::vec2& size, ImU32 tintHovered /*= Color::DarkGray*/)
+		bool ImageButton(const Texture2DAsset& texture, const glm::vec2& size, ImU32 tintHovered /*= Color::DarkGray*/)
 		{
 			const f32 padding = (size.y - (f32)texture.GetHeight()) / 2.0f;
 
-			if (ImGui::InvisibleButton(std::to_string(texture.GetTexHandle()).c_str(), ImVec2(size.x, size.y)))
+			if (ImGui::InvisibleButton(std::to_string(texture.Asset::GetHandle()).c_str(), ImVec2(size.x, size.y)))
 				return true;
 
 			ImDrawList* drawList = ImGui::GetWindowDrawList();
@@ -1075,7 +1075,7 @@ namespace SW::GUI
 			return modified;
 		}
 
-		void DrawImagePartProperty(Texture2D* wholeImage, const char* label, const char* tooltip /*= nullptr*/,
+		void DrawImagePartProperty(Texture2DAsset* wholeImage, const char* label, const char* tooltip /*= nullptr*/,
 		                           glm::vec2 offset /*= glm::vec2(0.0f)*/, glm::vec2 size /*= glm::vec2(0.0f)*/,
 		                           glm::vec4 tint /*= glm::vec4(1.0f)*/, bool showBorder /*= false */
 		)
@@ -1106,8 +1106,8 @@ namespace SW::GUI
 			const ImVec4 borderCol =
 			    showBorder ? ImGui::ColorConvertU32ToFloat4(GUI::Theme::TextBrighter) : ImVec4(0.f, 0.f, 0.f, 0.f);
 
-			ImGui::Image(GUI::GetTextureID(wholeImage->GetTexHandle()), imagePartSize, uv0, uv1,
-			             {tint.r, tint.g, tint.b, tint.a}, borderCol);
+			ImGui::Image(GUI::GetTextureID(wholeImage), imagePartSize, uv0, uv1, {tint.r, tint.g, tint.b, tint.a},
+			             borderCol);
 
 			GUI::Properties::EndPropertyGrid();
 		}

@@ -1,6 +1,6 @@
 #include "Asset.hpp"
 
-#include "Core/OpenGL/Texture2D.hpp"
+#include "Asset/Texture2DAsset.hpp"
 #include "GUI/Editor/EditorResources.hpp"
 #include "GUI/Icons.hpp"
 
@@ -154,7 +154,7 @@ namespace SW
 
 	Thumbnail Asset::GetThumbnailFromAssetType(AssetType type)
 	{
-		Texture2D** texture = nullptr;
+		Texture2DAsset** texture = nullptr;
 
 		switch (type)
 		{
