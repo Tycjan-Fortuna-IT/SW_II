@@ -37,12 +37,16 @@
 [submodule "vendor/FancyBuildSystem"]
 	path = vendor/FancyBuildSystem
 	url = https://github.com/Tycjan-Fortuna-IT/FancyBuildSystem.git
+	branch = master
 [submodule "Engine/modules/Logger"]
 	path = Engine/modules/Logger
 	url = https://github.com/SW-II/Logger.git
+	branch = master
 [submodule "Engine/modules/Eventing"]
 	path = Engine/modules/Eventing
 	url = https://github.com/Tycjan-Fortuna-IT/Eventing.git
+	branch = master
 [submodule "Engine/modules/OpenGL"]
 	path = Engine/modules/OpenGL
 	url = https://github.com/Tycjan-Fortuna-IT/OpenGL.git
+	branch = master
